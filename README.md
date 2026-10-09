@@ -4,17 +4,17 @@ Rotom Spark is a standalone, deterministic Rust battle simulator targeting
 Pokémon Champions Regulation M-C. During Phase 1, behavior will be validated
 against a pinned Pokémon Showdown Champions implementation.
 
-The repository currently contains the workspace foundations and a normalized
-static-data export from a pinned Pokémon Showdown revision. Battle mechanics,
-team parsing, and format validation are intentionally deferred to later
-milestones.
+The repository currently contains the workspace foundations, normalized static
+data from a pinned Pokémon Showdown revision, Regulation M-C team parsing and
+validation, and the serializable core battle-state model. Battle resolution is
+intentionally deferred to later milestones.
 
 ## Workspace
 
-- `rotom-core`: shared engine IDs, enums, and errors; later battle simulation.
+- `rotom-core`: shared engine IDs, errors, and authoritative battle state.
 - `rotom-dex`: static game data boundary.
 - `rotom-formats`: format rules and legality boundary.
-- `rotom-protocol`: normalized snapshots and protocol types boundary.
+- `rotom-protocol`: normalized battle snapshots and protocol boundary.
 - `rotom-cli`: development command-line shell, installed as `rotom`.
 
 ## Development

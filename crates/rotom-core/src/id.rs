@@ -43,6 +43,7 @@ macro_rules! define_id {
 }
 
 define_id!(AbilityId);
+define_id!(ConditionId);
 define_id!(FormId);
 define_id!(ItemId);
 define_id!(MoveId);

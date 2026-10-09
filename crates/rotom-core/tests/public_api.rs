@@ -1,11 +1,12 @@
 use rotom_core::{
-    AbilityId, FormId, Gender, ItemId, MoveId, NatureId, PokemonSet, SideId, SpeciesId,
-    StatAllocation, TeamDefinition,
+    AbilityId, BattlePhase, BattleState, ConditionId, FieldState, FormId, Gender, ItemId, MoveId,
+    NatureId, PokemonSet, SideId, SideState, SpeciesId, StatAllocation, TeamDefinition, TeamState,
 };
 
 #[test]
 fn foundational_types_are_available_from_the_crate_root() {
     assert_eq!(AbilityId::new(1).get(), 1);
+    assert_eq!(ConditionId::new(7).get(), 7);
     assert_eq!(FormId::new(2).get(), 2);
     assert_eq!(ItemId::new(3).get(), 3);
     assert_eq!(MoveId::new(4).get(), 4);
@@ -18,4 +19,10 @@ fn foundational_types_are_available_from_the_crate_root() {
     let _: TeamDefinition = TeamDefinition {
         members: Vec::new(),
     };
+    let battle = BattleState::new(
+        SideState::new(TeamState::default()),
+        SideState::new(TeamState::default()),
+    );
+    assert_eq!(battle.phase, BattlePhase::TeamPreview);
+    assert_eq!(battle.field, FieldState::default());
 }

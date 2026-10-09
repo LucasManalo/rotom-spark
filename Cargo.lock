@@ -66,6 +66,11 @@ dependencies = [
 [[package]]
 name = "rotom-protocol"
 version = "0.1.0"
+dependencies = [
+ "rotom-core",
+ "serde",
+ "serde_json",
+]
 
 [[package]]
 name = "serde"
