@@ -1,7 +1,7 @@
 use crate::{parser::to_id, ValidationError, ValidationProblem};
 use rotom_core::{Gender, PokemonSet, TeamDefinition};
 use rotom_dex::{DexData, SpeciesData};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 pub(crate) fn validate_reg_mc_team(
     team: &TeamDefinition,
@@ -286,11 +286,19 @@ fn validate_moves(
     if count == 0 || count > usize::from(dex.format.max_move_count) {
         problems.push(ValidationProblem::InvalidMoveCount { slot, count });
     }
+    let mut seen_moves = HashSet::new();
+    let mut reported_duplicates = HashSet::new();
     for move_id in &set.moves {
         let Some(move_data) = dex.move_data(*move_id) else {
             problems.push(ValidationProblem::UnknownReference { slot, kind: "move" });
             continue;
         };
+        if !seen_moves.insert(*move_id) && reported_duplicates.insert(*move_id) {
+            problems.push(ValidationProblem::DuplicateMove {
+                slot,
+                name: move_data.name.clone(),
+            });
+        }
         if !move_data.legal {
             problems.push(ValidationProblem::IllegalMove {
                 slot,

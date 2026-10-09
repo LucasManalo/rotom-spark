@@ -5,6 +5,13 @@ use rotom_core::{
 };
 use rotom_dex::DexData;
 
+const SEEN_ABILITY: u8 = 1 << 0;
+const SEEN_LEVEL: u8 = 1 << 1;
+const SEEN_SHINY: u8 = 1 << 2;
+const SEEN_STAT_POINTS: u8 = 1 << 3;
+const SEEN_IVS: u8 = 1 << 4;
+const SEEN_NATURE: u8 = 1 << 5;
+
 struct SetBuilder {
     start_line: usize,
     nickname: Option<String>,
@@ -19,6 +26,7 @@ struct SetBuilder {
     ivs: StatAllocation,
     moves: Vec<MoveId>,
     shiny: bool,
+    seen_fields: u8,
 }
 
 impl SetBuilder {
@@ -169,6 +177,7 @@ fn parse_header(
         ivs: StatAllocation::PERFECT_IVS,
         moves: Vec::new(),
         shiny: false,
+        seen_fields: 0,
     })
 }
 
@@ -182,6 +191,12 @@ fn parse_set_line(
         .strip_prefix("Ability: ")
         .or_else(|| line.strip_prefix("Trait: "))
     {
+        reject_duplicate(
+            &mut builder.seen_fields,
+            SEEN_ABILITY,
+            line_number,
+            "Ability",
+        )?;
         builder.ability = Some(
             dex.resolve_ability(&to_id(name))
                 .map(|(id, _)| id)
@@ -190,20 +205,30 @@ fn parse_set_line(
                 })?,
         );
     } else if let Some(value) = line.strip_prefix("Level: ") {
+        reject_duplicate(&mut builder.seen_fields, SEEN_LEVEL, line_number, "Level")?;
         builder.level = value.parse().map_err(|_| {
             TeamParseError::new(line_number, "level must be an integer from 1 to 100")
         })?;
     } else if let Some(value) = line.strip_prefix("Shiny: ") {
+        reject_duplicate(&mut builder.seen_fields, SEEN_SHINY, line_number, "Shiny")?;
         builder.shiny = match value {
             "Yes" => true,
             "No" => false,
             _ => return Err(TeamParseError::new(line_number, "Shiny must be Yes or No")),
         };
     } else if let Some(value) = line.strip_prefix("EVs: ") {
+        reject_duplicate(
+            &mut builder.seen_fields,
+            SEEN_STAT_POINTS,
+            line_number,
+            "EVs",
+        )?;
         builder.stat_points = parse_stats(value, StatAllocation::ZERO, line_number)?;
     } else if let Some(value) = line.strip_prefix("IVs: ") {
+        reject_duplicate(&mut builder.seen_fields, SEEN_IVS, line_number, "IVs")?;
         builder.ivs = parse_stats(value, StatAllocation::PERFECT_IVS, line_number)?;
     } else if let Some(name) = line.strip_suffix(" Nature") {
+        reject_duplicate(&mut builder.seen_fields, SEEN_NATURE, line_number, "Nature")?;
         builder.nature = dex
             .resolve_nature(&to_id(name))
             .map(|(id, _)| id)
@@ -231,6 +256,7 @@ fn parse_stats(
     mut result: StatAllocation,
     line_number: usize,
 ) -> Result<StatAllocation, TeamParseError> {
+    let mut seen = [false; 6];
     for component in value.split(" / ") {
         let (number, stat) = component.split_once(' ').ok_or_else(|| {
             TeamParseError::new(
@@ -241,22 +267,46 @@ fn parse_stats(
         let number = number.parse::<u8>().map_err(|_| {
             TeamParseError::new(line_number, format!("invalid stat value `{number}`"))
         })?;
-        match stat {
-            "HP" => result.hp = number,
-            "Atk" => result.atk = number,
-            "Def" => result.def = number,
-            "SpA" => result.spa = number,
-            "SpD" => result.spd = number,
-            "Spe" => result.spe = number,
+        let (target, already_seen) = match stat {
+            "HP" => (&mut result.hp, &mut seen[0]),
+            "Atk" => (&mut result.atk, &mut seen[1]),
+            "Def" => (&mut result.def, &mut seen[2]),
+            "SpA" => (&mut result.spa, &mut seen[3]),
+            "SpD" => (&mut result.spd, &mut seen[4]),
+            "Spe" => (&mut result.spe, &mut seen[5]),
             _ => {
                 return Err(TeamParseError::new(
                     line_number,
                     format!("unknown stat `{stat}`"),
                 ));
             }
+        };
+        if *already_seen {
+            return Err(TeamParseError::new(
+                line_number,
+                format!("stat `{stat}` is specified more than once"),
+            ));
         }
+        *already_seen = true;
+        *target = number;
     }
     Ok(result)
+}
+
+fn reject_duplicate(
+    seen_fields: &mut u8,
+    field_flag: u8,
+    line_number: usize,
+    field: &str,
+) -> Result<(), TeamParseError> {
+    if *seen_fields & field_flag != 0 {
+        return Err(TeamParseError::new(
+            line_number,
+            format!("{field} is specified more than once"),
+        ));
+    }
+    *seen_fields |= field_flag;
+    Ok(())
 }
 
 fn normalize_move_name(name: &str) -> String {

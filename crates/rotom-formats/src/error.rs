@@ -97,6 +97,10 @@ pub enum ValidationProblem {
         slot: usize,
         count: usize,
     },
+    DuplicateMove {
+        slot: usize,
+        name: String,
+    },
     IllegalMove {
         slot: usize,
         name: String,

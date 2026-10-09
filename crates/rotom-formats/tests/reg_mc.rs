@@ -1,4 +1,4 @@
-use rotom_core::{AbilityId, StatAllocation};
+use rotom_core::{AbilityId, Gender, StatAllocation};
 use rotom_dex::champions_reg_mc;
 use rotom_formats::{
     parse_showdown_team, BattleFormat, ChampionsRegMC, FormatId, GameType, ValidationProblem,
@@ -116,6 +116,49 @@ fn rejects_illegal_species_and_unlearnable_move() {
 }
 
 #[test]
+fn rejects_duplicate_moves_like_showdown() {
+    let dex = champions_reg_mc().expect("generated data should load");
+    let mut team = parse_showdown_team(VALID_TEAM, &dex).expect("fixture should parse");
+    let protect = dex.resolve_move("protect").expect("Protect exists").0;
+    team.members[0].moves = vec![protect; 4];
+
+    let problems = ChampionsRegMC
+        .validate_team(&team, &dex)
+        .expect_err("duplicate moves must be rejected")
+        .problems;
+    assert!(problems.iter().any(|problem| matches!(
+        problem,
+        ValidationProblem::DuplicateMove { slot: 1, name } if name == "Protect"
+    )));
+}
+
+#[test]
+fn validates_required_mega_item_and_fixed_gender() {
+    let dex = champions_reg_mc().expect("generated data should load");
+    let mut team = parse_showdown_team(VALID_TEAM, &dex).expect("fixture should parse");
+    team.members[0].item = Some(dex.resolve_item("gengarite").expect("Gengarite exists").0);
+    team.members[5].species = dex.resolve_species("ditto").expect("Ditto exists").0;
+    team.members[5].form = None;
+    team.members[5].ability = dex.resolve_ability("imposter").expect("Imposter exists").0;
+    team.members[5].moves = vec![dex.resolve_move("transform").expect("Transform exists").0];
+    team.members[5].gender = Some(Gender::Male);
+
+    let problems = ChampionsRegMC
+        .validate_team(&team, &dex)
+        .expect_err("wrong Mega item and genderless Pokémon must be rejected")
+        .problems;
+    assert!(problems
+        .iter()
+        .any(|problem| matches!(problem, ValidationProblem::RequiredItem { slot: 1, .. })));
+    assert!(problems
+        .iter()
+        .any(|problem| matches!(problem, ValidationProblem::WrongMegaStone { slot: 1, .. })));
+    assert!(problems
+        .iter()
+        .any(|problem| matches!(problem, ValidationProblem::GenderMismatch { slot: 6 })));
+}
+
+#[test]
 fn parser_rejects_unknown_names_and_fields() {
     let dex = champions_reg_mc().expect("generated data should load");
     let unknown_species = parse_showdown_team(
@@ -132,4 +175,24 @@ fn parser_rejects_unknown_names_and_fields() {
     .expect_err("unsupported fields must not be ignored");
     assert_eq!(unsupported_field.line, 3);
     assert!(unsupported_field.message.contains("unsupported"));
+}
+
+#[test]
+fn parser_rejects_repeated_singleton_fields_and_stats() {
+    let dex = champions_reg_mc().expect("generated data should load");
+    let repeated_ability = parse_showdown_team(
+        "Charizard\nAbility: Blaze\nAbility: Solar Power\nAdamant Nature\n- Protect",
+        &dex,
+    )
+    .expect_err("repeated ability must be rejected");
+    assert_eq!(repeated_ability.line, 3);
+    assert!(repeated_ability.message.contains("more than once"));
+
+    let repeated_stat = parse_showdown_team(
+        "Charizard\nAbility: Blaze\nEVs: 2 HP / 32 Atk / 32 Atk\nAdamant Nature\n- Protect",
+        &dex,
+    )
+    .expect_err("repeated stat must be rejected");
+    assert_eq!(repeated_stat.line, 3);
+    assert!(repeated_stat.message.contains("Atk"));
 }
