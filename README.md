@@ -4,9 +4,10 @@ Rotom Spark is a standalone, deterministic Rust battle simulator targeting
 Pokémon Champions Regulation M-C. During Phase 1, behavior will be validated
 against a pinned Pokémon Showdown Champions implementation.
 
-The repository currently contains only the workspace foundations. Battle
-mechanics, game data, format validation, and Showdown tooling are intentionally
-deferred to later milestones.
+The repository currently contains the workspace foundations and a normalized
+static-data export from a pinned Pokémon Showdown revision. Battle mechanics,
+team parsing, and format validation are intentionally deferred to later
+milestones.
 
 ## Workspace
 
@@ -25,4 +26,17 @@ cargo test --workspace
 ```
 
 See `AGENTS.md` and `ROTOM_SPARK_IMPLEMENTATION_PLAN.md` before making changes.
+
+## Regenerating Champions data
+
+Pokémon Showdown is a development-only Git submodule. It is not needed when
+using the checked-in generated data through `rotom-dex`.
+
+```text
+git submodule update --init --recursive
+npm ci --prefix vendor/pokemon-showdown
+npm run build --prefix vendor/pokemon-showdown
+node tools/showdown-export/export-champions.cjs
+node tools/showdown-export/export-champions.cjs --check
+```
 

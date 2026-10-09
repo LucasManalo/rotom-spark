@@ -1,14 +1,28 @@
 //! Static Pokémon game data for Rotom Spark.
 //!
-//! Resolved Champions data will be introduced by the Showdown export milestone.
+//! The checked-in data is generated from the resolved Champions Dex at the
+//! exact Pokémon Showdown revision recorded in `SHOWDOWN_VERSION`. Showdown is
+//! development tooling only and is never loaded by this crate.
 
-/// The crate's stable boundary name, useful for workspace smoke checks.
-pub const CRATE_NAME: &str = "rotom-dex";
+mod error;
+mod model;
 
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn crate_boundary_is_available() {
-        assert_eq!(super::CRATE_NAME, "rotom-dex");
-    }
+pub use error::DexLoadError;
+pub use model::{
+    AbilityData, Accuracy, ComplexBan, Damage, DexData, Fling, FormData, FormatData, Fraction,
+    GenderRatio, ItemData, ItemFlag, KeyValue, MoveData, MultiHit, NaturalGift, RuleEntry,
+    SourceMetadata, SpeciesData, Stats, ValueRule,
+};
+
+const CHAMPIONS_REG_MC_JSON: &str = include_str!("../../../data/generated/champions-reg-mc.json");
+
+/// Loads the generated Champions Regulation M-C data bundled with this crate.
+///
+/// # Errors
+///
+/// Returns an error when the checked-in generated data does not match the Rust
+/// schema. Such an error indicates a build/release defect rather than bad user
+/// input.
+pub fn champions_reg_mc() -> Result<DexData, DexLoadError> {
+    DexData::from_json(CHAMPIONS_REG_MC_JSON)
 }
