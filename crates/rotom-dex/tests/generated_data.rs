@@ -7,7 +7,7 @@ const SHOWDOWN_COMMIT: &str = "b79ce06d06b8f0dc8de8bb348bc9cab5d931553f";
 fn generated_data_has_expected_source_and_format() {
     let data = champions_reg_mc().expect("checked-in data should match the Rust schema");
 
-    assert_eq!(data.schema_version, 1);
+    assert_eq!(data.schema_version, 2);
     assert_eq!(data.source.commit, SHOWDOWN_COMMIT);
     assert_eq!(data.format.id, "gen9championsvgc2026regmc");
     assert_eq!(data.format.mod_name, "champions");
@@ -22,6 +22,7 @@ fn generated_data_has_expected_source_and_format() {
     assert_eq!(data.moves.len(), 954);
     assert_eq!(data.items.len(), 583);
     assert_eq!(data.abilities.len(), 321);
+    assert_eq!(data.natures.len(), 25);
 }
 
 #[test]
@@ -49,6 +50,10 @@ fn generated_collections_are_sorted_and_unique() {
             .iter()
             .map(|entry| entry.id.as_str())
             .collect::<Vec<_>>(),
+        data.natures
+            .iter()
+            .map(|entry| entry.id.as_str())
+            .collect::<Vec<_>>(),
     ] {
         assert!(ids.windows(2).all(|pair| pair[0] < pair[1]));
         assert_eq!(ids.len(), ids.iter().copied().collect::<HashSet<_>>().len());
@@ -68,6 +73,11 @@ fn data_contains_resolved_champions_overrides() {
     assert_eq!(anchor_shot.accuracy, Accuracy::Percent { value: 100 });
     assert!(data.moves.iter().all(|entry| entry.pp <= 20));
     assert!(data.forms.iter().any(|entry| entry.id == "charizardmegax"));
+    assert!(data
+        .species
+        .iter()
+        .find(|entry| entry.id == "charizard")
+        .is_some_and(|entry| entry.move_pool.iter().any(|move_id| move_id == "protect")));
 }
 
 #[test]

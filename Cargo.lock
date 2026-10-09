@@ -48,6 +48,7 @@ dependencies = [
 name = "rotom-dex"
 version = "0.1.0"
 dependencies = [
+ "rotom-core",
  "serde",
  "serde_json",
 ]
@@ -55,6 +56,12 @@ dependencies = [
 [[package]]
 name = "rotom-formats"
 version = "0.1.0"
+dependencies = [
+ "rotom-core",
+ "rotom-dex",
+ "serde",
+ "serde_json",
+]
 
 [[package]]
 name = "rotom-protocol"

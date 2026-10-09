@@ -46,6 +46,7 @@ define_id!(AbilityId);
 define_id!(FormId);
 define_id!(ItemId);
 define_id!(MoveId);
+define_id!(NatureId);
 define_id!(SpeciesId);
 
 #[cfg(test)]

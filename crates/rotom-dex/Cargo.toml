@@ -6,6 +6,7 @@ license.workspace = true
 rust-version.workspace = true
 
 [dependencies]
+rotom-core = { path = "../rotom-core" }
 serde.workspace = true
 serde_json.workspace = true
 

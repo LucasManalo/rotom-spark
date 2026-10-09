@@ -8,3 +8,11 @@ rust-version.workspace = true
 [lints]
 workspace = true
 
+[dependencies]
+rotom-core = { path = "../rotom-core" }
+rotom-dex = { path = "../rotom-dex" }
+serde.workspace = true
+
+[dev-dependencies]
+serde_json.workspace = true
+

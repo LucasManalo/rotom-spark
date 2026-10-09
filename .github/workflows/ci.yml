@@ -31,6 +31,9 @@ jobs:
       - name: Verify generated Champions data
         run: node tools/showdown-export/export-champions.cjs --check
 
+      - name: Validate Regulation M-C team fixture against Showdown
+        run: node tools/showdown-reference/validate-team.cjs data/fixtures/teams/valid-reg-mc.txt
+
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:

@@ -1,0 +1,59 @@
+Charizard-Mega-X @ Charizardite X
+Ability: Blaze
+Level: 50
+EVs: 2 HP / 32 Atk / 32 Spe
+Adamant Nature
+- Flare Blitz
+- Dragon Claw
+- Protect
+- Dragon Dance
+
+Blastoise @ Sitrus Berry
+Ability: Torrent
+Level: 50
+EVs: 2 HP / 32 SpA / 32 Spe
+Modest Nature
+- Hydro Pump
+- Ice Beam
+- Protect
+- Water Pulse
+
+Dragonite @ Choice Scarf
+Ability: Multiscale
+Level: 50
+EVs: 2 HP / 32 Atk / 32 Spe
+Adamant Nature
+- Extreme Speed
+- Dragon Claw
+- Tailwind
+- Protect
+
+Garchomp @ Life Orb
+Ability: Rough Skin
+Level: 50
+EVs: 2 HP / 32 Atk / 32 Spe
+Jolly Nature
+- Earthquake
+- Dragon Claw
+- Rock Slide
+- Protect
+
+Gengar @ Focus Sash
+Ability: Cursed Body
+Level: 50
+EVs: 2 HP / 32 SpA / 32 Spe
+Timid Nature
+- Shadow Ball
+- Sludge Bomb
+- Icy Wind
+- Protect
+
+Gardevoir @ Air Balloon
+Ability: Telepathy
+Level: 50
+EVs: 2 HP / 32 SpA / 32 Spe
+Modest Nature
+- Moonblast
+- Psychic
+- Trick Room
+- Protect

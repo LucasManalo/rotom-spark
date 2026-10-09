@@ -125,6 +125,18 @@ function exportSpecies(dex, validator) {
 	return sorted(dex.species.all().filter(species => species.exists)).map(species => {
 		const set = {name: species.name, species: species.name, moves: [], ability: ''};
 		const banReason = validator.checkSpecies(set, species, species, {});
+		const sourcesByMove = new Map();
+		for (const learnset of dex.species.getFullLearnset(species.id)) {
+			for (const [move, sources] of Object.entries(learnset.learnset)) {
+				const collected = sourcesByMove.get(move) || [];
+				collected.push(...sources.filter(source => source.startsWith('9')));
+				sourcesByMove.set(move, collected);
+			}
+		}
+		const eventOnlyMoves = [...sourcesByMove]
+			.filter(([, sources]) => sources.length && sources.every(source => source.startsWith('9S')))
+			.map(([move]) => move)
+			.sort(compareStrings);
 
 		return {
 			id: species.id,
@@ -159,6 +171,8 @@ function exportSpecies(dex, validator) {
 			is_nonstandard: species.isNonstandard || null,
 			tags: sortedStrings(species.tags),
 			tier: species.tier,
+			move_pool: [...dex.species.getMovePool(species.id)].sort(compareStrings),
+			event_only_moves: eventOnlyMoves,
 			legal: banReason == null,
 			ban_reason: banReason || null,
 		};
@@ -265,6 +279,20 @@ function exportAbilities(dex, validator) {
 	});
 }
 
+function exportNatures(dex, validator) {
+	return sorted(dex.natures.all().filter(nature => nature.exists)).map(nature => {
+		const banReason = validator.checkNature({name: nature.name}, nature, {});
+		return {
+			id: nature.id,
+			name: nature.name,
+			plus: optional(nature.plus),
+			minus: optional(nature.minus),
+			legal: banReason == null,
+			ban_reason: banReason || null,
+		};
+	});
+}
+
 function buildExport(version, Showdown) {
 	const {Dex, TeamValidator} = Showdown;
 	const format = Dex.formats.get(version.format);
@@ -281,7 +309,7 @@ function buildExport(version, Showdown) {
 	const species = exportSpecies(dex, validator);
 
 	return {
-		schema_version: 1,
+		schema_version: 2,
 		source: {repo: version.repo, commit: version.commit},
 		format: {
 			id: format.id,
@@ -311,6 +339,7 @@ function buildExport(version, Showdown) {
 		moves: exportMoves(dex, validator),
 		items: exportItems(dex, validator),
 		abilities: exportAbilities(dex, validator),
+		natures: exportNatures(dex, validator),
 	};
 }
 

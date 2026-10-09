@@ -1,4 +1,5 @@
 use crate::DexLoadError;
+use rotom_core::{AbilityId, FormId, ItemId, MoveId, NatureId, SpeciesId};
 use serde::{Deserialize, Serialize};
 
 /// Complete normalized static data exported for one battle format.
@@ -13,6 +14,7 @@ pub struct DexData {
     pub moves: Vec<MoveData>,
     pub items: Vec<ItemData>,
     pub abilities: Vec<AbilityData>,
+    pub natures: Vec<NatureData>,
 }
 
 impl DexData {
@@ -24,6 +26,83 @@ impl DexData {
     pub fn from_json(json: &str) -> Result<Self, DexLoadError> {
         serde_json::from_str(json).map_err(DexLoadError::new)
     }
+
+    #[must_use]
+    pub fn resolve_species(&self, key: &str) -> Option<(SpeciesId, &SpeciesData)> {
+        resolve(&self.species, key, |entry| entry.id.as_str())
+            .and_then(|(index, entry)| Some((SpeciesId::new(u32::try_from(index).ok()?), entry)))
+    }
+
+    #[must_use]
+    pub fn resolve_form(&self, key: &str) -> Option<(FormId, &FormData)> {
+        resolve(&self.forms, key, |entry| entry.id.as_str())
+            .and_then(|(index, entry)| Some((FormId::new(u32::try_from(index).ok()?), entry)))
+    }
+
+    #[must_use]
+    pub fn resolve_move(&self, key: &str) -> Option<(MoveId, &MoveData)> {
+        resolve(&self.moves, key, |entry| entry.id.as_str())
+            .and_then(|(index, entry)| Some((MoveId::new(u32::try_from(index).ok()?), entry)))
+    }
+
+    #[must_use]
+    pub fn resolve_item(&self, key: &str) -> Option<(ItemId, &ItemData)> {
+        resolve(&self.items, key, |entry| entry.id.as_str())
+            .and_then(|(index, entry)| Some((ItemId::new(u32::try_from(index).ok()?), entry)))
+    }
+
+    #[must_use]
+    pub fn resolve_ability(&self, key: &str) -> Option<(AbilityId, &AbilityData)> {
+        resolve(&self.abilities, key, |entry| entry.id.as_str())
+            .and_then(|(index, entry)| Some((AbilityId::new(u32::try_from(index).ok()?), entry)))
+    }
+
+    #[must_use]
+    pub fn resolve_nature(&self, key: &str) -> Option<(NatureId, &NatureData)> {
+        resolve(&self.natures, key, |entry| entry.id.as_str())
+            .and_then(|(index, entry)| Some((NatureId::new(u32::try_from(index).ok()?), entry)))
+    }
+
+    #[must_use]
+    pub fn species(&self, id: SpeciesId) -> Option<&SpeciesData> {
+        self.species.get(usize::try_from(id.get()).ok()?)
+    }
+
+    #[must_use]
+    pub fn form(&self, id: FormId) -> Option<&FormData> {
+        self.forms.get(usize::try_from(id.get()).ok()?)
+    }
+
+    #[must_use]
+    pub fn move_data(&self, id: MoveId) -> Option<&MoveData> {
+        self.moves.get(usize::try_from(id.get()).ok()?)
+    }
+
+    #[must_use]
+    pub fn item(&self, id: ItemId) -> Option<&ItemData> {
+        self.items.get(usize::try_from(id.get()).ok()?)
+    }
+
+    #[must_use]
+    pub fn ability(&self, id: AbilityId) -> Option<&AbilityData> {
+        self.abilities.get(usize::try_from(id.get()).ok()?)
+    }
+
+    #[must_use]
+    pub fn nature(&self, id: NatureId) -> Option<&NatureData> {
+        self.natures.get(usize::try_from(id.get()).ok()?)
+    }
+}
+
+fn resolve<'a, T>(
+    entries: &'a [T],
+    key: &str,
+    get_key: impl Fn(&T) -> &str,
+) -> Option<(usize, &'a T)> {
+    let index = entries
+        .binary_search_by(|entry| get_key(entry).cmp(key))
+        .ok()?;
+    Some((index, &entries[index]))
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -111,6 +190,8 @@ pub struct SpeciesData {
     pub is_nonstandard: Option<String>,
     pub tags: Vec<String>,
     pub tier: String,
+    pub move_pool: Vec<String>,
+    pub event_only_moves: Vec<String>,
     pub legal: bool,
     pub ban_reason: Option<String>,
 }
@@ -266,6 +347,17 @@ pub struct AbilityData {
     pub gen: u8,
     pub rating: f64,
     pub is_nonstandard: Option<String>,
+    pub legal: bool,
+    pub ban_reason: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct NatureData {
+    pub id: String,
+    pub name: String,
+    pub plus: Option<String>,
+    pub minus: Option<String>,
     pub legal: bool,
     pub ban_reason: Option<String>,
 }

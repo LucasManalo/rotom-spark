@@ -21,6 +21,7 @@ node tools/showdown-export/export-champions.cjs --check
 ```
 
 Format-level `legal` fields reflect the resolved Showdown ban and tag rules.
-Move learnability and valid combinations of species, form, item, ability, and
-moves remain the responsibility of the later team-validation milestone.
+The export also includes natures and each species' resolved move pool for the
+Regulation M-C team validator. Event-only moves are marked separately because
+their source-combination rules are not silently approximated by Rotom Spark.
 

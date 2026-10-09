@@ -1,6 +1,15 @@
-//! Format rules and team-legality boundaries for Rotom Spark.
-//!
-//! Regulation M-C behavior is intentionally deferred to its dedicated milestone.
+//! Format rules, team parsing, and team-legality boundaries for Rotom Spark.
+
+mod error;
+mod format;
+mod parser;
+mod reg_mc;
+mod validation;
+
+pub use error::{TeamParseError, ValidationError, ValidationProblem};
+pub use format::{BattleFormat, FormatId, GameType};
+pub use parser::parse_showdown_team;
+pub use reg_mc::ChampionsRegMC;
 
 /// The crate's stable boundary name, useful for workspace smoke checks.
 pub const CRATE_NAME: &str = "rotom-formats";
