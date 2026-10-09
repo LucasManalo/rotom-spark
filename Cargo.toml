@@ -1,0 +1,26 @@
+[workspace]
+members = [
+    "crates/rotom-cli",
+    "crates/rotom-core",
+    "crates/rotom-dex",
+    "crates/rotom-formats",
+    "crates/rotom-protocol",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+rust-version = "1.75"
+
+[workspace.dependencies]
+serde = { version = "1.0", features = ["derive"] }
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+
