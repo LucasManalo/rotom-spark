@@ -1,6 +1,7 @@
 use rotom_core::{
-    AbilityId, BattleState, BattleStats, MoveId, MoveSlot, PokemonIndex, PokemonPosition,
-    PokemonState, SideId, SideState, SpeciesId, StatStages, StatusState, TeamState,
+    AbilityId, BattlePhase, BattleState, BattleStats, MoveId, MoveSlot, PokemonIndex,
+    PokemonPosition, PokemonState, SideId, SideState, SpeciesId, StatStages, StatusState,
+    TeamState,
 };
 use rotom_protocol::{BattleSnapshot, BattleStateSnapshot};
 
@@ -35,10 +36,14 @@ fn pokemon(species: u32, hp: u16) -> PokemonState {
 }
 
 fn battle() -> BattleState {
+    let p1 = (11..=14).map(|species| pokemon(species, 120)).collect();
+    let p2 = (21..=24).map(|species| pokemon(species, 130)).collect();
     BattleState::new(
-        SideState::new(TeamState::new(vec![pokemon(11, 120)])),
-        SideState::new(TeamState::new(vec![pokemon(12, 130)])),
+        SideState::new(TeamState::new(p1)),
+        SideState::new(TeamState::new(p2)),
+        4,
     )
+    .expect("fixture is a valid preview state")
 }
 
 #[test]
@@ -46,6 +51,7 @@ fn snapshot_is_normalized_and_serializable() {
     let state = battle();
     let snapshot = state.snapshot();
 
+    assert_eq!(snapshot.picked_team_size, 4);
     assert_eq!(snapshot.sides[0].side, SideId::P1);
     assert_eq!(snapshot.sides[1].side, SideId::P2);
     assert_eq!(snapshot.sides[0].team[0].species, 11);
@@ -53,8 +59,7 @@ fn snapshot_is_normalized_and_serializable() {
     assert_eq!(snapshot.sides[0].team[0].stats.max_hp, 120);
 
     let json = serde_json::to_string_pretty(&snapshot).expect("snapshot should serialize");
-    let decoded: BattleSnapshot =
-        serde_json::from_str(&json).expect("snapshot should deserialize");
+    let decoded: BattleSnapshot = serde_json::from_str(&json).expect("snapshot should deserialize");
     assert_eq!(decoded, snapshot);
 }
 
@@ -70,4 +75,34 @@ fn snapshot_does_not_alias_mutable_battle_state() {
         .current_hp = 1;
 
     assert_eq!(snapshot.sides[0].team[0].current_hp, 120);
+}
+
+#[test]
+fn snapshot_exposes_preview_order_and_initial_leads() {
+    let mut state = battle();
+    let p1 = vec![
+        PokemonIndex::new(3),
+        PokemonIndex::new(1),
+        PokemonIndex::new(0),
+        PokemonIndex::new(2),
+    ];
+    let p2 = vec![
+        PokemonIndex::new(2),
+        PokemonIndex::new(0),
+        PokemonIndex::new(3),
+        PokemonIndex::new(1),
+    ];
+    state
+        .select_team(SideId::P1, p1)
+        .expect("P1 preview choice should be valid");
+    state
+        .select_team(SideId::P2, p2)
+        .expect("P2 preview choice should be valid");
+
+    let snapshot = state.snapshot();
+    assert_eq!(snapshot.turn, 1);
+    assert_eq!(snapshot.phase, BattlePhase::TurnSelection);
+    assert_eq!(snapshot.sides[0].selected_team, vec![3, 1, 0, 2]);
+    assert_eq!(snapshot.sides[0].active, [Some(3), Some(1)]);
+    assert_eq!(snapshot.sides[1].active, [Some(2), Some(0)]);
 }

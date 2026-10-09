@@ -1,6 +1,7 @@
 use rotom_core::{
     AbilityId, BattlePhase, BattleState, BattleStats, MoveId, MoveSlot, PokemonIndex,
-    PokemonPosition, PokemonState, SideId, SideState, SpeciesId, StatStages, StatusState, TeamState,
+    PokemonPosition, PokemonState, SideId, SideState, SpeciesId, StatStages, StatusState,
+    TeamState,
 };
 
 fn pokemon(species: u32, hp: u16) -> PokemonState {
@@ -34,10 +35,14 @@ fn pokemon(species: u32, hp: u16) -> PokemonState {
 }
 
 fn battle() -> BattleState {
+    let p1 = (1..=4).map(|species| pokemon(species, 150)).collect();
+    let p2 = (5..=8).map(|species| pokemon(species, 175)).collect();
     BattleState::new(
-        SideState::new(TeamState::new(vec![pokemon(1, 150)])),
-        SideState::new(TeamState::new(vec![pokemon(2, 175)])),
+        SideState::new(TeamState::new(p1)),
+        SideState::new(TeamState::new(p2)),
+        4,
     )
+    .expect("fixture is a valid preview state")
 }
 
 #[test]

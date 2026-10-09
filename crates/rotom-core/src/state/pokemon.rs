@@ -27,6 +27,18 @@ pub enum ActiveSlot {
     Right,
 }
 
+impl ActiveSlot {
+    pub const ALL: [Self; 2] = [Self::Left, Self::Right];
+
+    #[must_use]
+    pub const fn index(self) -> usize {
+        match self {
+            Self::Left => 0,
+            Self::Right => 1,
+        }
+    }
+}
+
 /// A Pokémon's current relationship to the battlefield.
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
@@ -108,6 +120,21 @@ pub struct PokemonState {
     pub stat_stages: StatStages,
     pub volatiles: Vec<ConditionState>,
     pub position: PokemonPosition,
+}
+
+impl PokemonState {
+    #[must_use]
+    pub const fn is_fainted(&self) -> bool {
+        matches!(self.position, PokemonPosition::Fainted)
+    }
+
+    pub(crate) fn clear_on_exit(&mut self) {
+        self.stat_stages = StatStages::default();
+        self.volatiles.clear();
+        for move_slot in &mut self.moves {
+            move_slot.disabled = false;
+        }
+    }
 }
 
 /// Runtime Pokémon collection, distinct from the immutable team definition.

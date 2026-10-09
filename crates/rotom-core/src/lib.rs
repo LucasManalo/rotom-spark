@@ -14,8 +14,8 @@ pub use error::BattleError;
 pub use id::{AbilityId, ConditionId, FormId, ItemId, MoveId, NatureId, SpeciesId};
 pub use side::SideId;
 pub use state::{
-    ActiveSlot, BattlePhase, BattleState, BattleStats, ConditionState, FieldState, MajorStatus,
-    MoveSlot, PokemonIndex, PokemonPosition, PokemonState, SideState, StatStages, StatusState,
-    TeamState,
+    ActiveSlot, BattlePhase, BattleState, BattleStats, ConditionState, FaintTarget, FieldState,
+    MajorStatus, MoveSlot, PokemonIndex, PokemonPosition, PokemonState, ReplacementRequest,
+    SideState, StatStages, StatusState, TeamState,
 };
 pub use team::{Gender, PokemonSet, StatAllocation, TeamDefinition};

@@ -15,6 +15,7 @@ pub const CRATE_NAME: &str = "rotom-protocol";
 #[serde(deny_unknown_fields)]
 pub struct BattleSnapshot {
     pub turn: u32,
+    pub picked_team_size: u8,
     pub phase: BattlePhase,
     pub field: FieldSnapshot,
     pub sides: [SideSnapshot; 2],
@@ -116,6 +117,7 @@ pub enum PositionSnapshot {
 pub fn snapshot(state: &BattleState) -> BattleSnapshot {
     BattleSnapshot {
         turn: state.turn,
+        picked_team_size: state.picked_team_size,
         phase: state.phase,
         field: FieldSnapshot {
             weather: state.field.weather.map(ConditionSnapshot::from),
@@ -164,7 +166,12 @@ impl SideSnapshot {
                 .copied()
                 .map(ConditionSnapshot::from)
                 .collect(),
-            team: state.team.members.iter().map(PokemonSnapshot::from).collect(),
+            team: state
+                .team
+                .members
+                .iter()
+                .map(PokemonSnapshot::from)
+                .collect(),
         }
     }
 }

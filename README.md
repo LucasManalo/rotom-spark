@@ -7,7 +7,8 @@ against a pinned Pokémon Showdown Champions implementation.
 The repository currently contains the workspace foundations, normalized static
 data from a pinned Pokémon Showdown revision, Regulation M-C team parsing and
 validation, and the serializable core battle-state model. Battle resolution is
-intentionally deferred to later milestones.
+being added incrementally; team preview, basic switching, faint resolution,
+forced replacements, and victory detection are available.
 
 ## Workspace
 

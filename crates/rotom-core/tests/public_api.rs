@@ -19,10 +19,9 @@ fn foundational_types_are_available_from_the_crate_root() {
     let _: TeamDefinition = TeamDefinition {
         members: Vec::new(),
     };
-    let battle = BattleState::new(
-        SideState::new(TeamState::default()),
-        SideState::new(TeamState::default()),
-    );
-    assert_eq!(battle.phase, BattlePhase::TeamPreview);
-    assert_eq!(battle.field, FieldState::default());
+    let _: Option<BattleState> = None;
+    let _: Option<SideState> = None;
+    let _: TeamState = TeamState::default();
+    let _: BattlePhase = BattlePhase::TeamPreview;
+    let _: FieldState = FieldState::default();
 }
