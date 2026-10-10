@@ -2,17 +2,39 @@
   "showdown_commit": "b79ce06d06b8f0dc8de8bb348bc9cab5d931553f",
   "format": "gen9championsvgc2026regmc",
   "random": {
-    "critical": false,
-    "damage_percent": 100
+    "damage_percent_min": 85,
+    "damage_percent_max": 100
   },
   "cases": [
     {
       "name": "dragon-pulse-neutral-stab",
       "move": "dragonpulse",
+      "critical": false,
       "source": {
         "species": "goodra",
+        "ability": "gooey",
+        "nature": "modest",
+        "stat_points": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 32,
+          "spd": 0,
+          "spe": 0
+        },
+        "stages": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0,
+          "accuracy": 0,
+          "evasion": 0
+        },
         "level": 50,
         "stats": {
+          "hp": 165,
           "atk": 108,
           "def": 90,
           "spa": 178,
@@ -25,8 +47,29 @@
       },
       "target": {
         "species": "arcanine",
-        "max_hp": 197,
+        "ability": "flashfire",
+        "nature": "serious",
+        "stat_points": {
+          "hp": 32,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        },
+        "stages": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0,
+          "accuracy": 0,
+          "evasion": 0
+        },
+        "level": 50,
         "stats": {
+          "hp": 197,
           "atk": 130,
           "def": 100,
           "spa": 120,
@@ -37,15 +80,102 @@
           "Fire"
         ]
       },
-      "damage": 102
+      "rolls": [
+        {
+          "percent": 85,
+          "damage": 85
+        },
+        {
+          "percent": 86,
+          "damage": 87
+        },
+        {
+          "percent": 87,
+          "damage": 88
+        },
+        {
+          "percent": 88,
+          "damage": 88
+        },
+        {
+          "percent": 89,
+          "damage": 90
+        },
+        {
+          "percent": 90,
+          "damage": 91
+        },
+        {
+          "percent": 91,
+          "damage": 91
+        },
+        {
+          "percent": 92,
+          "damage": 93
+        },
+        {
+          "percent": 93,
+          "damage": 94
+        },
+        {
+          "percent": 94,
+          "damage": 94
+        },
+        {
+          "percent": 95,
+          "damage": 96
+        },
+        {
+          "percent": 96,
+          "damage": 97
+        },
+        {
+          "percent": 97,
+          "damage": 97
+        },
+        {
+          "percent": 98,
+          "damage": 99
+        },
+        {
+          "percent": 99,
+          "damage": 100
+        },
+        {
+          "percent": 100,
+          "damage": 102
+        }
+      ]
     },
     {
       "name": "power-gem-quad-effective-stab",
       "move": "powergem",
+      "critical": false,
       "source": {
         "species": "glimmora",
+        "ability": "corrosion",
+        "nature": "modest",
+        "stat_points": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 32,
+          "spd": 0,
+          "spe": 0
+        },
+        "stages": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0,
+          "accuracy": 0,
+          "evasion": 0
+        },
         "level": 50,
         "stats": {
+          "hp": 158,
           "atk": 67,
           "def": 110,
           "spa": 200,
@@ -59,8 +189,29 @@
       },
       "target": {
         "species": "charizard",
-        "max_hp": 185,
+        "ability": "blaze",
+        "nature": "serious",
+        "stat_points": {
+          "hp": 32,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        },
+        "stages": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0,
+          "accuracy": 0,
+          "evasion": 0
+        },
+        "level": 50,
         "stats": {
+          "hp": 185,
           "atk": 104,
           "def": 98,
           "spa": 129,
@@ -72,15 +223,102 @@
           "Flying"
         ]
       },
-      "damage": 412
+      "rolls": [
+        {
+          "percent": 85,
+          "damage": 348
+        },
+        {
+          "percent": 86,
+          "damage": 352
+        },
+        {
+          "percent": 87,
+          "damage": 360
+        },
+        {
+          "percent": 88,
+          "damage": 360
+        },
+        {
+          "percent": 89,
+          "damage": 364
+        },
+        {
+          "percent": 90,
+          "damage": 372
+        },
+        {
+          "percent": 91,
+          "damage": 372
+        },
+        {
+          "percent": 92,
+          "damage": 376
+        },
+        {
+          "percent": 93,
+          "damage": 384
+        },
+        {
+          "percent": 94,
+          "damage": 384
+        },
+        {
+          "percent": 95,
+          "damage": 388
+        },
+        {
+          "percent": 96,
+          "damage": 396
+        },
+        {
+          "percent": 97,
+          "damage": 396
+        },
+        {
+          "percent": 98,
+          "damage": 400
+        },
+        {
+          "percent": 99,
+          "damage": 408
+        },
+        {
+          "percent": 100,
+          "damage": 412
+        }
+      ]
     },
     {
       "name": "high-horsepower-super-effective-stab",
       "move": "highhorsepower",
+      "critical": false,
       "source": {
         "species": "mudsdale",
+        "ability": "owntempo",
+        "nature": "adamant",
+        "stat_points": {
+          "hp": 0,
+          "atk": 32,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        },
+        "stages": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0,
+          "accuracy": 0,
+          "evasion": 0
+        },
         "level": 50,
         "stats": {
+          "hp": 175,
           "atk": 194,
           "def": 120,
           "spa": 67,
@@ -93,8 +331,29 @@
       },
       "target": {
         "species": "arcanine",
-        "max_hp": 197,
+        "ability": "flashfire",
+        "nature": "serious",
+        "stat_points": {
+          "hp": 32,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        },
+        "stages": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0,
+          "accuracy": 0,
+          "evasion": 0
+        },
+        "level": 50,
         "stats": {
+          "hp": 197,
           "atk": 130,
           "def": 100,
           "spa": 120,
@@ -105,7 +364,1343 @@
           "Fire"
         ]
       },
-      "damage": 248
+      "rolls": [
+        {
+          "percent": 85,
+          "damage": 210
+        },
+        {
+          "percent": 86,
+          "damage": 212
+        },
+        {
+          "percent": 87,
+          "damage": 216
+        },
+        {
+          "percent": 88,
+          "damage": 218
+        },
+        {
+          "percent": 89,
+          "damage": 218
+        },
+        {
+          "percent": 90,
+          "damage": 222
+        },
+        {
+          "percent": 91,
+          "damage": 224
+        },
+        {
+          "percent": 92,
+          "damage": 228
+        },
+        {
+          "percent": 93,
+          "damage": 230
+        },
+        {
+          "percent": 94,
+          "damage": 234
+        },
+        {
+          "percent": 95,
+          "damage": 234
+        },
+        {
+          "percent": 96,
+          "damage": 236
+        },
+        {
+          "percent": 97,
+          "damage": 240
+        },
+        {
+          "percent": 98,
+          "damage": 242
+        },
+        {
+          "percent": 99,
+          "damage": 246
+        },
+        {
+          "percent": 100,
+          "damage": 248
+        }
+      ]
+    },
+    {
+      "name": "dragon-pulse-critical",
+      "move": "dragonpulse",
+      "critical": true,
+      "source": {
+        "species": "goodra",
+        "ability": "gooey",
+        "nature": "modest",
+        "stat_points": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 32,
+          "spd": 0,
+          "spe": 0
+        },
+        "stages": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0,
+          "accuracy": 0,
+          "evasion": 0
+        },
+        "level": 50,
+        "stats": {
+          "hp": 165,
+          "atk": 108,
+          "def": 90,
+          "spa": 178,
+          "spd": 170,
+          "spe": 100
+        },
+        "types": [
+          "Dragon"
+        ]
+      },
+      "target": {
+        "species": "arcanine",
+        "ability": "flashfire",
+        "nature": "serious",
+        "stat_points": {
+          "hp": 32,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        },
+        "stages": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0,
+          "accuracy": 0,
+          "evasion": 0
+        },
+        "level": 50,
+        "stats": {
+          "hp": 197,
+          "atk": 130,
+          "def": 100,
+          "spa": 120,
+          "spd": 100,
+          "spe": 115
+        },
+        "types": [
+          "Fire"
+        ]
+      },
+      "rolls": [
+        {
+          "percent": 85,
+          "damage": 129
+        },
+        {
+          "percent": 86,
+          "damage": 130
+        },
+        {
+          "percent": 87,
+          "damage": 132
+        },
+        {
+          "percent": 88,
+          "damage": 133
+        },
+        {
+          "percent": 89,
+          "damage": 135
+        },
+        {
+          "percent": 90,
+          "damage": 136
+        },
+        {
+          "percent": 91,
+          "damage": 138
+        },
+        {
+          "percent": 92,
+          "damage": 139
+        },
+        {
+          "percent": 93,
+          "damage": 141
+        },
+        {
+          "percent": 94,
+          "damage": 142
+        },
+        {
+          "percent": 95,
+          "damage": 144
+        },
+        {
+          "percent": 96,
+          "damage": 145
+        },
+        {
+          "percent": 97,
+          "damage": 147
+        },
+        {
+          "percent": 98,
+          "damage": 148
+        },
+        {
+          "percent": 99,
+          "damage": 150
+        },
+        {
+          "percent": 100,
+          "damage": 153
+        }
+      ]
+    },
+    {
+      "name": "dragon-pulse-positive-offense-stage",
+      "move": "dragonpulse",
+      "critical": false,
+      "source": {
+        "species": "goodra",
+        "ability": "gooey",
+        "nature": "modest",
+        "stat_points": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 32,
+          "spd": 0,
+          "spe": 0
+        },
+        "stages": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 1,
+          "spd": 0,
+          "spe": 0,
+          "accuracy": 0,
+          "evasion": 0
+        },
+        "level": 50,
+        "stats": {
+          "hp": 165,
+          "atk": 108,
+          "def": 90,
+          "spa": 178,
+          "spd": 170,
+          "spe": 100
+        },
+        "types": [
+          "Dragon"
+        ]
+      },
+      "target": {
+        "species": "arcanine",
+        "ability": "flashfire",
+        "nature": "serious",
+        "stat_points": {
+          "hp": 32,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        },
+        "stages": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0,
+          "accuracy": 0,
+          "evasion": 0
+        },
+        "level": 50,
+        "stats": {
+          "hp": 197,
+          "atk": 130,
+          "def": 100,
+          "spa": 120,
+          "spd": 100,
+          "spe": 115
+        },
+        "types": [
+          "Fire"
+        ]
+      },
+      "rolls": [
+        {
+          "percent": 85,
+          "damage": 127
+        },
+        {
+          "percent": 86,
+          "damage": 129
+        },
+        {
+          "percent": 87,
+          "damage": 130
+        },
+        {
+          "percent": 88,
+          "damage": 132
+        },
+        {
+          "percent": 89,
+          "damage": 133
+        },
+        {
+          "percent": 90,
+          "damage": 135
+        },
+        {
+          "percent": 91,
+          "damage": 136
+        },
+        {
+          "percent": 92,
+          "damage": 138
+        },
+        {
+          "percent": 93,
+          "damage": 139
+        },
+        {
+          "percent": 94,
+          "damage": 141
+        },
+        {
+          "percent": 95,
+          "damage": 142
+        },
+        {
+          "percent": 96,
+          "damage": 144
+        },
+        {
+          "percent": 97,
+          "damage": 145
+        },
+        {
+          "percent": 98,
+          "damage": 147
+        },
+        {
+          "percent": 99,
+          "damage": 148
+        },
+        {
+          "percent": 100,
+          "damage": 151
+        }
+      ]
+    },
+    {
+      "name": "dragon-pulse-negative-offense-stage",
+      "move": "dragonpulse",
+      "critical": false,
+      "source": {
+        "species": "goodra",
+        "ability": "gooey",
+        "nature": "modest",
+        "stat_points": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 32,
+          "spd": 0,
+          "spe": 0
+        },
+        "stages": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": -2,
+          "spd": 0,
+          "spe": 0,
+          "accuracy": 0,
+          "evasion": 0
+        },
+        "level": 50,
+        "stats": {
+          "hp": 165,
+          "atk": 108,
+          "def": 90,
+          "spa": 178,
+          "spd": 170,
+          "spe": 100
+        },
+        "types": [
+          "Dragon"
+        ]
+      },
+      "target": {
+        "species": "arcanine",
+        "ability": "flashfire",
+        "nature": "serious",
+        "stat_points": {
+          "hp": 32,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        },
+        "stages": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0,
+          "accuracy": 0,
+          "evasion": 0
+        },
+        "level": 50,
+        "stats": {
+          "hp": 197,
+          "atk": 130,
+          "def": 100,
+          "spa": 120,
+          "spd": 100,
+          "spe": 115
+        },
+        "types": [
+          "Fire"
+        ]
+      },
+      "rolls": [
+        {
+          "percent": 85,
+          "damage": 43
+        },
+        {
+          "percent": 86,
+          "damage": 45
+        },
+        {
+          "percent": 87,
+          "damage": 45
+        },
+        {
+          "percent": 88,
+          "damage": 45
+        },
+        {
+          "percent": 89,
+          "damage": 46
+        },
+        {
+          "percent": 90,
+          "damage": 46
+        },
+        {
+          "percent": 91,
+          "damage": 46
+        },
+        {
+          "percent": 92,
+          "damage": 48
+        },
+        {
+          "percent": 93,
+          "damage": 48
+        },
+        {
+          "percent": 94,
+          "damage": 48
+        },
+        {
+          "percent": 95,
+          "damage": 49
+        },
+        {
+          "percent": 96,
+          "damage": 49
+        },
+        {
+          "percent": 97,
+          "damage": 49
+        },
+        {
+          "percent": 98,
+          "damage": 51
+        },
+        {
+          "percent": 99,
+          "damage": 51
+        },
+        {
+          "percent": 100,
+          "damage": 52
+        }
+      ]
+    },
+    {
+      "name": "dragon-pulse-positive-defense-stage",
+      "move": "dragonpulse",
+      "critical": false,
+      "source": {
+        "species": "goodra",
+        "ability": "gooey",
+        "nature": "modest",
+        "stat_points": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 32,
+          "spd": 0,
+          "spe": 0
+        },
+        "stages": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0,
+          "accuracy": 0,
+          "evasion": 0
+        },
+        "level": 50,
+        "stats": {
+          "hp": 165,
+          "atk": 108,
+          "def": 90,
+          "spa": 178,
+          "spd": 170,
+          "spe": 100
+        },
+        "types": [
+          "Dragon"
+        ]
+      },
+      "target": {
+        "species": "arcanine",
+        "ability": "flashfire",
+        "nature": "serious",
+        "stat_points": {
+          "hp": 32,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        },
+        "stages": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 2,
+          "spe": 0,
+          "accuracy": 0,
+          "evasion": 0
+        },
+        "level": 50,
+        "stats": {
+          "hp": 197,
+          "atk": 130,
+          "def": 100,
+          "spa": 120,
+          "spd": 100,
+          "spe": 115
+        },
+        "types": [
+          "Fire"
+        ]
+      },
+      "rolls": [
+        {
+          "percent": 85,
+          "damage": 43
+        },
+        {
+          "percent": 86,
+          "damage": 45
+        },
+        {
+          "percent": 87,
+          "damage": 45
+        },
+        {
+          "percent": 88,
+          "damage": 45
+        },
+        {
+          "percent": 89,
+          "damage": 46
+        },
+        {
+          "percent": 90,
+          "damage": 46
+        },
+        {
+          "percent": 91,
+          "damage": 46
+        },
+        {
+          "percent": 92,
+          "damage": 48
+        },
+        {
+          "percent": 93,
+          "damage": 48
+        },
+        {
+          "percent": 94,
+          "damage": 48
+        },
+        {
+          "percent": 95,
+          "damage": 49
+        },
+        {
+          "percent": 96,
+          "damage": 49
+        },
+        {
+          "percent": 97,
+          "damage": 49
+        },
+        {
+          "percent": 98,
+          "damage": 51
+        },
+        {
+          "percent": 99,
+          "damage": 51
+        },
+        {
+          "percent": 100,
+          "damage": 52
+        }
+      ]
+    },
+    {
+      "name": "dragon-pulse-negative-defense-stage",
+      "move": "dragonpulse",
+      "critical": false,
+      "source": {
+        "species": "goodra",
+        "ability": "gooey",
+        "nature": "modest",
+        "stat_points": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 32,
+          "spd": 0,
+          "spe": 0
+        },
+        "stages": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0,
+          "accuracy": 0,
+          "evasion": 0
+        },
+        "level": 50,
+        "stats": {
+          "hp": 165,
+          "atk": 108,
+          "def": 90,
+          "spa": 178,
+          "spd": 170,
+          "spe": 100
+        },
+        "types": [
+          "Dragon"
+        ]
+      },
+      "target": {
+        "species": "arcanine",
+        "ability": "flashfire",
+        "nature": "serious",
+        "stat_points": {
+          "hp": 32,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        },
+        "stages": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": -1,
+          "spe": 0,
+          "accuracy": 0,
+          "evasion": 0
+        },
+        "level": 50,
+        "stats": {
+          "hp": 197,
+          "atk": 130,
+          "def": 100,
+          "spa": 120,
+          "spd": 100,
+          "spe": 115
+        },
+        "types": [
+          "Fire"
+        ]
+      },
+      "rolls": [
+        {
+          "percent": 85,
+          "damage": 129
+        },
+        {
+          "percent": 86,
+          "damage": 130
+        },
+        {
+          "percent": 87,
+          "damage": 132
+        },
+        {
+          "percent": 88,
+          "damage": 133
+        },
+        {
+          "percent": 89,
+          "damage": 135
+        },
+        {
+          "percent": 90,
+          "damage": 136
+        },
+        {
+          "percent": 91,
+          "damage": 138
+        },
+        {
+          "percent": 92,
+          "damage": 139
+        },
+        {
+          "percent": 93,
+          "damage": 141
+        },
+        {
+          "percent": 94,
+          "damage": 142
+        },
+        {
+          "percent": 95,
+          "damage": 144
+        },
+        {
+          "percent": 96,
+          "damage": 145
+        },
+        {
+          "percent": 97,
+          "damage": 147
+        },
+        {
+          "percent": 98,
+          "damage": 148
+        },
+        {
+          "percent": 99,
+          "damage": 150
+        },
+        {
+          "percent": 100,
+          "damage": 153
+        }
+      ]
+    },
+    {
+      "name": "critical-ignores-negative-offense-and-positive-defense",
+      "move": "dragonpulse",
+      "critical": true,
+      "source": {
+        "species": "goodra",
+        "ability": "gooey",
+        "nature": "modest",
+        "stat_points": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 32,
+          "spd": 0,
+          "spe": 0
+        },
+        "stages": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": -3,
+          "spd": 0,
+          "spe": 0,
+          "accuracy": 0,
+          "evasion": 0
+        },
+        "level": 50,
+        "stats": {
+          "hp": 165,
+          "atk": 108,
+          "def": 90,
+          "spa": 178,
+          "spd": 170,
+          "spe": 100
+        },
+        "types": [
+          "Dragon"
+        ]
+      },
+      "target": {
+        "species": "arcanine",
+        "ability": "flashfire",
+        "nature": "serious",
+        "stat_points": {
+          "hp": 32,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        },
+        "stages": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 4,
+          "spe": 0,
+          "accuracy": 0,
+          "evasion": 0
+        },
+        "level": 50,
+        "stats": {
+          "hp": 197,
+          "atk": 130,
+          "def": 100,
+          "spa": 120,
+          "spd": 100,
+          "spe": 115
+        },
+        "types": [
+          "Fire"
+        ]
+      },
+      "rolls": [
+        {
+          "percent": 85,
+          "damage": 129
+        },
+        {
+          "percent": 86,
+          "damage": 130
+        },
+        {
+          "percent": 87,
+          "damage": 132
+        },
+        {
+          "percent": 88,
+          "damage": 133
+        },
+        {
+          "percent": 89,
+          "damage": 135
+        },
+        {
+          "percent": 90,
+          "damage": 136
+        },
+        {
+          "percent": 91,
+          "damage": 138
+        },
+        {
+          "percent": 92,
+          "damage": 139
+        },
+        {
+          "percent": 93,
+          "damage": 141
+        },
+        {
+          "percent": 94,
+          "damage": 142
+        },
+        {
+          "percent": 95,
+          "damage": 144
+        },
+        {
+          "percent": 96,
+          "damage": 145
+        },
+        {
+          "percent": 97,
+          "damage": 147
+        },
+        {
+          "percent": 98,
+          "damage": 148
+        },
+        {
+          "percent": 99,
+          "damage": 150
+        },
+        {
+          "percent": 100,
+          "damage": 153
+        }
+      ]
+    },
+    {
+      "name": "critical-keeps-positive-offense-and-negative-defense",
+      "move": "dragonpulse",
+      "critical": true,
+      "source": {
+        "species": "goodra",
+        "ability": "gooey",
+        "nature": "modest",
+        "stat_points": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 32,
+          "spd": 0,
+          "spe": 0
+        },
+        "stages": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 2,
+          "spd": 0,
+          "spe": 0,
+          "accuracy": 0,
+          "evasion": 0
+        },
+        "level": 50,
+        "stats": {
+          "hp": 165,
+          "atk": 108,
+          "def": 90,
+          "spa": 178,
+          "spd": 170,
+          "spe": 100
+        },
+        "types": [
+          "Dragon"
+        ]
+      },
+      "target": {
+        "species": "arcanine",
+        "ability": "flashfire",
+        "nature": "serious",
+        "stat_points": {
+          "hp": 32,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        },
+        "stages": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": -2,
+          "spe": 0,
+          "accuracy": 0,
+          "evasion": 0
+        },
+        "level": 50,
+        "stats": {
+          "hp": 197,
+          "atk": 130,
+          "def": 100,
+          "spa": 120,
+          "spd": 100,
+          "spe": 115
+        },
+        "types": [
+          "Fire"
+        ]
+      },
+      "rolls": [
+        {
+          "percent": 85,
+          "damage": 511
+        },
+        {
+          "percent": 86,
+          "damage": 517
+        },
+        {
+          "percent": 87,
+          "damage": 523
+        },
+        {
+          "percent": 88,
+          "damage": 529
+        },
+        {
+          "percent": 89,
+          "damage": 535
+        },
+        {
+          "percent": 90,
+          "damage": 541
+        },
+        {
+          "percent": 91,
+          "damage": 547
+        },
+        {
+          "percent": 92,
+          "damage": 553
+        },
+        {
+          "percent": 93,
+          "damage": 559
+        },
+        {
+          "percent": 94,
+          "damage": 565
+        },
+        {
+          "percent": 95,
+          "damage": 571
+        },
+        {
+          "percent": 96,
+          "damage": 577
+        },
+        {
+          "percent": 97,
+          "damage": 583
+        },
+        {
+          "percent": 98,
+          "damage": 589
+        },
+        {
+          "percent": 99,
+          "damage": 595
+        },
+        {
+          "percent": 100,
+          "damage": 603
+        }
+      ]
+    },
+    {
+      "name": "aqua-jet-low-damage-quarter-resisted",
+      "move": "aquajet",
+      "critical": false,
+      "source": {
+        "species": "happiny",
+        "ability": "naturalcure",
+        "nature": "serious",
+        "stat_points": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        },
+        "stages": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0,
+          "accuracy": 0,
+          "evasion": 0
+        },
+        "level": 50,
+        "stats": {
+          "hp": 175,
+          "atk": 25,
+          "def": 25,
+          "spa": 35,
+          "spd": 85,
+          "spe": 50
+        },
+        "types": [
+          "Normal"
+        ]
+      },
+      "target": {
+        "species": "palkia",
+        "ability": "pressure",
+        "nature": "serious",
+        "stat_points": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 32,
+          "spe": 0
+        },
+        "stages": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0,
+          "accuracy": 0,
+          "evasion": 0
+        },
+        "level": 50,
+        "stats": {
+          "hp": 165,
+          "atk": 140,
+          "def": 120,
+          "spa": 170,
+          "spd": 172,
+          "spe": 120
+        },
+        "types": [
+          "Water",
+          "Dragon"
+        ]
+      },
+      "rolls": [
+        {
+          "percent": 85,
+          "damage": 1
+        },
+        {
+          "percent": 86,
+          "damage": 1
+        },
+        {
+          "percent": 87,
+          "damage": 1
+        },
+        {
+          "percent": 88,
+          "damage": 1
+        },
+        {
+          "percent": 89,
+          "damage": 1
+        },
+        {
+          "percent": 90,
+          "damage": 1
+        },
+        {
+          "percent": 91,
+          "damage": 1
+        },
+        {
+          "percent": 92,
+          "damage": 1
+        },
+        {
+          "percent": 93,
+          "damage": 1
+        },
+        {
+          "percent": 94,
+          "damage": 1
+        },
+        {
+          "percent": 95,
+          "damage": 1
+        },
+        {
+          "percent": 96,
+          "damage": 1
+        },
+        {
+          "percent": 97,
+          "damage": 1
+        },
+        {
+          "percent": 98,
+          "damage": 1
+        },
+        {
+          "percent": 99,
+          "damage": 1
+        },
+        {
+          "percent": 100,
+          "damage": 1
+        }
+      ]
+    },
+    {
+      "name": "high-horsepower-immunity",
+      "move": "highhorsepower",
+      "critical": false,
+      "source": {
+        "species": "mudsdale",
+        "ability": "owntempo",
+        "nature": "adamant",
+        "stat_points": {
+          "hp": 0,
+          "atk": 32,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        },
+        "stages": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0,
+          "accuracy": 0,
+          "evasion": 0
+        },
+        "level": 50,
+        "stats": {
+          "hp": 175,
+          "atk": 194,
+          "def": 120,
+          "spa": 67,
+          "spd": 105,
+          "spe": 55
+        },
+        "types": [
+          "Ground"
+        ]
+      },
+      "target": {
+        "species": "charizard",
+        "ability": "blaze",
+        "nature": "serious",
+        "stat_points": {
+          "hp": 32,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        },
+        "stages": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0,
+          "accuracy": 0,
+          "evasion": 0
+        },
+        "level": 50,
+        "stats": {
+          "hp": 185,
+          "atk": 104,
+          "def": 98,
+          "spa": 129,
+          "spd": 105,
+          "spe": 120
+        },
+        "types": [
+          "Fire",
+          "Flying"
+        ]
+      },
+      "rolls": [
+        {
+          "percent": 85,
+          "damage": 0
+        },
+        {
+          "percent": 86,
+          "damage": 0
+        },
+        {
+          "percent": 87,
+          "damage": 0
+        },
+        {
+          "percent": 88,
+          "damage": 0
+        },
+        {
+          "percent": 89,
+          "damage": 0
+        },
+        {
+          "percent": 90,
+          "damage": 0
+        },
+        {
+          "percent": 91,
+          "damage": 0
+        },
+        {
+          "percent": 92,
+          "damage": 0
+        },
+        {
+          "percent": 93,
+          "damage": 0
+        },
+        {
+          "percent": 94,
+          "damage": 0
+        },
+        {
+          "percent": 95,
+          "damage": 0
+        },
+        {
+          "percent": 96,
+          "damage": 0
+        },
+        {
+          "percent": 97,
+          "damage": 0
+        },
+        {
+          "percent": 98,
+          "damage": 0
+        },
+        {
+          "percent": 99,
+          "damage": 0
+        },
+        {
+          "percent": 100,
+          "damage": 0
+        }
+      ]
     }
   ]
 }

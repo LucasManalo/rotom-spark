@@ -1,9 +1,82 @@
 use rotom_core::{
     calculate_move_damage, ActionTarget, BattlePhase, BattleState, FormId, Gender, MoveSlotIndex,
-    PokemonAction, PokemonIndex, PokemonSet, SideId, SideState, StatAllocation, TeamState,
-    TurnChoice,
+    PokemonAction, PokemonIndex, PokemonSet, RngOperation, RngReason, SideId, SideState,
+    StatAllocation, StatStages, TeamState, TurnChoice,
 };
 use rotom_dex::champions_reg_mc;
+use serde::Deserialize;
+
+const SHOWDOWN_COMMIT: &str = "b79ce06d06b8f0dc8de8bb348bc9cab5d931553f";
+
+#[derive(Debug, Deserialize)]
+struct DamageFixture {
+    showdown_commit: String,
+    format: String,
+    random: DamageRollRange,
+    cases: Vec<DamageCase>,
+}
+
+#[derive(Debug, Deserialize)]
+struct DamageRollRange {
+    damage_percent_min: u8,
+    damage_percent_max: u8,
+}
+
+#[derive(Debug, Deserialize)]
+struct DamageCase {
+    name: String,
+    #[serde(rename = "move")]
+    move_name: String,
+    critical: bool,
+    source: FixturePokemon,
+    target: FixturePokemon,
+    rolls: Vec<DamageRoll>,
+}
+
+#[derive(Debug, Deserialize)]
+struct FixturePokemon {
+    species: String,
+    ability: String,
+    nature: String,
+    stat_points: StatAllocation,
+    stages: FixtureStages,
+    level: u8,
+    stats: rotom_core::BattleStats,
+    types: Vec<String>,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize)]
+struct FixtureStages {
+    hp: i8,
+    atk: i8,
+    def: i8,
+    spa: i8,
+    spd: i8,
+    spe: i8,
+    accuracy: i8,
+    evasion: i8,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize)]
+struct DamageRoll {
+    percent: u8,
+    damage: u16,
+}
+
+impl From<FixtureStages> for StatStages {
+    fn from(value: FixtureStages) -> Self {
+        assert_eq!(value.hp, 0, "HP cannot have a battle stat stage");
+        Self {
+            atk: value.atk,
+            def: value.def,
+            spa: value.spa,
+            spd: value.spd,
+            spe: value.spe,
+            accuracy: value.accuracy,
+            evasion: value.evasion,
+        }
+    }
+}
 
 fn set(
     dex: &rotom_dex::DexData,
@@ -44,112 +117,76 @@ fn set(
 #[test]
 fn champions_stats_and_damage_match_pinned_showdown_fixtures() {
     let dex = champions_reg_mc().expect("generated Dex");
-    for (source_set, target_set, expected_attack, expected_hp, expected_damage) in
-        showdown_damage_cases(&dex)
-    {
-        let source = dex.pokemon_state(&source_set).expect("source state");
-        let target = dex.pokemon_state(&target_set).expect("target state");
+    let fixture: DamageFixture = serde_json::from_str(include_str!(
+        "../../../data/fixtures/differential/basic-damage.json"
+    ))
+    .expect("Showdown damage fixture should deserialize");
+    assert_eq!(fixture.showdown_commit, SHOWDOWN_COMMIT);
+    assert_eq!(fixture.format, "gen9championsvgc2026regmc");
+    assert_eq!(fixture.random.damage_percent_min, 85);
+    assert_eq!(fixture.random.damage_percent_max, 100);
+    assert!(fixture.cases.len() >= 12);
+    assert!(fixture.cases.iter().any(|case| case.critical));
+    assert!(fixture
+        .cases
+        .iter()
+        .any(|case| case.source.stages.spa != 0 || case.target.stages.spd != 0));
+
+    for case in fixture.cases {
+        let source_set = fixture_set(&dex, &case.source, &case.move_name);
+        let target_set = fixture_set(&dex, &case.target, "splash");
+        let mut source = dex.pokemon_state(&source_set).expect("source state");
+        let mut target = dex.pokemon_state(&target_set).expect("target state");
+        source.stat_stages = case.source.stages.into();
+        target.stat_stages = case.target.stages.into();
         let move_id = source_set.moves[0];
-        let attack = if dex.move_data(move_id).expect("move").category == "Physical" {
-            source.stats.atk
-        } else {
-            source.stats.spa
-        };
-        assert_eq!(attack, expected_attack);
-        assert_eq!(target.stats.hp, expected_hp);
         assert_eq!(
-            calculate_move_damage(&dex, &source, &target, move_id, false, 100)
-                .expect("supported damage")
-                .final_damage,
-            expected_damage
+            source.level, case.source.level,
+            "{} source level",
+            case.name
         );
+        assert_eq!(
+            target.level, case.target.level,
+            "{} target level",
+            case.name
+        );
+        assert_eq!(
+            source.stats, case.source.stats,
+            "{} source stats",
+            case.name
+        );
+        assert_eq!(
+            target.stats, case.target.stats,
+            "{} target stats",
+            case.name
+        );
+        assert!(!case.source.types.is_empty(), "{} source types", case.name);
+        assert!(!case.target.types.is_empty(), "{} target types", case.name);
+        assert_eq!(case.rolls.len(), 16, "{} roll count", case.name);
+        for roll in case.rolls {
+            let actual =
+                calculate_move_damage(&dex, &source, &target, move_id, case.critical, roll.percent)
+                    .unwrap_or_else(|error| panic!("{} at {}%: {error}", case.name, roll.percent));
+            assert_eq!(
+                actual.final_damage, roll.damage,
+                "{} at {}%",
+                case.name, roll.percent
+            );
+        }
     }
 }
 
-fn showdown_damage_cases(dex: &rotom_dex::DexData) -> Vec<(PokemonSet, PokemonSet, u16, u16, u16)> {
-    vec![
-        (
-            set(
-                dex,
-                "goodra",
-                "gooey",
-                "modest",
-                "dragonpulse",
-                StatAllocation {
-                    spa: 32,
-                    ..StatAllocation::ZERO
-                },
-            ),
-            set(
-                dex,
-                "arcanine",
-                "intimidate",
-                "serious",
-                "splash",
-                StatAllocation {
-                    hp: 32,
-                    ..StatAllocation::ZERO
-                },
-            ),
-            178,
-            197,
-            102,
-        ),
-        (
-            set(
-                dex,
-                "glimmora",
-                "corrosion",
-                "modest",
-                "powergem",
-                StatAllocation {
-                    spa: 32,
-                    ..StatAllocation::ZERO
-                },
-            ),
-            set(
-                dex,
-                "charizard",
-                "blaze",
-                "serious",
-                "splash",
-                StatAllocation {
-                    hp: 32,
-                    ..StatAllocation::ZERO
-                },
-            ),
-            200,
-            185,
-            412,
-        ),
-        (
-            set(
-                dex,
-                "mudsdale",
-                "owntempo",
-                "adamant",
-                "highhorsepower",
-                StatAllocation {
-                    atk: 32,
-                    ..StatAllocation::ZERO
-                },
-            ),
-            set(
-                dex,
-                "arcanine",
-                "flashfire",
-                "serious",
-                "splash",
-                StatAllocation {
-                    hp: 32,
-                    ..StatAllocation::ZERO
-                },
-            ),
-            194,
-            197,
-            248,
-        ),
-    ]
+fn fixture_set(dex: &rotom_dex::DexData, pokemon: &FixturePokemon, move_name: &str) -> PokemonSet {
+    let mut result = set(
+        dex,
+        &pokemon.species,
+        &pokemon.ability,
+        &pokemon.nature,
+        move_name,
+        pokemon.stat_points,
+    );
+    result.level = pokemon.level;
+    result
 }
 
 #[test]
@@ -214,8 +251,13 @@ fn queued_turn_consumes_pp_and_updates_hp() {
         ],
     };
     battle.queue_turn(p1, p2).expect("queue");
+    battle.rng.enable_trace();
+    let mut replay = battle.clone();
     let outcome = battle.resolve_turn(&dex).expect("resolution");
+    let replay_outcome = replay.resolve_turn(&dex).expect("replayed resolution");
 
+    assert_eq!(outcome, replay_outcome);
+    assert_eq!(battle, replay);
     assert_eq!(outcome.actions.len(), 4);
     assert_eq!(battle.phase, BattlePhase::TurnSelection);
     assert_eq!(battle.turn, 2);
@@ -227,6 +269,38 @@ fn queued_turn_consumes_pp_and_updates_hp() {
             assert!(pokemon.current_hp < pokemon.stats.hp);
             assert!(pokemon.current_hp > 0);
         }
+    }
+    assert_combat_rng_trace(battle.rng.trace().expect("enabled trace"));
+}
+
+fn assert_combat_rng_trace(trace: &[rotom_core::RngTraceEntry]) {
+    assert_eq!(trace.len(), 12);
+    for action_trace in trace.chunks_exact(3) {
+        assert_eq!(action_trace[0].reason, RngReason::Accuracy);
+        assert_eq!(
+            action_trace[0].operation,
+            RngOperation::Chance {
+                numerator: 100,
+                denominator: 100,
+            }
+        );
+        assert_eq!(action_trace[1].reason, RngReason::CriticalHit);
+        assert_eq!(
+            action_trace[1].operation,
+            RngOperation::Chance {
+                numerator: 1,
+                denominator: 24,
+            }
+        );
+        assert_eq!(action_trace[2].reason, RngReason::DamageRoll);
+        assert_eq!(
+            action_trace[2].operation,
+            RngOperation::Range {
+                start: 85,
+                end_exclusive: 101,
+            }
+        );
+        assert!((85..=100).contains(&action_trace[2].result));
     }
 }
 

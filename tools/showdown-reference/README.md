@@ -9,7 +9,8 @@ Validate the shared Regulation M-C fixture with:
 node tools/showdown-reference/validate-team.cjs data/fixtures/teams/valid-reg-mc.txt
 ```
 
-Regenerate or verify the forced-maximum-roll base-damage fixture with:
+Regenerate or verify the base-damage fixture (all 16 rolls, criticals, stat
+stages, low-damage rounding, and immunity) with:
 
 ```text
 node tools/showdown-reference/basic-damage.cjs
