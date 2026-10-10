@@ -1,4 +1,4 @@
-use super::{FieldState, SideState};
+use super::{ActionQueue, FieldState, SideState};
 use crate::{BattleError, BattleRng, PokemonPosition, SideId};
 use serde::{Deserialize, Serialize};
 
@@ -15,8 +15,8 @@ pub enum BattlePhase {
 
 /// Complete authoritative state for one battle.
 ///
-/// Queued actions are added by their later milestone. All random mechanics
-/// consume the battle-owned deterministic RNG stored here.
+/// Random mechanics consume the battle-owned deterministic RNG. Submitted
+/// normal turn choices expand into the inspectable action queue.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct BattleState {
@@ -25,6 +25,7 @@ pub struct BattleState {
     pub sides: [SideState; 2],
     pub field: FieldState,
     pub rng: BattleRng,
+    pub queue: ActionQueue,
     pub phase: BattlePhase,
     pub winner: Option<SideId>,
 }
@@ -92,6 +93,7 @@ impl BattleState {
             sides: [p1, p2],
             field: FieldState::default(),
             rng: BattleRng::new(seed),
+            queue: ActionQueue::default(),
             phase: BattlePhase::TeamPreview,
             winner: None,
         })

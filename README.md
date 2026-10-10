@@ -10,7 +10,9 @@ validation, and the serializable core battle-state model. Battle resolution is
 being added incrementally; team preview, basic switching, faint resolution,
 forced replacements, and victory detection are available.
 Typed legal-action enumeration and battle-owned deterministic RNG with optional
-diagnostic tracing are also available.
+diagnostic tracing are also available. Normal turn choices can now be expanded
+into an inspectable priority/speed-ordered action queue with deterministic
+speed-tie handling.
 
 ## Workspace
 

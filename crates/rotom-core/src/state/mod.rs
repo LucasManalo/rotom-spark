@@ -2,6 +2,7 @@ mod battle;
 mod decision;
 mod field;
 mod pokemon;
+mod queue;
 mod side;
 mod transition;
 
@@ -11,5 +12,6 @@ pub use pokemon::{
     ActiveSlot, BattleStats, MajorStatus, MoveSlot, PokemonIndex, PokemonPosition, PokemonState,
     StatStages, StatusState, TeamState,
 };
+pub use queue::{ActionOrder, ActionQueue, QueuedAction};
 pub use side::SideState;
 pub use transition::{FaintTarget, ReplacementRequest};

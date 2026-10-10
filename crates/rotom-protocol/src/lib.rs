@@ -5,8 +5,8 @@
 //! replay or differential-testing contract.
 
 use rotom_core::{
-    ActiveSlot, BattlePhase, BattleState, MajorStatus, MoveTarget, PokemonIndex, PokemonPosition,
-    SideId,
+    ActionOrder, ActiveSlot, BattlePhase, BattleState, MajorStatus, MoveTarget, PokemonAction,
+    PokemonIndex, PokemonPosition, SideId,
 };
 use serde::{Deserialize, Serialize};
 
@@ -20,6 +20,7 @@ pub struct BattleSnapshot {
     pub phase: BattlePhase,
     pub field: FieldSnapshot,
     pub rng: RngSnapshot,
+    pub queue: Vec<QueuedActionSnapshot>,
     pub sides: [SideSnapshot; 2],
     pub winner: Option<SideId>,
 }
@@ -30,6 +31,18 @@ pub struct RngSnapshot {
     pub seed: u64,
     pub state: u64,
     pub draws: u64,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct QueuedActionSnapshot {
+    pub side: SideId,
+    pub slot: ActiveSlot,
+    pub pokemon: u8,
+    pub choice: PokemonAction,
+    pub order: ActionOrder,
+    pub priority: i8,
+    pub speed: u16,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -87,6 +100,7 @@ pub struct StatsSnapshot {
 pub struct MoveSnapshot {
     pub move_id: u32,
     pub target: MoveTarget,
+    pub priority: i8,
     pub pp: u8,
     pub max_pp: u8,
     pub disabled: bool,
@@ -149,6 +163,20 @@ pub fn snapshot(state: &BattleState) -> BattleSnapshot {
             state: state.rng.state(),
             draws: state.rng.draws(),
         },
+        queue: state
+            .queue
+            .actions
+            .iter()
+            .map(|action| QueuedActionSnapshot {
+                side: action.side,
+                slot: action.slot,
+                pokemon: action.pokemon.get(),
+                choice: action.choice,
+                order: action.order,
+                priority: action.priority,
+                speed: action.speed,
+            })
+            .collect(),
         sides: [
             SideSnapshot::from_state(SideId::P1, &state.sides[0]),
             SideSnapshot::from_state(SideId::P2, &state.sides[1]),
@@ -219,6 +247,7 @@ impl From<&rotom_core::PokemonState> for PokemonSnapshot {
                 .map(|move_slot| MoveSnapshot {
                     move_id: move_slot.move_id.get(),
                     target: move_slot.target,
+                    priority: move_slot.priority,
                     pp: move_slot.pp,
                     max_pp: move_slot.max_pp,
                     disabled: move_slot.disabled,

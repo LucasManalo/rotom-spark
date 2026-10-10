@@ -1,7 +1,7 @@
 use rotom_core::{
-    AbilityId, BattlePhase, BattleState, BattleStats, MoveId, MoveSlot, MoveTarget, PokemonIndex,
-    PokemonPosition, PokemonState, RngReason, SideId, SideState, SpeciesId, StatStages,
-    StatusState, TeamState,
+    AbilityId, ActionTarget, ActiveSlot, BattlePhase, BattleState, BattleStats, MoveId, MoveSlot,
+    MoveSlotIndex, MoveTarget, PokemonAction, PokemonIndex, PokemonPosition, PokemonState,
+    RngReason, SideId, SideState, SpeciesId, StatStages, StatusState, TeamState, TurnChoice,
 };
 use rotom_protocol::{BattleSnapshot, BattleStateSnapshot};
 
@@ -24,6 +24,7 @@ fn pokemon(species: u32, hp: u16) -> PokemonState {
         moves: vec![MoveSlot {
             move_id: MoveId::new(3),
             target: MoveTarget::Normal,
+            priority: 0,
             pp: 8,
             max_pp: 8,
             disabled: false,
@@ -122,4 +123,40 @@ fn snapshot_exposes_preview_order_and_initial_leads() {
     assert_eq!(snapshot.sides[0].selected_team, vec![3, 1, 0, 2]);
     assert_eq!(snapshot.sides[0].active, [Some(3), Some(1)]);
     assert_eq!(snapshot.sides[1].active, [Some(2), Some(0)]);
+}
+
+#[test]
+fn snapshot_exposes_the_pending_action_queue() {
+    let mut state = battle();
+    let selection = vec![
+        PokemonIndex::new(0),
+        PokemonIndex::new(1),
+        PokemonIndex::new(2),
+        PokemonIndex::new(3),
+    ];
+    state
+        .select_team(SideId::P1, selection.clone())
+        .expect("P1 preview choice should be valid");
+    state
+        .select_team(SideId::P2, selection)
+        .expect("P2 preview choice should be valid");
+    let action = PokemonAction::Move {
+        move_slot: MoveSlotIndex::new(0),
+        target: ActionTarget::Foe(ActiveSlot::Left),
+        mega: false,
+    };
+    let choice = TurnChoice {
+        actions: [action, action],
+    };
+    state
+        .queue_turn(choice, choice)
+        .expect("ordinary move choices should queue");
+
+    let snapshot = state.snapshot();
+    assert_eq!(snapshot.phase, BattlePhase::ResolvingTurn);
+    assert_eq!(snapshot.queue.len(), 4);
+    assert!(snapshot
+        .queue
+        .iter()
+        .all(|queued| queued.choice == action && queued.speed == 94));
 }

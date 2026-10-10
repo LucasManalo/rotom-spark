@@ -66,6 +66,9 @@ pub struct BattleStats {
 pub struct MoveSlot {
     pub move_id: MoveId,
     pub target: MoveTarget,
+    /// Base move priority from the pinned static Dex data.
+    #[serde(default)]
+    pub priority: i8,
     pub pp: u8,
     pub max_pp: u8,
     pub disabled: bool,

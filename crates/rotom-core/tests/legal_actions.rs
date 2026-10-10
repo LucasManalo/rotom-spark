@@ -27,6 +27,7 @@ fn pokemon(species: u32) -> PokemonState {
         moves: vec![MoveSlot {
             move_id: MoveId::new(1),
             target: MoveTarget::Normal,
+            priority: 0,
             pp: 16,
             max_pp: 16,
             disabled: false,
