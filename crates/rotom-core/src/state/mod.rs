@@ -1,4 +1,5 @@
 mod battle;
+mod decision;
 mod field;
 mod pokemon;
 mod side;

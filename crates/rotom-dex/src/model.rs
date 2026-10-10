@@ -1,5 +1,5 @@
 use crate::DexLoadError;
-use rotom_core::{AbilityId, FormId, ItemId, MoveId, NatureId, SpeciesId};
+use rotom_core::{AbilityId, FormId, ItemId, MoveId, MoveTarget, NatureId, SpeciesId};
 use serde::{Deserialize, Serialize};
 
 /// Complete normalized static data exported for one battle format.
@@ -252,7 +252,7 @@ pub struct MoveData {
     pub accuracy: Accuracy,
     pub pp: u8,
     pub priority: i8,
-    pub target: String,
+    pub target: MoveTarget,
     pub flags: Vec<String>,
     pub crit_ratio: u8,
     pub multi_hit: Option<MultiHit>,

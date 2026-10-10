@@ -9,6 +9,8 @@ pub struct SideState {
     pub active: [Option<PokemonIndex>; 2],
     pub selected_team: Vec<PokemonIndex>,
     pub side_conditions: Vec<ConditionState>,
+    /// True after this side has completed its once-per-battle Mega Evolution.
+    pub mega_evolution_used: bool,
 }
 
 impl SideState {
@@ -20,6 +22,7 @@ impl SideState {
             active: [None, None],
             selected_team: Vec::new(),
             side_conditions: Vec::new(),
+            mega_evolution_used: false,
         }
     }
 

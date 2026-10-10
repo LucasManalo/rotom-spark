@@ -1,5 +1,5 @@
 use rotom_core::{
-    AbilityId, BattlePhase, BattleState, BattleStats, MoveId, MoveSlot, PokemonIndex,
+    AbilityId, BattlePhase, BattleState, BattleStats, MoveId, MoveSlot, MoveTarget, PokemonIndex,
     PokemonPosition, PokemonState, SideId, SideState, SpeciesId, StatStages, StatusState,
     TeamState,
 };
@@ -23,6 +23,7 @@ fn pokemon(species: u32, hp: u16) -> PokemonState {
         item: None,
         moves: vec![MoveSlot {
             move_id: MoveId::new(3),
+            target: MoveTarget::Normal,
             pp: 8,
             max_pp: 8,
             disabled: false,
@@ -31,6 +32,8 @@ fn pokemon(species: u32, hp: u16) -> PokemonState {
         status_state: StatusState::default(),
         stat_stages: StatStages::default(),
         volatiles: Vec::new(),
+        can_mega_evolve: false,
+        trapped: false,
         position: PokemonPosition::Team,
     }
 }

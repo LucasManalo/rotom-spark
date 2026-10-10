@@ -1,5 +1,5 @@
 use super::ConditionState;
-use crate::{AbilityId, FormId, ItemId, MoveId, SpeciesId};
+use crate::{AbilityId, FormId, ItemId, MoveId, MoveTarget, SpeciesId};
 use serde::{Deserialize, Serialize};
 
 /// Stable zero-based index into a side's battle team.
@@ -65,6 +65,7 @@ pub struct BattleStats {
 #[serde(deny_unknown_fields)]
 pub struct MoveSlot {
     pub move_id: MoveId,
+    pub target: MoveTarget,
     pub pp: u8,
     pub max_pp: u8,
     pub disabled: bool,
@@ -119,6 +120,10 @@ pub struct PokemonState {
     pub status_state: StatusState,
     pub stat_stages: StatStages,
     pub volatiles: Vec<ConditionState>,
+    /// Whether this Pokémon's current form/item combination can Mega Evolve.
+    pub can_mega_evolve: bool,
+    /// Authoritative trapping state used to reject voluntary switches.
+    pub trapped: bool,
     pub position: PokemonPosition,
 }
 
@@ -131,6 +136,7 @@ impl PokemonState {
     pub(crate) fn clear_on_exit(&mut self) {
         self.stat_stages = StatStages::default();
         self.volatiles.clear();
+        self.trapped = false;
         for move_slot in &mut self.moves {
             move_slot.disabled = false;
         }

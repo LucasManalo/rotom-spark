@@ -5,7 +5,8 @@
 //! replay or differential-testing contract.
 
 use rotom_core::{
-    ActiveSlot, BattlePhase, BattleState, MajorStatus, PokemonIndex, PokemonPosition, SideId,
+    ActiveSlot, BattlePhase, BattleState, MajorStatus, MoveTarget, PokemonIndex, PokemonPosition,
+    SideId,
 };
 use serde::{Deserialize, Serialize};
 
@@ -37,6 +38,7 @@ pub struct SideSnapshot {
     pub active: [Option<u8>; 2],
     pub selected_team: Vec<u8>,
     pub side_conditions: Vec<ConditionSnapshot>,
+    pub mega_evolution_used: bool,
     pub team: Vec<PokemonSnapshot>,
 }
 
@@ -55,6 +57,8 @@ pub struct PokemonSnapshot {
     pub status_state: StatusSnapshot,
     pub stat_stages: StatStagesSnapshot,
     pub volatiles: Vec<ConditionSnapshot>,
+    pub can_mega_evolve: bool,
+    pub trapped: bool,
     pub position: PositionSnapshot,
 }
 
@@ -73,6 +77,7 @@ pub struct StatsSnapshot {
 #[serde(deny_unknown_fields)]
 pub struct MoveSnapshot {
     pub move_id: u32,
+    pub target: MoveTarget,
     pub pp: u8,
     pub max_pp: u8,
     pub disabled: bool,
@@ -166,6 +171,7 @@ impl SideSnapshot {
                 .copied()
                 .map(ConditionSnapshot::from)
                 .collect(),
+            mega_evolution_used: state.mega_evolution_used,
             team: state
                 .team
                 .members
@@ -198,6 +204,7 @@ impl From<&rotom_core::PokemonState> for PokemonSnapshot {
                 .iter()
                 .map(|move_slot| MoveSnapshot {
                     move_id: move_slot.move_id.get(),
+                    target: move_slot.target,
                     pp: move_slot.pp,
                     max_pp: move_slot.max_pp,
                     disabled: move_slot.disabled,
@@ -223,6 +230,8 @@ impl From<&rotom_core::PokemonState> for PokemonSnapshot {
                 .copied()
                 .map(ConditionSnapshot::from)
                 .collect(),
+            can_mega_evolve: state.can_mega_evolve,
+            trapped: state.trapped,
             position: PositionSnapshot::from(state.position),
         }
     }

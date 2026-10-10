@@ -4,12 +4,17 @@
 //! milestones. The state in this crate is structured, serializable, and
 //! cloneable so those mechanics do not need to rely on text logs.
 
+mod action;
 mod error;
 mod id;
 mod side;
 mod state;
 mod team;
 
+pub use action::{
+    ActionTarget, LegalActions, MoveSlotIndex, MoveTarget, PokemonAction, SlotLegalActions,
+    TurnChoice,
+};
 pub use error::BattleError;
 pub use id::{AbilityId, ConditionId, FormId, ItemId, MoveId, NatureId, SpeciesId};
 pub use side::SideId;
