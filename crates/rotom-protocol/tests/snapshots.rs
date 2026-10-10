@@ -1,7 +1,7 @@
 use rotom_core::{
     AbilityId, BattlePhase, BattleState, BattleStats, MoveId, MoveSlot, MoveTarget, PokemonIndex,
-    PokemonPosition, PokemonState, SideId, SideState, SpeciesId, StatStages, StatusState,
-    TeamState,
+    PokemonPosition, PokemonState, RngReason, SideId, SideState, SpeciesId, StatStages,
+    StatusState, TeamState,
 };
 use rotom_protocol::{BattleSnapshot, BattleStateSnapshot};
 
@@ -78,6 +78,20 @@ fn snapshot_does_not_alias_mutable_battle_state() {
         .current_hp = 1;
 
     assert_eq!(snapshot.sides[0].team[0].current_hp, 120);
+}
+
+#[test]
+fn snapshot_captures_replay_relevant_rng_state() {
+    let mut state = battle();
+    state
+        .rng
+        .range(RngReason::SpeedTie, 0..2)
+        .expect("speed tie range should be valid");
+
+    let snapshot = state.snapshot();
+    assert_eq!(snapshot.rng.seed, 0);
+    assert_eq!(snapshot.rng.state, state.rng.state());
+    assert_eq!(snapshot.rng.draws, 1);
 }
 
 #[test]

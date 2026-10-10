@@ -9,6 +9,8 @@ data from a pinned Pokémon Showdown revision, Regulation M-C team parsing and
 validation, and the serializable core battle-state model. Battle resolution is
 being added incrementally; team preview, basic switching, faint resolution,
 forced replacements, and victory detection are available.
+Typed legal-action enumeration and battle-owned deterministic RNG with optional
+diagnostic tracing are also available.
 
 ## Workspace
 

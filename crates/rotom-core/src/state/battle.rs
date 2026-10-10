@@ -1,5 +1,5 @@
 use super::{FieldState, SideState};
-use crate::{BattleError, PokemonPosition, SideId};
+use crate::{BattleError, BattleRng, PokemonPosition, SideId};
 use serde::{Deserialize, Serialize};
 
 /// The explicit point in the battle lifecycle at which choices or resolution occur.
@@ -15,8 +15,8 @@ pub enum BattlePhase {
 
 /// Complete authoritative state for one battle.
 ///
-/// Queued actions and deterministic RNG state are added by their respective
-/// milestones. They are intentionally not represented by placeholders here.
+/// Queued actions are added by their later milestone. All random mechanics
+/// consume the battle-owned deterministic RNG stored here.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct BattleState {
@@ -24,6 +24,7 @@ pub struct BattleState {
     pub picked_team_size: u8,
     pub sides: [SideState; 2],
     pub field: FieldState,
+    pub rng: BattleRng,
     pub phase: BattlePhase,
     pub winner: Option<SideId>,
 }
@@ -37,6 +38,24 @@ impl BattleState {
     /// doubles leads, exceeds either loaded team, or either side is not in its
     /// initial pre-preview state.
     pub fn new(p1: SideState, p2: SideState, picked_team_size: usize) -> Result<Self, BattleError> {
+        Self::new_with_seed(p1, p2, picked_team_size, 0)
+    }
+
+    /// Creates a battle with an explicit deterministic RNG seed.
+    ///
+    /// Use this constructor for simulations and replays whose random stream
+    /// must be reproducible. [`Self::new`] remains a zero-seeded convenience
+    /// constructor for callers that do not yet consume randomness.
+    ///
+    /// # Errors
+    ///
+    /// Returns the same state-validation errors as [`Self::new`].
+    pub fn new_with_seed(
+        p1: SideState,
+        p2: SideState,
+        picked_team_size: usize,
+        seed: u64,
+    ) -> Result<Self, BattleError> {
         let picked_team_size = u8::try_from(picked_team_size).map_err(|_| {
             BattleError::InvalidState("picked-team size does not fit in a u8".to_owned())
         })?;
@@ -72,6 +91,7 @@ impl BattleState {
             picked_team_size,
             sides: [p1, p2],
             field: FieldState::default(),
+            rng: BattleRng::new(seed),
             phase: BattlePhase::TeamPreview,
             winner: None,
         })

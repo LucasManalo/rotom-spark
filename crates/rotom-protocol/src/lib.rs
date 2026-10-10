@@ -19,8 +19,17 @@ pub struct BattleSnapshot {
     pub picked_team_size: u8,
     pub phase: BattlePhase,
     pub field: FieldSnapshot,
+    pub rng: RngSnapshot,
     pub sides: [SideSnapshot; 2],
     pub winner: Option<SideId>,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct RngSnapshot {
+    pub seed: u64,
+    pub state: u64,
+    pub draws: u64,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -134,6 +143,11 @@ pub fn snapshot(state: &BattleState) -> BattleSnapshot {
                 .copied()
                 .map(ConditionSnapshot::from)
                 .collect(),
+        },
+        rng: RngSnapshot {
+            seed: state.rng.seed(),
+            state: state.rng.state(),
+            draws: state.rng.draws(),
         },
         sides: [
             SideSnapshot::from_state(SideId::P1, &state.sides[0]),

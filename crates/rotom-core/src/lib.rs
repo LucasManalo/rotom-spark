@@ -7,6 +7,7 @@
 mod action;
 mod error;
 mod id;
+mod rng;
 mod side;
 mod state;
 mod team;
@@ -17,6 +18,7 @@ pub use action::{
 };
 pub use error::BattleError;
 pub use id::{AbilityId, ConditionId, FormId, ItemId, MoveId, NatureId, SpeciesId};
+pub use rng::{BattleRng, RngOperation, RngReason, RngTraceEntry};
 pub use side::SideId;
 pub use state::{
     ActiveSlot, BattlePhase, BattleState, BattleStats, ConditionState, FaintTarget, FieldState,
