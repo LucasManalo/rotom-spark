@@ -5,6 +5,7 @@
 //! cloneable so those mechanics do not need to rely on text logs.
 
 mod action;
+mod combat;
 mod error;
 mod id;
 mod rng;
@@ -15,6 +16,11 @@ mod team;
 pub use action::{
     ActionTarget, LegalActions, MoveSlotIndex, MoveTarget, PokemonAction, SlotLegalActions,
     TurnChoice,
+};
+pub use combat::{
+    calculate_damage, calculate_move_damage, CombatData, CombatMove, DamageResult, Modifier,
+    MoveAccuracy, MoveCategory, MoveSupport, PokemonType, PokemonTypes, ResolvedAction,
+    TurnResolution,
 };
 pub use error::BattleError;
 pub use id::{AbilityId, ConditionId, FormId, ItemId, MoveId, NatureId, SpeciesId};

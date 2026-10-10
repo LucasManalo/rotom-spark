@@ -212,6 +212,7 @@ function exportMoves(dex, validator) {
 			base_power: move.basePower,
 			accuracy: normalizeAccuracy(move.accuracy),
 			pp: move.pp,
+			no_pp_boosts: Boolean(move.noPPBoosts),
 			priority: move.priority,
 			target: move.target,
 			flags: sortedStrings(Object.keys(move.flags || {}).filter(flag => move.flags[flag])),
@@ -227,6 +228,17 @@ function exportMoves(dex, validator) {
 			ban_reason: banReason || null,
 		};
 	});
+}
+
+function exportTypes(dex) {
+	return sorted(dex.types.all().filter(type => type.exists)).map(type => ({
+		id: type.id,
+		name: type.name,
+		damage_taken: Object.entries(type.damageTaken)
+			.filter(([source]) => dex.types.get(source).exists)
+			.sort(([left], [right]) => compareStrings(left, right))
+			.map(([source, value]) => ({key: source.toLowerCase(), value})),
+	}));
 }
 
 function exportItems(dex, validator) {
@@ -309,7 +321,7 @@ function buildExport(version, Showdown) {
 	const species = exportSpecies(dex, validator);
 
 	return {
-		schema_version: 2,
+		schema_version: 3,
 		source: {repo: version.repo, commit: version.commit},
 		format: {
 			id: format.id,
@@ -336,6 +348,7 @@ function buildExport(version, Showdown) {
 		},
 		species,
 		forms: exportForms(species),
+		types: exportTypes(dex),
 		moves: exportMoves(dex, validator),
 		items: exportItems(dex, validator),
 		abilities: exportAbilities(dex, validator),

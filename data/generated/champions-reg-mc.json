@@ -1,5 +1,5 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "source": {
     "repo": "https://github.com/smogon/pokemon-showdown",
     "commit": "b79ce06d06b8f0dc8de8bb348bc9cab5d931553f"
@@ -159148,6 +159148,1566 @@
       "ban_reason": "Zygarde-Mega is tagged Restricted Legendary, which is banned by Flat Rules."
     }
   ],
+  "types": [
+    {
+      "id": "bug",
+      "name": "Bug",
+      "damage_taken": [
+        {
+          "key": "bug",
+          "value": 0
+        },
+        {
+          "key": "dark",
+          "value": 0
+        },
+        {
+          "key": "dragon",
+          "value": 0
+        },
+        {
+          "key": "electric",
+          "value": 0
+        },
+        {
+          "key": "fairy",
+          "value": 0
+        },
+        {
+          "key": "fighting",
+          "value": 2
+        },
+        {
+          "key": "fire",
+          "value": 1
+        },
+        {
+          "key": "flying",
+          "value": 1
+        },
+        {
+          "key": "ghost",
+          "value": 0
+        },
+        {
+          "key": "grass",
+          "value": 2
+        },
+        {
+          "key": "ground",
+          "value": 2
+        },
+        {
+          "key": "ice",
+          "value": 0
+        },
+        {
+          "key": "normal",
+          "value": 0
+        },
+        {
+          "key": "poison",
+          "value": 0
+        },
+        {
+          "key": "psychic",
+          "value": 0
+        },
+        {
+          "key": "rock",
+          "value": 1
+        },
+        {
+          "key": "steel",
+          "value": 0
+        },
+        {
+          "key": "stellar",
+          "value": 0
+        },
+        {
+          "key": "water",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "dark",
+      "name": "Dark",
+      "damage_taken": [
+        {
+          "key": "bug",
+          "value": 1
+        },
+        {
+          "key": "dark",
+          "value": 2
+        },
+        {
+          "key": "dragon",
+          "value": 0
+        },
+        {
+          "key": "electric",
+          "value": 0
+        },
+        {
+          "key": "fairy",
+          "value": 1
+        },
+        {
+          "key": "fighting",
+          "value": 1
+        },
+        {
+          "key": "fire",
+          "value": 0
+        },
+        {
+          "key": "flying",
+          "value": 0
+        },
+        {
+          "key": "ghost",
+          "value": 2
+        },
+        {
+          "key": "grass",
+          "value": 0
+        },
+        {
+          "key": "ground",
+          "value": 0
+        },
+        {
+          "key": "ice",
+          "value": 0
+        },
+        {
+          "key": "normal",
+          "value": 0
+        },
+        {
+          "key": "poison",
+          "value": 0
+        },
+        {
+          "key": "psychic",
+          "value": 3
+        },
+        {
+          "key": "rock",
+          "value": 0
+        },
+        {
+          "key": "steel",
+          "value": 0
+        },
+        {
+          "key": "stellar",
+          "value": 0
+        },
+        {
+          "key": "water",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "dragon",
+      "name": "Dragon",
+      "damage_taken": [
+        {
+          "key": "bug",
+          "value": 0
+        },
+        {
+          "key": "dark",
+          "value": 0
+        },
+        {
+          "key": "dragon",
+          "value": 1
+        },
+        {
+          "key": "electric",
+          "value": 2
+        },
+        {
+          "key": "fairy",
+          "value": 1
+        },
+        {
+          "key": "fighting",
+          "value": 0
+        },
+        {
+          "key": "fire",
+          "value": 2
+        },
+        {
+          "key": "flying",
+          "value": 0
+        },
+        {
+          "key": "ghost",
+          "value": 0
+        },
+        {
+          "key": "grass",
+          "value": 2
+        },
+        {
+          "key": "ground",
+          "value": 0
+        },
+        {
+          "key": "ice",
+          "value": 1
+        },
+        {
+          "key": "normal",
+          "value": 0
+        },
+        {
+          "key": "poison",
+          "value": 0
+        },
+        {
+          "key": "psychic",
+          "value": 0
+        },
+        {
+          "key": "rock",
+          "value": 0
+        },
+        {
+          "key": "steel",
+          "value": 0
+        },
+        {
+          "key": "stellar",
+          "value": 0
+        },
+        {
+          "key": "water",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "id": "electric",
+      "name": "Electric",
+      "damage_taken": [
+        {
+          "key": "bug",
+          "value": 0
+        },
+        {
+          "key": "dark",
+          "value": 0
+        },
+        {
+          "key": "dragon",
+          "value": 0
+        },
+        {
+          "key": "electric",
+          "value": 2
+        },
+        {
+          "key": "fairy",
+          "value": 0
+        },
+        {
+          "key": "fighting",
+          "value": 0
+        },
+        {
+          "key": "fire",
+          "value": 0
+        },
+        {
+          "key": "flying",
+          "value": 2
+        },
+        {
+          "key": "ghost",
+          "value": 0
+        },
+        {
+          "key": "grass",
+          "value": 0
+        },
+        {
+          "key": "ground",
+          "value": 1
+        },
+        {
+          "key": "ice",
+          "value": 0
+        },
+        {
+          "key": "normal",
+          "value": 0
+        },
+        {
+          "key": "poison",
+          "value": 0
+        },
+        {
+          "key": "psychic",
+          "value": 0
+        },
+        {
+          "key": "rock",
+          "value": 0
+        },
+        {
+          "key": "steel",
+          "value": 2
+        },
+        {
+          "key": "stellar",
+          "value": 0
+        },
+        {
+          "key": "water",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "fairy",
+      "name": "Fairy",
+      "damage_taken": [
+        {
+          "key": "bug",
+          "value": 2
+        },
+        {
+          "key": "dark",
+          "value": 2
+        },
+        {
+          "key": "dragon",
+          "value": 3
+        },
+        {
+          "key": "electric",
+          "value": 0
+        },
+        {
+          "key": "fairy",
+          "value": 0
+        },
+        {
+          "key": "fighting",
+          "value": 2
+        },
+        {
+          "key": "fire",
+          "value": 0
+        },
+        {
+          "key": "flying",
+          "value": 0
+        },
+        {
+          "key": "ghost",
+          "value": 0
+        },
+        {
+          "key": "grass",
+          "value": 0
+        },
+        {
+          "key": "ground",
+          "value": 0
+        },
+        {
+          "key": "ice",
+          "value": 0
+        },
+        {
+          "key": "normal",
+          "value": 0
+        },
+        {
+          "key": "poison",
+          "value": 1
+        },
+        {
+          "key": "psychic",
+          "value": 0
+        },
+        {
+          "key": "rock",
+          "value": 0
+        },
+        {
+          "key": "steel",
+          "value": 1
+        },
+        {
+          "key": "stellar",
+          "value": 0
+        },
+        {
+          "key": "water",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "fighting",
+      "name": "Fighting",
+      "damage_taken": [
+        {
+          "key": "bug",
+          "value": 2
+        },
+        {
+          "key": "dark",
+          "value": 2
+        },
+        {
+          "key": "dragon",
+          "value": 0
+        },
+        {
+          "key": "electric",
+          "value": 0
+        },
+        {
+          "key": "fairy",
+          "value": 1
+        },
+        {
+          "key": "fighting",
+          "value": 0
+        },
+        {
+          "key": "fire",
+          "value": 0
+        },
+        {
+          "key": "flying",
+          "value": 1
+        },
+        {
+          "key": "ghost",
+          "value": 0
+        },
+        {
+          "key": "grass",
+          "value": 0
+        },
+        {
+          "key": "ground",
+          "value": 0
+        },
+        {
+          "key": "ice",
+          "value": 0
+        },
+        {
+          "key": "normal",
+          "value": 0
+        },
+        {
+          "key": "poison",
+          "value": 0
+        },
+        {
+          "key": "psychic",
+          "value": 1
+        },
+        {
+          "key": "rock",
+          "value": 2
+        },
+        {
+          "key": "steel",
+          "value": 0
+        },
+        {
+          "key": "stellar",
+          "value": 0
+        },
+        {
+          "key": "water",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "fire",
+      "name": "Fire",
+      "damage_taken": [
+        {
+          "key": "bug",
+          "value": 2
+        },
+        {
+          "key": "dark",
+          "value": 0
+        },
+        {
+          "key": "dragon",
+          "value": 0
+        },
+        {
+          "key": "electric",
+          "value": 0
+        },
+        {
+          "key": "fairy",
+          "value": 2
+        },
+        {
+          "key": "fighting",
+          "value": 0
+        },
+        {
+          "key": "fire",
+          "value": 2
+        },
+        {
+          "key": "flying",
+          "value": 0
+        },
+        {
+          "key": "ghost",
+          "value": 0
+        },
+        {
+          "key": "grass",
+          "value": 2
+        },
+        {
+          "key": "ground",
+          "value": 1
+        },
+        {
+          "key": "ice",
+          "value": 2
+        },
+        {
+          "key": "normal",
+          "value": 0
+        },
+        {
+          "key": "poison",
+          "value": 0
+        },
+        {
+          "key": "psychic",
+          "value": 0
+        },
+        {
+          "key": "rock",
+          "value": 1
+        },
+        {
+          "key": "steel",
+          "value": 2
+        },
+        {
+          "key": "stellar",
+          "value": 0
+        },
+        {
+          "key": "water",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "flying",
+      "name": "Flying",
+      "damage_taken": [
+        {
+          "key": "bug",
+          "value": 2
+        },
+        {
+          "key": "dark",
+          "value": 0
+        },
+        {
+          "key": "dragon",
+          "value": 0
+        },
+        {
+          "key": "electric",
+          "value": 1
+        },
+        {
+          "key": "fairy",
+          "value": 0
+        },
+        {
+          "key": "fighting",
+          "value": 2
+        },
+        {
+          "key": "fire",
+          "value": 0
+        },
+        {
+          "key": "flying",
+          "value": 0
+        },
+        {
+          "key": "ghost",
+          "value": 0
+        },
+        {
+          "key": "grass",
+          "value": 2
+        },
+        {
+          "key": "ground",
+          "value": 3
+        },
+        {
+          "key": "ice",
+          "value": 1
+        },
+        {
+          "key": "normal",
+          "value": 0
+        },
+        {
+          "key": "poison",
+          "value": 0
+        },
+        {
+          "key": "psychic",
+          "value": 0
+        },
+        {
+          "key": "rock",
+          "value": 1
+        },
+        {
+          "key": "steel",
+          "value": 0
+        },
+        {
+          "key": "stellar",
+          "value": 0
+        },
+        {
+          "key": "water",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "ghost",
+      "name": "Ghost",
+      "damage_taken": [
+        {
+          "key": "bug",
+          "value": 2
+        },
+        {
+          "key": "dark",
+          "value": 1
+        },
+        {
+          "key": "dragon",
+          "value": 0
+        },
+        {
+          "key": "electric",
+          "value": 0
+        },
+        {
+          "key": "fairy",
+          "value": 0
+        },
+        {
+          "key": "fighting",
+          "value": 3
+        },
+        {
+          "key": "fire",
+          "value": 0
+        },
+        {
+          "key": "flying",
+          "value": 0
+        },
+        {
+          "key": "ghost",
+          "value": 1
+        },
+        {
+          "key": "grass",
+          "value": 0
+        },
+        {
+          "key": "ground",
+          "value": 0
+        },
+        {
+          "key": "ice",
+          "value": 0
+        },
+        {
+          "key": "normal",
+          "value": 3
+        },
+        {
+          "key": "poison",
+          "value": 2
+        },
+        {
+          "key": "psychic",
+          "value": 0
+        },
+        {
+          "key": "rock",
+          "value": 0
+        },
+        {
+          "key": "steel",
+          "value": 0
+        },
+        {
+          "key": "stellar",
+          "value": 0
+        },
+        {
+          "key": "water",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "grass",
+      "name": "Grass",
+      "damage_taken": [
+        {
+          "key": "bug",
+          "value": 1
+        },
+        {
+          "key": "dark",
+          "value": 0
+        },
+        {
+          "key": "dragon",
+          "value": 0
+        },
+        {
+          "key": "electric",
+          "value": 2
+        },
+        {
+          "key": "fairy",
+          "value": 0
+        },
+        {
+          "key": "fighting",
+          "value": 0
+        },
+        {
+          "key": "fire",
+          "value": 1
+        },
+        {
+          "key": "flying",
+          "value": 1
+        },
+        {
+          "key": "ghost",
+          "value": 0
+        },
+        {
+          "key": "grass",
+          "value": 2
+        },
+        {
+          "key": "ground",
+          "value": 2
+        },
+        {
+          "key": "ice",
+          "value": 1
+        },
+        {
+          "key": "normal",
+          "value": 0
+        },
+        {
+          "key": "poison",
+          "value": 1
+        },
+        {
+          "key": "psychic",
+          "value": 0
+        },
+        {
+          "key": "rock",
+          "value": 0
+        },
+        {
+          "key": "steel",
+          "value": 0
+        },
+        {
+          "key": "stellar",
+          "value": 0
+        },
+        {
+          "key": "water",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "id": "ground",
+      "name": "Ground",
+      "damage_taken": [
+        {
+          "key": "bug",
+          "value": 0
+        },
+        {
+          "key": "dark",
+          "value": 0
+        },
+        {
+          "key": "dragon",
+          "value": 0
+        },
+        {
+          "key": "electric",
+          "value": 3
+        },
+        {
+          "key": "fairy",
+          "value": 0
+        },
+        {
+          "key": "fighting",
+          "value": 0
+        },
+        {
+          "key": "fire",
+          "value": 0
+        },
+        {
+          "key": "flying",
+          "value": 0
+        },
+        {
+          "key": "ghost",
+          "value": 0
+        },
+        {
+          "key": "grass",
+          "value": 1
+        },
+        {
+          "key": "ground",
+          "value": 0
+        },
+        {
+          "key": "ice",
+          "value": 1
+        },
+        {
+          "key": "normal",
+          "value": 0
+        },
+        {
+          "key": "poison",
+          "value": 2
+        },
+        {
+          "key": "psychic",
+          "value": 0
+        },
+        {
+          "key": "rock",
+          "value": 2
+        },
+        {
+          "key": "steel",
+          "value": 0
+        },
+        {
+          "key": "stellar",
+          "value": 0
+        },
+        {
+          "key": "water",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "ice",
+      "name": "Ice",
+      "damage_taken": [
+        {
+          "key": "bug",
+          "value": 0
+        },
+        {
+          "key": "dark",
+          "value": 0
+        },
+        {
+          "key": "dragon",
+          "value": 0
+        },
+        {
+          "key": "electric",
+          "value": 0
+        },
+        {
+          "key": "fairy",
+          "value": 0
+        },
+        {
+          "key": "fighting",
+          "value": 1
+        },
+        {
+          "key": "fire",
+          "value": 1
+        },
+        {
+          "key": "flying",
+          "value": 0
+        },
+        {
+          "key": "ghost",
+          "value": 0
+        },
+        {
+          "key": "grass",
+          "value": 0
+        },
+        {
+          "key": "ground",
+          "value": 0
+        },
+        {
+          "key": "ice",
+          "value": 2
+        },
+        {
+          "key": "normal",
+          "value": 0
+        },
+        {
+          "key": "poison",
+          "value": 0
+        },
+        {
+          "key": "psychic",
+          "value": 0
+        },
+        {
+          "key": "rock",
+          "value": 1
+        },
+        {
+          "key": "steel",
+          "value": 1
+        },
+        {
+          "key": "stellar",
+          "value": 0
+        },
+        {
+          "key": "water",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "normal",
+      "name": "Normal",
+      "damage_taken": [
+        {
+          "key": "bug",
+          "value": 0
+        },
+        {
+          "key": "dark",
+          "value": 0
+        },
+        {
+          "key": "dragon",
+          "value": 0
+        },
+        {
+          "key": "electric",
+          "value": 0
+        },
+        {
+          "key": "fairy",
+          "value": 0
+        },
+        {
+          "key": "fighting",
+          "value": 1
+        },
+        {
+          "key": "fire",
+          "value": 0
+        },
+        {
+          "key": "flying",
+          "value": 0
+        },
+        {
+          "key": "ghost",
+          "value": 3
+        },
+        {
+          "key": "grass",
+          "value": 0
+        },
+        {
+          "key": "ground",
+          "value": 0
+        },
+        {
+          "key": "ice",
+          "value": 0
+        },
+        {
+          "key": "normal",
+          "value": 0
+        },
+        {
+          "key": "poison",
+          "value": 0
+        },
+        {
+          "key": "psychic",
+          "value": 0
+        },
+        {
+          "key": "rock",
+          "value": 0
+        },
+        {
+          "key": "steel",
+          "value": 0
+        },
+        {
+          "key": "stellar",
+          "value": 0
+        },
+        {
+          "key": "water",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "poison",
+      "name": "Poison",
+      "damage_taken": [
+        {
+          "key": "bug",
+          "value": 2
+        },
+        {
+          "key": "dark",
+          "value": 0
+        },
+        {
+          "key": "dragon",
+          "value": 0
+        },
+        {
+          "key": "electric",
+          "value": 0
+        },
+        {
+          "key": "fairy",
+          "value": 2
+        },
+        {
+          "key": "fighting",
+          "value": 2
+        },
+        {
+          "key": "fire",
+          "value": 0
+        },
+        {
+          "key": "flying",
+          "value": 0
+        },
+        {
+          "key": "ghost",
+          "value": 0
+        },
+        {
+          "key": "grass",
+          "value": 2
+        },
+        {
+          "key": "ground",
+          "value": 1
+        },
+        {
+          "key": "ice",
+          "value": 0
+        },
+        {
+          "key": "normal",
+          "value": 0
+        },
+        {
+          "key": "poison",
+          "value": 2
+        },
+        {
+          "key": "psychic",
+          "value": 1
+        },
+        {
+          "key": "rock",
+          "value": 0
+        },
+        {
+          "key": "steel",
+          "value": 0
+        },
+        {
+          "key": "stellar",
+          "value": 0
+        },
+        {
+          "key": "water",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "psychic",
+      "name": "Psychic",
+      "damage_taken": [
+        {
+          "key": "bug",
+          "value": 1
+        },
+        {
+          "key": "dark",
+          "value": 1
+        },
+        {
+          "key": "dragon",
+          "value": 0
+        },
+        {
+          "key": "electric",
+          "value": 0
+        },
+        {
+          "key": "fairy",
+          "value": 0
+        },
+        {
+          "key": "fighting",
+          "value": 2
+        },
+        {
+          "key": "fire",
+          "value": 0
+        },
+        {
+          "key": "flying",
+          "value": 0
+        },
+        {
+          "key": "ghost",
+          "value": 1
+        },
+        {
+          "key": "grass",
+          "value": 0
+        },
+        {
+          "key": "ground",
+          "value": 0
+        },
+        {
+          "key": "ice",
+          "value": 0
+        },
+        {
+          "key": "normal",
+          "value": 0
+        },
+        {
+          "key": "poison",
+          "value": 0
+        },
+        {
+          "key": "psychic",
+          "value": 2
+        },
+        {
+          "key": "rock",
+          "value": 0
+        },
+        {
+          "key": "steel",
+          "value": 0
+        },
+        {
+          "key": "stellar",
+          "value": 0
+        },
+        {
+          "key": "water",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "rock",
+      "name": "Rock",
+      "damage_taken": [
+        {
+          "key": "bug",
+          "value": 0
+        },
+        {
+          "key": "dark",
+          "value": 0
+        },
+        {
+          "key": "dragon",
+          "value": 0
+        },
+        {
+          "key": "electric",
+          "value": 0
+        },
+        {
+          "key": "fairy",
+          "value": 0
+        },
+        {
+          "key": "fighting",
+          "value": 1
+        },
+        {
+          "key": "fire",
+          "value": 2
+        },
+        {
+          "key": "flying",
+          "value": 2
+        },
+        {
+          "key": "ghost",
+          "value": 0
+        },
+        {
+          "key": "grass",
+          "value": 1
+        },
+        {
+          "key": "ground",
+          "value": 1
+        },
+        {
+          "key": "ice",
+          "value": 0
+        },
+        {
+          "key": "normal",
+          "value": 2
+        },
+        {
+          "key": "poison",
+          "value": 2
+        },
+        {
+          "key": "psychic",
+          "value": 0
+        },
+        {
+          "key": "rock",
+          "value": 0
+        },
+        {
+          "key": "steel",
+          "value": 1
+        },
+        {
+          "key": "stellar",
+          "value": 0
+        },
+        {
+          "key": "water",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "steel",
+      "name": "Steel",
+      "damage_taken": [
+        {
+          "key": "bug",
+          "value": 2
+        },
+        {
+          "key": "dark",
+          "value": 0
+        },
+        {
+          "key": "dragon",
+          "value": 2
+        },
+        {
+          "key": "electric",
+          "value": 0
+        },
+        {
+          "key": "fairy",
+          "value": 2
+        },
+        {
+          "key": "fighting",
+          "value": 1
+        },
+        {
+          "key": "fire",
+          "value": 1
+        },
+        {
+          "key": "flying",
+          "value": 2
+        },
+        {
+          "key": "ghost",
+          "value": 0
+        },
+        {
+          "key": "grass",
+          "value": 2
+        },
+        {
+          "key": "ground",
+          "value": 1
+        },
+        {
+          "key": "ice",
+          "value": 2
+        },
+        {
+          "key": "normal",
+          "value": 2
+        },
+        {
+          "key": "poison",
+          "value": 3
+        },
+        {
+          "key": "psychic",
+          "value": 2
+        },
+        {
+          "key": "rock",
+          "value": 2
+        },
+        {
+          "key": "steel",
+          "value": 2
+        },
+        {
+          "key": "stellar",
+          "value": 0
+        },
+        {
+          "key": "water",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "stellar",
+      "name": "Stellar",
+      "damage_taken": [
+        {
+          "key": "bug",
+          "value": 0
+        },
+        {
+          "key": "dark",
+          "value": 0
+        },
+        {
+          "key": "dragon",
+          "value": 0
+        },
+        {
+          "key": "electric",
+          "value": 0
+        },
+        {
+          "key": "fairy",
+          "value": 0
+        },
+        {
+          "key": "fighting",
+          "value": 0
+        },
+        {
+          "key": "fire",
+          "value": 0
+        },
+        {
+          "key": "flying",
+          "value": 0
+        },
+        {
+          "key": "ghost",
+          "value": 0
+        },
+        {
+          "key": "grass",
+          "value": 0
+        },
+        {
+          "key": "ground",
+          "value": 0
+        },
+        {
+          "key": "ice",
+          "value": 0
+        },
+        {
+          "key": "normal",
+          "value": 0
+        },
+        {
+          "key": "poison",
+          "value": 0
+        },
+        {
+          "key": "psychic",
+          "value": 0
+        },
+        {
+          "key": "rock",
+          "value": 0
+        },
+        {
+          "key": "steel",
+          "value": 0
+        },
+        {
+          "key": "stellar",
+          "value": 0
+        },
+        {
+          "key": "water",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "water",
+      "name": "Water",
+      "damage_taken": [
+        {
+          "key": "bug",
+          "value": 0
+        },
+        {
+          "key": "dark",
+          "value": 0
+        },
+        {
+          "key": "dragon",
+          "value": 0
+        },
+        {
+          "key": "electric",
+          "value": 1
+        },
+        {
+          "key": "fairy",
+          "value": 0
+        },
+        {
+          "key": "fighting",
+          "value": 0
+        },
+        {
+          "key": "fire",
+          "value": 2
+        },
+        {
+          "key": "flying",
+          "value": 0
+        },
+        {
+          "key": "ghost",
+          "value": 0
+        },
+        {
+          "key": "grass",
+          "value": 1
+        },
+        {
+          "key": "ground",
+          "value": 0
+        },
+        {
+          "key": "ice",
+          "value": 2
+        },
+        {
+          "key": "normal",
+          "value": 0
+        },
+        {
+          "key": "poison",
+          "value": 0
+        },
+        {
+          "key": "psychic",
+          "value": 0
+        },
+        {
+          "key": "rock",
+          "value": 0
+        },
+        {
+          "key": "steel",
+          "value": 2
+        },
+        {
+          "key": "stellar",
+          "value": 0
+        },
+        {
+          "key": "water",
+          "value": 2
+        }
+      ]
+    }
+  ],
   "moves": [
     {
       "id": "10000000voltthunderbolt",
@@ -159161,6 +160721,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "normal",
       "flags": [],
@@ -159188,6 +160749,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -159223,6 +160785,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 1,
       "target": "normal",
       "flags": [
@@ -159255,6 +160818,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -159285,6 +160849,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -159314,6 +160879,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "normal",
       "flags": [],
@@ -159341,6 +160907,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -159373,6 +160940,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "any",
       "flags": [
@@ -159405,6 +160973,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentAllyOrSelf",
       "flags": [
@@ -159433,6 +161002,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "any",
       "flags": [
@@ -159467,6 +161037,7 @@
         "value": 95
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "any",
       "flags": [
@@ -159499,6 +161070,7 @@
         "kind": "always"
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -159528,6 +161100,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -159558,6 +161131,7 @@
         "value": 95
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -159591,6 +161165,7 @@
         "value": 95
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "any",
       "flags": [
@@ -159623,6 +161198,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "normal",
       "flags": [],
@@ -159650,6 +161226,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -159682,6 +161259,7 @@
         "kind": "always"
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 2,
       "target": "self",
       "flags": [
@@ -159710,6 +161288,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -159740,6 +161319,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -159772,6 +161352,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -159803,6 +161384,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -159833,6 +161415,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -159865,6 +161448,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 1,
       "target": "normal",
       "flags": [
@@ -159896,6 +161480,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -159926,6 +161511,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -159959,6 +161545,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -159991,6 +161578,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -160021,6 +161609,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -160055,6 +161644,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allyTeam",
       "flags": [
@@ -160085,6 +161675,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentAlly",
       "flags": [
@@ -160114,6 +161705,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -160148,6 +161740,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -160180,6 +161773,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -160212,6 +161806,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -160242,6 +161837,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -160273,6 +161869,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -160305,6 +161902,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "any",
       "flags": [
@@ -160339,6 +161937,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -160369,6 +161968,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -160399,6 +161999,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allySide",
       "flags": [
@@ -160428,6 +162029,7 @@
         "kind": "always"
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -160458,6 +162060,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": -4,
       "target": "normal",
       "flags": [
@@ -160490,6 +162093,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -160522,6 +162126,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 1,
       "target": "normal",
       "flags": [
@@ -160555,6 +162160,7 @@
         "value": 95
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -160584,6 +162190,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 4,
       "target": "self",
       "flags": [
@@ -160614,6 +162221,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -160645,6 +162253,7 @@
         "value": 85
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -160679,6 +162288,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -160708,6 +162318,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -160737,6 +162348,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": -3,
       "target": "normal",
       "flags": [
@@ -160772,6 +162384,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -160804,6 +162417,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -160837,6 +162451,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -160871,6 +162486,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -160905,6 +162521,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -160934,6 +162551,7 @@
         "kind": "always"
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -160966,6 +162584,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 1,
       "target": "self",
       "flags": [
@@ -160999,6 +162618,7 @@
         "value": 85
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -161031,6 +162651,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -161064,6 +162685,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -161101,6 +162723,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -161131,6 +162754,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "normal",
       "flags": [],
@@ -161158,6 +162782,7 @@
         "value": 90
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -161190,6 +162815,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -161222,6 +162848,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -161259,6 +162886,7 @@
         "value": 80
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -161291,6 +162919,7 @@
         "value": 70
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -161322,6 +162951,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -161353,6 +162983,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -161384,6 +163015,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "normal",
       "flags": [],
@@ -161411,6 +163043,7 @@
         "value": 85
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -161442,6 +163075,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -161473,6 +163107,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -161507,6 +163142,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -161539,6 +163175,7 @@
         "value": 85
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -161571,6 +163208,7 @@
         "value": 85
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -161602,6 +163240,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -161636,6 +163275,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -161670,6 +163310,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacent",
       "flags": [
@@ -161703,6 +163344,7 @@
         "value": 85
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "any",
       "flags": [
@@ -161741,6 +163383,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -161775,6 +163418,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -161806,6 +163450,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "any",
       "flags": [
@@ -161842,6 +163487,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -161872,6 +163518,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "normal",
       "flags": [],
@@ -161899,6 +163546,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -161931,6 +163579,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -161962,6 +163611,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacent",
       "flags": [
@@ -161994,6 +163644,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -162025,6 +163676,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -162056,6 +163708,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -162088,6 +163741,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -162120,6 +163774,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -162150,6 +163805,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacent",
       "flags": [
@@ -162182,6 +163838,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 1,
       "target": "normal",
       "flags": [
@@ -162215,6 +163872,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -162249,6 +163907,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 4,
       "target": "self",
       "flags": [
@@ -162280,6 +163939,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -162311,6 +163971,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -162343,6 +164004,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -162372,6 +164034,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -162401,6 +164064,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -162431,6 +164095,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -162462,6 +164127,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -162491,6 +164157,7 @@
         "value": 90
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -162523,6 +164190,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -162555,6 +164223,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -162585,6 +164254,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -162616,6 +164286,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -162649,6 +164320,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "any",
       "flags": [
@@ -162687,6 +164359,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -162716,6 +164389,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "all",
       "flags": [],
@@ -162743,6 +164417,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -162775,6 +164450,7 @@
         "value": 95
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -162806,6 +164482,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": -6,
       "target": "normal",
       "flags": [
@@ -162840,6 +164517,7 @@
         "value": 85
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -162872,6 +164550,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -162904,6 +164583,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -162934,6 +164614,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -162963,6 +164644,7 @@
         "kind": "always"
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -162994,6 +164676,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -163025,6 +164708,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentAlly",
       "flags": [
@@ -163055,6 +164739,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -163085,6 +164770,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -163116,6 +164802,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -163153,6 +164840,7 @@
         "value": 85
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -163189,6 +164877,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "scripted",
       "flags": [
@@ -163220,6 +164909,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -163253,6 +164943,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -163285,6 +164976,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -163316,6 +165008,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -163347,6 +165040,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "normal",
       "flags": [],
@@ -163373,6 +165067,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -163402,6 +165097,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -163431,6 +165127,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -163465,6 +165162,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -163495,6 +165193,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "normal",
       "flags": [],
@@ -163522,6 +165221,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacent",
       "flags": [
@@ -163554,6 +165254,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -163583,6 +165284,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -163613,6 +165315,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -163646,6 +165349,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": -5,
       "target": "scripted",
       "flags": [
@@ -163679,6 +165383,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "all",
       "flags": [
@@ -163709,6 +165414,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -163743,6 +165449,7 @@
         "value": 95
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -163774,6 +165481,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 3,
       "target": "allySide",
       "flags": [],
@@ -163801,6 +165509,7 @@
         "value": 80
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -163833,6 +165542,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -163866,6 +165576,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -163899,6 +165610,7 @@
         "value": 95
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -163932,6 +165644,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -163963,6 +165676,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -163993,6 +165707,7 @@
         "value": 95
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -164026,6 +165741,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -164058,6 +165774,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "any",
       "flags": [
@@ -164091,6 +165808,7 @@
         "value": 50
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -164124,6 +165842,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -164154,6 +165873,7 @@
         "kind": "always"
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -164182,6 +165902,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -164211,6 +165932,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -164240,6 +165962,7 @@
         "kind": "always"
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -164272,6 +165995,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -164302,6 +166026,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 4,
       "target": "self",
       "flags": [
@@ -164331,6 +166056,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "normal",
       "flags": [],
@@ -164358,6 +166084,7 @@
         "value": 95
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -164388,6 +166115,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -164425,6 +166153,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -164458,6 +166187,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -164490,6 +166220,7 @@
         "kind": "always"
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -164523,6 +166254,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacent",
       "flags": [
@@ -164554,6 +166286,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -164592,6 +166325,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -164625,6 +166359,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -164652,6 +166387,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -164682,6 +166418,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -164717,6 +166454,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -164752,6 +166490,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -164787,6 +166526,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -164822,6 +166562,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -164854,6 +166595,7 @@
         "value": 85
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -164888,6 +166630,7 @@
         "kind": "always"
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -164918,6 +166661,7 @@
         "value": 90
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -164949,6 +166693,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "any",
       "flags": [
@@ -164981,6 +166726,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -165011,6 +166757,7 @@
         "kind": "always"
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentAlly",
       "flags": [
@@ -165043,6 +166790,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -165075,6 +166823,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -165106,6 +166855,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -165141,6 +166891,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -165171,6 +166922,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -165203,6 +166955,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "any",
       "flags": [
@@ -165236,6 +166989,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -165270,6 +167024,7 @@
         "value": 75
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -165303,6 +167058,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": -6,
       "target": "normal",
       "flags": [
@@ -165337,6 +167093,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -165373,6 +167130,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -165410,6 +167168,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -165445,6 +167204,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "any",
       "flags": [
@@ -165478,6 +167238,7 @@
         "value": 95
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -165510,6 +167271,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -165540,6 +167302,7 @@
         "value": 90
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -165575,6 +167338,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -165610,6 +167374,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -165645,6 +167410,7 @@
         "value": 50
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -165678,6 +167444,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -165710,6 +167477,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacent",
       "flags": [
@@ -165742,6 +167510,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -165775,6 +167544,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -165807,6 +167577,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -165840,6 +167611,7 @@
         "value": 75
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -165871,6 +167643,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "all",
       "flags": [
@@ -165900,6 +167673,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -165932,6 +167706,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -165964,6 +167739,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -165995,6 +167771,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -166027,6 +167804,7 @@
         "value": 95
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -166058,6 +167836,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -166090,6 +167869,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -166121,6 +167901,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -166155,6 +167936,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -166187,6 +167969,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 4,
       "target": "self",
       "flags": [
@@ -166217,6 +168000,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -166249,6 +168033,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -166282,6 +168067,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -166313,6 +168099,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -166344,6 +168131,7 @@
         "value": 90
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -166375,6 +168163,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -166406,6 +168195,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacent",
       "flags": [
@@ -166438,6 +168228,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -166468,6 +168259,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "self",
       "flags": [],
@@ -166495,6 +168287,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 2,
       "target": "normal",
       "flags": [
@@ -166527,6 +168320,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -166558,6 +168352,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "all",
       "flags": [
@@ -166589,6 +168384,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -166621,6 +168417,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 3,
       "target": "normal",
       "flags": [
@@ -166653,6 +168450,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -166685,6 +168483,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -166716,6 +168515,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -166748,6 +168548,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -166782,6 +168583,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 2,
       "target": "normal",
       "flags": [
@@ -166812,6 +168614,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -166844,6 +168647,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -166876,6 +168680,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -166907,6 +168712,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -166939,6 +168745,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -166968,6 +168775,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -166997,6 +168805,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -167028,6 +168837,7 @@
         "value": 85
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -167059,6 +168869,7 @@
         "value": 95
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -167092,6 +168903,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -167124,6 +168936,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -167157,6 +168970,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -167190,6 +169004,7 @@
         "value": 85
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -167221,6 +169036,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 2,
       "target": "normal",
       "flags": [
@@ -167253,6 +169069,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -167286,6 +169103,7 @@
         "value": 30
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -167318,6 +169136,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -167350,6 +169169,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -167381,6 +169201,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -167413,6 +169234,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -167444,6 +169266,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -167477,6 +169300,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -167513,6 +169337,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -167545,6 +169370,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -167576,6 +169402,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -167609,6 +169436,7 @@
         "value": 90
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -167639,6 +169467,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -167672,6 +169501,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -167704,6 +169534,7 @@
         "value": 95
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -167735,6 +169566,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -167767,6 +169599,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "all",
       "flags": [
@@ -167796,6 +169629,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -167827,6 +169661,7 @@
         "value": 95
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "any",
       "flags": [
@@ -167865,6 +169700,7 @@
         "value": 95
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "any",
       "flags": [
@@ -167901,6 +169737,7 @@
         "value": 70
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -167932,6 +169769,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -167962,6 +169800,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": -3,
       "target": "normal",
       "flags": [
@@ -167997,6 +169836,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 2,
       "target": "self",
       "flags": [
@@ -168027,6 +169867,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -168058,6 +169899,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -168091,6 +169933,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -168124,6 +169967,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -168156,6 +170000,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -168187,6 +170032,7 @@
         "value": 90
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -168220,6 +170066,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -168250,6 +170097,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -168280,6 +170128,7 @@
         "value": 90
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -168313,6 +170162,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -168344,6 +170194,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -168376,6 +170227,7 @@
         "value": 85
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -168411,6 +170263,7 @@
         "value": 95
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -168444,6 +170297,7 @@
         "value": 80
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -168479,6 +170333,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -168510,6 +170365,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -168542,6 +170398,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -168573,6 +170430,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -168606,6 +170464,7 @@
         "value": 90
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -168640,6 +170499,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allySide",
       "flags": [
@@ -168670,6 +170530,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "normal",
       "flags": [],
@@ -168696,6 +170557,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -168729,6 +170591,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -168764,6 +170627,7 @@
         "value": 90
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -168797,6 +170661,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -168828,6 +170693,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "normal",
       "flags": [],
@@ -168855,6 +170721,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -168885,6 +170752,7 @@
         "value": 95
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -168916,6 +170784,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -168948,6 +170817,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -168980,6 +170850,7 @@
         "value": 95
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -169009,6 +170880,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -169035,6 +170907,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -169061,6 +170934,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -169087,6 +170961,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -169113,6 +170988,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -169139,6 +171015,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -169165,6 +171042,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -169191,6 +171069,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -169217,6 +171096,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -169243,6 +171123,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -169269,6 +171150,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -169295,6 +171177,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -169321,6 +171204,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -169347,6 +171231,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -169373,6 +171258,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -169399,6 +171285,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -169425,6 +171312,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -169451,6 +171339,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -169477,6 +171366,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -169503,6 +171393,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -169529,6 +171420,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -169555,6 +171447,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -169581,6 +171474,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -169607,6 +171501,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -169633,6 +171528,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -169659,6 +171555,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -169685,6 +171582,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -169711,6 +171609,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -169737,6 +171636,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -169763,6 +171663,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -169789,6 +171690,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -169815,6 +171717,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -169841,6 +171744,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -169868,6 +171772,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -169901,6 +171806,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -169934,6 +171840,7 @@
         "value": 55
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -169968,6 +171875,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -169999,6 +171907,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "all",
       "flags": [
@@ -170029,6 +171938,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -170058,6 +171968,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "all",
       "flags": [
@@ -170088,6 +171999,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -170121,6 +172033,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -170150,6 +172063,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -170179,6 +172093,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "normal",
       "flags": [],
@@ -170205,6 +172120,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -170235,6 +172151,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -170268,6 +172185,7 @@
         "value": 30
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -170300,6 +172218,7 @@
         "value": 80
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -170331,6 +172250,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "any",
       "flags": [
@@ -170364,6 +172284,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -170396,6 +172317,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "all",
       "flags": [
@@ -170425,6 +172347,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -170457,6 +172380,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allySide",
       "flags": [
@@ -170485,6 +172409,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -170515,6 +172440,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -170546,6 +172472,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "all",
       "flags": [
@@ -170576,6 +172503,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -170608,6 +172536,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -170643,6 +172572,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -170676,6 +172606,7 @@
         "value": 80
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -170710,6 +172641,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allyTeam",
       "flags": [
@@ -170743,6 +172675,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -170774,6 +172707,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -170804,6 +172738,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -170834,6 +172769,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "any",
       "flags": [
@@ -170869,6 +172805,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -170900,6 +172837,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -170933,6 +172871,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -170967,6 +172906,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -170999,6 +172939,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -171032,6 +172973,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 5,
       "target": "adjacentAlly",
       "flags": [
@@ -171063,6 +173005,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -171094,6 +173037,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -171125,6 +173069,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -171155,6 +173100,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -171185,6 +173131,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -171215,6 +173162,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -171245,6 +173193,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -171275,6 +173224,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -171305,6 +173255,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -171335,6 +173286,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -171365,6 +173317,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -171395,6 +173348,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -171425,6 +173379,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -171455,6 +173410,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -171485,6 +173441,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -171515,6 +173472,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -171545,6 +173503,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -171575,6 +173534,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -171605,6 +173565,7 @@
         "value": 95
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -171637,6 +173598,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -171670,6 +173632,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -171701,6 +173664,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentAlly",
       "flags": [
@@ -171734,6 +173698,7 @@
         "kind": "always"
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -171764,6 +173729,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -171796,6 +173762,7 @@
         "value": 30
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -171828,6 +173795,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -171863,6 +173831,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allies",
       "flags": [
@@ -171895,6 +173864,7 @@
         "value": 70
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "any",
       "flags": [
@@ -171928,6 +173898,7 @@
         "value": 90
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -171960,6 +173931,7 @@
         "value": 80
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -171991,6 +173963,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -172022,6 +173995,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "normal",
       "flags": [],
@@ -172049,6 +174023,7 @@
         "value": 90
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -172081,6 +174056,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -172111,6 +174087,7 @@
         "value": 90
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -172143,6 +174120,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -172173,6 +174151,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -172203,6 +174182,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -172236,6 +174216,7 @@
         "value": 60
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -172268,6 +174249,7 @@
         "value": 90
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -172303,6 +174285,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -172334,6 +174317,7 @@
         "value": 90
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -172367,6 +174351,7 @@
         "value": 95
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -172400,6 +174385,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -172433,6 +174419,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -172466,6 +174453,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 1,
       "target": "normal",
       "flags": [
@@ -172497,6 +174485,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -172529,6 +174518,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -172560,6 +174550,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -172594,6 +174585,7 @@
         "value": 95
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -172625,6 +174617,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -172657,6 +174650,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -172688,6 +174682,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -172719,6 +174714,7 @@
         "value": 50
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -172749,6 +174745,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "normal",
       "flags": [],
@@ -172776,6 +174773,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -172807,6 +174805,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -172837,6 +174836,7 @@
         "kind": "always"
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -172868,6 +174868,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 1,
       "target": "all",
       "flags": [
@@ -172896,6 +174897,7 @@
         "kind": "always"
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -172926,6 +174928,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -172958,6 +174961,7 @@
         "value": 75
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -172990,6 +174994,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -173021,6 +175026,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -173054,6 +175060,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 1,
       "target": "normal",
       "flags": [
@@ -173086,6 +175093,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -173117,6 +175125,7 @@
         "value": 95
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -173149,6 +175158,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allies",
       "flags": [
@@ -173180,6 +175190,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -173212,6 +175223,7 @@
         "value": 80
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -173243,6 +175255,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 4,
       "target": "self",
       "flags": [
@@ -173274,6 +175287,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -173305,6 +175319,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -173338,6 +175353,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -173369,6 +175385,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -173399,6 +175416,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -173431,6 +175449,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -173463,6 +175482,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -173494,6 +175514,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacent",
       "flags": [
@@ -173525,6 +175546,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -173556,6 +175578,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -173589,6 +175612,7 @@
         "value": 90
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -173620,6 +175644,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -173651,6 +175676,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -173687,6 +175713,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -173719,6 +175746,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -173750,6 +175778,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -173779,6 +175808,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -173810,6 +175840,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allies",
       "flags": [
@@ -173841,6 +175872,7 @@
         "value": 90
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -173873,6 +175905,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allySide",
       "flags": [
@@ -173902,6 +175935,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "normal",
       "flags": [],
@@ -173929,6 +175963,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -173960,6 +175995,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -173991,6 +176027,7 @@
         "value": 75
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -174023,6 +176060,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -174055,6 +176093,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -174086,6 +176125,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allySide",
       "flags": [
@@ -174116,6 +176156,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -174146,6 +176187,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allies",
       "flags": [
@@ -174176,6 +176218,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -174208,6 +176251,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -174240,6 +176284,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -174271,6 +176316,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 1,
       "target": "normal",
       "flags": [
@@ -174303,6 +176349,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -174334,6 +176381,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -174370,6 +176418,7 @@
         "kind": "always"
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 4,
       "target": "self",
       "flags": [
@@ -174399,6 +176448,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -174432,6 +176482,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "all",
       "flags": [
@@ -174462,6 +176513,7 @@
         "value": 75
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -174492,6 +176544,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -174523,6 +176576,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allySide",
       "flags": [
@@ -174554,6 +176608,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -174585,6 +176640,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacent",
       "flags": [
@@ -174617,6 +176673,7 @@
         "value": 95
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -174646,6 +176703,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -174676,6 +176734,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -174706,6 +176765,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allySide",
       "flags": [
@@ -174738,6 +176798,7 @@
         "value": 90
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -174773,6 +176834,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -174799,6 +176861,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -174825,6 +176888,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -174851,6 +176915,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -174877,6 +176942,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -174903,6 +176969,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 4,
       "target": "self",
       "flags": [],
@@ -174929,6 +176996,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -174955,6 +177023,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -174981,6 +177050,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -175007,6 +177077,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -175033,6 +177104,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -175059,6 +177131,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -175085,6 +177158,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -175111,6 +177185,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -175137,6 +177212,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -175163,6 +177239,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -175189,6 +177266,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -175215,6 +177293,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -175241,6 +177320,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [],
@@ -175267,6 +177347,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -175297,6 +177378,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -175326,6 +177408,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentFoe",
       "flags": [
@@ -175363,6 +177446,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -175398,6 +177482,7 @@
         "value": 85
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -175430,6 +177515,7 @@
         "value": 75
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -175462,6 +177548,7 @@
         "value": 85
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -175495,6 +177582,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -175525,6 +177613,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "normal",
       "flags": [],
@@ -175552,6 +177641,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "scripted",
       "flags": [
@@ -175584,6 +177674,7 @@
         "value": 95
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -175617,6 +177708,7 @@
         "value": 85
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -175652,6 +177744,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -175684,6 +177777,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -175716,6 +177810,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -175748,6 +177843,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -175782,6 +177878,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -175813,6 +177910,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "adjacentAllyOrSelf",
       "flags": [
@@ -175843,6 +177941,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -175880,6 +177979,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacent",
       "flags": [
@@ -175909,6 +178009,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -175939,6 +178040,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -175968,6 +178070,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -176001,6 +178104,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": -5,
       "target": "scripted",
       "flags": [
@@ -176031,6 +178135,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -176065,6 +178170,7 @@
         "value": 85
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -176095,6 +178201,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allySide",
       "flags": [
@@ -176125,6 +178232,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -176157,6 +178265,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacent",
       "flags": [
@@ -176187,6 +178296,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "all",
       "flags": [
@@ -176217,6 +178327,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -176248,6 +178359,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -176277,6 +178389,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -176307,6 +178420,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -176338,6 +178452,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -176370,6 +178485,7 @@
         "value": 85
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -176401,6 +178517,7 @@
         "value": 85
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -176433,6 +178550,7 @@
         "value": 85
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -176465,6 +178583,7 @@
         "value": 95
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -176496,6 +178615,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -176526,6 +178646,7 @@
         "kind": "always"
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "all",
       "flags": [
@@ -176556,6 +178677,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -176588,6 +178710,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -176619,6 +178742,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -176649,6 +178773,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -176679,6 +178804,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -176709,6 +178835,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -176743,6 +178870,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -176773,6 +178901,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -176804,6 +178933,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "normal",
       "flags": [],
@@ -176831,6 +178961,7 @@
         "value": 95
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -176862,6 +178993,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -176893,6 +179025,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -176926,6 +179059,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -176959,6 +179093,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -176990,6 +179125,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -177023,6 +179159,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -177053,6 +179190,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -177090,6 +179228,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -177122,6 +179261,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "any",
       "flags": [
@@ -177158,6 +179298,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 4,
       "target": "self",
       "flags": [
@@ -177186,6 +179327,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "normal",
       "flags": [],
@@ -177213,6 +179355,7 @@
         "value": 85
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -177245,6 +179388,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -177275,6 +179419,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -177309,6 +179454,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -177340,6 +179486,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -177369,6 +179516,7 @@
         "value": 85
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -177400,6 +179548,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "randomNormal",
       "flags": [
@@ -177433,6 +179582,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -177465,6 +179615,7 @@
         "value": 90
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -177495,6 +179646,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -177527,6 +179679,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -177557,6 +179710,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacent",
       "flags": [
@@ -177592,6 +179746,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -177626,6 +179781,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -177658,6 +179814,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -177689,6 +179846,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "any",
       "flags": [
@@ -177721,6 +179879,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "all",
       "flags": [
@@ -177753,6 +179912,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacent",
       "flags": [
@@ -177785,6 +179945,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "randomNormal",
       "flags": [
@@ -177819,6 +179980,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -177854,6 +180016,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -177883,6 +180046,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -177913,6 +180077,7 @@
         "value": 95
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -177947,6 +180112,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -177978,6 +180144,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -178010,6 +180177,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -178042,6 +180210,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "any",
       "flags": [
@@ -178075,6 +180244,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -178108,6 +180278,7 @@
         "value": 90
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -178140,6 +180311,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -178172,6 +180344,7 @@
         "value": 75
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -178205,6 +180378,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -178236,6 +180410,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -178268,6 +180443,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -178300,6 +180476,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -178333,6 +180510,7 @@
         "value": 90
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -178364,6 +180542,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -178399,6 +180578,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -178430,6 +180610,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -178462,6 +180643,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 1,
       "target": "normal",
       "flags": [
@@ -178496,6 +180678,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -178527,6 +180710,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -178557,6 +180741,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -178585,6 +180770,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -178615,6 +180801,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -178647,6 +180834,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -178677,6 +180865,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -178709,6 +180898,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -178742,6 +180932,7 @@
         "value": 85
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -178774,6 +180965,7 @@
         "value": 85
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -178805,6 +180997,7 @@
         "value": 90
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -178836,6 +181029,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -178867,6 +181061,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 4,
       "target": "self",
       "flags": [
@@ -178897,6 +181092,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -178928,6 +181124,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -178961,6 +181158,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -178992,6 +181190,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -179025,6 +181224,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -179057,6 +181257,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "all",
       "flags": [
@@ -179087,6 +181288,7 @@
         "value": 90
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -179118,6 +181320,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -179150,6 +181353,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -179180,6 +181384,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -179211,6 +181416,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -179243,6 +181449,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -179274,6 +181481,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -179305,6 +181513,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -179335,6 +181544,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -179364,6 +181574,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -179395,6 +181606,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -179427,6 +181639,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -179459,6 +181672,7 @@
         "value": 90
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -179491,6 +181705,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -179521,6 +181736,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 1,
       "target": "normal",
       "flags": [
@@ -179552,6 +181768,7 @@
         "kind": "always"
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 3,
       "target": "allySide",
       "flags": [
@@ -179580,6 +181797,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -179611,6 +181829,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -179643,6 +181862,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -179674,6 +181894,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 2,
       "target": "self",
       "flags": [
@@ -179705,6 +181926,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -179736,6 +181958,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "randomNormal",
       "flags": [
@@ -179765,6 +181988,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "all",
       "flags": [
@@ -179794,6 +182018,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -179826,6 +182051,7 @@
         "value": 95
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -179858,6 +182084,7 @@
         "value": 95
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -179891,6 +182118,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -179924,6 +182152,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -179954,6 +182183,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -179983,6 +182213,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allySide",
       "flags": [
@@ -180012,6 +182243,7 @@
         "kind": "always"
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -180043,6 +182275,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -180073,6 +182306,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -180104,6 +182338,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -180135,6 +182370,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -180167,6 +182403,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -180199,6 +182436,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -180231,6 +182469,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": -4,
       "target": "normal",
       "flags": [
@@ -180263,6 +182502,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -180294,6 +182534,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -180324,6 +182565,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -180354,6 +182596,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": -6,
       "target": "normal",
       "flags": [
@@ -180390,6 +182633,7 @@
         "value": 90
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -180422,6 +182666,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -180457,6 +182702,7 @@
         "value": 85
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -180488,6 +182734,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -180518,6 +182765,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -180549,6 +182797,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -180581,6 +182830,7 @@
         "value": 90
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -180612,6 +182862,7 @@
         "value": 95
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -180643,6 +182894,7 @@
         "value": 90
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -180675,6 +182927,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -180706,6 +182959,7 @@
         "value": 85
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -180738,6 +182992,7 @@
         "value": 90
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -180771,6 +183026,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -180801,6 +183057,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "all",
       "flags": [
@@ -180832,6 +183089,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -180865,6 +183123,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -180895,6 +183154,7 @@
         "value": 95
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -180927,6 +183187,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -180959,6 +183220,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allySide",
       "flags": [
@@ -180989,6 +183251,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -181019,6 +183282,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -181051,6 +183315,7 @@
         "value": 80
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -181082,6 +183347,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "all",
       "flags": [
@@ -181112,6 +183378,7 @@
         "value": 85
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -181143,6 +183410,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -181173,6 +183441,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "normal",
       "flags": [],
@@ -181200,6 +183469,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -181232,6 +183502,7 @@
         "value": 90
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -181266,6 +183537,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -181299,6 +183571,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -181331,6 +183604,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -181363,6 +183637,7 @@
         "value": 85
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -181398,6 +183673,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacent",
       "flags": [
@@ -181429,6 +183705,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -181458,6 +183735,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -181489,6 +183767,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -181520,6 +183799,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -181552,6 +183832,7 @@
         "value": 85
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -181583,6 +183864,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -181618,6 +183900,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacent",
       "flags": [
@@ -181650,6 +183933,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -181682,6 +183966,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -181713,6 +183998,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -181746,6 +184032,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -181780,6 +184067,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -181813,6 +184101,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 1,
       "target": "normal",
       "flags": [
@@ -181845,6 +184134,7 @@
         "value": 95
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -181875,6 +184165,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -181904,6 +184195,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "normal",
       "flags": [],
@@ -181930,6 +184222,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [],
@@ -181957,6 +184250,7 @@
         "value": 30
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -181988,6 +184282,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -182018,6 +184313,7 @@
         "kind": "always"
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -182048,6 +184344,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": -3,
       "target": "allAdjacentFoes",
       "flags": [
@@ -182081,6 +184378,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -182110,6 +184408,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -182139,6 +184438,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -182169,6 +184469,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -182200,6 +184501,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -182230,6 +184532,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 4,
       "target": "self",
       "flags": [],
@@ -182257,6 +184560,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -182288,6 +184592,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -182321,6 +184626,7 @@
         "value": 55
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -182354,6 +184660,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "normal",
       "flags": [],
@@ -182381,6 +184688,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -182412,6 +184720,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -182448,6 +184757,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -182481,6 +184791,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -182513,6 +184824,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -182548,6 +184860,7 @@
         "value": 90
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "any",
       "flags": [
@@ -182583,6 +184896,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "any",
       "flags": [
@@ -182621,6 +184935,7 @@
         "value": 90
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -182653,6 +184968,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -182684,6 +185000,7 @@
         "value": 75
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -182717,6 +185034,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -182750,6 +185068,7 @@
         "value": 75
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -182782,6 +185101,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -182816,6 +185136,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -182847,6 +185168,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -182879,6 +185201,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacent",
       "flags": [
@@ -182910,6 +185233,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -182941,6 +185265,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -182973,6 +185298,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -183005,6 +185331,7 @@
         "value": 70
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -183036,6 +185363,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -183068,6 +185396,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -183099,6 +185428,7 @@
         "value": 95
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -183130,6 +185460,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 4,
       "target": "self",
       "flags": [
@@ -183162,6 +185493,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -183193,6 +185525,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -183224,6 +185557,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "all",
       "flags": [],
@@ -183251,6 +185585,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -183283,6 +185618,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -183314,6 +185650,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -183348,6 +185685,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -183384,6 +185722,7 @@
         "value": 90
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -183417,6 +185756,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -183446,6 +185786,7 @@
         "value": 95
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -183477,6 +185818,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -183509,6 +185851,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacent",
       "flags": [
@@ -183542,6 +185885,7 @@
         "value": 85
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -183572,6 +185916,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -183603,6 +185948,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -183635,6 +185981,7 @@
         "kind": "always"
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -183665,6 +186012,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -183697,6 +186045,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -183730,6 +186079,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "foeSide",
       "flags": [
@@ -183761,6 +186111,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 4,
       "target": "self",
       "flags": [
@@ -183791,6 +186142,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -183823,6 +186175,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -183854,6 +186207,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -183885,6 +186239,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -183918,6 +186273,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -183947,6 +186303,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -183976,6 +186333,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "normal",
       "flags": [],
@@ -184003,6 +186361,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -184033,6 +186392,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -184065,6 +186425,7 @@
         "kind": "always"
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 3,
       "target": "normal",
       "flags": [
@@ -184098,6 +186459,7 @@
         "value": 80
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -184128,6 +186490,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "foeSide",
       "flags": [
@@ -184159,6 +186522,7 @@
         "value": 95
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -184190,6 +186554,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -184223,6 +186588,7 @@
         "value": 95
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -184253,6 +186619,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -184285,6 +186652,7 @@
         "value": 90
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -184316,6 +186684,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "foeSide",
       "flags": [
@@ -184345,6 +186714,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -184374,6 +186744,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "normal",
       "flags": [],
@@ -184401,6 +186772,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -184435,6 +186807,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -184467,6 +186840,7 @@
         "value": 90
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -184500,6 +186874,7 @@
         "value": 80
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -184531,6 +186906,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -184562,6 +186938,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -184594,6 +186971,7 @@
         "value": 95
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -184624,6 +187002,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -184656,6 +187035,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -184689,6 +187069,7 @@
         "value": 95
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -184720,6 +187101,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "randomNormal",
       "flags": [
@@ -184758,6 +187140,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -184788,6 +187171,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -184818,6 +187202,7 @@
         "value": 75
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -184851,6 +187236,7 @@
         "value": 80
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -184885,6 +187271,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -184915,6 +187302,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "normal",
       "flags": [],
@@ -184942,6 +187330,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 1,
       "target": "normal",
       "flags": [
@@ -184973,6 +187362,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "all",
       "flags": [
@@ -185002,6 +187392,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -185033,6 +187424,7 @@
         "value": 95
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -185066,6 +187458,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -185098,6 +187491,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -185130,6 +187524,7 @@
         "value": 55
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -185163,6 +187558,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "normal",
       "flags": [],
@@ -185190,6 +187586,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacent",
       "flags": [
@@ -185222,6 +187619,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -185257,6 +187655,7 @@
         "value": 85
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -185289,6 +187688,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -185320,6 +187720,7 @@
         "value": 75
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -185352,6 +187753,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -185383,6 +187785,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -185414,6 +187817,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -185446,6 +187850,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -185477,6 +187882,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacent",
       "flags": [
@@ -185507,6 +187913,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -185538,6 +187945,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -185569,6 +187977,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -185604,6 +188013,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -185635,6 +188045,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -185665,6 +188076,7 @@
         "value": 85
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -185700,6 +188112,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -185731,6 +188144,7 @@
         "kind": "always"
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allySide",
       "flags": [
@@ -185762,6 +188176,7 @@
         "value": 85
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -185796,6 +188211,7 @@
         "kind": "always"
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -185826,6 +188242,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -185858,6 +188275,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -185890,6 +188308,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -185920,6 +188339,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "all",
       "flags": [
@@ -185950,6 +188370,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -185979,6 +188400,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "normal",
       "flags": [],
@@ -186006,6 +188428,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacent",
       "flags": [
@@ -186037,6 +188460,7 @@
         "kind": "always"
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -186070,6 +188494,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": -6,
       "target": "self",
       "flags": [
@@ -186099,6 +188524,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -186131,6 +188557,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -186163,6 +188590,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -186197,6 +188625,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -186229,6 +188658,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -186263,6 +188693,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -186294,6 +188725,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -186325,6 +188757,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "randomNormal",
       "flags": [
@@ -186358,6 +188791,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -186390,6 +188824,7 @@
         "value": 70
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -186421,6 +188856,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -186452,6 +188888,7 @@
         "value": 90
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -186482,6 +188919,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 1,
       "target": "normal",
       "flags": [
@@ -186513,6 +188951,7 @@
         "value": 95
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -186546,6 +188985,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -186577,6 +189017,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -186610,6 +189051,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -186641,6 +189083,7 @@
         "value": 90
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -186673,6 +189116,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -186705,6 +189149,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [],
@@ -186731,6 +189176,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -186764,6 +189210,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -186797,6 +189244,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -186830,6 +189278,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -186861,6 +189310,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "foeSide",
       "flags": [
@@ -186893,6 +189343,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -186925,6 +189376,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -186955,6 +189407,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -186989,6 +189442,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -187020,6 +189474,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -187053,6 +189508,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -187085,6 +189541,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": -7,
       "target": "all",
       "flags": [
@@ -187115,6 +189572,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -187146,6 +189604,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -187181,6 +189640,7 @@
         "value": 95
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -187216,6 +189676,7 @@
         "value": 90
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -187251,6 +189712,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -187282,6 +189744,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -187314,6 +189777,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -187347,6 +189811,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -187380,6 +189845,7 @@
         "kind": "always"
       },
       "pp": 1,
+      "no_pp_boosts": true,
       "priority": 0,
       "target": "normal",
       "flags": [],
@@ -187407,6 +189873,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -187439,6 +189906,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 3,
       "target": "normal",
       "flags": [
@@ -187471,6 +189939,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "randomNormal",
       "flags": [
@@ -187506,6 +189975,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -187538,6 +190008,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 1,
       "target": "normal",
       "flags": [
@@ -187569,6 +190040,7 @@
         "value": 95
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -187599,6 +190071,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -187630,6 +190103,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -187662,6 +190136,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -187692,6 +190167,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -187723,6 +190199,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -187755,6 +190232,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -187786,6 +190264,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": -1,
       "target": "normal",
       "flags": [
@@ -187818,6 +190297,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -187849,6 +190329,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -187884,6 +190365,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -187916,6 +190398,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -187948,6 +190431,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -187979,6 +190463,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -188012,6 +190497,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "any",
       "flags": [
@@ -188045,6 +190531,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 1,
       "target": "normal",
       "flags": [
@@ -188078,6 +190565,7 @@
         "kind": "always"
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "all",
       "flags": [
@@ -188108,6 +190596,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -188139,6 +190628,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -188174,6 +190664,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -188206,6 +190697,7 @@
         "value": 85
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -188236,6 +190728,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": -6,
       "target": "normal",
       "flags": [
@@ -188272,6 +190765,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -188304,6 +190798,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -188340,6 +190835,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 3,
       "target": "allySide",
       "flags": [
@@ -188369,6 +190865,7 @@
         "value": 80
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "allAdjacentFoes",
       "flags": [
@@ -188401,6 +190898,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -188436,6 +190934,7 @@
         "value": 85
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -188468,6 +190967,7 @@
         "value": 100
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "any",
       "flags": [
@@ -188500,6 +191000,7 @@
         "kind": "always"
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -188530,6 +191031,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -188559,6 +191061,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "all",
       "flags": [
@@ -188589,6 +191092,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -188623,6 +191127,7 @@
         "kind": "always"
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "self",
       "flags": [
@@ -188653,6 +191158,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -188686,6 +191192,7 @@
         "value": 90
       },
       "pp": 20,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -188718,6 +191225,7 @@
         "value": 100
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -188750,6 +191258,7 @@
         "value": 100
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -188782,6 +191291,7 @@
         "kind": "always"
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -188814,6 +191324,7 @@
         "value": 50
       },
       "pp": 5,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -188846,6 +191357,7 @@
         "value": 90
       },
       "pp": 15,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -188878,6 +191390,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 0,
       "target": "normal",
       "flags": [
@@ -188910,6 +191423,7 @@
         "value": 100
       },
       "pp": 10,
+      "no_pp_boosts": false,
       "priority": 2,
       "target": "normal",
       "flags": [

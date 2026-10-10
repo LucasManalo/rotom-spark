@@ -7,7 +7,7 @@ const SHOWDOWN_COMMIT: &str = "b79ce06d06b8f0dc8de8bb348bc9cab5d931553f";
 fn generated_data_has_expected_source_and_format() {
     let data = champions_reg_mc().expect("checked-in data should match the Rust schema");
 
-    assert_eq!(data.schema_version, 2);
+    assert_eq!(data.schema_version, 3);
     assert_eq!(data.source.commit, SHOWDOWN_COMMIT);
     assert_eq!(data.format.id, "gen9championsvgc2026regmc");
     assert_eq!(data.format.mod_name, "champions");
@@ -19,6 +19,7 @@ fn generated_data_has_expected_source_and_format() {
     assert_eq!(data.format.ev_limit, Some(66));
     assert_eq!(data.species.len(), 1_518);
     assert_eq!(data.forms.len(), 397);
+    assert_eq!(data.types.len(), 19);
     assert_eq!(data.moves.len(), 954);
     assert_eq!(data.items.len(), 583);
     assert_eq!(data.abilities.len(), 321);
@@ -35,6 +36,10 @@ fn generated_collections_are_sorted_and_unique() {
             .map(|entry| entry.id.as_str())
             .collect::<Vec<_>>(),
         data.forms
+            .iter()
+            .map(|entry| entry.id.as_str())
+            .collect::<Vec<_>>(),
+        data.types
             .iter()
             .map(|entry| entry.id.as_str())
             .collect::<Vec<_>>(),

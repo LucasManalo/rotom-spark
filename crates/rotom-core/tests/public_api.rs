@@ -1,7 +1,8 @@
 use rotom_core::{
-    AbilityId, ActionOrder, ActionQueue, BattlePhase, BattleRng, BattleState, ConditionId,
-    FieldState, FormId, Gender, ItemId, MoveId, NatureId, PokemonSet, QueuedAction, RngReason,
-    SideId, SideState, SpeciesId, StatAllocation, TeamDefinition, TeamState,
+    AbilityId, ActionOrder, ActionQueue, BattlePhase, BattleRng, BattleState, CombatMove,
+    ConditionId, DamageResult, FieldState, FormId, Gender, ItemId, MoveId, NatureId, PokemonSet,
+    PokemonType, QueuedAction, RngReason, SideId, SideState, SpeciesId, StatAllocation,
+    TeamDefinition, TeamState, TurnResolution,
 };
 
 #[test]
@@ -30,4 +31,8 @@ fn foundational_types_are_available_from_the_crate_root() {
     let _: ActionQueue = ActionQueue::default();
     let _: ActionOrder = ActionOrder::Move;
     let _: Option<QueuedAction> = None;
+    let _: Option<CombatMove> = None;
+    let _: Option<DamageResult> = None;
+    let _: Option<PokemonType> = None;
+    let _: TurnResolution = TurnResolution::default();
 }

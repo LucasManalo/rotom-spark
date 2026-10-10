@@ -13,6 +13,9 @@ Typed legal-action enumeration and battle-owned deterministic RNG with optional
 diagnostic tracing are also available. Normal turn choices can now be expanded
 into an inspectable priority/speed-ordered action queue with deterministic
 speed-tie handling.
+The first vertical combat slice now resolves a deliberately small set of
+ordinary physical and special attacks with Champions stats, accuracy, PP,
+critical and damage rolls, STAB, type effectiveness, HP loss, and fainting.
 
 ## Workspace
 

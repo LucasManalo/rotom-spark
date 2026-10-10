@@ -11,6 +11,7 @@ pub struct DexData {
     pub format: FormatData,
     pub species: Vec<SpeciesData>,
     pub forms: Vec<FormData>,
+    pub types: Vec<TypeData>,
     pub moves: Vec<MoveData>,
     pub items: Vec<ItemData>,
     pub abilities: Vec<AbilityData>,
@@ -43,6 +44,11 @@ impl DexData {
     pub fn resolve_move(&self, key: &str) -> Option<(MoveId, &MoveData)> {
         resolve(&self.moves, key, |entry| entry.id.as_str())
             .and_then(|(index, entry)| Some((MoveId::new(u32::try_from(index).ok()?), entry)))
+    }
+
+    #[must_use]
+    pub fn resolve_type(&self, key: &str) -> Option<&TypeData> {
+        resolve(&self.types, key, |entry| entry.id.as_str()).map(|(_, entry)| entry)
     }
 
     #[must_use]
@@ -224,6 +230,14 @@ pub struct Stats {
     pub spe: u16,
 }
 
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct TypeData {
+    pub id: String,
+    pub name: String,
+    pub damage_taken: Vec<KeyValue<u8>>,
+}
+
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct GenderRatio {
@@ -251,6 +265,7 @@ pub struct MoveData {
     pub base_power: u16,
     pub accuracy: Accuracy,
     pub pp: u8,
+    pub no_pp_boosts: bool,
     pub priority: i8,
     pub target: MoveTarget,
     pub flags: Vec<String>,

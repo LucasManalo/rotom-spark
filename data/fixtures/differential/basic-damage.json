@@ -1,0 +1,111 @@
+{
+  "showdown_commit": "b79ce06d06b8f0dc8de8bb348bc9cab5d931553f",
+  "format": "gen9championsvgc2026regmc",
+  "random": {
+    "critical": false,
+    "damage_percent": 100
+  },
+  "cases": [
+    {
+      "name": "dragon-pulse-neutral-stab",
+      "move": "dragonpulse",
+      "source": {
+        "species": "goodra",
+        "level": 50,
+        "stats": {
+          "atk": 108,
+          "def": 90,
+          "spa": 178,
+          "spd": 170,
+          "spe": 100
+        },
+        "types": [
+          "Dragon"
+        ]
+      },
+      "target": {
+        "species": "arcanine",
+        "max_hp": 197,
+        "stats": {
+          "atk": 130,
+          "def": 100,
+          "spa": 120,
+          "spd": 100,
+          "spe": 115
+        },
+        "types": [
+          "Fire"
+        ]
+      },
+      "damage": 102
+    },
+    {
+      "name": "power-gem-quad-effective-stab",
+      "move": "powergem",
+      "source": {
+        "species": "glimmora",
+        "level": 50,
+        "stats": {
+          "atk": 67,
+          "def": 110,
+          "spa": 200,
+          "spd": 101,
+          "spe": 106
+        },
+        "types": [
+          "Rock",
+          "Poison"
+        ]
+      },
+      "target": {
+        "species": "charizard",
+        "max_hp": 185,
+        "stats": {
+          "atk": 104,
+          "def": 98,
+          "spa": 129,
+          "spd": 105,
+          "spe": 120
+        },
+        "types": [
+          "Fire",
+          "Flying"
+        ]
+      },
+      "damage": 412
+    },
+    {
+      "name": "high-horsepower-super-effective-stab",
+      "move": "highhorsepower",
+      "source": {
+        "species": "mudsdale",
+        "level": 50,
+        "stats": {
+          "atk": 194,
+          "def": 120,
+          "spa": 67,
+          "spd": 105,
+          "spe": 55
+        },
+        "types": [
+          "Ground"
+        ]
+      },
+      "target": {
+        "species": "arcanine",
+        "max_hp": 197,
+        "stats": {
+          "atk": 130,
+          "def": 100,
+          "spa": 120,
+          "spd": 100,
+          "spe": 115
+        },
+        "types": [
+          "Fire"
+        ]
+      },
+      "damage": 248
+    }
+  ]
+}

@@ -4,6 +4,7 @@
 //! exact Pokémon Showdown revision recorded in `SHOWDOWN_VERSION`. Showdown is
 //! development tooling only and is never loaded by this crate.
 
+mod combat;
 mod error;
 mod model;
 
@@ -11,7 +12,7 @@ pub use error::DexLoadError;
 pub use model::{
     AbilityData, Accuracy, ComplexBan, Damage, DexData, Fling, FormData, FormatData, Fraction,
     GenderRatio, ItemData, ItemFlag, KeyValue, MoveData, MultiHit, NaturalGift, NatureData,
-    RuleEntry, SourceMetadata, SpeciesData, Stats, ValueRule,
+    RuleEntry, SourceMetadata, SpeciesData, Stats, TypeData, ValueRule,
 };
 
 const CHAMPIONS_REG_MC_JSON: &str = include_str!("../../../data/generated/champions-reg-mc.json");

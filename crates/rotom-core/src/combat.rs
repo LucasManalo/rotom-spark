@@ -1,0 +1,669 @@
+use crate::{
+    ActionTarget, ActiveSlot, BattleError, BattlePhase, BattleState, FaintTarget, FormId, MoveId,
+    MoveSlotIndex, MoveTarget, PokemonAction, PokemonIndex, PokemonState, RngReason, SideId,
+    SpeciesId,
+};
+use serde::{Deserialize, Serialize};
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PokemonType {
+    Bug,
+    Dark,
+    Dragon,
+    Electric,
+    Fairy,
+    Fighting,
+    Fire,
+    Flying,
+    Ghost,
+    Grass,
+    Ground,
+    Ice,
+    Normal,
+    Poison,
+    Psychic,
+    Rock,
+    Steel,
+    Stellar,
+    Water,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum MoveCategory {
+    Physical,
+    Special,
+    Status,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(tag = "kind", rename_all = "snake_case")]
+pub enum MoveAccuracy {
+    Always,
+    Percent { value: u8 },
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum MoveSupport {
+    BasicDamage,
+    Unsupported,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct CombatMove {
+    pub move_type: PokemonType,
+    pub category: MoveCategory,
+    pub base_power: u16,
+    pub accuracy: MoveAccuracy,
+    pub crit_ratio: u8,
+    pub target: MoveTarget,
+    pub support: MoveSupport,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct PokemonTypes {
+    pub primary: PokemonType,
+    pub secondary: Option<PokemonType>,
+}
+
+/// Static battle data consumed by mechanics without coupling `rotom-core` to a Dex implementation.
+pub trait CombatData {
+    fn move_data(&self, move_id: MoveId) -> Option<CombatMove>;
+    fn pokemon_types(&self, species: SpeciesId, form: Option<FormId>) -> Option<PokemonTypes>;
+    /// Returns Showdown's type modifier: `1` weak, `-1` resist, and `None` immune.
+    fn type_modifier(&self, attacking: PokemonType, defending: PokemonType) -> Option<i8>;
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct Modifier {
+    pub numerator: u16,
+    pub denominator: u16,
+}
+
+impl Modifier {
+    pub const NEUTRAL: Self = Self {
+        numerator: 1,
+        denominator: 1,
+    };
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct DamageResult {
+    pub base_damage: u32,
+    pub attack_stat: u32,
+    pub defense_stat: u32,
+    pub stab_modifier: Modifier,
+    /// Combined dual-type modifier. A zero numerator denotes immunity.
+    pub type_modifier: Modifier,
+    pub critical_modifier: Modifier,
+    pub random_modifier: Modifier,
+    pub final_damage: u16,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(tag = "kind", rename_all = "snake_case")]
+pub enum ResolvedAction {
+    Switched {
+        side: SideId,
+        slot: ActiveSlot,
+        incoming: PokemonIndex,
+    },
+    Missed {
+        side: SideId,
+        slot: ActiveSlot,
+        move_slot: MoveSlotIndex,
+    },
+    Damaged {
+        side: SideId,
+        slot: ActiveSlot,
+        target_side: SideId,
+        target_slot: ActiveSlot,
+        move_slot: MoveSlotIndex,
+        damage: DamageResult,
+    },
+    Skipped {
+        side: SideId,
+        slot: ActiveSlot,
+    },
+}
+
+#[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct TurnResolution {
+    pub actions: Vec<ResolvedAction>,
+}
+
+impl BattleState {
+    /// Resolves the queued normal turn transactionally using static combat data.
+    ///
+    /// If unsupported or inconsistent data is encountered, the original battle
+    /// remains unchanged, including its RNG stream.
+    ///
+    /// # Errors
+    ///
+    /// Returns an illegal-choice error outside resolution, an explicit
+    /// unsupported-mechanic error for mechanics outside this slice, or a data
+    /// or state error when referenced combat state is inconsistent.
+    pub fn resolve_turn<D: CombatData>(&mut self, data: &D) -> Result<TurnResolution, BattleError> {
+        if self.phase != BattlePhase::ResolvingTurn {
+            return Err(BattleError::IllegalChoice(format!(
+                "cannot resolve a turn during {:?}",
+                self.phase
+            )));
+        }
+        let mut next = self.clone();
+        let result = next.resolve_turn_inner(data)?;
+        *self = next;
+        Ok(result)
+    }
+
+    fn resolve_turn_inner<D: CombatData>(
+        &mut self,
+        data: &D,
+    ) -> Result<TurnResolution, BattleError> {
+        let queued = self.queue.actions.clone();
+        let mut resolution = TurnResolution::default();
+        for action in queued {
+            if self.phase == BattlePhase::BattleEnd {
+                break;
+            }
+            if self.side(action.side).active[action.slot.index()] != Some(action.pokemon) {
+                resolution.actions.push(ResolvedAction::Skipped {
+                    side: action.side,
+                    slot: action.slot,
+                });
+                continue;
+            }
+            match action.choice {
+                PokemonAction::Switch { pokemon } => {
+                    self.resolve_queued_switch(action.side, action.slot, pokemon)?;
+                    resolution.actions.push(ResolvedAction::Switched {
+                        side: action.side,
+                        slot: action.slot,
+                        incoming: pokemon,
+                    });
+                }
+                PokemonAction::Move {
+                    move_slot,
+                    target,
+                    mega: false,
+                } => {
+                    self.resolve_basic_move(
+                        data,
+                        action.side,
+                        action.slot,
+                        move_slot,
+                        target,
+                        &mut resolution,
+                    )?;
+                }
+                PokemonAction::Move { mega: true, .. } => {
+                    return Err(BattleError::UnsupportedMechanic(
+                        "Mega Evolution resolution is deferred".to_owned(),
+                    ));
+                }
+                PokemonAction::Struggle => {
+                    return Err(BattleError::UnsupportedMechanic(
+                        "Struggle resolution is deferred".to_owned(),
+                    ));
+                }
+                PokemonAction::Pass => {}
+            }
+        }
+
+        self.queue.actions.clear();
+        if self.phase != BattlePhase::BattleEnd {
+            self.turn = self.turn.checked_add(1).ok_or_else(|| {
+                BattleError::InvalidState("battle turn counter overflowed".to_owned())
+            })?;
+            if self.phase == BattlePhase::ResolvingTurn {
+                self.phase = BattlePhase::TurnSelection;
+            }
+        }
+        Ok(resolution)
+    }
+
+    fn resolve_basic_move<D: CombatData>(
+        &mut self,
+        data: &D,
+        side: SideId,
+        slot: ActiveSlot,
+        move_slot: MoveSlotIndex,
+        target: ActionTarget,
+        resolution: &mut TurnResolution,
+    ) -> Result<(), BattleError> {
+        let source_index = self.side(side).active[slot.index()].ok_or_else(|| {
+            BattleError::InvalidState("queued move source is no longer active".to_owned())
+        })?;
+        let (move_id, source_species, source_form) = {
+            let source = self.side(side).pokemon(source_index).ok_or_else(|| {
+                BattleError::InvalidState("queued move source is out of bounds".to_owned())
+            })?;
+            let move_state = source
+                .moves
+                .get(usize::from(move_slot.get()))
+                .ok_or_else(|| {
+                    BattleError::InvalidState("move slot is out of bounds".to_owned())
+                })?;
+            if move_state.pp == 0 {
+                return Err(BattleError::InvalidState(
+                    "queued move has no remaining PP".to_owned(),
+                ));
+            }
+            (move_state.move_id, source.species, source.form)
+        };
+        let move_data = data.move_data(move_id).ok_or_else(|| {
+            BattleError::DataMismatch(format!("missing combat data for move {move_id}"))
+        })?;
+        validate_basic_move(move_id, move_data)?;
+        let (target_side, target_slot) = resolve_target(side, slot, target)?;
+        let target_index = self.side(target_side).active[target_slot.index()].ok_or_else(|| {
+            BattleError::UnsupportedMechanic(
+                "retargeting after an empty or fainted target is deferred".to_owned(),
+            )
+        })?;
+
+        self.side_mut(side)
+            .pokemon_mut(source_index)
+            .and_then(|source| source.moves.get_mut(usize::from(move_slot.get())))
+            .ok_or_else(|| BattleError::InvalidState("move slot became invalid".to_owned()))?
+            .pp -= 1;
+
+        if !self.check_accuracy(
+            move_data.accuracy,
+            side,
+            source_index,
+            target_side,
+            target_index,
+        )? {
+            resolution.actions.push(ResolvedAction::Missed {
+                side,
+                slot,
+                move_slot,
+            });
+            return Ok(());
+        }
+
+        let critical = roll_critical(&mut self.rng, move_data.crit_ratio)?;
+        let random_percent = u8::try_from(self.rng.range(RngReason::DamageRoll, 85..101)?)
+            .map_err(|_| BattleError::InvalidState("damage roll does not fit in u8".to_owned()))?;
+        let source_types = data
+            .pokemon_types(source_species, source_form)
+            .ok_or_else(|| BattleError::DataMismatch("missing source type data".to_owned()))?;
+        let target_state = self
+            .side(target_side)
+            .pokemon(target_index)
+            .ok_or_else(|| {
+                BattleError::InvalidState("damage target is out of bounds".to_owned())
+            })?;
+        let target_types = data
+            .pokemon_types(target_state.species, target_state.form)
+            .ok_or_else(|| BattleError::DataMismatch("missing target type data".to_owned()))?;
+        let type_exponent = combined_type_modifier(data, move_data.move_type, target_types)?;
+        let source_state = self.side(side).pokemon(source_index).ok_or_else(|| {
+            BattleError::InvalidState("damage source is out of bounds".to_owned())
+        })?;
+        let damage = calculate_damage(
+            source_state,
+            target_state,
+            move_data,
+            source_types,
+            type_exponent,
+            critical,
+            random_percent,
+        )?;
+        resolution.actions.push(ResolvedAction::Damaged {
+            side,
+            slot,
+            target_side,
+            target_slot,
+            move_slot,
+            damage,
+        });
+        self.apply_damage(target_side, target_slot, target_index, damage.final_damage)?;
+        Ok(())
+    }
+
+    fn apply_damage(
+        &mut self,
+        side: SideId,
+        slot: ActiveSlot,
+        pokemon: PokemonIndex,
+        damage: u16,
+    ) -> Result<(), BattleError> {
+        let target = self
+            .side_mut(side)
+            .pokemon_mut(pokemon)
+            .ok_or_else(|| BattleError::InvalidState("damage target became invalid".to_owned()))?;
+        target.current_hp = target.current_hp.saturating_sub(damage);
+        if target.current_hp == 0 {
+            self.process_faints(&[FaintTarget::new(side, slot)])?;
+        }
+        Ok(())
+    }
+
+    fn check_accuracy(
+        &mut self,
+        accuracy: MoveAccuracy,
+        source_side: SideId,
+        source: PokemonIndex,
+        target_side: SideId,
+        target: PokemonIndex,
+    ) -> Result<bool, BattleError> {
+        let MoveAccuracy::Percent { value } = accuracy else {
+            return Ok(true);
+        };
+        let source_stage = self
+            .side(source_side)
+            .pokemon(source)
+            .ok_or_else(|| BattleError::InvalidState("accuracy source is invalid".to_owned()))?
+            .stat_stages
+            .accuracy;
+        let target_stage = self
+            .side(target_side)
+            .pokemon(target)
+            .ok_or_else(|| BattleError::InvalidState("accuracy target is invalid".to_owned()))?
+            .stat_stages
+            .evasion;
+        let stage = (source_stage - target_stage).clamp(-6, 6);
+        let adjusted = match stage.cmp(&0) {
+            std::cmp::Ordering::Greater => {
+                u16::from(value) * u16::try_from(3 + stage).unwrap_or(9) / 3
+            }
+            std::cmp::Ordering::Less => {
+                u16::from(value) * 3 / u16::try_from(3 - stage).unwrap_or(9)
+            }
+            std::cmp::Ordering::Equal => u16::from(value),
+        };
+        self.rng
+            .chance(RngReason::Accuracy, u64::from(adjusted.min(100)), 100)
+    }
+
+    fn resolve_queued_switch(
+        &mut self,
+        side: SideId,
+        slot: ActiveSlot,
+        incoming: PokemonIndex,
+    ) -> Result<(), BattleError> {
+        let outgoing = self.side(side).active[slot.index()].ok_or_else(|| {
+            BattleError::InvalidState("queued switch has no outgoing Pokémon".to_owned())
+        })?;
+        let side_state = self.side_mut(side);
+        let outgoing = side_state
+            .pokemon_mut(outgoing)
+            .ok_or_else(|| BattleError::InvalidState("switch source is invalid".to_owned()))?;
+        outgoing.clear_on_exit();
+        outgoing.position = crate::PokemonPosition::Team;
+        side_state
+            .pokemon_mut(incoming)
+            .ok_or_else(|| BattleError::InvalidState("switch target is invalid".to_owned()))?
+            .position = crate::PokemonPosition::Active { slot };
+        side_state.active[slot.index()] = Some(incoming);
+        Ok(())
+    }
+}
+
+#[allow(clippy::too_many_arguments)]
+/// Calculates one normal Gen 9 damage result from already-resolved inputs.
+///
+/// # Errors
+///
+/// Returns an error for status moves or a random percentage outside 85–100.
+pub fn calculate_damage(
+    source: &PokemonState,
+    target: &PokemonState,
+    move_data: CombatMove,
+    source_types: PokemonTypes,
+    type_exponent: Option<i8>,
+    critical: bool,
+    random_percent: u8,
+) -> Result<DamageResult, BattleError> {
+    if !(85..=100).contains(&random_percent) {
+        return Err(BattleError::InvalidState(
+            "damage roll must be between 85 and 100".to_owned(),
+        ));
+    }
+    let (raw_attack, raw_defense, attack_stage, defense_stage) = match move_data.category {
+        MoveCategory::Physical => (
+            source.stats.atk,
+            target.stats.def,
+            source.stat_stages.atk,
+            target.stat_stages.def,
+        ),
+        MoveCategory::Special => (
+            source.stats.spa,
+            target.stats.spd,
+            source.stat_stages.spa,
+            target.stat_stages.spd,
+        ),
+        MoveCategory::Status => {
+            return Err(BattleError::UnsupportedMechanic(
+                "status moves do not use the damage formula".to_owned(),
+            ));
+        }
+    };
+    let attack_stage = if critical && attack_stage < 0 {
+        0
+    } else {
+        attack_stage
+    };
+    let defense_stage = if critical && defense_stage > 0 {
+        0
+    } else {
+        defense_stage
+    };
+    let attack = staged_stat(raw_attack, attack_stage);
+    let defense = staged_stat(raw_defense, defense_stage).max(1);
+    let level_factor = (2 * u32::from(source.level) / 5) + 2;
+    let base_damage = level_factor
+        .saturating_mul(u32::from(move_data.base_power))
+        .saturating_mul(attack)
+        / defense
+        / 50;
+    let mut final_damage = base_damage + 2;
+    let critical_modifier = if critical {
+        final_damage = final_damage.saturating_mul(3) / 2;
+        Modifier {
+            numerator: 3,
+            denominator: 2,
+        }
+    } else {
+        Modifier::NEUTRAL
+    };
+    final_damage = final_damage.saturating_mul(u32::from(random_percent)) / 100;
+    let has_stab = source_types.primary == move_data.move_type
+        || source_types.secondary == Some(move_data.move_type);
+    let stab_modifier = if has_stab {
+        final_damage = showdown_modify(final_damage, 3, 2);
+        Modifier {
+            numerator: 3,
+            denominator: 2,
+        }
+    } else {
+        Modifier::NEUTRAL
+    };
+    let (typed_damage, type_modifier) = apply_type_modifier(final_damage, type_exponent);
+    final_damage = typed_damage;
+    if type_exponent.is_some() && final_damage == 0 {
+        final_damage = 1;
+    }
+    Ok(DamageResult {
+        base_damage,
+        attack_stat: attack,
+        defense_stat: defense,
+        stab_modifier,
+        type_modifier,
+        critical_modifier,
+        random_modifier: Modifier {
+            numerator: u16::from(random_percent),
+            denominator: 100,
+        },
+        final_damage: u16::try_from(final_damage.min(u32::from(u16::MAX))).unwrap_or(u16::MAX),
+    })
+}
+
+fn apply_type_modifier(damage: u32, exponent: Option<i8>) -> (u32, Modifier) {
+    match exponent {
+        None => (
+            0,
+            Modifier {
+                numerator: 0,
+                denominator: 1,
+            },
+        ),
+        Some(value) if value > 0 => {
+            let factor = 1_u16
+                .checked_shl(u32::from(value.unsigned_abs()))
+                .unwrap_or(u16::MAX);
+            (
+                damage.saturating_mul(u32::from(factor)),
+                Modifier {
+                    numerator: factor,
+                    denominator: 1,
+                },
+            )
+        }
+        Some(value) if value < 0 => {
+            let factor = 1_u16
+                .checked_shl(u32::from(value.unsigned_abs()))
+                .unwrap_or(u16::MAX);
+            (
+                damage / u32::from(factor),
+                Modifier {
+                    numerator: 1,
+                    denominator: factor,
+                },
+            )
+        }
+        Some(_) => (damage, Modifier::NEUTRAL),
+    }
+}
+
+/// Resolves static typing and calculates one forced-outcome damage value.
+///
+/// This is the deterministic seam used by focused Showdown differential
+/// fixtures. Turn resolution supplies its rolled critical and random values.
+///
+/// # Errors
+///
+/// Returns an error when static data is missing, the move is outside the
+/// supported basic-damage slice, or damage inputs are invalid.
+pub fn calculate_move_damage<D: CombatData>(
+    data: &D,
+    source: &PokemonState,
+    target: &PokemonState,
+    move_id: MoveId,
+    critical: bool,
+    random_percent: u8,
+) -> Result<DamageResult, BattleError> {
+    let move_data = data.move_data(move_id).ok_or_else(|| {
+        BattleError::DataMismatch(format!("missing combat data for move {move_id}"))
+    })?;
+    if move_data.support != MoveSupport::BasicDamage {
+        return Err(BattleError::UnsupportedMechanic(format!(
+            "move {move_id} does not have a basic-damage implementation"
+        )));
+    }
+    let source_types = data
+        .pokemon_types(source.species, source.form)
+        .ok_or_else(|| BattleError::DataMismatch("missing source type data".to_owned()))?;
+    let target_types = data
+        .pokemon_types(target.species, target.form)
+        .ok_or_else(|| BattleError::DataMismatch("missing target type data".to_owned()))?;
+    let type_exponent = combined_type_modifier(data, move_data.move_type, target_types)?;
+    calculate_damage(
+        source,
+        target,
+        move_data,
+        source_types,
+        type_exponent,
+        critical,
+        random_percent,
+    )
+}
+
+fn staged_stat(stat: u16, stage: i8) -> u32 {
+    let stage = stage.clamp(-6, 6);
+    if stage >= 0 {
+        u32::from(stat) * u32::try_from(2 + stage).unwrap_or(8) / 2
+    } else {
+        u32::from(stat) * 2 / u32::try_from(2 - stage).unwrap_or(8)
+    }
+}
+
+fn validate_basic_move(move_id: MoveId, move_data: CombatMove) -> Result<(), BattleError> {
+    if move_data.support != MoveSupport::BasicDamage
+        || move_data.category == MoveCategory::Status
+        || move_data.base_power == 0
+    {
+        return Err(BattleError::UnsupportedMechanic(format!(
+            "move {move_id} does not have an ordinary basic-damage implementation"
+        )));
+    }
+    if !matches!(
+        move_data.target,
+        MoveTarget::Normal | MoveTarget::Any | MoveTarget::AdjacentFoe
+    ) {
+        return Err(BattleError::UnsupportedMechanic(format!(
+            "move {move_id} uses unsupported multi-target behavior"
+        )));
+    }
+    Ok(())
+}
+
+fn showdown_modify(value: u32, numerator: u32, denominator: u32) -> u32 {
+    let modifier = numerator.saturating_mul(4096) / denominator;
+    value.saturating_mul(modifier).saturating_add(2047) / 4096
+}
+
+fn roll_critical(rng: &mut crate::BattleRng, ratio: u8) -> Result<bool, BattleError> {
+    let denominator = match ratio.min(4) {
+        0 => return Ok(false),
+        1 => 24,
+        2 => 8,
+        3 => 2,
+        _ => 1,
+    };
+    rng.chance(RngReason::CriticalHit, 1, denominator)
+}
+
+fn combined_type_modifier<D: CombatData>(
+    data: &D,
+    attacking: PokemonType,
+    defending: PokemonTypes,
+) -> Result<Option<i8>, BattleError> {
+    let mut modifier = 0_i8;
+    for defending_type in [Some(defending.primary), defending.secondary]
+        .into_iter()
+        .flatten()
+    {
+        let Some(value) = data.type_modifier(attacking, defending_type) else {
+            return Ok(None);
+        };
+        modifier = modifier.checked_add(value).ok_or_else(|| {
+            BattleError::InvalidState("combined type modifier overflowed".to_owned())
+        })?;
+    }
+    Ok(Some(modifier))
+}
+
+fn resolve_target(
+    source_side: SideId,
+    source_slot: ActiveSlot,
+    target: ActionTarget,
+) -> Result<(SideId, ActiveSlot), BattleError> {
+    match target {
+        ActionTarget::Self_ => Ok((source_side, source_slot)),
+        ActionTarget::Ally(slot) => Ok((source_side, slot)),
+        ActionTarget::Foe(slot) => Ok((source_side.opponent(), slot)),
+        ActionTarget::Automatic => Err(BattleError::UnsupportedMechanic(
+            "automatic or spread targeting is deferred".to_owned(),
+        )),
+    }
+}
