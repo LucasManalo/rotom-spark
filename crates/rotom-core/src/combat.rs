@@ -239,17 +239,24 @@ impl BattleState {
             }
             match action.choice {
                 PokemonAction::Switch { pokemon } => {
-                    self.resolve_queued_switch(
+                    let switched = self.resolve_queued_switch(
                         effects,
                         action.side,
                         action.slot,
                         pokemon,
                         &mut resolution,
                     )?;
-                    resolution.actions.push(ResolvedAction::Switched {
-                        side: action.side,
-                        slot: action.slot,
-                        incoming: pokemon,
+                    resolution.actions.push(if switched {
+                        ResolvedAction::Switched {
+                            side: action.side,
+                            slot: action.slot,
+                            incoming: pokemon,
+                        }
+                    } else {
+                        ResolvedAction::Skipped {
+                            side: action.side,
+                            slot: action.slot,
+                        }
                     });
                 }
                 PokemonAction::Move {
@@ -507,7 +514,7 @@ impl BattleState {
             self,
             BattleEvent::Hit,
             context,
-            EventValue::Integer(i64::from(damage.final_damage)),
+            EventValue::None,
         )?);
         resolution.actions.push(ResolvedAction::Damaged {
             side: queued.side,
@@ -621,7 +628,7 @@ impl BattleState {
         slot: ActiveSlot,
         incoming: PokemonIndex,
         resolution: &mut TurnResolution,
-    ) -> Result<(), BattleError> {
+    ) -> Result<bool, BattleError> {
         let outgoing = self.side(side).active[slot.index()].ok_or_else(|| {
             BattleError::InvalidState("queued switch has no outgoing Pokémon".to_owned())
         })?;
@@ -630,12 +637,13 @@ impl BattleState {
             target: Some(PokemonRef::new(side, incoming)),
             move_id: None,
         };
-        resolution.events.push(effects.dispatch(
-            self,
-            BattleEvent::SwitchOut,
-            context,
-            EventValue::None,
-        )?);
+        let switch_out =
+            effects.dispatch(self, BattleEvent::SwitchOut, context, EventValue::None)?;
+        let cancelled = switch_out.cancelled;
+        resolution.events.push(switch_out);
+        if cancelled {
+            return Ok(false);
+        }
         let side_state = self.side_mut(side);
         let outgoing_state = side_state
             .pokemon_mut(outgoing)
@@ -657,7 +665,7 @@ impl BattleState {
             },
             EventValue::None,
         )?);
-        Ok(())
+        Ok(true)
     }
 }
 

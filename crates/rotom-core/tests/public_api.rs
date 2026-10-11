@@ -1,9 +1,9 @@
 use rotom_core::{
     AbilityId, ActionOrder, ActionQueue, BattleEvent, BattlePhase, BattleRng, BattleState,
     CombatMove, ConditionId, DamageResult, EffectOrder, EffectRegistry, EffectSource, EventContext,
-    EventValue, FieldState, FormId, Gender, ItemId, MoveId, NatureId, PokemonSet, PokemonType,
-    QueuedAction, RngReason, SideId, SideState, SpeciesId, StatAllocation, TeamDefinition,
-    TeamState, TurnResolution,
+    EventContract, EventRelay, EventValue, FieldState, FormId, Gender, ItemId, MoveId, NatureId,
+    PokemonSet, PokemonType, QueuedAction, RngReason, SideId, SideState, SpeciesId, StatAllocation,
+    TeamDefinition, TeamState, TurnResolution,
 };
 
 #[test]
@@ -41,5 +41,7 @@ fn foundational_types_are_available_from_the_crate_root() {
     let _: EffectOrder = EffectOrder::default();
     let _: EffectRegistry = EffectRegistry::new();
     let _: EventContext = EventContext::default();
+    let _: EventContract = BattleEvent::BeforeMove.contract();
+    let _: EventRelay = EventRelay::None;
     let _: EventValue = EventValue::None;
 }

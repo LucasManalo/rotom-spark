@@ -16,3 +16,11 @@ stages, low-damage rounding, and immunity) with:
 node tools/showdown-reference/basic-damage.cjs
 node tools/showdown-reference/basic-damage.cjs --check
 ```
+
+Regenerate or verify the event-listener ordering fixture produced directly by
+the pinned `Battle.comparePriority` implementation with:
+
+```text
+node tools/showdown-reference/event-order.cjs
+node tools/showdown-reference/event-order.cjs --check
+```

@@ -13,8 +13,11 @@ pub enum BattleEvent {
     BeforeMove,
     ModifyPriority,
     ModifySpeed,
+    /// Reserved for the common-condition damage pipeline; not yet dispatched.
     ModifyAttack,
+    /// Reserved for the common-condition damage pipeline; not yet dispatched.
     ModifyDefense,
+    /// Reserved for the common-condition damage pipeline; not yet dispatched.
     ModifyBasePower,
     ModifyDamage,
     TryHit,
@@ -25,6 +28,75 @@ pub enum BattleEvent {
     SwitchOut,
     Faint,
     Residual,
+}
+
+impl BattleEvent {
+    /// Declares the relay and cancellation semantics enforced by dispatch.
+    #[must_use]
+    pub const fn contract(self) -> EventContract {
+        match self {
+            Self::BeforeMove | Self::SwitchOut => EventContract::new(EventRelay::None, true, false),
+            Self::TryHit => EventContract::new(EventRelay::Boolean, true, true),
+            Self::ModifyPriority
+            | Self::ModifySpeed
+            | Self::ModifyAttack
+            | Self::ModifyDefense
+            | Self::ModifyBasePower
+            | Self::ModifyDamage => EventContract::new(EventRelay::Integer, false, true),
+            Self::AfterDamage => EventContract::new(EventRelay::Integer, false, false),
+            Self::BeforeTurn
+            | Self::Hit
+            | Self::AfterMove
+            | Self::SwitchIn
+            | Self::Faint
+            | Self::Residual => EventContract::new(EventRelay::None, false, false),
+        }
+    }
+}
+
+/// Relay shape accepted by an event contract.
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum EventRelay {
+    None,
+    Boolean,
+    Integer,
+}
+
+/// Static rules for one event's relay and early termination behavior.
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventContract {
+    pub relay: EventRelay,
+    pub cancellable: bool,
+    pub mutable_relay: bool,
+}
+
+impl EventContract {
+    #[must_use]
+    pub const fn new(relay: EventRelay, cancellable: bool, mutable_relay: bool) -> Self {
+        Self {
+            relay,
+            cancellable,
+            mutable_relay,
+        }
+    }
+
+    fn validate_value(self, event: BattleEvent, value: EventValue) -> Result<(), BattleError> {
+        let valid = matches!(
+            (self.relay, value),
+            (EventRelay::None, EventValue::None)
+                | (EventRelay::Boolean, EventValue::Boolean(_))
+                | (EventRelay::Integer, EventValue::Integer(_))
+        );
+        if valid {
+            Ok(())
+        } else {
+            Err(BattleError::InvalidState(format!(
+                "{event:?} received an incompatible relay value"
+            )))
+        }
+    }
 }
 
 /// Static identity of behavior that may register one or more event handlers.
@@ -215,8 +287,10 @@ impl EffectRegistry {
 
     /// Collects active instances, orders them, and executes their callbacks.
     ///
-    /// A callback may update the relay value, mutate battle state, cancel the
-    /// event, or return a typed battle error. Cancellation stops later handlers.
+    /// Applicable handlers are snapshotted before the first callback. A
+    /// callback may update mutable relays, mutate battle state, cancel a
+    /// cancellable event, or return a typed battle error. Cancellation stops
+    /// later handlers; invalid relay or cancellation behavior is rejected.
     ///
     /// # Errors
     ///
@@ -228,12 +302,26 @@ impl EffectRegistry {
         context: EventContext,
         value: EventValue,
     ) -> Result<EventDispatch, BattleError> {
+        let contract = event.contract();
+        contract.validate_value(event, value)?;
+        let initial_value = value;
         let mut handlers = self.collect(battle, event, context)?;
         handlers.sort_by(compare_collected_effects);
         let mut dispatch = EventDispatch::new(event, context, value);
         for handler in handlers {
             dispatch.invocations.push(handler.invocation);
             (handler.callback)(battle, &handler.invocation, &context, &mut dispatch)?;
+            contract.validate_value(event, dispatch.value)?;
+            if !contract.mutable_relay && dispatch.value != initial_value {
+                return Err(BattleError::InvalidState(format!(
+                    "{event:?} handlers cannot modify their relay value"
+                )));
+            }
+            if dispatch.cancelled && !contract.cancellable {
+                return Err(BattleError::InvalidState(format!(
+                    "{event:?} is not a cancellable event"
+                )));
+            }
             if dispatch.cancelled {
                 break;
             }
@@ -433,10 +521,8 @@ fn owner_speed(battle: &BattleState, owner: EffectOwner) -> Result<u16, BattleEr
 }
 
 fn compare_collected_effects(left: &CollectedEffect, right: &CollectedEffect) -> Ordering {
-    left.invocation
-        .order
-        .order
-        .cmp(&right.invocation.order.order)
+    effective_order(left.invocation.order.order)
+        .cmp(&effective_order(right.invocation.order.order))
         .then_with(|| {
             right
                 .invocation
@@ -452,4 +538,12 @@ fn compare_collected_effects(left: &CollectedEffect, right: &CollectedEffect) ->
                 .cmp(&right.invocation.order.sub_order)
         })
         .then_with(|| left.registration_order.cmp(&right.registration_order))
+}
+
+const fn effective_order(order: i16) -> i16 {
+    if order == 0 {
+        i16::MAX
+    } else {
+        order
+    }
 }

@@ -26,7 +26,7 @@ pub use combat::{
 pub use error::BattleError;
 pub use event::{
     BattleEvent, EffectCallback, EffectInvocation, EffectOrder, EffectOwner, EffectRegistry,
-    EffectSource, EventContext, EventDispatch, EventValue, PokemonRef,
+    EffectSource, EventContext, EventContract, EventDispatch, EventRelay, EventValue, PokemonRef,
 };
 pub use id::{AbilityId, ConditionId, FormId, ItemId, MoveId, NatureId, SpeciesId};
 pub use rng::{BattleRng, RngOperation, RngReason, RngTraceEntry};
