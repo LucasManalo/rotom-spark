@@ -110,6 +110,8 @@ pub struct MoveSnapshot {
 #[serde(deny_unknown_fields)]
 pub struct StatusSnapshot {
     pub sleep_turns: u8,
+    #[serde(default)]
+    pub freeze_turns: u8,
     pub toxic_counter: u8,
 }
 
@@ -256,6 +258,7 @@ impl From<&rotom_core::PokemonState> for PokemonSnapshot {
             status: state.status,
             status_state: StatusSnapshot {
                 sleep_turns: state.status_state.sleep_turns,
+                freeze_turns: state.status_state.freeze_turns,
                 toxic_counter: state.status_state.toxic_counter,
             },
             stat_stages: StatStagesSnapshot {

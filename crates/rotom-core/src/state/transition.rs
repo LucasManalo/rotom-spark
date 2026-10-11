@@ -249,6 +249,7 @@ impl BattleState {
         let incoming_state = side_state.pokemon_mut(incoming).ok_or_else(|| {
             BattleError::InvalidState("replacement index became invalid".to_owned())
         })?;
+        incoming_state.prepare_switch_in();
         incoming_state.position = PokemonPosition::Active { slot };
         side_state.active[slot.index()] = Some(incoming);
 
@@ -306,6 +307,7 @@ impl BattleState {
                 let pokemon = side_state.pokemon_mut(index).ok_or_else(|| {
                     BattleError::InvalidState("selected lead index is out of bounds".to_owned())
                 })?;
+                pokemon.prepare_switch_in();
                 pokemon.position = PokemonPosition::Active { slot };
                 side_state.active[slot.index()] = Some(index);
             }

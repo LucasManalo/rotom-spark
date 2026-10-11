@@ -24,3 +24,11 @@ the pinned `Battle.comparePriority` implementation with:
 node tools/showdown-reference/event-order.cjs
 node tools/showdown-reference/event-order.cjs --check
 ```
+
+Regenerate or verify the common-condition fixture produced by invoking the
+resolved Champions status callbacks with controlled random outcomes:
+
+```text
+node tools/showdown-reference/common-conditions.cjs
+node tools/showdown-reference/common-conditions.cjs --check
+```

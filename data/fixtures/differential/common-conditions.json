@@ -1,0 +1,50 @@
+{
+  "showdown_commit": "b79ce06d06b8f0dc8de8bb348bc9cab5d931553f",
+  "format": "gen9championsvgc2026regmc",
+  "source": "resolved champions conditions callbacks",
+  "paralysis": {
+    "speed_from_101": 50,
+    "before_move_chance": [
+      1,
+      8
+    ]
+  },
+  "sleep": {
+    "durations": [
+      2,
+      3,
+      3
+    ],
+    "initialized_turns": 2
+  },
+  "freeze": {
+    "initialized_turns": 3,
+    "early_thaw_chance": [
+      1,
+      4
+    ],
+    "automatic_thaw_attempt": 3
+  },
+  "residual": {
+    "max_hp": 160,
+    "poison": {
+      "order": 9,
+      "damage": [
+        20
+      ]
+    },
+    "toxic": {
+      "order": 9,
+      "damage": [
+        10,
+        20
+      ]
+    },
+    "burn": {
+      "order": 10,
+      "damage": [
+        10
+      ]
+    }
+  }
+}

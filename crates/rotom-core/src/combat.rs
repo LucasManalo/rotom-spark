@@ -1,10 +1,11 @@
 use crate::{
     ActionTarget, ActiveSlot, BattleError, BattleEvent, BattlePhase, BattleState, EffectRegistry,
-    EventContext, EventDispatch, EventValue, FaintTarget, FormId, MoveId, MoveSlotIndex,
-    MoveTarget, PokemonAction, PokemonIndex, PokemonRef, PokemonState, RngReason, SideId,
-    SpeciesId,
+    EventContext, EventDispatch, EventValue, FaintTarget, FormId, MajorStatus, MoveId,
+    MoveSlotIndex, MoveTarget, PokemonAction, PokemonIndex, PokemonRef, PokemonState, RngReason,
+    SideId, SpeciesId,
 };
 use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
@@ -138,9 +139,30 @@ pub enum ResolvedAction {
 #[serde(deny_unknown_fields)]
 pub struct TurnResolution {
     pub actions: Vec<ResolvedAction>,
+    /// HP loss caused by common major statuses during residual processing.
+    #[serde(default)]
+    pub residual_damage: Vec<ResidualDamage>,
+    /// Timed volatile conditions removed before residual callbacks.
+    #[serde(default)]
+    pub expired_volatiles: Vec<ExpiredVolatile>,
     /// Ordered event dispatches emitted while resolving this turn.
     #[serde(default)]
     pub events: Vec<EventDispatch>,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct ResidualDamage {
+    pub pokemon: PokemonRef,
+    pub status: MajorStatus,
+    pub damage: u16,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct ExpiredVolatile {
+    pub pokemon: PokemonRef,
+    pub condition: crate::ConditionId,
 }
 
 #[derive(Clone, Copy)]
@@ -207,8 +229,9 @@ impl BattleState {
                 self.phase
             )));
         }
+        let effects = crate::conditions::composed_registry(effects);
         let mut next = self.clone();
-        let result = next.resolve_turn_inner(data, effects)?;
+        let result = next.resolve_turn_inner(data, &effects)?;
         *self = next;
         Ok(result)
     }
@@ -291,12 +314,18 @@ impl BattleState {
         }
 
         if self.phase != BattlePhase::BattleEnd {
-            resolution.events.push(effects.dispatch(
+            self.tick_volatile_durations(&mut resolution)?;
+            let before = self.active_status_hp()?;
+            let residual = effects.dispatch(
                 self,
                 BattleEvent::Residual,
                 EventContext::default(),
                 EventValue::None,
-            )?);
+            )?;
+            self.record_residual_damage(&before, &residual, &mut resolution)?;
+            let residual_invocations = residual.invocations.clone();
+            resolution.events.push(residual);
+            self.process_residual_faints(effects, &residual_invocations, &mut resolution)?;
         }
         self.queue.actions.clear();
         self.queue.events.clear();
@@ -650,10 +679,11 @@ impl BattleState {
             .ok_or_else(|| BattleError::InvalidState("switch source is invalid".to_owned()))?;
         outgoing_state.clear_on_exit();
         outgoing_state.position = crate::PokemonPosition::Team;
-        side_state
+        let incoming_state = side_state
             .pokemon_mut(incoming)
-            .ok_or_else(|| BattleError::InvalidState("switch target is invalid".to_owned()))?
-            .position = crate::PokemonPosition::Active { slot };
+            .ok_or_else(|| BattleError::InvalidState("switch target is invalid".to_owned()))?;
+        incoming_state.prepare_switch_in();
+        incoming_state.position = crate::PokemonPosition::Active { slot };
         side_state.active[slot.index()] = Some(incoming);
         resolution.events.push(effects.dispatch(
             self,
@@ -666,6 +696,169 @@ impl BattleState {
             EventValue::None,
         )?);
         Ok(true)
+    }
+
+    fn tick_volatile_durations(
+        &mut self,
+        resolution: &mut TurnResolution,
+    ) -> Result<(), BattleError> {
+        for side in [SideId::P1, SideId::P2] {
+            for pokemon in self.side(side).active.into_iter().flatten() {
+                let expired = self
+                    .side_mut(side)
+                    .pokemon_mut(pokemon)
+                    .ok_or_else(|| {
+                        BattleError::InvalidState(
+                            "active Pokémon is invalid during volatile upkeep".to_owned(),
+                        )
+                    })?
+                    .tick_volatile_durations();
+                resolution
+                    .expired_volatiles
+                    .extend(expired.into_iter().map(|condition| ExpiredVolatile {
+                        pokemon: PokemonRef::new(side, pokemon),
+                        condition,
+                    }));
+            }
+        }
+        Ok(())
+    }
+
+    fn active_status_hp(&self) -> Result<Vec<(PokemonRef, MajorStatus, u16)>, BattleError> {
+        let mut output = Vec::new();
+        for side in [SideId::P1, SideId::P2] {
+            for pokemon in self.side(side).active.into_iter().flatten() {
+                let state = self.side(side).pokemon(pokemon).ok_or_else(|| {
+                    BattleError::InvalidState(
+                        "active Pokémon is invalid before residual processing".to_owned(),
+                    )
+                })?;
+                if let Some(status) = state.status {
+                    output.push((PokemonRef::new(side, pokemon), status, state.current_hp));
+                }
+            }
+        }
+        Ok(output)
+    }
+
+    fn record_residual_damage(
+        &self,
+        before: &[(PokemonRef, MajorStatus, u16)],
+        residual: &EventDispatch,
+        resolution: &mut TurnResolution,
+    ) -> Result<(), BattleError> {
+        let mut ordered = Vec::new();
+        let mut seen = HashSet::new();
+        for invocation in &residual.invocations {
+            let crate::EffectOwner::Pokemon { pokemon } = invocation.owner else {
+                continue;
+            };
+            if seen.insert(pokemon) {
+                ordered.push(pokemon);
+            }
+        }
+        ordered.extend(
+            before
+                .iter()
+                .map(|(pokemon, _, _)| *pokemon)
+                .filter(|pokemon| seen.insert(*pokemon)),
+        );
+        for pokemon in ordered {
+            let Some(&(_, status, hp)) = before
+                .iter()
+                .find(|(candidate, _, _)| *candidate == pokemon)
+            else {
+                continue;
+            };
+            let current_hp = self
+                .side(pokemon.side)
+                .pokemon(pokemon.pokemon)
+                .ok_or_else(|| {
+                    BattleError::InvalidState(
+                        "status holder became invalid during residual processing".to_owned(),
+                    )
+                })?
+                .current_hp;
+            if current_hp < hp {
+                resolution.residual_damage.push(ResidualDamage {
+                    pokemon,
+                    status,
+                    damage: hp - current_hp,
+                });
+            }
+        }
+        Ok(())
+    }
+
+    fn process_residual_faints(
+        &mut self,
+        effects: &EffectRegistry,
+        residual_invocations: &[crate::EffectInvocation],
+        resolution: &mut TurnResolution,
+    ) -> Result<(), BattleError> {
+        let mut ordered = Vec::new();
+        let mut seen = HashSet::new();
+        for invocation in residual_invocations {
+            let crate::EffectOwner::Pokemon { pokemon } = invocation.owner else {
+                continue;
+            };
+            if seen.insert(pokemon) && self.pokemon_has_zero_hp(pokemon)? {
+                ordered.push(pokemon);
+            }
+        }
+        for side in [SideId::P1, SideId::P2] {
+            for pokemon in self.side(side).active.into_iter().flatten() {
+                let pokemon = PokemonRef::new(side, pokemon);
+                if seen.insert(pokemon) && self.pokemon_has_zero_hp(pokemon)? {
+                    ordered.push(pokemon);
+                }
+            }
+        }
+        if ordered.is_empty() {
+            return Ok(());
+        }
+        let mut targets = Vec::with_capacity(ordered.len());
+        for pokemon in ordered {
+            let slot = match self
+                .side(pokemon.side)
+                .pokemon(pokemon.pokemon)
+                .ok_or_else(|| {
+                    BattleError::InvalidState("residual faint target is invalid".to_owned())
+                })?
+                .position
+            {
+                crate::PokemonPosition::Active { slot } => slot,
+                crate::PokemonPosition::Team | crate::PokemonPosition::Fainted => {
+                    return Err(BattleError::InvalidState(
+                        "residual faint target is not active".to_owned(),
+                    ));
+                }
+            };
+            let context = EventContext {
+                source: None,
+                target: Some(pokemon),
+                move_id: None,
+            };
+            resolution.events.push(effects.dispatch(
+                self,
+                BattleEvent::Faint,
+                context,
+                EventValue::None,
+            )?);
+            targets.push(FaintTarget::new(pokemon.side, slot));
+        }
+        self.process_faints(&targets)
+    }
+
+    fn pokemon_has_zero_hp(&self, pokemon: PokemonRef) -> Result<bool, BattleError> {
+        Ok(self
+            .side(pokemon.side)
+            .pokemon(pokemon.pokemon)
+            .ok_or_else(|| {
+                BattleError::InvalidState("residual effect owner is invalid".to_owned())
+            })?
+            .current_hp
+            == 0)
     }
 }
 
@@ -750,6 +943,9 @@ pub fn calculate_damage(
     };
     let (typed_damage, type_modifier) = apply_type_modifier(final_damage, type_exponent);
     final_damage = typed_damage;
+    if source.status == Some(MajorStatus::Burn) && move_data.category == MoveCategory::Physical {
+        final_damage /= 2;
+    }
     if type_exponent.is_some() && final_damage == 0 {
         final_damage = 1;
     }

@@ -285,6 +285,17 @@ impl EffectRegistry {
         });
     }
 
+    pub(crate) fn append(&mut self, other: &Self) {
+        for registration in &other.registrations {
+            self.register(
+                registration.event,
+                registration.source,
+                registration.order,
+                registration.callback,
+            );
+        }
+    }
+
     /// Collects active instances, orders them, and executes their callbacks.
     ///
     /// Applicable handlers are snapshotted before the first callback. A
@@ -407,7 +418,7 @@ fn collect_active_pokemon(
                     EffectOwner::Pokemon {
                         pokemon: PokemonRef::new(side, pokemon),
                     },
-                    state.stats.spe,
+                    state.effective_speed(),
                 );
             }
         }
@@ -453,7 +464,7 @@ fn collect_condition(
                     EffectOwner::Pokemon {
                         pokemon: PokemonRef::new(side, pokemon),
                     },
-                    state.stats.spe,
+                    state.effective_speed(),
                 );
             }
         }
@@ -517,7 +528,7 @@ fn owner_speed(battle: &BattleState, owner: EffectOwner) -> Result<u16, BattleEr
             "a Pokémon-owned active effect has an inactive holder".to_owned(),
         ));
     }
-    Ok(state.stats.spe)
+    Ok(state.effective_speed())
 }
 
 fn compare_collected_effects(left: &CollectedEffect, right: &CollectedEffect) -> Ordering {

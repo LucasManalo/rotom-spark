@@ -6,6 +6,7 @@
 
 mod action;
 mod combat;
+mod conditions;
 mod error;
 mod event;
 mod id;
@@ -19,9 +20,9 @@ pub use action::{
     TurnChoice,
 };
 pub use combat::{
-    calculate_damage, calculate_move_damage, CombatData, CombatMove, DamageResult, Modifier,
-    MoveAccuracy, MoveCategory, MoveSupport, PokemonType, PokemonTypes, ResolvedAction,
-    TurnResolution,
+    calculate_damage, calculate_move_damage, CombatData, CombatMove, DamageResult, ExpiredVolatile,
+    Modifier, MoveAccuracy, MoveCategory, MoveSupport, PokemonType, PokemonTypes, ResidualDamage,
+    ResolvedAction, TurnResolution,
 };
 pub use error::BattleError;
 pub use event::{
@@ -32,8 +33,9 @@ pub use id::{AbilityId, ConditionId, FormId, ItemId, MoveId, NatureId, SpeciesId
 pub use rng::{BattleRng, RngOperation, RngReason, RngTraceEntry};
 pub use side::SideId;
 pub use state::{
-    ActionOrder, ActionQueue, ActiveSlot, BattlePhase, BattleState, BattleStats, ConditionState,
-    FaintTarget, FieldState, MajorStatus, MoveSlot, PokemonIndex, PokemonPosition, PokemonState,
-    QueuedAction, ReplacementRequest, SideState, StatStages, StatusState, TeamState,
+    ActionOrder, ActionQueue, ActiveSlot, BattlePhase, BattleStat, BattleState, BattleStats,
+    ConditionState, FaintTarget, FieldState, MajorStatus, MoveSlot, PokemonIndex, PokemonPosition,
+    PokemonState, QueuedAction, ReplacementRequest, SideState, StatStageChange, StatStages,
+    StatusState, TeamState,
 };
 pub use team::{Gender, PokemonSet, StatAllocation, TeamDefinition};

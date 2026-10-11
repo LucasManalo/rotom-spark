@@ -1,7 +1,7 @@
 use super::{ActiveSlot, BattlePhase, BattleState, PokemonIndex, PokemonPosition};
 use crate::{
     ActionTarget, BattleError, BattleEvent, EffectRegistry, EventContext, EventDispatch,
-    EventValue, PokemonAction, PokemonRef, RngReason, SideId, TurnChoice,
+    EventValue, PokemonAction, PokemonRef, PokemonState, RngReason, SideId, TurnChoice,
 };
 use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
@@ -78,8 +78,9 @@ impl BattleState {
         p2: TurnChoice,
         effects: &EffectRegistry,
     ) -> Result<&ActionQueue, BattleError> {
+        let effects = crate::conditions::composed_registry(effects);
         let mut next = self.clone();
-        next.queue_turn_inner(p1, p2, effects)?;
+        next.queue_turn_inner(p1, p2, &effects)?;
         *self = next;
         Ok(&self.queue)
     }
@@ -142,41 +143,7 @@ impl BattleState {
                         "{side:?}'s {slot:?} queued Pokémon is inconsistent"
                     )));
                 }
-
-                match action {
-                    PokemonAction::Move { mega: true, .. } => {
-                        return Err(BattleError::UnsupportedMechanic(
-                            "Mega Evolution queue expansion is deferred".to_owned(),
-                        ));
-                    }
-                    PokemonAction::Move {
-                        move_slot,
-                        mega: false,
-                        ..
-                    } => {
-                        let move_data = pokemon_state
-                            .moves
-                            .get(usize::from(move_slot.get()))
-                            .ok_or_else(|| {
-                                BattleError::InvalidState(
-                                    "queued move-slot index is out of bounds".to_owned(),
-                                )
-                            })?;
-                        (
-                            ActionOrder::Move,
-                            move_data.priority,
-                            pokemon_state.stats.spe,
-                            Some(move_data.move_id),
-                        )
-                    }
-                    PokemonAction::Struggle => {
-                        (ActionOrder::Move, 0, pokemon_state.stats.spe, None)
-                    }
-                    PokemonAction::Switch { .. } => {
-                        (ActionOrder::Switch, 0, pokemon_state.stats.spe, None)
-                    }
-                    PokemonAction::Pass => continue,
-                }
+                base_action_ordering(pokemon_state, action)?
             };
             let context = EventContext {
                 source: Some(PokemonRef::new(side, pokemon)),
@@ -246,6 +213,41 @@ impl BattleState {
             group_start = group_end;
         }
         Ok(())
+    }
+}
+
+fn base_action_ordering(
+    pokemon: &PokemonState,
+    action: PokemonAction,
+) -> Result<(ActionOrder, i8, u16, Option<crate::MoveId>), BattleError> {
+    let speed = pokemon.staged_speed();
+    match action {
+        PokemonAction::Move { mega: true, .. } => Err(BattleError::UnsupportedMechanic(
+            "Mega Evolution queue expansion is deferred".to_owned(),
+        )),
+        PokemonAction::Move {
+            move_slot,
+            mega: false,
+            ..
+        } => {
+            let move_data = pokemon
+                .moves
+                .get(usize::from(move_slot.get()))
+                .ok_or_else(|| {
+                    BattleError::InvalidState("queued move-slot index is out of bounds".to_owned())
+                })?;
+            Ok((
+                ActionOrder::Move,
+                move_data.priority,
+                speed,
+                Some(move_data.move_id),
+            ))
+        }
+        PokemonAction::Struggle => Ok((ActionOrder::Move, 0, speed, None)),
+        PokemonAction::Switch { .. } => Ok((ActionOrder::Switch, 0, speed, None)),
+        PokemonAction::Pass => Err(BattleError::InvalidState(
+            "pass actions must be removed before queue expansion".to_owned(),
+        )),
     }
 }
 

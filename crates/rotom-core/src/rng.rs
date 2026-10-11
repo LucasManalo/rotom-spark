@@ -11,6 +11,8 @@ pub enum RngReason {
     DamageRoll,
     SecondaryEffect,
     Paralysis,
+    SleepDuration,
+    Freeze,
     Confusion,
     MultiHit,
     SpeedTie,

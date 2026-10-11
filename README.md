@@ -20,6 +20,9 @@ A typed event/effect registry now collects active battle effects, orders their
 handlers deterministically, dispatches initial turn/move/damage/switch hooks,
 enforces per-event relay and cancellation contracts, and records inspectable
 per-turn event traces.
+Common condition processing now includes bounded stat stages, Champions major
+status timing and RNG, burn/poison/toxic effects, timed volatile lifecycle,
+and ordered residual faint handling.
 
 ## Workspace
 
