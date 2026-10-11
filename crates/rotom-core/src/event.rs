@@ -1,0 +1,455 @@
+use crate::{
+    AbilityId, BattleError, BattleState, ConditionId, ItemId, MajorStatus, MoveId, PokemonIndex,
+    PokemonPosition, SideId,
+};
+use serde::{Deserialize, Serialize};
+use std::cmp::Ordering;
+
+/// Stable hook points through which battle effects intercept engine operations.
+#[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum BattleEvent {
+    BeforeTurn,
+    BeforeMove,
+    ModifyPriority,
+    ModifySpeed,
+    ModifyAttack,
+    ModifyDefense,
+    ModifyBasePower,
+    ModifyDamage,
+    TryHit,
+    Hit,
+    AfterDamage,
+    AfterMove,
+    SwitchIn,
+    SwitchOut,
+    Faint,
+    Residual,
+}
+
+/// Static identity of behavior that may register one or more event handlers.
+#[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
+#[serde(tag = "kind", content = "id", rename_all = "snake_case")]
+pub enum EffectSource {
+    Battle,
+    Ability(AbilityId),
+    Item(ItemId),
+    Move(MoveId),
+    MajorStatus(MajorStatus),
+    Condition(ConditionId),
+}
+
+/// A Pokémon participating in an event without borrowing battle state.
+#[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct PokemonRef {
+    pub side: SideId,
+    pub pokemon: PokemonIndex,
+}
+
+impl PokemonRef {
+    #[must_use]
+    pub const fn new(side: SideId, pokemon: PokemonIndex) -> Self {
+        Self { side, pokemon }
+    }
+}
+
+/// Runtime state holder from which a registered effect was collected.
+#[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
+#[serde(tag = "kind", rename_all = "snake_case")]
+pub enum EffectOwner {
+    Battle,
+    Field,
+    Side { side: SideId },
+    Pokemon { pokemon: PokemonRef },
+    Move { pokemon: PokemonRef },
+}
+
+/// Central ordering metadata for effect handlers.
+///
+/// Handlers sort by lower `order`, higher `priority`, holder Speed, lower
+/// `sub_order`, and finally registration order. This matches Showdown's normal
+/// event-listener key direction while making the final tie-break deterministic.
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct EffectOrder {
+    pub order: i16,
+    pub priority: i16,
+    pub sub_order: i16,
+}
+
+impl EffectOrder {
+    #[must_use]
+    pub const fn new(order: i16, priority: i16, sub_order: i16) -> Self {
+        Self {
+            order,
+            priority,
+            sub_order,
+        }
+    }
+}
+
+impl Default for EffectOrder {
+    fn default() -> Self {
+        Self {
+            order: i16::MAX,
+            priority: 0,
+            sub_order: 0,
+        }
+    }
+}
+
+/// Actor, target, and move associated with one event dispatch.
+#[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventContext {
+    pub source: Option<PokemonRef>,
+    pub target: Option<PokemonRef>,
+    pub move_id: Option<MoveId>,
+}
+
+/// Typed relay value passed through an event's ordered handlers.
+#[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(tag = "kind", content = "value", rename_all = "snake_case")]
+pub enum EventValue {
+    #[default]
+    None,
+    Boolean(bool),
+    Integer(i64),
+}
+
+/// One collected handler, retained in dispatch traces for inspection.
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct EffectInvocation {
+    pub source: EffectSource,
+    pub owner: EffectOwner,
+    pub order: EffectOrder,
+    pub speed: u16,
+}
+
+/// Result and ordered trace of a completed event dispatch.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventDispatch {
+    pub event: BattleEvent,
+    pub context: EventContext,
+    pub value: EventValue,
+    pub cancelled: bool,
+    pub invocations: Vec<EffectInvocation>,
+}
+
+impl EventDispatch {
+    #[must_use]
+    pub fn new(event: BattleEvent, context: EventContext, value: EventValue) -> Self {
+        Self {
+            event,
+            context,
+            value,
+            cancelled: false,
+            invocations: Vec::new(),
+        }
+    }
+
+    /// Stops the current event after the active handler returns.
+    pub fn cancel(&mut self) {
+        self.cancelled = true;
+    }
+}
+
+/// A stateless effect function registered in the engine behavior registry.
+pub type EffectCallback = fn(
+    &mut BattleState,
+    &EffectInvocation,
+    &EventContext,
+    &mut EventDispatch,
+) -> Result<(), BattleError>;
+
+#[derive(Clone, Copy)]
+struct EffectRegistration {
+    event: BattleEvent,
+    source: EffectSource,
+    order: EffectOrder,
+    callback: EffectCallback,
+    registration_order: usize,
+}
+
+#[derive(Clone, Copy)]
+struct CollectedEffect {
+    invocation: EffectInvocation,
+    callback: EffectCallback,
+    registration_order: usize,
+}
+
+/// Static behavior registry kept outside serializable, cloneable battle state.
+#[derive(Clone, Default)]
+pub struct EffectRegistry {
+    registrations: Vec<EffectRegistration>,
+}
+
+impl EffectRegistry {
+    #[must_use]
+    pub const fn new() -> Self {
+        Self {
+            registrations: Vec::new(),
+        }
+    }
+
+    /// Registers one stateless callback for a typed effect and event.
+    pub fn register(
+        &mut self,
+        event: BattleEvent,
+        source: EffectSource,
+        order: EffectOrder,
+        callback: EffectCallback,
+    ) {
+        let registration_order = self.registrations.len();
+        self.registrations.push(EffectRegistration {
+            event,
+            source,
+            order,
+            callback,
+            registration_order,
+        });
+    }
+
+    /// Collects active instances, orders them, and executes their callbacks.
+    ///
+    /// A callback may update the relay value, mutate battle state, cancel the
+    /// event, or return a typed battle error. Cancellation stops later handlers.
+    ///
+    /// # Errors
+    ///
+    /// Propagates the first callback error.
+    pub fn dispatch(
+        &self,
+        battle: &mut BattleState,
+        event: BattleEvent,
+        context: EventContext,
+        value: EventValue,
+    ) -> Result<EventDispatch, BattleError> {
+        let mut handlers = self.collect(battle, event, context)?;
+        handlers.sort_by(compare_collected_effects);
+        let mut dispatch = EventDispatch::new(event, context, value);
+        for handler in handlers {
+            dispatch.invocations.push(handler.invocation);
+            (handler.callback)(battle, &handler.invocation, &context, &mut dispatch)?;
+            if dispatch.cancelled {
+                break;
+            }
+        }
+        Ok(dispatch)
+    }
+
+    fn collect(
+        &self,
+        battle: &BattleState,
+        event: BattleEvent,
+        context: EventContext,
+    ) -> Result<Vec<CollectedEffect>, BattleError> {
+        let mut collected = Vec::new();
+        for registration in self
+            .registrations
+            .iter()
+            .copied()
+            .filter(|registration| registration.event == event)
+        {
+            Self::collect_registration(battle, context, registration, &mut collected)?;
+        }
+        Ok(collected)
+    }
+
+    fn collect_registration(
+        battle: &BattleState,
+        context: EventContext,
+        registration: EffectRegistration,
+        output: &mut Vec<CollectedEffect>,
+    ) -> Result<(), BattleError> {
+        match registration.source {
+            EffectSource::Battle => push_collected(output, registration, EffectOwner::Battle, 0),
+            EffectSource::Move(move_id) => {
+                if context.move_id == Some(move_id) {
+                    let owner = context
+                        .source
+                        .map_or(EffectOwner::Battle, |pokemon| EffectOwner::Move { pokemon });
+                    let speed = owner_speed(battle, owner)?;
+                    push_collected(output, registration, owner, speed);
+                }
+            }
+            EffectSource::Condition(condition_id) => {
+                collect_condition(battle, registration, condition_id, output)?;
+            }
+            EffectSource::Ability(ability_id) => {
+                collect_active_pokemon(battle, registration, output, |pokemon| {
+                    pokemon.ability == ability_id
+                })?;
+            }
+            EffectSource::Item(item_id) => {
+                collect_active_pokemon(battle, registration, output, |pokemon| {
+                    pokemon.item == Some(item_id)
+                })?;
+            }
+            EffectSource::MajorStatus(status) => {
+                collect_active_pokemon(battle, registration, output, |pokemon| {
+                    pokemon.status == Some(status)
+                })?;
+            }
+        }
+        Ok(())
+    }
+}
+
+fn collect_active_pokemon(
+    battle: &BattleState,
+    registration: EffectRegistration,
+    output: &mut Vec<CollectedEffect>,
+    predicate: impl Fn(&crate::PokemonState) -> bool,
+) -> Result<(), BattleError> {
+    for side in [SideId::P1, SideId::P2] {
+        for pokemon in battle.side(side).active.into_iter().flatten() {
+            let state = battle.side(side).pokemon(pokemon).ok_or_else(|| {
+                BattleError::InvalidState(
+                    "active Pokémon index is out of bounds during effect collection".to_owned(),
+                )
+            })?;
+            if predicate(state) {
+                push_collected(
+                    output,
+                    registration,
+                    EffectOwner::Pokemon {
+                        pokemon: PokemonRef::new(side, pokemon),
+                    },
+                    state.stats.spe,
+                );
+            }
+        }
+    }
+    Ok(())
+}
+
+fn collect_condition(
+    battle: &BattleState,
+    registration: EffectRegistration,
+    condition_id: ConditionId,
+    output: &mut Vec<CollectedEffect>,
+) -> Result<(), BattleError> {
+    let field = &battle.field;
+    let field_matches = field.weather.is_some_and(|state| state.id == condition_id)
+        || field.terrain.is_some_and(|state| state.id == condition_id)
+        || field
+            .conditions
+            .iter()
+            .any(|state| state.id == condition_id);
+    if field_matches {
+        push_collected(output, registration, EffectOwner::Field, 0);
+    }
+    for side in [SideId::P1, SideId::P2] {
+        if battle
+            .side(side)
+            .side_conditions
+            .iter()
+            .any(|state| state.id == condition_id)
+        {
+            push_collected(output, registration, EffectOwner::Side { side }, 0);
+        }
+        for pokemon in battle.side(side).active.into_iter().flatten() {
+            let state = battle.side(side).pokemon(pokemon).ok_or_else(|| {
+                BattleError::InvalidState(
+                    "active Pokémon index is out of bounds during condition collection".to_owned(),
+                )
+            })?;
+            if state.volatiles.iter().any(|state| state.id == condition_id) {
+                push_collected(
+                    output,
+                    registration,
+                    EffectOwner::Pokemon {
+                        pokemon: PokemonRef::new(side, pokemon),
+                    },
+                    state.stats.spe,
+                );
+            }
+        }
+    }
+    Ok(())
+}
+
+fn push_collected(
+    output: &mut Vec<CollectedEffect>,
+    registration: EffectRegistration,
+    owner: EffectOwner,
+    speed: u16,
+) {
+    let mut order = registration.order;
+    if order.sub_order == 0 {
+        order.sub_order = default_sub_order(registration.source, owner);
+    }
+    output.push(CollectedEffect {
+        invocation: EffectInvocation {
+            source: registration.source,
+            owner,
+            order,
+            speed,
+        },
+        callback: registration.callback,
+        registration_order: registration.registration_order,
+    });
+}
+
+const fn default_sub_order(source: EffectSource, owner: EffectOwner) -> i16 {
+    match source {
+        EffectSource::MajorStatus(_) => 2,
+        EffectSource::Condition(_) => match owner {
+            EffectOwner::Pokemon { .. } => 2,
+            EffectOwner::Side { .. } => 4,
+            EffectOwner::Field => 5,
+            EffectOwner::Battle | EffectOwner::Move { .. } => 0,
+        },
+        EffectSource::Battle => 5,
+        EffectSource::Ability(_) => 7,
+        EffectSource::Item(_) => 8,
+        EffectSource::Move(_) => 0,
+    }
+}
+
+fn owner_speed(battle: &BattleState, owner: EffectOwner) -> Result<u16, BattleError> {
+    let pokemon = match owner {
+        EffectOwner::Pokemon { pokemon } | EffectOwner::Move { pokemon } => pokemon,
+        EffectOwner::Battle | EffectOwner::Field | EffectOwner::Side { .. } => return Ok(0),
+    };
+    let state = battle
+        .side(pokemon.side)
+        .pokemon(pokemon.pokemon)
+        .ok_or_else(|| {
+            BattleError::InvalidState(
+                "effect owner Pokémon index is out of bounds during collection".to_owned(),
+            )
+        })?;
+    if !matches!(state.position, PokemonPosition::Active { .. }) {
+        return Err(BattleError::InvalidState(
+            "a Pokémon-owned active effect has an inactive holder".to_owned(),
+        ));
+    }
+    Ok(state.stats.spe)
+}
+
+fn compare_collected_effects(left: &CollectedEffect, right: &CollectedEffect) -> Ordering {
+    left.invocation
+        .order
+        .order
+        .cmp(&right.invocation.order.order)
+        .then_with(|| {
+            right
+                .invocation
+                .order
+                .priority
+                .cmp(&left.invocation.order.priority)
+        })
+        .then_with(|| right.invocation.speed.cmp(&left.invocation.speed))
+        .then_with(|| {
+            left.invocation
+                .order
+                .sub_order
+                .cmp(&right.invocation.order.sub_order)
+        })
+        .then_with(|| left.registration_order.cmp(&right.registration_order))
+}

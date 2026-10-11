@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 /// Identifies one of the two players in a battle.
-#[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum SideId {
     P1,

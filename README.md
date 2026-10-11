@@ -16,6 +16,9 @@ speed-tie handling.
 The first vertical combat slice now resolves a deliberately small set of
 ordinary physical and special attacks with Champions stats, accuracy, PP,
 critical and damage rolls, STAB, type effectiveness, HP loss, and fainting.
+A typed event/effect registry now collects active battle effects, orders their
+handlers deterministically, dispatches initial turn/move/damage/switch hooks,
+and records inspectable per-turn event traces.
 
 ## Workspace
 

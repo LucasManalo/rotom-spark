@@ -1,6 +1,7 @@
 use crate::{
-    ActionTarget, ActiveSlot, BattleError, BattlePhase, BattleState, FaintTarget, FormId, MoveId,
-    MoveSlotIndex, MoveTarget, PokemonAction, PokemonIndex, PokemonState, RngReason, SideId,
+    ActionTarget, ActiveSlot, BattleError, BattleEvent, BattlePhase, BattleState, EffectRegistry,
+    EventContext, EventDispatch, EventValue, FaintTarget, FormId, MoveId, MoveSlotIndex,
+    MoveTarget, PokemonAction, PokemonIndex, PokemonRef, PokemonState, RngReason, SideId,
     SpeciesId,
 };
 use serde::{Deserialize, Serialize};
@@ -137,6 +138,38 @@ pub enum ResolvedAction {
 #[serde(deny_unknown_fields)]
 pub struct TurnResolution {
     pub actions: Vec<ResolvedAction>,
+    /// Ordered event dispatches emitted while resolving this turn.
+    #[serde(default)]
+    pub events: Vec<EventDispatch>,
+}
+
+#[derive(Clone, Copy)]
+struct QueuedMove {
+    side: SideId,
+    slot: ActiveSlot,
+    move_slot: MoveSlotIndex,
+    target: ActionTarget,
+}
+
+#[derive(Clone, Copy)]
+struct BasicMoveContext {
+    queued: QueuedMove,
+    source: PokemonRef,
+    target: PokemonRef,
+    target_slot: ActiveSlot,
+    move_id: MoveId,
+    move_data: CombatMove,
+    source_species: SpeciesId,
+    source_form: Option<FormId>,
+}
+
+#[derive(Clone, Copy)]
+struct DamageApplication {
+    context: EventContext,
+    side: SideId,
+    slot: ActiveSlot,
+    pokemon: PokemonIndex,
+    damage: u16,
 }
 
 impl BattleState {
@@ -151,6 +184,23 @@ impl BattleState {
     /// unsupported-mechanic error for mechanics outside this slice, or a data
     /// or state error when referenced combat state is inconsistent.
     pub fn resolve_turn<D: CombatData>(&mut self, data: &D) -> Result<TurnResolution, BattleError> {
+        self.resolve_turn_with_effects(data, &EffectRegistry::new())
+    }
+
+    /// Resolves a queued turn through the registered event/effect handlers.
+    ///
+    /// The registry is static behavior, not battle state. Handler errors roll
+    /// back state, RNG, and event output together with the rest of the turn.
+    ///
+    /// # Errors
+    ///
+    /// Returns the same errors as [`Self::resolve_turn`] and propagates errors
+    /// returned by effect handlers.
+    pub fn resolve_turn_with_effects<D: CombatData>(
+        &mut self,
+        data: &D,
+        effects: &EffectRegistry,
+    ) -> Result<TurnResolution, BattleError> {
         if self.phase != BattlePhase::ResolvingTurn {
             return Err(BattleError::IllegalChoice(format!(
                 "cannot resolve a turn during {:?}",
@@ -158,7 +208,7 @@ impl BattleState {
             )));
         }
         let mut next = self.clone();
-        let result = next.resolve_turn_inner(data)?;
+        let result = next.resolve_turn_inner(data, effects)?;
         *self = next;
         Ok(result)
     }
@@ -166,9 +216,16 @@ impl BattleState {
     fn resolve_turn_inner<D: CombatData>(
         &mut self,
         data: &D,
+        effects: &EffectRegistry,
     ) -> Result<TurnResolution, BattleError> {
         let queued = self.queue.actions.clone();
         let mut resolution = TurnResolution::default();
+        resolution.events.push(effects.dispatch(
+            self,
+            BattleEvent::BeforeTurn,
+            EventContext::default(),
+            EventValue::None,
+        )?);
         for action in queued {
             if self.phase == BattlePhase::BattleEnd {
                 break;
@@ -182,7 +239,13 @@ impl BattleState {
             }
             match action.choice {
                 PokemonAction::Switch { pokemon } => {
-                    self.resolve_queued_switch(action.side, action.slot, pokemon)?;
+                    self.resolve_queued_switch(
+                        effects,
+                        action.side,
+                        action.slot,
+                        pokemon,
+                        &mut resolution,
+                    )?;
                     resolution.actions.push(ResolvedAction::Switched {
                         side: action.side,
                         slot: action.slot,
@@ -196,10 +259,13 @@ impl BattleState {
                 } => {
                     self.resolve_basic_move(
                         data,
-                        action.side,
-                        action.slot,
-                        move_slot,
-                        target,
+                        QueuedMove {
+                            side: action.side,
+                            slot: action.slot,
+                            move_slot,
+                            target,
+                        },
+                        effects,
                         &mut resolution,
                     )?;
                 }
@@ -217,7 +283,16 @@ impl BattleState {
             }
         }
 
+        if self.phase != BattlePhase::BattleEnd {
+            resolution.events.push(effects.dispatch(
+                self,
+                BattleEvent::Residual,
+                EventContext::default(),
+                EventValue::None,
+            )?);
+        }
         self.queue.actions.clear();
+        self.queue.events.clear();
         if self.phase != BattlePhase::BattleEnd {
             self.turn = self.turn.checked_add(1).ok_or_else(|| {
                 BattleError::InvalidState("battle turn counter overflowed".to_owned())
@@ -232,63 +307,151 @@ impl BattleState {
     fn resolve_basic_move<D: CombatData>(
         &mut self,
         data: &D,
-        side: SideId,
-        slot: ActiveSlot,
-        move_slot: MoveSlotIndex,
-        target: ActionTarget,
+        queued: QueuedMove,
+        effects: &EffectRegistry,
         resolution: &mut TurnResolution,
     ) -> Result<(), BattleError> {
-        let source_index = self.side(side).active[slot.index()].ok_or_else(|| {
-            BattleError::InvalidState("queued move source is no longer active".to_owned())
-        })?;
-        let (move_id, source_species, source_form) = {
-            let source = self.side(side).pokemon(source_index).ok_or_else(|| {
-                BattleError::InvalidState("queued move source is out of bounds".to_owned())
-            })?;
-            let move_state = source
-                .moves
-                .get(usize::from(move_slot.get()))
-                .ok_or_else(|| {
-                    BattleError::InvalidState("move slot is out of bounds".to_owned())
-                })?;
-            if move_state.pp == 0 {
-                return Err(BattleError::InvalidState(
-                    "queued move has no remaining PP".to_owned(),
-                ));
-            }
-            (move_state.move_id, source.species, source.form)
+        let move_context = self.prepare_basic_move(data, queued)?;
+        let source_index = move_context.source.pokemon;
+        let target_side = move_context.target.side;
+        let target_index = move_context.target.pokemon;
+        let context = EventContext {
+            source: Some(move_context.source),
+            target: Some(move_context.target),
+            move_id: Some(move_context.move_id),
         };
-        let move_data = data.move_data(move_id).ok_or_else(|| {
-            BattleError::DataMismatch(format!("missing combat data for move {move_id}"))
-        })?;
-        validate_basic_move(move_id, move_data)?;
-        let (target_side, target_slot) = resolve_target(side, slot, target)?;
-        let target_index = self.side(target_side).active[target_slot.index()].ok_or_else(|| {
-            BattleError::UnsupportedMechanic(
-                "retargeting after an empty or fainted target is deferred".to_owned(),
-            )
-        })?;
+        let before_move =
+            effects.dispatch(self, BattleEvent::BeforeMove, context, EventValue::None)?;
+        let cancelled = before_move.cancelled;
+        resolution.events.push(before_move);
+        if cancelled {
+            resolution.actions.push(ResolvedAction::Skipped {
+                side: queued.side,
+                slot: queued.slot,
+            });
+            return Ok(());
+        }
 
-        self.side_mut(side)
+        self.side_mut(queued.side)
             .pokemon_mut(source_index)
-            .and_then(|source| source.moves.get_mut(usize::from(move_slot.get())))
+            .and_then(|source| source.moves.get_mut(usize::from(queued.move_slot.get())))
             .ok_or_else(|| BattleError::InvalidState("move slot became invalid".to_owned()))?
             .pp -= 1;
 
         if !self.check_accuracy(
-            move_data.accuracy,
-            side,
+            move_context.move_data.accuracy,
+            queued.side,
             source_index,
             target_side,
             target_index,
         )? {
             resolution.actions.push(ResolvedAction::Missed {
-                side,
-                slot,
-                move_slot,
+                side: queued.side,
+                slot: queued.slot,
+                move_slot: queued.move_slot,
             });
+            resolution.events.push(effects.dispatch(
+                self,
+                BattleEvent::AfterMove,
+                context,
+                EventValue::None,
+            )?);
             return Ok(());
         }
+
+        let try_hit = effects.dispatch(
+            self,
+            BattleEvent::TryHit,
+            context,
+            EventValue::Boolean(true),
+        )?;
+        let cancelled = try_hit.cancelled || try_hit.value == EventValue::Boolean(false);
+        resolution.events.push(try_hit);
+        if cancelled {
+            resolution.actions.push(ResolvedAction::Skipped {
+                side: queued.side,
+                slot: queued.slot,
+            });
+            resolution.events.push(effects.dispatch(
+                self,
+                BattleEvent::AfterMove,
+                context,
+                EventValue::None,
+            )?);
+            return Ok(());
+        }
+
+        self.resolve_basic_damage(data, move_context, effects, resolution)
+    }
+
+    fn prepare_basic_move<D: CombatData>(
+        &self,
+        data: &D,
+        queued: QueuedMove,
+    ) -> Result<BasicMoveContext, BattleError> {
+        let source_index = self.side(queued.side).active[queued.slot.index()].ok_or_else(|| {
+            BattleError::InvalidState("queued move source is no longer active".to_owned())
+        })?;
+        let source = self
+            .side(queued.side)
+            .pokemon(source_index)
+            .ok_or_else(|| {
+                BattleError::InvalidState("queued move source is out of bounds".to_owned())
+            })?;
+        let move_state = source
+            .moves
+            .get(usize::from(queued.move_slot.get()))
+            .ok_or_else(|| BattleError::InvalidState("move slot is out of bounds".to_owned()))?;
+        if move_state.pp == 0 {
+            return Err(BattleError::InvalidState(
+                "queued move has no remaining PP".to_owned(),
+            ));
+        }
+        let move_id = move_state.move_id;
+        let move_data = data.move_data(move_id).ok_or_else(|| {
+            BattleError::DataMismatch(format!("missing combat data for move {move_id}"))
+        })?;
+        validate_basic_move(move_id, move_data)?;
+        let (target_side, target_slot) = resolve_target(queued.side, queued.slot, queued.target)?;
+        let target_index = self.side(target_side).active[target_slot.index()].ok_or_else(|| {
+            BattleError::UnsupportedMechanic(
+                "retargeting after an empty or fainted target is deferred".to_owned(),
+            )
+        })?;
+        Ok(BasicMoveContext {
+            queued,
+            source: PokemonRef::new(queued.side, source_index),
+            target: PokemonRef::new(target_side, target_index),
+            target_slot,
+            move_id,
+            move_data,
+            source_species: source.species,
+            source_form: source.form,
+        })
+    }
+
+    fn resolve_basic_damage<D: CombatData>(
+        &mut self,
+        data: &D,
+        move_context: BasicMoveContext,
+        effects: &EffectRegistry,
+        resolution: &mut TurnResolution,
+    ) -> Result<(), BattleError> {
+        let BasicMoveContext {
+            queued,
+            source,
+            target,
+            target_slot,
+            move_id,
+            move_data,
+            source_species,
+            source_form,
+        } = move_context;
+        let context = EventContext {
+            source: Some(source),
+            target: Some(target),
+            move_id: Some(move_id),
+        };
 
         let critical = roll_critical(&mut self.rng, move_data.crit_ratio)?;
         let random_percent = u8::try_from(self.rng.range(RngReason::DamageRoll, 85..101)?)
@@ -297,8 +460,8 @@ impl BattleState {
             .pokemon_types(source_species, source_form)
             .ok_or_else(|| BattleError::DataMismatch("missing source type data".to_owned()))?;
         let target_state = self
-            .side(target_side)
-            .pokemon(target_index)
+            .side(target.side)
+            .pokemon(target.pokemon)
             .ok_or_else(|| {
                 BattleError::InvalidState("damage target is out of bounds".to_owned())
             })?;
@@ -306,10 +469,13 @@ impl BattleState {
             .pokemon_types(target_state.species, target_state.form)
             .ok_or_else(|| BattleError::DataMismatch("missing target type data".to_owned()))?;
         let type_exponent = combined_type_modifier(data, move_data.move_type, target_types)?;
-        let source_state = self.side(side).pokemon(source_index).ok_or_else(|| {
-            BattleError::InvalidState("damage source is out of bounds".to_owned())
-        })?;
-        let damage = calculate_damage(
+        let source_state = self
+            .side(source.side)
+            .pokemon(source.pokemon)
+            .ok_or_else(|| {
+                BattleError::InvalidState("damage source is out of bounds".to_owned())
+            })?;
+        let mut damage = calculate_damage(
             source_state,
             target_state,
             move_data,
@@ -318,31 +484,94 @@ impl BattleState {
             critical,
             random_percent,
         )?;
+        let modify_damage = effects.dispatch(
+            self,
+            BattleEvent::ModifyDamage,
+            context,
+            EventValue::Integer(i64::from(damage.final_damage)),
+        )?;
+        damage.final_damage = match modify_damage.value {
+            EventValue::Integer(value) => u16::try_from(value).map_err(|_| {
+                BattleError::InvalidState(
+                    "ModifyDamage produced a value outside the u16 damage range".to_owned(),
+                )
+            })?,
+            EventValue::None | EventValue::Boolean(_) => {
+                return Err(BattleError::InvalidState(
+                    "ModifyDamage replaced its integer relay with an incompatible value".to_owned(),
+                ));
+            }
+        };
+        resolution.events.push(modify_damage);
+        resolution.events.push(effects.dispatch(
+            self,
+            BattleEvent::Hit,
+            context,
+            EventValue::Integer(i64::from(damage.final_damage)),
+        )?);
         resolution.actions.push(ResolvedAction::Damaged {
-            side,
-            slot,
-            target_side,
+            side: queued.side,
+            slot: queued.slot,
+            target_side: target.side,
             target_slot,
-            move_slot,
+            move_slot: queued.move_slot,
             damage,
         });
-        self.apply_damage(target_side, target_slot, target_index, damage.final_damage)?;
+        self.apply_damage(
+            effects,
+            DamageApplication {
+                context,
+                side: target.side,
+                slot: target_slot,
+                pokemon: target.pokemon,
+                damage: damage.final_damage,
+            },
+            resolution,
+        )?;
+        resolution.events.push(effects.dispatch(
+            self,
+            BattleEvent::AfterMove,
+            context,
+            EventValue::None,
+        )?);
         Ok(())
     }
 
     fn apply_damage(
         &mut self,
-        side: SideId,
-        slot: ActiveSlot,
-        pokemon: PokemonIndex,
-        damage: u16,
+        effects: &EffectRegistry,
+        application: DamageApplication,
+        resolution: &mut TurnResolution,
     ) -> Result<(), BattleError> {
+        let DamageApplication {
+            context,
+            side,
+            slot,
+            pokemon,
+            damage,
+        } = application;
         let target = self
             .side_mut(side)
             .pokemon_mut(pokemon)
             .ok_or_else(|| BattleError::InvalidState("damage target became invalid".to_owned()))?;
         target.current_hp = target.current_hp.saturating_sub(damage);
-        if target.current_hp == 0 {
+        resolution.events.push(effects.dispatch(
+            self,
+            BattleEvent::AfterDamage,
+            context,
+            EventValue::Integer(i64::from(damage)),
+        )?);
+        let fainted = self
+            .side(side)
+            .pokemon(pokemon)
+            .is_some_and(|target| target.current_hp == 0);
+        if fainted {
+            resolution.events.push(effects.dispatch(
+                self,
+                BattleEvent::Faint,
+                context,
+                EventValue::None,
+            )?);
             self.process_faints(&[FaintTarget::new(side, slot)])?;
         }
         Ok(())
@@ -387,24 +616,47 @@ impl BattleState {
 
     fn resolve_queued_switch(
         &mut self,
+        effects: &EffectRegistry,
         side: SideId,
         slot: ActiveSlot,
         incoming: PokemonIndex,
+        resolution: &mut TurnResolution,
     ) -> Result<(), BattleError> {
         let outgoing = self.side(side).active[slot.index()].ok_or_else(|| {
             BattleError::InvalidState("queued switch has no outgoing Pokémon".to_owned())
         })?;
+        let context = EventContext {
+            source: Some(PokemonRef::new(side, outgoing)),
+            target: Some(PokemonRef::new(side, incoming)),
+            move_id: None,
+        };
+        resolution.events.push(effects.dispatch(
+            self,
+            BattleEvent::SwitchOut,
+            context,
+            EventValue::None,
+        )?);
         let side_state = self.side_mut(side);
-        let outgoing = side_state
+        let outgoing_state = side_state
             .pokemon_mut(outgoing)
             .ok_or_else(|| BattleError::InvalidState("switch source is invalid".to_owned()))?;
-        outgoing.clear_on_exit();
-        outgoing.position = crate::PokemonPosition::Team;
+        outgoing_state.clear_on_exit();
+        outgoing_state.position = crate::PokemonPosition::Team;
         side_state
             .pokemon_mut(incoming)
             .ok_or_else(|| BattleError::InvalidState("switch target is invalid".to_owned()))?
             .position = crate::PokemonPosition::Active { slot };
         side_state.active[slot.index()] = Some(incoming);
+        resolution.events.push(effects.dispatch(
+            self,
+            BattleEvent::SwitchIn,
+            EventContext {
+                source: Some(PokemonRef::new(side, incoming)),
+                target: Some(PokemonRef::new(side, outgoing)),
+                move_id: None,
+            },
+            EventValue::None,
+        )?);
         Ok(())
     }
 }
