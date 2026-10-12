@@ -1,7 +1,7 @@
 # Authoritative mutation ownership inventory
 
-Status: PR A inventory of the pre-kernel code. Line references describe the
-source at PR A and should be refreshed as each migration PR lands.
+Status: Updated for PR D mechanics-to-kernel integration. Line references are
+descriptive migration anchors; ownership classifications are authoritative.
 
 This inventory treats battle fields, nested side/team/Pokémon/condition data,
 the pending queue, and the embedded RNG stream as authoritative. Diagnostic
@@ -27,39 +27,37 @@ future simulation.
 | `rotom-dex/src/combat.rs:78-132` | Constructs runtime `PokemonState` and `MoveSlot` values from immutable resolved Dex data | Construction | Dex-to-state constructor; no running-battle mutation |
 | `state/battle.rs:39-105` | Constructs turn, picked size, sides, field, embedded RNG, queue, phase, winner | Construction | State constructor; stable validation at return |
 | `state/side.rs:16-27`, `state/pokemon.rs:375-379` | Constructs pre-preview side and runtime team containers | Construction | State constructors |
-| `state/transition.rs:63` | Stores one side's selected-team order | Kernel candidate | Selection/preview transition operation |
-| `state/transition.rs:113-121` | Clears outgoing switch state, writes outgoing/incoming positions, replaces active-slot reference | Kernel candidate | Atomic position/switch operation |
-| `state/transition.rs:187-194` | Sets HP to zero, clears status/counters and switch state, marks fainted, empties active slot | Kernel candidate | Atomic `mark_fainted`; mechanics retains faint ordering/consequences |
-| `state/transition.rs:247-259` | Prepares incoming replacement, writes position/slot, settles phase | Kernel candidate | Position operation plus transition-owned phase settlement |
-| `state/transition.rs:302-316` | Prepares both leads, writes positions/slots, sets turn 1 and phase | Kernel candidate | Preview activation operations plus transition settlement |
-| `state/transition.rs:345-363` | Writes winner and post-faint phase | Kernel candidate | Transition settlement; simultaneous-faint rule remains mechanics/transition policy |
+| `state/transition.rs` | Stores one side's selected-team order | Transition write | Justified transition-owned preview input; PR E will narrow the public field escape |
+| `state/transition.rs`, `kernel/mod.rs` | Voluntary switches, forced replacements, and initial leads | Kernel-routed | Transition/mechanics validate and order; kernel atomically performs cleanup and coupled position/slot writes |
+| `state/transition.rs`, `kernel/mod.rs` | Faint cleanup: HP/status/counters/volatiles/position/active slot | Kernel-routed | Mechanics owns faint ordering and settlement; kernel owns atomic structural representation |
+| `state/transition.rs` | Writes turn, winner, and post-preview/faint/replacement phase | Transition write | Justified phase settlement; not an effect or primitive mechanics write |
 | `state/queue.rs:75-85` | Clones and commits the whole battle transactionally | Compatibility adapter | Retained for migration compatibility; canonical `step` bypasses this extra clone |
-| `state/queue.rs:110-111` | Installs action queue and enters `ResolvingTurn` | Kernel candidate | Transition-owned queue/phase operation |
+| `state/queue.rs:110-111` | Installs action queue and enters `ResolvingTurn` | Transition write | Justified queue/phase settlement |
 | `state/queue.rs:190-213` | Advances embedded RNG while shuffling exact speed ties | Mechanics write | Ordering mechanics requests RNG; RNG remains embedded and authoritative |
 | `combat.rs:226-236` | Clones and commits the whole battle transactionally | Compatibility adapter | Retained for migration compatibility; canonical `step` bypasses this extra clone |
 | `transition.rs` | Clones the complete stable input once, orchestrates preview/turn/replacement, then returns only a validated stable result | Transition owner | Canonical public transaction boundary introduced by PR C |
-| `combat.rs:330-338` | Clears queue/events, increments turn, settles phase | Kernel candidate | Transition-owned turn settlement |
-| `combat.rs:370-375` | Decrements move PP | Mechanics write | Mechanics validates/requests; kernel applies bounded PP change |
+| `combat.rs:330-338` | Clears queue/events, increments turn, settles phase | Transition write | Justified end-of-turn settlement |
+| `combat.rs` | Decrements move PP | Kernel-routed | Mechanics validates the move; kernel applies the bounded PP assignment |
 | `combat.rs:487-492`, `632-646` | Advances RNG for critical, damage, and accuracy | Mechanics write | Mechanics-owned RNG requests; no kernel involvement |
-| `combat.rs:586-594` | Subtracts target HP | Mechanics write | Damage mechanics calculates; kernel applies and reports actual loss |
-| `combat.rs:676-687` | Clears outgoing state and writes both positions plus active slot | Mechanics write | Switch hooks/order remain mechanics; atomic position write moves to kernel |
-| `combat.rs:700-718` | Ticks/removes active timed volatiles through `PokemonState` | Mechanics write | Residual mechanics requests; kernel/retained invariant method applies |
-| `conditions.rs:69-124` | Draws sleep duration and installs/cures major status through `PokemonState` | Mechanics write | Status eligibility/duration stays mechanics; kernel owns coherent status write |
-| `conditions.rs:149-187` | Decrements sleep/freeze counters, cures status, advances freeze RNG | Mechanics write | Condition callbacks decide; kernel applies counter/status changes |
+| `combat.rs` | Applies calculated target HP loss | Kernel-routed | Damage mechanics calculates and orders events; kernel applies bounded HP loss |
+| `combat.rs` | Resolves switch cleanup and coupled outgoing/incoming positions | Kernel-routed | Switch hooks/order remain mechanics; kernel applies the atomic structural change |
+| `combat.rs` | Ticks/removes active timed volatiles | Kernel-routed | Residual ordering remains mechanics; kernel calls the retained invariant-preserving state operation |
+| `conditions.rs` | Draws sleep duration and installs/cures major status | Kernel-routed | Status eligibility/duration stays mechanics; kernel owns coherent status writes |
+| `conditions.rs` | Decrements sleep/freeze counters, cures status, advances freeze RNG | Kernel-routed | Condition callbacks decide; kernel applies counter/status changes; RNG stays mechanics-owned |
 | `conditions.rs:191-201` | Advances paralysis RNG and may cancel action | Mechanics write | Condition mechanics; no kernel write except future consequence APIs |
-| `conditions.rs:205-227` | Increments toxic counter and subtracts residual HP | Mechanics write | Residual formula/order stays mechanics; kernel applies counter and HP changes |
-| `state/pokemon.rs:154-165` | Writes one bounded stat stage | Kernel candidate | Retain and call from kernel |
-| `state/pokemon.rs:230-254` | Installs/cures status and coherent counters | Kernel candidate | Retain and call from kernel |
-| `state/pokemon.rs:256-304` | Adds/removes/ticks unique volatile conditions | Kernel candidate | Retain or wrap in kernel according to required battle context |
-| `state/pokemon.rs:328-340` | Clears switch-out state; resets toxic counter on entry | Kernel candidate | Kernel performs structural writes; mechanics decides when switching occurs |
+| `conditions.rs` | Increments toxic counter and subtracts residual HP | Kernel-routed | Residual formula/order stays mechanics; kernel applies bounded counter and HP changes |
+| `state/pokemon.rs:154-165` | Writes one bounded stat stage | Kernel primitive | Retained invariant method called by `StateKernel::change_stat_stage`; no supported production effect changes stages yet |
+| `state/pokemon.rs:230-254` | Installs/cures status and coherent counters | Kernel primitive | Retained invariant methods called only through the kernel in supported production mechanics |
+| `state/pokemon.rs:256-304` | Adds/removes/ticks unique volatile conditions | Kernel primitive | Retained invariant methods called through the kernel in supported production upkeep |
+| `state/pokemon.rs:328-340` | Clears switch-out state; resets toxic counter on entry | Kernel primitive | Called inside atomic kernel position operations; mechanics decides switch timing |
 | `rng.rs:87-107`, `rng.rs:207-223` | Enables/disables/clears trace; advances stream state/draw count and appends trace | Kernel candidate (RNG-local) | `BattleRng` remains the sole RNG authority; gameplay kernel never draws RNG |
 
 `event.rs` itself does not directly write battle state, but
-`EffectHandler` callbacks receive `&mut BattleState`. Production common
-condition handlers use that escape today, and custom/downstream handlers can
-write any public field. PR D must pass supported production mutations through
-the kernel. PR E must prevent ordinary consumers from using this unrestricted
-path while preserving a controlled internal callback context.
+`EffectHandler` callbacks receive `&mut BattleState`. Production
+common-condition handlers now route their supported writes through
+`StateKernel`. Custom/downstream handlers can still write any public field;
+PR E must prevent ordinary consumers from using this unrestricted path while
+preserving a controlled internal callback context.
 
 ## Public mutation surface
 
@@ -70,9 +68,9 @@ currently public. `BattleState::side_mut`, `SideState::pokemon_mut`, and
 outside this repository cannot be enumerated. This is an explicit PR E target,
 not something PR A or PR B should hide with blanket setters.
 
-The pending queue and `BattleState::rng` are also publicly mutable. PR C must
-make canonical `step` the normal advancement path before PR E narrows these
-escapes. There is no second RNG today, and none should be introduced.
+The pending queue and `BattleState::rng` are also publicly mutable. Canonical
+`step` is now the normal advancement path; PR E will narrow these escapes.
+There is no second RNG today, and none was introduced by PR D.
 
 ## Test and fixture writes
 
@@ -119,12 +117,11 @@ now checks HP, PP, stages, status counters, condition uniqueness/durations,
 selected and active references, phase settlement, replacements, and terminal
 winner consistency.
 
-Production mechanics still bypass the kernel for PP, HP, status counters,
-switch positions, volatile upkeep, and faint settlement. This is intentional:
-PR B defines and tests the mutation boundary without changing event order, RNG
-draws, or supported behavior. The internal kernel has a narrowly scoped
-temporary `dead_code` allowance in non-test builds; PR D removes that allowance
-as mechanics callers migrate.
+PR D routes supported production mechanics through that boundary for PP, HP,
+status installation/cure/counters, volatile upkeep, voluntary switches,
+initial leads, forced replacements, and faint cleanup. Mechanics still owns
+eligibility, formulas, event order, RNG requests, and consequences. The kernel
+does not dispatch callbacks or draw RNG.
 
 PR C established the single phase-aware transaction. Its normal-turn path
 calls crate-internal queue/resolver operations on one cloned input; the old
@@ -133,8 +130,14 @@ as compatibility adapters. PR C also makes a no-op forced-switch choice legal
 for the side with no replacement due, enabling complete two-sided joint
 replacement actions.
 
-PR D should migrate the mechanics writes listed above. PR E should close
-public mutation escapes and provide valid/test-invalid builders.
+Remaining direct authoritative writes are justified transition settlement
+(`selected_team`, queue, turn, phase, winner), construction, or RNG-local
+advancement. Public fields, `side_mut`, nested `pokemon_mut`, and the
+`EffectCallback(&mut BattleState, ...)` signature remain unrestricted until PR
+E; tests also continue to use direct fixture setup and deliberate corruption.
 
-No production mechanics write was moved in PR A, PR B, or PR C.
+PR E should close those public mutation escapes and provide valid/test-invalid
+builders. Registry composition remains immutable behavior outside battle state;
+`Mechanics` composes built-in and caller-provided effects once at construction
+and reuses that registry across transitions.
 

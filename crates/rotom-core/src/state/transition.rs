@@ -1,5 +1,5 @@
-use super::{ActiveSlot, BattlePhase, BattleState, PokemonIndex, PokemonPosition, StatusState};
-use crate::{BattleError, SideId};
+use super::{ActiveSlot, BattlePhase, BattleState, PokemonIndex, PokemonPosition};
+use crate::{kernel::StateKernel, BattleError, SideId};
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 
@@ -102,8 +102,7 @@ impl BattleState {
             ));
         }
 
-        let side_state = self.side_mut(side);
-        let outgoing_state = side_state.pokemon_mut(outgoing).ok_or_else(|| {
+        let outgoing_state = self.side(side).pokemon(outgoing).ok_or_else(|| {
             BattleError::InvalidState("active Pokémon index is out of bounds".to_owned())
         })?;
         if outgoing_state.is_fainted() || outgoing_state.current_hp == 0 {
@@ -111,14 +110,7 @@ impl BattleState {
                 "a fainted active Pokémon requires a forced replacement".to_owned(),
             ));
         }
-        outgoing_state.clear_on_exit();
-        outgoing_state.position = PokemonPosition::Team;
-
-        let incoming_state = side_state.pokemon_mut(incoming).ok_or_else(|| {
-            BattleError::InvalidState("switch target index became invalid".to_owned())
-        })?;
-        incoming_state.position = PokemonPosition::Active { slot };
-        side_state.active[slot_index] = Some(incoming);
+        StateKernel::new(self).switch_active_position(side, slot, incoming)?;
         Ok(())
     }
 
@@ -178,20 +170,7 @@ impl BattleState {
         }
 
         for target in targets {
-            let slot_index = target.slot.index();
-            let pokemon_index = self.side(target.side).active[slot_index].ok_or_else(|| {
-                BattleError::InvalidState("validated active slot became empty".to_owned())
-            })?;
-            let side_state = self.side_mut(target.side);
-            let pokemon = side_state.pokemon_mut(pokemon_index).ok_or_else(|| {
-                BattleError::InvalidState("validated Pokémon index became invalid".to_owned())
-            })?;
-            pokemon.current_hp = 0;
-            pokemon.status = None;
-            pokemon.status_state = StatusState::default();
-            pokemon.clear_on_exit();
-            pokemon.position = PokemonPosition::Fainted;
-            side_state.active[slot_index] = None;
+            StateKernel::new(self).mark_fainted(target.side, target.slot)?;
         }
 
         let last_fainted_side = targets
@@ -245,13 +224,7 @@ impl BattleState {
             ));
         }
 
-        let side_state = self.side_mut(side);
-        let incoming_state = side_state.pokemon_mut(incoming).ok_or_else(|| {
-            BattleError::InvalidState("replacement index became invalid".to_owned())
-        })?;
-        incoming_state.prepare_switch_in();
-        incoming_state.position = PokemonPosition::Active { slot };
-        side_state.active[slot.index()] = Some(incoming);
+        StateKernel::new(self).fill_active_position(side, slot, incoming)?;
 
         if self.compute_replacement_request(SideId::P1)?.required == 0
             && self.compute_replacement_request(SideId::P2)?.required == 0
@@ -303,13 +276,7 @@ impl BattleState {
                 self.side(side).selected_team[1],
             ];
             for (slot, index) in ActiveSlot::ALL.into_iter().zip(leads) {
-                let side_state = self.side_mut(side);
-                let pokemon = side_state.pokemon_mut(index).ok_or_else(|| {
-                    BattleError::InvalidState("selected lead index is out of bounds".to_owned())
-                })?;
-                pokemon.prepare_switch_in();
-                pokemon.position = PokemonPosition::Active { slot };
-                side_state.active[slot.index()] = Some(index);
+                StateKernel::new(self).fill_active_position(side, slot, index)?;
             }
         }
         self.turn = 1;

@@ -1,9 +1,10 @@
 # Battle-state transition contract
 
-Status: PR C canonical transition API for milestone 11.5. PR A established
-this contract and PR B added the internal mutation kernel and stable-state
-validation. PR C implements the approved phase-aware API without changing
-supported mechanics.
+Status: PR D mechanics integration for milestone 11.5. PR A established this
+contract, PR B added the internal mutation kernel and stable-state validation,
+and PR C implemented the canonical phase-aware API. PR D routes supported
+mechanics writes through the kernel without changing the public transition
+contract or supported behavior.
 
 ## Transition model
 
@@ -59,7 +60,8 @@ pub fn step<D: CombatData>(
 ```
 
 `Mechanics::new` accepts immutable combat data and an immutable custom effect
-registry. The concrete data provider and the caller's replay metadata identify
+registry, composes it with the built-in effects once, and owns the resulting
+immutable registry for reuse across transitions. The concrete data provider and the caller's replay metadata identify
 the pinned format/mechanics version; no mutable or duplicated version state is
 stored in `BattleState`. `StepDiagnostics` contains queue-construction events
 and, for ordinary turns, the existing structured `TurnResolution`.
@@ -249,10 +251,26 @@ The checked differential fixtures are pinned to Showdown commit
 - PR C does not route existing mechanics writes through the kernel or restrict
   public mutable fields; those remain the explicit scopes of PR D and PR E.
 
+## PR D implementation notes
+
+- Basic damage HP loss and PP consumption use bounded kernel operations; damage
+  calculation, RNG draws, callback order, and diagnostic payloads are unchanged.
+- Common-condition handlers retain their eligibility, duration, residual, and
+  RNG decisions while the kernel applies status installation/cure, sleep/freeze
+  counters, toxic counters, and residual HP loss.
+- Timed volatile upkeep, voluntary switches, initial leads, forced
+  replacements, and faint cleanup use kernel operations. Switch and faint event
+  dispatch remains in mechanics/transition code and the kernel dispatches no
+  effects.
+- `Mechanics` composes built-in and custom immutable effects once at
+  construction and reuses that registry across transitions as well as within
+  queue construction and resolution.
+- PR E still owns public-field encapsulation and replacement of unrestricted
+  callback/fixture mutation escapes.
+
 ## PR sequencing gate
 
-PR D may begin only after PR C review accepts the public transition types,
-phase semantics, one-clone turn path, deterministic/error-atomic behavior, and
-compatibility parity. PR D migrates supported mechanics writes through the
-kernel without changing this public contract.
+PR E may begin after review confirms PR D preserves the public transition
+types, phase semantics, event/RNG ordering, compatibility parity, and stable
+state invariants.
 

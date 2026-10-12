@@ -1,7 +1,7 @@
 use crate::{
-    BattleError, BattleEvent, BattleState, EffectInvocation, EffectOrder, EffectOwner,
-    EffectRegistry, EffectSource, EventContext, EventDispatch, EventValue, MajorStatus,
-    PokemonPosition, PokemonRef, RngReason, StatusState,
+    kernel::StateKernel, BattleError, BattleEvent, BattleState, EffectInvocation, EffectOrder,
+    EffectOwner, EffectRegistry, EffectSource, EventContext, EventDispatch, EventValue,
+    MajorStatus, PokemonPosition, PokemonRef, RngReason, StatusState,
 };
 
 const CHAMPIONS_SLEEP_DURATIONS: [u8; 3] = [2, 3, 3];
@@ -105,10 +105,7 @@ impl BattleState {
             | MajorStatus::Poison
             | MajorStatus::BadlyPoisoned => StatusState::default(),
         };
-        self.side_mut(target.side)
-            .pokemon_mut(target.pokemon)
-            .ok_or_else(|| BattleError::InvalidState("status target became invalid".to_owned()))?
-            .set_major_status(status, state)
+        StateKernel::new(self).set_major_status(target, status, state)
     }
 
     /// Cures a target's major status and clears all associated counters.
@@ -120,11 +117,7 @@ impl BattleState {
         &mut self,
         target: PokemonRef,
     ) -> Result<Option<MajorStatus>, BattleError> {
-        Ok(self
-            .side_mut(target.side)
-            .pokemon_mut(target.pokemon)
-            .ok_or_else(|| BattleError::InvalidState("status target is out of bounds".to_owned()))?
-            .cure_major_status())
+        StateKernel::new(self).cure_major_status(target)
     }
 }
 
@@ -155,11 +148,8 @@ fn sleep_before_move(
     let Some(pokemon) = matching_source(invocation, context) else {
         return Ok(());
     };
-    let state = pokemon_mut(battle, pokemon)?;
-    state.status_state.sleep_turns = state.status_state.sleep_turns.saturating_sub(1);
-    if state.status_state.sleep_turns == 0 {
-        state.cure_major_status();
-    } else {
+    let turns = StateKernel::new(battle).decrement_sleep_turns(pokemon)?;
+    if turns > 0 {
         dispatch.cancel();
     }
     Ok(())
@@ -174,16 +164,12 @@ fn freeze_before_move(
     let Some(pokemon) = matching_source(invocation, context) else {
         return Ok(());
     };
-    let turns = {
-        let state = pokemon_mut(battle, pokemon)?;
-        state.status_state.freeze_turns = state.status_state.freeze_turns.saturating_sub(1);
-        state.status_state.freeze_turns
-    };
+    let turns = StateKernel::new(battle).decrement_freeze_turns(pokemon)?;
     let thawed = turns == 0 || battle.rng.chance(RngReason::Freeze, 1, 4)?;
-    if thawed {
-        pokemon_mut(battle, pokemon)?.cure_major_status();
-    } else {
+    if !thawed {
         dispatch.cancel();
+    } else if turns > 0 {
+        StateKernel::new(battle).cure_major_status(pokemon)?;
     }
     Ok(())
 }
@@ -211,19 +197,26 @@ fn status_residual(
     let Some(pokemon) = owner_pokemon(invocation) else {
         return Ok(());
     };
-    let state = pokemon_mut(battle, pokemon)?;
-    let unit = (state.stats.hp / 16).max(1);
-    let damage = match state.status {
-        Some(MajorStatus::Poison) => (state.stats.hp / 8).max(1),
+    let (max_hp, status) = {
+        let state = battle
+            .side(pokemon.side)
+            .pokemon(pokemon.pokemon)
+            .ok_or_else(|| {
+                BattleError::InvalidState("condition owner is out of bounds".to_owned())
+            })?;
+        (state.stats.hp, state.status)
+    };
+    let unit = (max_hp / 16).max(1);
+    let damage = match status {
+        Some(MajorStatus::Poison) => (max_hp / 8).max(1),
         Some(MajorStatus::Burn) => unit,
         Some(MajorStatus::BadlyPoisoned) => {
-            state.status_state.toxic_counter =
-                state.status_state.toxic_counter.saturating_add(1).min(15);
-            unit.saturating_mul(u16::from(state.status_state.toxic_counter))
+            let counter = StateKernel::new(battle).increment_toxic_counter(pokemon)?;
+            unit.saturating_mul(u16::from(counter))
         }
         Some(MajorStatus::Freeze | MajorStatus::Paralysis | MajorStatus::Sleep) | None => 0,
     };
-    state.current_hp = state.current_hp.saturating_sub(damage);
+    StateKernel::new(battle).damage_hp(pokemon, damage)?;
     Ok(())
 }
 
@@ -240,14 +233,4 @@ const fn owner_pokemon(invocation: &EffectInvocation) -> Option<PokemonRef> {
 fn matching_source(invocation: &EffectInvocation, context: &EventContext) -> Option<PokemonRef> {
     let owner = owner_pokemon(invocation)?;
     (Some(owner) == context.source).then_some(owner)
-}
-
-fn pokemon_mut(
-    battle: &mut BattleState,
-    pokemon: PokemonRef,
-) -> Result<&mut crate::PokemonState, BattleError> {
-    battle
-        .side_mut(pokemon.side)
-        .pokemon_mut(pokemon.pokemon)
-        .ok_or_else(|| BattleError::InvalidState("condition owner is out of bounds".to_owned()))
 }

@@ -39,13 +39,16 @@ pub enum JointAction {
 /// Immutable mechanics inputs shared across transitions.
 pub struct Mechanics<'a, D: CombatData> {
     data: &'a D,
-    effects: &'a EffectRegistry,
+    effects: EffectRegistry,
 }
 
 impl<'a, D: CombatData> Mechanics<'a, D> {
     #[must_use]
-    pub const fn new(data: &'a D, effects: &'a EffectRegistry) -> Self {
-        Self { data, effects }
+    pub fn new(data: &'a D, effects: &EffectRegistry) -> Self {
+        Self {
+            data,
+            effects: crate::conditions::composed_registry(effects),
+        }
     }
 
     #[must_use]
@@ -54,8 +57,8 @@ impl<'a, D: CombatData> Mechanics<'a, D> {
     }
 
     #[must_use]
-    pub const fn effects(&self) -> &'a EffectRegistry {
-        self.effects
+    pub const fn effects(&self) -> &EffectRegistry {
+        &self.effects
     }
 }
 
@@ -110,10 +113,9 @@ pub fn step<D: CombatData>(
             StepDiagnostics::default()
         }
         JointAction::Turn { p1, p2 } => {
-            let effects = crate::conditions::composed_registry(mechanics.effects);
-            next.queue_turn_inner(*p1, *p2, &effects)?;
+            next.queue_turn_inner(*p1, *p2, &mechanics.effects)?;
             let queue_events = next.queue.events.clone();
-            let turn = next.resolve_turn_inner(mechanics.data, &effects)?;
+            let turn = next.resolve_turn_inner(mechanics.data, &mechanics.effects)?;
             StepDiagnostics {
                 queue_events,
                 turn: Some(turn),

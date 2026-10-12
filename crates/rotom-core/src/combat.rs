@@ -1,8 +1,8 @@
 use crate::{
-    ActionTarget, ActiveSlot, BattleError, BattleEvent, BattlePhase, BattleState, EffectRegistry,
-    EventContext, EventDispatch, EventValue, FaintTarget, FormId, MajorStatus, MoveId,
-    MoveSlotIndex, MoveTarget, PokemonAction, PokemonIndex, PokemonRef, PokemonState, RngReason,
-    SideId, SpeciesId,
+    kernel::StateKernel, ActionTarget, ActiveSlot, BattleError, BattleEvent, BattlePhase,
+    BattleState, EffectRegistry, EventContext, EventDispatch, EventValue, FaintTarget, FormId,
+    MajorStatus, MoveId, MoveSlotIndex, MoveTarget, PokemonAction, PokemonIndex, PokemonRef,
+    PokemonState, RngReason, SideId, SpeciesId,
 };
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
@@ -368,11 +368,17 @@ impl BattleState {
             return Ok(());
         }
 
-        self.side_mut(queued.side)
-            .pokemon_mut(source_index)
-            .and_then(|source| source.moves.get_mut(usize::from(queued.move_slot.get())))
+        let remaining_pp = self
+            .side(queued.side)
+            .pokemon(source_index)
+            .and_then(|source| source.moves.get(usize::from(queued.move_slot.get())))
             .ok_or_else(|| BattleError::InvalidState("move slot became invalid".to_owned()))?
-            .pp -= 1;
+            .pp
+            .checked_sub(1)
+            .ok_or_else(|| {
+                BattleError::InvalidState("queued move has no remaining PP".to_owned())
+            })?;
+        StateKernel::new(self).set_pp(move_context.source, queued.move_slot, remaining_pp)?;
 
         if !self.check_accuracy(
             move_context.move_data.accuracy,
@@ -586,11 +592,7 @@ impl BattleState {
             pokemon,
             damage,
         } = application;
-        let target = self
-            .side_mut(side)
-            .pokemon_mut(pokemon)
-            .ok_or_else(|| BattleError::InvalidState("damage target became invalid".to_owned()))?;
-        target.current_hp = target.current_hp.saturating_sub(damage);
+        StateKernel::new(self).damage_hp(PokemonRef::new(side, pokemon), damage)?;
         resolution.events.push(effects.dispatch(
             self,
             BattleEvent::AfterDamage,
@@ -673,18 +675,7 @@ impl BattleState {
         if cancelled {
             return Ok(false);
         }
-        let side_state = self.side_mut(side);
-        let outgoing_state = side_state
-            .pokemon_mut(outgoing)
-            .ok_or_else(|| BattleError::InvalidState("switch source is invalid".to_owned()))?;
-        outgoing_state.clear_on_exit();
-        outgoing_state.position = crate::PokemonPosition::Team;
-        let incoming_state = side_state
-            .pokemon_mut(incoming)
-            .ok_or_else(|| BattleError::InvalidState("switch target is invalid".to_owned()))?;
-        incoming_state.prepare_switch_in();
-        incoming_state.position = crate::PokemonPosition::Active { slot };
-        side_state.active[slot.index()] = Some(incoming);
+        StateKernel::new(self).switch_active_position(side, slot, incoming)?;
         resolution.events.push(effects.dispatch(
             self,
             BattleEvent::SwitchIn,
@@ -704,19 +695,12 @@ impl BattleState {
     ) -> Result<(), BattleError> {
         for side in [SideId::P1, SideId::P2] {
             for pokemon in self.side(side).active.into_iter().flatten() {
-                let expired = self
-                    .side_mut(side)
-                    .pokemon_mut(pokemon)
-                    .ok_or_else(|| {
-                        BattleError::InvalidState(
-                            "active Pokémon is invalid during volatile upkeep".to_owned(),
-                        )
-                    })?
-                    .tick_volatile_durations();
+                let pokemon_ref = PokemonRef::new(side, pokemon);
+                let expired = StateKernel::new(self).tick_volatile_durations(pokemon_ref)?;
                 resolution
                     .expired_volatiles
                     .extend(expired.into_iter().map(|condition| ExpiredVolatile {
-                        pokemon: PokemonRef::new(side, pokemon),
+                        pokemon: pokemon_ref,
                         condition,
                     }));
             }

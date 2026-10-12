@@ -151,6 +151,51 @@ impl<'a> StateKernel<'a> {
         Ok(self.pokemon_mut(target)?.cure_major_status())
     }
 
+    pub(crate) fn decrement_sleep_turns(&mut self, target: PokemonRef) -> Result<u8, BattleError> {
+        let pokemon = self.pokemon_mut(target)?;
+        if pokemon.status != Some(MajorStatus::Sleep) {
+            return Err(BattleError::InvalidState(
+                "sleep counter mutation requires sleep status".to_owned(),
+            ));
+        }
+        pokemon.status_state.sleep_turns = pokemon.status_state.sleep_turns.saturating_sub(1);
+        let turns = pokemon.status_state.sleep_turns;
+        if turns == 0 {
+            pokemon.cure_major_status();
+        }
+        Ok(turns)
+    }
+
+    pub(crate) fn decrement_freeze_turns(&mut self, target: PokemonRef) -> Result<u8, BattleError> {
+        let pokemon = self.pokemon_mut(target)?;
+        if pokemon.status != Some(MajorStatus::Freeze) {
+            return Err(BattleError::InvalidState(
+                "freeze counter mutation requires freeze status".to_owned(),
+            ));
+        }
+        pokemon.status_state.freeze_turns = pokemon.status_state.freeze_turns.saturating_sub(1);
+        let turns = pokemon.status_state.freeze_turns;
+        if turns == 0 {
+            pokemon.cure_major_status();
+        }
+        Ok(turns)
+    }
+
+    pub(crate) fn increment_toxic_counter(
+        &mut self,
+        target: PokemonRef,
+    ) -> Result<u8, BattleError> {
+        let pokemon = self.pokemon_mut(target)?;
+        if pokemon.status != Some(MajorStatus::BadlyPoisoned) {
+            return Err(BattleError::InvalidState(
+                "toxic counter mutation requires badly poisoned status".to_owned(),
+            ));
+        }
+        pokemon.status_state.toxic_counter =
+            pokemon.status_state.toxic_counter.saturating_add(1).min(15);
+        Ok(pokemon.status_state.toxic_counter)
+    }
+
     pub(crate) fn add_volatile(
         &mut self,
         target: PokemonRef,
@@ -184,8 +229,8 @@ impl<'a> StateKernel<'a> {
         Ok(self.pokemon_mut(target)?.tick_volatile_durations())
     }
 
-    /// Replaces one occupied active position without applying switch rules or
-    /// switch-out cleanup.
+    /// Replaces one occupied active position and applies structural switch
+    /// cleanup. Eligibility and event ordering remain caller responsibilities.
     pub(crate) fn switch_active_position(
         &mut self,
         side: SideId,
@@ -215,14 +260,16 @@ impl<'a> StateKernel<'a> {
         self.require_healthy_team_position(side, incoming)?;
 
         let side_state = self.battle.side_mut(side);
-        side_state
-            .pokemon_mut(outgoing)
-            .ok_or_else(|| BattleError::InvalidState("switch source is out of bounds".to_owned()))?
-            .position = PokemonPosition::Team;
-        side_state
-            .pokemon_mut(incoming)
-            .ok_or_else(|| BattleError::InvalidState("switch target is out of bounds".to_owned()))?
-            .position = PokemonPosition::Active { slot };
+        let outgoing_state = side_state.pokemon_mut(outgoing).ok_or_else(|| {
+            BattleError::InvalidState("switch source is out of bounds".to_owned())
+        })?;
+        outgoing_state.clear_on_exit();
+        outgoing_state.position = PokemonPosition::Team;
+        let incoming_state = side_state.pokemon_mut(incoming).ok_or_else(|| {
+            BattleError::InvalidState("switch target is out of bounds".to_owned())
+        })?;
+        incoming_state.prepare_switch_in();
+        incoming_state.position = PokemonPosition::Active { slot };
         side_state.active[slot_index] = Some(incoming);
         Ok(outgoing)
     }
@@ -242,12 +289,11 @@ impl<'a> StateKernel<'a> {
         self.require_selected(side, incoming)?;
         self.require_healthy_team_position(side, incoming)?;
         let side_state = self.battle.side_mut(side);
-        side_state
-            .pokemon_mut(incoming)
-            .ok_or_else(|| {
-                BattleError::InvalidState("incoming Pokémon is out of bounds".to_owned())
-            })?
-            .position = PokemonPosition::Active { slot };
+        let incoming_state = side_state.pokemon_mut(incoming).ok_or_else(|| {
+            BattleError::InvalidState("incoming Pokémon is out of bounds".to_owned())
+        })?;
+        incoming_state.prepare_switch_in();
+        incoming_state.position = PokemonPosition::Active { slot };
         side_state.active[slot.index()] = Some(incoming);
         Ok(())
     }
@@ -559,10 +605,34 @@ mod tests {
         assert!(kernel
             .set_major_status(target, MajorStatus::Burn, StatusState::default())
             .is_err());
-        assert_eq!(
-            kernel.cure_major_status(target).unwrap(),
-            Some(MajorStatus::Sleep)
-        );
+        assert_eq!(kernel.decrement_sleep_turns(target).unwrap(), 1);
+        assert_eq!(kernel.decrement_sleep_turns(target).unwrap(), 0);
+        assert_eq!(kernel.cure_major_status(target).unwrap(), None);
+        kernel
+            .set_major_status(
+                target,
+                MajorStatus::Freeze,
+                StatusState {
+                    freeze_turns: 3,
+                    ..StatusState::default()
+                },
+            )
+            .unwrap();
+        assert_eq!(kernel.decrement_freeze_turns(target).unwrap(), 2);
+        kernel.cure_major_status(target).unwrap();
+        kernel
+            .set_major_status(
+                target,
+                MajorStatus::BadlyPoisoned,
+                StatusState {
+                    toxic_counter: 14,
+                    ..StatusState::default()
+                },
+            )
+            .unwrap();
+        assert_eq!(kernel.increment_toxic_counter(target).unwrap(), 15);
+        assert_eq!(kernel.increment_toxic_counter(target).unwrap(), 15);
+        kernel.cure_major_status(target).unwrap();
 
         kernel.add_volatile(target, condition).unwrap();
         assert!(kernel.add_volatile(target, condition).is_err());
@@ -608,6 +678,27 @@ mod tests {
         assert_eq!(battle, before);
 
         let mut kernel = StateKernel::new(&mut battle);
+        kernel
+            .pokemon_mut(PokemonRef::new(SideId::P1, index(0)))
+            .unwrap()
+            .stat_stages
+            .atk = 3;
+        kernel
+            .pokemon_mut(PokemonRef::new(SideId::P1, index(0)))
+            .unwrap()
+            .add_volatile(ConditionState::new(ConditionId::new(11), Some(2)))
+            .unwrap();
+        kernel
+            .pokemon_mut(PokemonRef::new(SideId::P1, index(2)))
+            .unwrap()
+            .set_major_status(
+                MajorStatus::BadlyPoisoned,
+                StatusState {
+                    toxic_counter: 3,
+                    ..StatusState::default()
+                },
+            )
+            .unwrap();
         assert_eq!(
             kernel
                 .switch_active_position(SideId::P1, ActiveSlot::Left, index(2))
@@ -620,10 +711,31 @@ mod tests {
             PokemonPosition::Team
         );
         assert_eq!(
+            battle
+                .side(SideId::P1)
+                .pokemon(index(0))
+                .unwrap()
+                .stat_stages,
+            StatStages::default()
+        );
+        assert_eq!(
+            battle.side(SideId::P1).pokemon(index(0)).unwrap().volatiles,
+            Vec::new()
+        );
+        assert_eq!(
             battle.side(SideId::P1).pokemon(index(2)).unwrap().position,
             PokemonPosition::Active {
                 slot: ActiveSlot::Left
             }
+        );
+        assert_eq!(
+            battle
+                .side(SideId::P1)
+                .pokemon(index(2))
+                .unwrap()
+                .status_state
+                .toxic_counter,
+            0
         );
 
         let mut kernel = StateKernel::new(&mut battle);
