@@ -1,8 +1,8 @@
 //! Core types and authoritative runtime state for the Rotom Spark battle engine.
 //!
-//! Turn resolution and battle mechanics are intentionally deferred to later
-//! milestones. The state in this crate is structured, serializable, and
-//! cloneable so those mechanics do not need to rely on text logs.
+//! The state in this crate is structured, serializable, and cloneable. The
+//! phase-aware [`step`] function is the canonical deterministic advancement
+//! API; its diagnostics never replace authoritative battle state.
 
 mod action;
 mod combat;
@@ -15,6 +15,7 @@ mod rng;
 mod side;
 mod state;
 mod team;
+mod transition;
 
 pub use action::{
     ActionTarget, LegalActions, MoveSlotIndex, MoveTarget, PokemonAction, SlotLegalActions,
@@ -40,3 +41,4 @@ pub use state::{
     StatusState, TeamState,
 };
 pub use team::{Gender, PokemonSet, StatAllocation, TeamDefinition};
+pub use transition::{step, JointAction, Mechanics, StepDiagnostics, StepResult, TeamSelection};

@@ -85,7 +85,7 @@ impl BattleState {
         Ok(&self.queue)
     }
 
-    fn queue_turn_inner(
+    pub(crate) fn queue_turn_inner(
         &mut self,
         p1: TurnChoice,
         p2: TurnChoice,

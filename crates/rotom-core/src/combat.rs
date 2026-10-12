@@ -236,7 +236,7 @@ impl BattleState {
         Ok(result)
     }
 
-    fn resolve_turn_inner<D: CombatData>(
+    pub(crate) fn resolve_turn_inner<D: CombatData>(
         &mut self,
         data: &D,
         effects: &EffectRegistry,

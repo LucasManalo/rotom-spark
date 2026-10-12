@@ -202,13 +202,19 @@ fn targets_for(source: ActiveSlot, target: MoveTarget) -> Vec<ActionTarget> {
 }
 
 fn combined_choices(slots: &[SlotLegalActions; 2], phase: BattlePhase) -> Vec<TurnChoice> {
+    let switch_required = phase == BattlePhase::ForcedSwitch
+        && slots.iter().any(|slot| {
+            slot.actions
+                .iter()
+                .any(|action| matches!(action, PokemonAction::Switch { .. }))
+        });
     let mut choices = Vec::new();
     for &left in &slots[0].actions {
         for &right in &slots[1].actions {
             let choice = TurnChoice {
                 actions: [left, right],
             };
-            if combination_is_legal(choice, phase) {
+            if combination_is_legal(choice, switch_required) {
                 choices.push(choice);
             }
         }
@@ -216,7 +222,7 @@ fn combined_choices(slots: &[SlotLegalActions; 2], phase: BattlePhase) -> Vec<Tu
     choices
 }
 
-fn combination_is_legal(choice: TurnChoice, phase: BattlePhase) -> bool {
+fn combination_is_legal(choice: TurnChoice, switch_required: bool) -> bool {
     let mut switch_ins = HashSet::new();
     let mut mega_count = 0;
     let mut switch_count = 0;
@@ -234,5 +240,5 @@ fn combination_is_legal(choice: TurnChoice, phase: BattlePhase) -> bool {
             | PokemonAction::Pass => {}
         }
     }
-    mega_count <= 1 && (phase != BattlePhase::ForcedSwitch || switch_count > 0)
+    mega_count <= 1 && (!switch_required || switch_count > 0)
 }

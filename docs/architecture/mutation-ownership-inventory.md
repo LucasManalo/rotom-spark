@@ -33,10 +33,11 @@ future simulation.
 | `state/transition.rs:247-259` | Prepares incoming replacement, writes position/slot, settles phase | Kernel candidate | Position operation plus transition-owned phase settlement |
 | `state/transition.rs:302-316` | Prepares both leads, writes positions/slots, sets turn 1 and phase | Kernel candidate | Preview activation operations plus transition settlement |
 | `state/transition.rs:345-363` | Writes winner and post-faint phase | Kernel candidate | Transition settlement; simultaneous-faint rule remains mechanics/transition policy |
-| `state/queue.rs:75-85` | Clones and commits the whole battle transactionally | Kernel candidate | Replaced by canonical transition commit in PR C |
+| `state/queue.rs:75-85` | Clones and commits the whole battle transactionally | Compatibility adapter | Retained for migration compatibility; canonical `step` bypasses this extra clone |
 | `state/queue.rs:110-111` | Installs action queue and enters `ResolvingTurn` | Kernel candidate | Transition-owned queue/phase operation |
 | `state/queue.rs:190-213` | Advances embedded RNG while shuffling exact speed ties | Mechanics write | Ordering mechanics requests RNG; RNG remains embedded and authoritative |
-| `combat.rs:226-236` | Clones and commits the whole battle transactionally | Kernel candidate | Replaced by canonical transition commit in PR C |
+| `combat.rs:226-236` | Clones and commits the whole battle transactionally | Compatibility adapter | Retained for migration compatibility; canonical `step` bypasses this extra clone |
+| `transition.rs` | Clones the complete stable input once, orchestrates preview/turn/replacement, then returns only a validated stable result | Transition owner | Canonical public transaction boundary introduced by PR C |
 | `combat.rs:330-338` | Clears queue/events, increments turn, settles phase | Kernel candidate | Transition-owned turn settlement |
 | `combat.rs:370-375` | Decrements move PP | Mechanics write | Mechanics validates/requests; kernel applies bounded PP change |
 | `combat.rs:487-492`, `632-646` | Advances RNG for critical, damage, and accuracy | Mechanics write | Mechanics-owned RNG requests; no kernel involvement |
@@ -125,10 +126,15 @@ draws, or supported behavior. The internal kernel has a narrowly scoped
 temporary `dead_code` allowance in non-test builds; PR D removes that allowance
 as mechanics callers migrate.
 
-PR C should establish the single phase-aware transaction and remove duplicated
-queue/resolve commits. PR D should migrate the mechanics writes listed above.
-PR E should close public mutation escapes and provide valid/test-invalid
-builders.
+PR C established the single phase-aware transaction. Its normal-turn path
+calls crate-internal queue/resolver operations on one cloned input; the old
+public queue/resolve methods keep their independent transactional clones only
+as compatibility adapters. PR C also makes a no-op forced-switch choice legal
+for the side with no replacement due, enabling complete two-sided joint
+replacement actions.
 
-No production mechanics write was moved in PR A or PR B.
+PR D should migrate the mechanics writes listed above. PR E should close
+public mutation escapes and provide valid/test-invalid builders.
+
+No production mechanics write was moved in PR A, PR B, or PR C.
 

@@ -1,9 +1,9 @@
 # Battle-state transition contract
 
-Status: PR A architectural contract and regression baseline for milestone 11.5.
-This document freezes the intended architecture before the mutation kernel or
-canonical transition API is implemented. PR A does not change production
-mechanics.
+Status: PR C canonical transition API for milestone 11.5. PR A established
+this contract and PR B added the internal mutation kernel and stable-state
+validation. PR C implements the approved phase-aware API without changing
+supported mechanics.
 
 ## Transition model
 
@@ -31,8 +31,8 @@ metadata, not gameplay authority.
 
 ## Approved canonical API direction
 
-PR C will introduce the equivalent of the following public contract (names may
-be adjusted only for ordinary Rust ergonomics, not semantics):
+PR C implements the following public contract in
+`crates/rotom-core/src/transition.rs`:
 
 ```rust
 pub enum JointAction {
@@ -42,9 +42,8 @@ pub enum JointAction {
 }
 
 pub struct Mechanics<'a, D> {
-    pub data: &'a D,
-    pub effects: &'a EffectRegistry,
-    // immutable format/mechanics version identity
+    data: &'a D,
+    effects: &'a EffectRegistry,
 }
 
 pub struct StepResult {
@@ -59,6 +58,12 @@ pub fn step<D: CombatData>(
 ) -> Result<StepResult, BattleError>;
 ```
 
+`Mechanics::new` accepts immutable combat data and an immutable custom effect
+registry. The concrete data provider and the caller's replay metadata identify
+the pinned format/mechanics version; no mutable or duplicated version state is
+stored in `BattleState`. `StepDiagnostics` contains queue-construction events
+and, for ordinary turns, the existing structured `TurnResolution`.
+
 `step` is pure from the caller's perspective. It clones the complete input at
 most once, advances only the clone, and returns it only after successful phase
 settlement and stable-state validation. An error returns no partially advanced
@@ -66,9 +71,11 @@ state, RNG, queue, or diagnostics. A later in-place optimization may exist,
 but only if it provides the same error atomicity.
 
 The current `select_team`, `queue_turn`, `resolve_turn`, `switch_active`,
-`process_faints`, and `replace_fainted` methods are migration-era low-level
-entry points. They are not the target application-facing protocol. PR C may
-retain them temporarily as internal adapters; PR A does not change them.
+`process_faints`, and `replace_fainted` methods remain migration-era low-level
+compatibility entry points. They are not the target application-facing
+protocol. The canonical normal-turn path calls the existing queue and resolver
+internals on one cloned state, avoiding the two transactional clones performed
+by sequential compatibility calls.
 
 ## Meaning of one step
 
@@ -173,7 +180,7 @@ output:
 - Field, side, status, volatile, PP, and counter structures satisfy their local
   invariants.
 
-PR B will encode these checks in `validate_stable_state` or an equivalent API.
+PR B encoded these checks in `BattleState::validate_stable_state`.
 Fixture builders may create arbitrary structurally valid scenarios. Deliberate
 corruption belongs in isolated negative tests and must not be silently fixed.
 
@@ -226,10 +233,26 @@ The checked differential fixtures are pinned to Showdown commit
 `b79ce06d06b8f0dc8de8bb348bc9cab5d931553f` and format
 `gen9championsvgc2026regmc`. PR A changes no fixture or supported mechanic.
 
+## PR C implementation notes
+
+- `step` validates a stable input and phase/action pairing before cloning the
+  complete embedded-RNG state once. Only a validated stable result is returned.
+- Team preview accepts both complete ordered selections in one call.
+- A normal turn composes built-in and custom effects once, queues and resolves
+  on the same clone, and preserves the prior queue/resolver behavior and RNG
+  order. Queue events are copied into diagnostics before resolver settlement
+  clears the authoritative queue.
+- Forced replacement validates both sides' complete choices before mutation,
+  then settles all requested slots. A side with no replacement due submits
+  explicit `Pass` actions while its opponent replaces.
+- `ResolvingTurn` remains internal and `BattleEnd` rejects every joint action.
+- PR C does not route existing mechanics writes through the kernel or restrict
+  public mutable fields; those remain the explicit scopes of PR D and PR E.
+
 ## PR sequencing gate
 
-PR B may begin only after review accepts this embedded-RNG policy, the pure
-phase-aware `step` direction, the invariant taxonomy, and the ownership
-inventory. PR B centralizes mutation primitives only. It must not implement
-`step`, migrate all mechanics, restrict public fields, or add new mechanics.
+PR D may begin only after PR C review accepts the public transition types,
+phase semantics, one-clone turn path, deterministic/error-atomic behavior, and
+compatibility parity. PR D migrates supported mechanics writes through the
+kernel without changing this public contract.
 
