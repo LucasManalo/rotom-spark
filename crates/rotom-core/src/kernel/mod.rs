@@ -1,0 +1,643 @@
+mod validation;
+
+use crate::{
+    ActiveSlot, BattleError, BattleStat, BattleState, ConditionId, ConditionState, MajorStatus,
+    MoveSlotIndex, PokemonPosition, PokemonRef, SideId, StatStageChange, StatusState,
+};
+
+/// The actual bounded result of one HP mutation.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+// PR B defines this result before PR D migrates production callers.
+#[cfg_attr(not(test), allow(dead_code))]
+pub(crate) struct HpChange {
+    pub(crate) previous: u16,
+    pub(crate) current: u16,
+    pub(crate) requested: u16,
+    pub(crate) applied: u16,
+}
+
+/// The previous and current PP after one bounded assignment.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+// PR B defines this result before PR D migrates production callers.
+#[cfg_attr(not(test), allow(dead_code))]
+pub(crate) struct PpChange {
+    pub(crate) previous: u8,
+    pub(crate) current: u8,
+}
+
+/// Internal, mechanically ignorant access to structurally safe state writes.
+///
+/// Callers decide why and when a change occurs. This type only resolves typed
+/// references, applies the requested write, and preserves local representation
+/// invariants. It never consumes RNG or dispatches effects.
+// PR B defines the internal kernel before PR D migrates production callers.
+#[cfg_attr(not(test), allow(dead_code))]
+pub(crate) struct StateKernel<'a> {
+    battle: &'a mut BattleState,
+}
+
+// PR B defines the internal kernel before PR D migrates production callers.
+#[cfg_attr(not(test), allow(dead_code))]
+impl<'a> StateKernel<'a> {
+    pub(crate) const fn new(battle: &'a mut BattleState) -> Self {
+        Self { battle }
+    }
+
+    pub(crate) fn damage_hp(
+        &mut self,
+        target: PokemonRef,
+        requested: u16,
+    ) -> Result<HpChange, BattleError> {
+        let pokemon = self.pokemon_mut(target)?;
+        if pokemon.current_hp > pokemon.stats.hp {
+            return Err(BattleError::InvalidState(
+                "cannot damage Pokémon whose HP exceeds max HP".to_owned(),
+            ));
+        }
+        let previous = pokemon.current_hp;
+        let current = previous.saturating_sub(requested);
+        pokemon.current_hp = current;
+        Ok(HpChange {
+            previous,
+            current,
+            requested,
+            applied: previous - current,
+        })
+    }
+
+    pub(crate) fn heal_hp(
+        &mut self,
+        target: PokemonRef,
+        requested: u16,
+    ) -> Result<HpChange, BattleError> {
+        let pokemon = self.pokemon_mut(target)?;
+        if pokemon.current_hp > pokemon.stats.hp {
+            return Err(BattleError::InvalidState(
+                "cannot heal Pokémon whose HP exceeds max HP".to_owned(),
+            ));
+        }
+        if pokemon.is_fainted() {
+            return Err(BattleError::InvalidState(
+                "cannot heal a structurally fainted Pokémon".to_owned(),
+            ));
+        }
+        let previous = pokemon.current_hp;
+        let current = previous.saturating_add(requested).min(pokemon.stats.hp);
+        pokemon.current_hp = current;
+        Ok(HpChange {
+            previous,
+            current,
+            requested,
+            applied: current - previous,
+        })
+    }
+
+    pub(crate) fn set_pp(
+        &mut self,
+        target: PokemonRef,
+        slot: MoveSlotIndex,
+        value: u8,
+    ) -> Result<PpChange, BattleError> {
+        let move_slot = self
+            .pokemon_mut(target)?
+            .moves
+            .get_mut(usize::from(slot.get()))
+            .ok_or_else(|| BattleError::InvalidState("move slot is out of bounds".to_owned()))?;
+        if value > move_slot.max_pp {
+            return Err(BattleError::InvalidState(
+                "move PP cannot exceed max PP".to_owned(),
+            ));
+        }
+        let previous = move_slot.pp;
+        move_slot.pp = value;
+        Ok(PpChange {
+            previous,
+            current: value,
+        })
+    }
+
+    pub(crate) fn change_stat_stage(
+        &mut self,
+        target: PokemonRef,
+        stat: BattleStat,
+        delta: i8,
+    ) -> Result<StatStageChange, BattleError> {
+        if self.pokemon(target)?.is_fainted() {
+            return Err(BattleError::InvalidState(
+                "cannot change stages on a structurally fainted Pokémon".to_owned(),
+            ));
+        }
+        Ok(self.pokemon_mut(target)?.stat_stages.change(stat, delta))
+    }
+
+    pub(crate) fn set_major_status(
+        &mut self,
+        target: PokemonRef,
+        status: MajorStatus,
+        state: StatusState,
+    ) -> Result<(), BattleError> {
+        if self.pokemon(target)?.is_fainted() {
+            return Err(BattleError::InvalidState(
+                "cannot add a major status to a structurally fainted Pokémon".to_owned(),
+            ));
+        }
+        self.pokemon_mut(target)?.set_major_status(status, state)
+    }
+
+    pub(crate) fn cure_major_status(
+        &mut self,
+        target: PokemonRef,
+    ) -> Result<Option<MajorStatus>, BattleError> {
+        Ok(self.pokemon_mut(target)?.cure_major_status())
+    }
+
+    pub(crate) fn add_volatile(
+        &mut self,
+        target: PokemonRef,
+        condition: ConditionState,
+    ) -> Result<(), BattleError> {
+        if self.pokemon(target)?.is_fainted() {
+            return Err(BattleError::InvalidState(
+                "cannot add a volatile to a structurally fainted Pokémon".to_owned(),
+            ));
+        }
+        self.pokemon_mut(target)?.add_volatile(condition)
+    }
+
+    pub(crate) fn remove_volatile(
+        &mut self,
+        target: PokemonRef,
+        condition: ConditionId,
+    ) -> Result<Option<ConditionState>, BattleError> {
+        Ok(self.pokemon_mut(target)?.remove_volatile(condition))
+    }
+
+    pub(crate) fn tick_volatile_durations(
+        &mut self,
+        target: PokemonRef,
+    ) -> Result<Vec<ConditionId>, BattleError> {
+        if self.pokemon(target)?.is_fainted() {
+            return Err(BattleError::InvalidState(
+                "cannot tick volatiles on a structurally fainted Pokémon".to_owned(),
+            ));
+        }
+        Ok(self.pokemon_mut(target)?.tick_volatile_durations())
+    }
+
+    /// Replaces one occupied active position without applying switch rules or
+    /// switch-out cleanup.
+    pub(crate) fn switch_active_position(
+        &mut self,
+        side: SideId,
+        slot: ActiveSlot,
+        incoming: crate::PokemonIndex,
+    ) -> Result<crate::PokemonIndex, BattleError> {
+        let slot_index = slot.index();
+        let outgoing = self.battle.side(side).active[slot_index].ok_or_else(|| {
+            BattleError::InvalidState("cannot switch an empty active position".to_owned())
+        })?;
+        if outgoing == incoming {
+            return Err(BattleError::InvalidState(
+                "incoming Pokémon already occupies the active position".to_owned(),
+            ));
+        }
+        self.require_selected(side, outgoing)?;
+        self.require_selected(side, incoming)?;
+        self.require_position(side, outgoing, PokemonPosition::Active { slot })?;
+        let outgoing_state = self.battle.side(side).pokemon(outgoing).ok_or_else(|| {
+            BattleError::InvalidState("switch source is out of bounds".to_owned())
+        })?;
+        if outgoing_state.current_hp == 0 || outgoing_state.is_fainted() {
+            return Err(BattleError::InvalidState(
+                "outgoing Pokémon must be a healthy active Pokémon".to_owned(),
+            ));
+        }
+        self.require_healthy_team_position(side, incoming)?;
+
+        let side_state = self.battle.side_mut(side);
+        side_state
+            .pokemon_mut(outgoing)
+            .ok_or_else(|| BattleError::InvalidState("switch source is out of bounds".to_owned()))?
+            .position = PokemonPosition::Team;
+        side_state
+            .pokemon_mut(incoming)
+            .ok_or_else(|| BattleError::InvalidState("switch target is out of bounds".to_owned()))?
+            .position = PokemonPosition::Active { slot };
+        side_state.active[slot_index] = Some(incoming);
+        Ok(outgoing)
+    }
+
+    /// Places a healthy benched Pokémon into an empty active slot.
+    pub(crate) fn fill_active_position(
+        &mut self,
+        side: SideId,
+        slot: ActiveSlot,
+        incoming: crate::PokemonIndex,
+    ) -> Result<(), BattleError> {
+        if self.battle.side(side).active[slot.index()].is_some() {
+            return Err(BattleError::InvalidState(
+                "cannot fill an occupied active position".to_owned(),
+            ));
+        }
+        self.require_selected(side, incoming)?;
+        self.require_healthy_team_position(side, incoming)?;
+        let side_state = self.battle.side_mut(side);
+        side_state
+            .pokemon_mut(incoming)
+            .ok_or_else(|| {
+                BattleError::InvalidState("incoming Pokémon is out of bounds".to_owned())
+            })?
+            .position = PokemonPosition::Active { slot };
+        side_state.active[slot.index()] = Some(incoming);
+        Ok(())
+    }
+
+    /// Atomically establishes the structural faint representation for one
+    /// occupied active slot. Event order and victory settlement remain caller
+    /// responsibilities.
+    pub(crate) fn mark_fainted(
+        &mut self,
+        side: SideId,
+        slot: ActiveSlot,
+    ) -> Result<crate::PokemonIndex, BattleError> {
+        let slot_index = slot.index();
+        let pokemon_index = self.battle.side(side).active[slot_index].ok_or_else(|| {
+            BattleError::InvalidState("cannot faint an empty active position".to_owned())
+        })?;
+        self.require_selected(side, pokemon_index)?;
+        self.require_position(side, pokemon_index, PokemonPosition::Active { slot })?;
+        let side_state = self.battle.side_mut(side);
+        let pokemon = side_state
+            .pokemon_mut(pokemon_index)
+            .ok_or_else(|| BattleError::InvalidState("faint target is out of bounds".to_owned()))?;
+        pokemon.current_hp = 0;
+        pokemon.status = None;
+        pokemon.status_state = StatusState::default();
+        pokemon.clear_on_exit();
+        pokemon.position = PokemonPosition::Fainted;
+        side_state.active[slot_index] = None;
+        Ok(pokemon_index)
+    }
+
+    pub(crate) fn add_side_condition(
+        &mut self,
+        side: SideId,
+        condition: ConditionState,
+    ) -> Result<(), BattleError> {
+        validate_new_condition(
+            &self.battle.side(side).side_conditions,
+            condition,
+            "side condition",
+        )?;
+        self.battle.side_mut(side).side_conditions.push(condition);
+        Ok(())
+    }
+
+    pub(crate) fn remove_side_condition(
+        &mut self,
+        side: SideId,
+        condition: ConditionId,
+    ) -> Option<ConditionState> {
+        remove_condition(&mut self.battle.side_mut(side).side_conditions, condition)
+    }
+
+    pub(crate) fn add_field_condition(
+        &mut self,
+        condition: ConditionState,
+    ) -> Result<(), BattleError> {
+        validate_new_condition(&self.battle.field.conditions, condition, "field condition")?;
+        self.battle.field.conditions.push(condition);
+        Ok(())
+    }
+
+    pub(crate) fn remove_field_condition(
+        &mut self,
+        condition: ConditionId,
+    ) -> Option<ConditionState> {
+        remove_condition(&mut self.battle.field.conditions, condition)
+    }
+
+    pub(crate) fn set_weather(
+        &mut self,
+        weather: Option<ConditionState>,
+    ) -> Result<Option<ConditionState>, BattleError> {
+        validate_single_condition(weather, "weather")?;
+        Ok(std::mem::replace(&mut self.battle.field.weather, weather))
+    }
+
+    pub(crate) fn set_terrain(
+        &mut self,
+        terrain: Option<ConditionState>,
+    ) -> Result<Option<ConditionState>, BattleError> {
+        validate_single_condition(terrain, "terrain")?;
+        Ok(std::mem::replace(&mut self.battle.field.terrain, terrain))
+    }
+
+    fn pokemon_mut(&mut self, target: PokemonRef) -> Result<&mut crate::PokemonState, BattleError> {
+        self.battle
+            .side_mut(target.side)
+            .pokemon_mut(target.pokemon)
+            .ok_or_else(|| {
+                BattleError::InvalidState("Pokémon reference is out of bounds".to_owned())
+            })
+    }
+
+    fn pokemon(&self, target: PokemonRef) -> Result<&crate::PokemonState, BattleError> {
+        self.battle
+            .side(target.side)
+            .pokemon(target.pokemon)
+            .ok_or_else(|| {
+                BattleError::InvalidState("Pokémon reference is out of bounds".to_owned())
+            })
+    }
+
+    fn require_selected(
+        &self,
+        side: SideId,
+        pokemon: crate::PokemonIndex,
+    ) -> Result<(), BattleError> {
+        if self.battle.side(side).selected_team.contains(&pokemon) {
+            Ok(())
+        } else {
+            Err(BattleError::InvalidState(
+                "active-position mutation requires a selected Pokémon".to_owned(),
+            ))
+        }
+    }
+
+    fn require_position(
+        &self,
+        side: SideId,
+        pokemon: crate::PokemonIndex,
+        expected: PokemonPosition,
+    ) -> Result<(), BattleError> {
+        let state = self.battle.side(side).pokemon(pokemon).ok_or_else(|| {
+            BattleError::InvalidState("Pokémon position reference is out of bounds".to_owned())
+        })?;
+        if state.position == expected {
+            Ok(())
+        } else {
+            Err(BattleError::InvalidState(
+                "Pokémon position does not match the active-slot mapping".to_owned(),
+            ))
+        }
+    }
+
+    fn require_healthy_team_position(
+        &self,
+        side: SideId,
+        pokemon: crate::PokemonIndex,
+    ) -> Result<(), BattleError> {
+        let state = self.battle.side(side).pokemon(pokemon).ok_or_else(|| {
+            BattleError::InvalidState("incoming Pokémon is out of bounds".to_owned())
+        })?;
+        if state.position != PokemonPosition::Team || state.current_hp == 0 || state.is_fainted() {
+            return Err(BattleError::InvalidState(
+                "incoming Pokémon must be healthy and on the team".to_owned(),
+            ));
+        }
+        Ok(())
+    }
+}
+
+#[cfg_attr(not(test), allow(dead_code))]
+fn validate_new_condition(
+    existing: &[ConditionState],
+    condition: ConditionState,
+    label: &str,
+) -> Result<(), BattleError> {
+    validate_single_condition(Some(condition), label)?;
+    if existing.iter().any(|state| state.id == condition.id) {
+        return Err(BattleError::InvalidState(format!(
+            "duplicate {label} identity {}",
+            condition.id.get()
+        )));
+    }
+    Ok(())
+}
+
+#[cfg_attr(not(test), allow(dead_code))]
+fn validate_single_condition(
+    condition: Option<ConditionState>,
+    label: &str,
+) -> Result<(), BattleError> {
+    if condition.is_some_and(|state| state.turns_remaining == Some(0)) {
+        return Err(BattleError::InvalidState(format!(
+            "{label} cannot have zero turns remaining"
+        )));
+    }
+    Ok(())
+}
+
+#[cfg_attr(not(test), allow(dead_code))]
+fn remove_condition(
+    conditions: &mut Vec<ConditionState>,
+    condition: ConditionId,
+) -> Option<ConditionState> {
+    let index = conditions.iter().position(|state| state.id == condition)?;
+    Some(conditions.remove(index))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{
+        AbilityId, BattlePhase, BattleStats, MoveId, MoveSlot, MoveTarget, PokemonIndex,
+        PokemonState, SideState, SpeciesId, StatStages, TeamState,
+    };
+
+    fn index(value: u8) -> PokemonIndex {
+        PokemonIndex::new(value)
+    }
+
+    fn pokemon(species: u32) -> PokemonState {
+        PokemonState {
+            species: SpeciesId::new(species),
+            form: None,
+            level: 50,
+            stats: BattleStats {
+                hp: 100,
+                atk: 100,
+                def: 100,
+                spa: 100,
+                spd: 100,
+                spe: 100,
+            },
+            current_hp: 100,
+            ability: AbilityId::new(1),
+            item: None,
+            moves: vec![MoveSlot {
+                move_id: MoveId::new(1),
+                target: MoveTarget::Normal,
+                priority: 0,
+                pp: 16,
+                max_pp: 16,
+                disabled: false,
+            }],
+            status: None,
+            status_state: StatusState::default(),
+            stat_stages: StatStages::default(),
+            volatiles: Vec::new(),
+            can_mega_evolve: false,
+            trapped: false,
+            position: PokemonPosition::Team,
+        }
+    }
+
+    fn battle() -> BattleState {
+        let make_side = |offset: u32| {
+            SideState::new(TeamState::new(
+                (0_u32..4).map(|value| pokemon(offset + value)).collect(),
+            ))
+        };
+        let mut battle = BattleState::new(make_side(1), make_side(101), 4).unwrap();
+        let selected = vec![index(0), index(1), index(2), index(3)];
+        battle.select_team(SideId::P1, selected.clone()).unwrap();
+        battle.select_team(SideId::P2, selected).unwrap();
+        battle
+    }
+
+    #[test]
+    fn hp_pp_and_stages_are_bounded_and_report_actual_changes() {
+        let mut battle = battle();
+        let target = PokemonRef::new(SideId::P1, index(0));
+        let mut kernel = StateKernel::new(&mut battle);
+
+        let damage = kernel.damage_hp(target, 150).unwrap();
+        assert_eq!(damage.applied, 100);
+        assert_eq!(damage.current, 0);
+        let healing = kernel.heal_hp(target, 30).unwrap();
+        assert_eq!(healing.applied, 30);
+        assert_eq!(healing.current, 30);
+        let healing = kernel.heal_hp(target, 200).unwrap();
+        assert_eq!(healing.applied, 70);
+        assert_eq!(healing.current, 100);
+
+        let pp = kernel.set_pp(target, MoveSlotIndex::new(0), 3).unwrap();
+        assert_eq!(
+            pp,
+            PpChange {
+                previous: 16,
+                current: 3
+            }
+        );
+        assert!(kernel.set_pp(target, MoveSlotIndex::new(0), 17).is_err());
+        assert_eq!(
+            kernel
+                .battle
+                .side(SideId::P1)
+                .pokemon(index(0))
+                .unwrap()
+                .moves[0]
+                .pp,
+            3
+        );
+        let stage = kernel
+            .change_stat_stage(target, BattleStat::Attack, 20)
+            .unwrap();
+        assert_eq!(stage.current, 6);
+        assert_eq!(stage.applied_delta, 6);
+    }
+
+    #[test]
+    fn status_volatile_and_condition_writes_preserve_local_invariants() {
+        let mut battle = battle();
+        let target = PokemonRef::new(SideId::P1, index(0));
+        let condition = ConditionState::new(ConditionId::new(7), Some(2));
+        let mut kernel = StateKernel::new(&mut battle);
+
+        kernel
+            .set_major_status(
+                target,
+                MajorStatus::Sleep,
+                StatusState {
+                    sleep_turns: 2,
+                    ..StatusState::default()
+                },
+            )
+            .unwrap();
+        assert!(kernel
+            .set_major_status(target, MajorStatus::Burn, StatusState::default())
+            .is_err());
+        assert_eq!(
+            kernel.cure_major_status(target).unwrap(),
+            Some(MajorStatus::Sleep)
+        );
+
+        kernel.add_volatile(target, condition).unwrap();
+        assert!(kernel.add_volatile(target, condition).is_err());
+        assert_eq!(kernel.tick_volatile_durations(target).unwrap(), Vec::new());
+        assert_eq!(
+            kernel.tick_volatile_durations(target).unwrap(),
+            vec![condition.id]
+        );
+        kernel.add_volatile(target, condition).unwrap();
+        assert_eq!(
+            kernel.remove_volatile(target, condition.id).unwrap(),
+            Some(condition)
+        );
+
+        kernel.add_side_condition(SideId::P1, condition).unwrap();
+        assert!(kernel.add_side_condition(SideId::P1, condition).is_err());
+        assert_eq!(
+            kernel.remove_side_condition(SideId::P1, condition.id),
+            Some(condition)
+        );
+        kernel.add_field_condition(condition).unwrap();
+        assert!(kernel.add_field_condition(condition).is_err());
+        assert_eq!(kernel.remove_field_condition(condition.id), Some(condition));
+        assert!(kernel
+            .set_weather(Some(ConditionState::new(ConditionId::new(8), Some(0))))
+            .is_err());
+        assert_eq!(
+            kernel
+                .set_terrain(Some(ConditionState::new(ConditionId::new(9), Some(5))))
+                .unwrap(),
+            None
+        );
+    }
+
+    #[test]
+    fn position_operations_update_both_sides_of_the_mapping_atomically() {
+        let mut battle = battle();
+        let before = battle.clone();
+        let mut kernel = StateKernel::new(&mut battle);
+        assert!(kernel
+            .switch_active_position(SideId::P1, ActiveSlot::Left, index(99))
+            .is_err());
+        assert_eq!(battle, before);
+
+        let mut kernel = StateKernel::new(&mut battle);
+        assert_eq!(
+            kernel
+                .switch_active_position(SideId::P1, ActiveSlot::Left, index(2))
+                .unwrap(),
+            index(0)
+        );
+        assert_eq!(battle.side(SideId::P1).active[0], Some(index(2)));
+        assert_eq!(
+            battle.side(SideId::P1).pokemon(index(0)).unwrap().position,
+            PokemonPosition::Team
+        );
+        assert_eq!(
+            battle.side(SideId::P1).pokemon(index(2)).unwrap().position,
+            PokemonPosition::Active {
+                slot: ActiveSlot::Left
+            }
+        );
+
+        let mut kernel = StateKernel::new(&mut battle);
+        kernel.mark_fainted(SideId::P1, ActiveSlot::Right).unwrap();
+        assert_eq!(battle.side(SideId::P1).active[1], None);
+        let fainted = battle.side(SideId::P1).pokemon(index(1)).unwrap();
+        assert_eq!(fainted.current_hp, 0);
+        assert_eq!(fainted.position, PokemonPosition::Fainted);
+
+        let mut kernel = StateKernel::new(&mut battle);
+        kernel
+            .fill_active_position(SideId::P1, ActiveSlot::Right, index(3))
+            .unwrap();
+        assert_eq!(battle.side(SideId::P1).active[1], Some(index(3)));
+        assert_eq!(battle.phase, BattlePhase::TurnSelection);
+    }
+}

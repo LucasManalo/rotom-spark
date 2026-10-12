@@ -10,6 +10,7 @@ mod conditions;
 mod error;
 mod event;
 mod id;
+mod kernel;
 mod rng;
 mod side;
 mod state;

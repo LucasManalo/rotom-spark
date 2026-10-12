@@ -341,7 +341,10 @@ impl PokemonState {
     }
 }
 
-fn validate_status_state(status: MajorStatus, state: StatusState) -> Result<(), BattleError> {
+pub(crate) fn validate_status_state(
+    status: MajorStatus,
+    state: StatusState,
+) -> Result<(), BattleError> {
     let valid = match status {
         MajorStatus::Sleep => {
             state.sleep_turns > 0 && state.freeze_turns == 0 && state.toxic_counter == 0

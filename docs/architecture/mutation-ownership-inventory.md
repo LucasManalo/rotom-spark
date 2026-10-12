@@ -110,13 +110,25 @@ from which future simulation proceeds.
 
 ## Ownership audit result and PR dependencies
 
-Production mechanics currently bypass the future kernel for PP, HP, status
-counters, switch positions, volatile upkeep, and faint settlement. These are
-known migration sites, not PR A defects. PR B should add the smallest typed
-operations needed by this inventory without changing callers' behavior. PR C
-should establish the single phase-aware transaction and remove duplicated
-queue/resolve commits. PR D should migrate the mechanics writes. PR E should
-close public mutation escapes and provide valid/test-invalid builders.
+PR B added the internal `StateKernel` in `crates/rotom-core/src/kernel/` with
+typed operations for bounded HP and PP changes, stage changes, coherent major
+status and volatile lifecycle, coupled active-position changes, atomic faint
+representation, and field/side conditions. `BattleState::validate_stable_state`
+now checks HP, PP, stages, status counters, condition uniqueness/durations,
+selected and active references, phase settlement, replacements, and terminal
+winner consistency.
 
-No production write was moved in PR A.
+Production mechanics still bypass the kernel for PP, HP, status counters,
+switch positions, volatile upkeep, and faint settlement. This is intentional:
+PR B defines and tests the mutation boundary without changing event order, RNG
+draws, or supported behavior. The internal kernel has a narrowly scoped
+temporary `dead_code` allowance in non-test builds; PR D removes that allowance
+as mechanics callers migrate.
+
+PR C should establish the single phase-aware transaction and remove duplicated
+queue/resolve commits. PR D should migrate the mechanics writes listed above.
+PR E should close public mutation escapes and provide valid/test-invalid
+builders.
+
+No production mechanics write was moved in PR A or PR B.
 

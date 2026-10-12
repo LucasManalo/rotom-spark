@@ -140,6 +140,9 @@ fn normal_turn_replays_state_resolution_and_rng_trace_exactly() {
     assert_eq!(first_resolution, replay_resolution);
     assert_eq!(first, replay);
     assert_eq!(first.phase, BattlePhase::TurnSelection);
+    first
+        .validate_stable_state()
+        .expect("resolved turn should be a stable state");
     assert_eq!(first.turn, 2);
     assert_eq!(first.queue.actions, Vec::new());
     assert_eq!(first.queue.events, Vec::new());
@@ -219,6 +222,9 @@ fn switching_and_status_upkeep_preserve_the_current_state_contract() {
     assert_eq!(resolution.residual_damage.len(), 1);
     assert_eq!(resolution.residual_damage[0].status, MajorStatus::Poison);
     assert_eq!(resolution.residual_damage[0].damage, 15);
+    state
+        .validate_stable_state()
+        .expect("switch and upkeep should settle to a stable state");
 }
 
 #[test]
@@ -248,4 +254,7 @@ fn damage_faints_settle_positions_and_request_replacements() {
             .required,
         2
     );
+    state
+        .validate_stable_state()
+        .expect("forced-switch output should be a stable state");
 }
