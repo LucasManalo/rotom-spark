@@ -1,7 +1,8 @@
 use super::{ActiveSlot, BattlePhase, BattleState, PokemonIndex, PokemonPosition};
 use crate::{
-    ActionTarget, BattleError, BattleEvent, EffectRegistry, EventContext, EventDispatch,
-    EventValue, PokemonAction, PokemonRef, PokemonState, RngReason, SideId, TurnChoice,
+    ActionTarget, BattleError, BattleEvent, CombatData, EffectRegistry, EventContext,
+    EventDispatch, EventValue, Mechanics, PokemonAction, PokemonRef, PokemonState, RngReason,
+    SideId, TurnChoice,
 };
 use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
@@ -39,13 +40,13 @@ pub struct ActionQueue {
 }
 
 impl BattleState {
-    /// Validates both players' choices and builds the normal turn action queue.
+    /// Returns the deterministic queue that a complete turn choice would use
+    /// without mutating this battle or its authoritative RNG stream.
     ///
     /// Voluntary switches use Showdown order 103 and moves use order 200.
     /// Within an order bucket, higher move priority and then higher current
     /// Speed execute first. Exact ties are Fisher–Yates shuffled using the
-    /// battle-owned RNG. The resulting queue is stored on the battle for
-    /// inspection and the phase advances to [`BattlePhase::ResolvingTurn`].
+    /// battle-owned RNG cloned for inspection.
     ///
     /// Current `BattleStats::spe` values are the base effective speeds. The
     /// effect-aware entry point applies registered priority and Speed hooks;
@@ -54,35 +55,17 @@ impl BattleState {
     /// # Errors
     ///
     /// Returns an error unless the battle is selecting a turn, either choice
-    /// is illegal, or active/move state is internally inconsistent. Choices
-    /// are fully validated before RNG state, queue, or phase is changed.
-    pub fn queue_turn(
-        &mut self,
+    /// is illegal, or active/move state is internally inconsistent.
+    pub fn inspect_turn_queue<D: CombatData>(
+        &self,
         p1: TurnChoice,
         p2: TurnChoice,
-    ) -> Result<&ActionQueue, BattleError> {
-        self.queue_turn_with_effects(p1, p2, &EffectRegistry::new())
-    }
-
-    /// Validates and queues a turn through priority and Speed effect hooks.
-    ///
-    /// Handler failures leave battle state and RNG unchanged.
-    ///
-    /// # Errors
-    ///
-    /// Returns the same errors as [`Self::queue_turn`] and propagates effect
-    /// handler errors or incompatible modifier relay values.
-    pub fn queue_turn_with_effects(
-        &mut self,
-        p1: TurnChoice,
-        p2: TurnChoice,
-        effects: &EffectRegistry,
-    ) -> Result<&ActionQueue, BattleError> {
-        let effects = crate::conditions::composed_registry(effects);
+        mechanics: &Mechanics<'_, D>,
+    ) -> Result<ActionQueue, BattleError> {
+        self.validate_stable_state()?;
         let mut next = self.clone();
-        next.queue_turn_inner(p1, p2, &effects)?;
-        *self = next;
-        Ok(&self.queue)
+        next.queue_turn_inner(p1, p2, mechanics.effects())?;
+        Ok(next.queue)
     }
 
     pub(crate) fn queue_turn_inner(

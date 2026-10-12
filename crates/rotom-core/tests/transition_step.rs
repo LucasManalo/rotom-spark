@@ -153,13 +153,13 @@ fn step_advances_preview_turn_and_forced_switch_phases() {
     let initial = preview(0x5eed, 4);
 
     let preview_result = step(&initial, &preview_action(4), &mechanics).unwrap();
-    assert_eq!(initial.phase, BattlePhase::TeamPreview);
-    assert_eq!(preview_result.state.phase, BattlePhase::TurnSelection);
-    assert_eq!(preview_result.state.turn, 1);
+    assert_eq!(initial.phase(), BattlePhase::TeamPreview);
+    assert_eq!(preview_result.state.phase(), BattlePhase::TurnSelection);
+    assert_eq!(preview_result.state.turn(), 1);
     assert_eq!(preview_result.diagnostics, StepDiagnostics::default());
 
     let turn_result = step(&preview_result.state, &attacking_turn(), &mechanics).unwrap();
-    assert_eq!(turn_result.state.phase, BattlePhase::ForcedSwitch);
+    assert_eq!(turn_result.state.phase(), BattlePhase::ForcedSwitch);
     assert_eq!(turn_result.state.side(SideId::P2).active, [None, None]);
     assert!(turn_result.diagnostics.turn.is_some());
 
@@ -182,7 +182,7 @@ fn step_advances_preview_turn_and_forced_switch_phases() {
         },
     };
     let replaced = step(&turn_result.state, &replacements, &mechanics).unwrap();
-    assert_eq!(replaced.state.phase, BattlePhase::TurnSelection);
+    assert_eq!(replaced.state.phase(), BattlePhase::TurnSelection);
     assert_eq!(
         replaced.state.side(SideId::P2).active,
         [Some(index(2)), Some(index(3))]
@@ -191,7 +191,7 @@ fn step_advances_preview_turn_and_forced_switch_phases() {
 }
 
 #[test]
-fn canonical_turn_matches_the_sequential_compatibility_path() {
+fn queue_inspection_matches_canonical_transition_diagnostics() {
     let effects = EffectRegistry::new();
     let data = TestData::basic(20);
     let mechanics = Mechanics::new(&data, &effects);
@@ -200,19 +200,12 @@ fn canonical_turn_matches_the_sequential_compatibility_path() {
         unreachable!();
     };
 
-    let mut sequential = current.clone();
-    sequential
-        .queue_turn_with_effects(p1, p2, &effects)
-        .unwrap();
-    let queue_events = sequential.queue.events.clone();
-    let turn = sequential
-        .resolve_turn_with_effects(&data, &effects)
-        .unwrap();
+    let inspected = current.inspect_turn_queue(p1, p2, &mechanics).unwrap();
 
     let canonical = step(&current, &JointAction::Turn { p1, p2 }, &mechanics).unwrap();
-    assert_eq!(canonical.state, sequential);
-    assert_eq!(canonical.diagnostics.queue_events, queue_events);
-    assert_eq!(canonical.diagnostics.turn, Some(turn));
+    assert_eq!(canonical.diagnostics.queue_events, inspected.events);
+    assert_eq!(current.phase(), BattlePhase::TurnSelection);
+    assert_eq!(current.queue().actions, Vec::new());
 }
 
 #[test]
@@ -260,7 +253,7 @@ fn transition_errors_are_atomic_and_terminal_battles_reject_actions() {
     let terminal = step(&selected, &attacking_turn(), &mechanics)
         .unwrap()
         .state;
-    assert_eq!(terminal.phase, BattlePhase::BattleEnd);
+    assert_eq!(terminal.phase(), BattlePhase::BattleEnd);
     let terminal_before = terminal.clone();
     assert!(matches!(
         step(&terminal, &attacking_turn(), &mechanics),
@@ -276,22 +269,22 @@ fn rng_tracing_does_not_change_transition_outcomes_or_draws() {
     let mechanics = Mechanics::new(&data, &effects);
     let plain = started(0xabcd);
     let mut traced = plain.clone();
-    traced.rng.enable_trace();
+    traced.enable_rng_trace();
 
     let plain_result = step(&plain, &attacking_turn(), &mechanics).unwrap();
     let traced_result = step(&traced, &attacking_turn(), &mechanics).unwrap();
     assert_eq!(
-        plain_result.state.rng.state(),
-        traced_result.state.rng.state()
+        plain_result.state.rng().state(),
+        traced_result.state.rng().state()
     );
     assert_eq!(
-        plain_result.state.rng.draws(),
-        traced_result.state.rng.draws()
+        plain_result.state.rng().draws(),
+        traced_result.state.rng().draws()
     );
     assert_eq!(plain_result.diagnostics, traced_result.diagnostics);
 
     let mut traced_without_metadata = traced_result.state;
-    traced_without_metadata.rng.disable_trace();
+    traced_without_metadata.disable_rng_trace();
     assert_eq!(plain_result.state, traced_without_metadata);
 }
 
@@ -308,6 +301,6 @@ fn phase_mismatch_is_rejected_before_transition_work() {
     .unwrap_err();
 
     assert!(matches!(error, BattleError::IllegalChoice(_)));
-    assert_eq!(initial.phase, BattlePhase::TeamPreview);
-    assert_eq!(initial.rng.draws(), 0);
+    assert_eq!(initial.phase(), BattlePhase::TeamPreview);
+    assert_eq!(initial.rng().draws(), 0);
 }

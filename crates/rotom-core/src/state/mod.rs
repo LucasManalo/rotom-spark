@@ -3,6 +3,7 @@ mod decision;
 mod field;
 mod pokemon;
 mod queue;
+mod scenario;
 mod side;
 mod transition;
 
@@ -13,6 +14,7 @@ pub use pokemon::{
     PokemonState, StatStageChange, StatStages, StatusState, TeamState,
 };
 pub use queue::{ActionOrder, ActionQueue, QueuedAction};
+pub use scenario::BattleStateBuilder;
 pub use side::SideState;
 pub use transition::{FaintTarget, ReplacementRequest};
 

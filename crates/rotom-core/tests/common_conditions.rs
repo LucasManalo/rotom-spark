@@ -1,10 +1,10 @@
 use rotom_core::{
-    calculate_damage, AbilityId, ActionTarget, BattlePhase, BattleStat, BattleState, BattleStats,
-    CombatData, CombatMove, ConditionId, ConditionState, FormId, MajorStatus, Modifier,
-    MoveAccuracy, MoveCategory, MoveId, MoveSlot, MoveSlotIndex, MoveSupport, MoveTarget,
-    PokemonAction, PokemonIndex, PokemonPosition, PokemonRef, PokemonState, PokemonType,
-    PokemonTypes, RngOperation, RngReason, SideId, SideState, StatStages, StatusState, TeamState,
-    TurnChoice,
+    calculate_damage, step, AbilityId, ActionTarget, BattlePhase, BattleStat, BattleState,
+    BattleStateBuilder, BattleStats, CombatData, CombatMove, ConditionId, ConditionState,
+    EffectRegistry, FormId, JointAction, MajorStatus, Mechanics, Modifier, MoveAccuracy,
+    MoveCategory, MoveId, MoveSlot, MoveSlotIndex, MoveSupport, MoveTarget, PokemonAction,
+    PokemonIndex, PokemonPosition, PokemonRef, PokemonState, PokemonType, PokemonTypes,
+    RngOperation, RngReason, SideId, SideState, StatStages, StatusState, TeamState, TurnChoice,
 };
 use serde::Deserialize;
 
@@ -138,7 +138,7 @@ fn battle(seed: u64) -> BattleState {
         pokemon(103, 60),
         pokemon(104, 50),
     ];
-    let mut battle = BattleState::new_with_seed(
+    let mut builder = BattleStateBuilder::new_with_seed(
         SideState::new(TeamState::new(p1)),
         SideState::new(TeamState::new(p2)),
         4,
@@ -146,13 +146,10 @@ fn battle(seed: u64) -> BattleState {
     )
     .expect("fixture battle should be valid");
     let selected = vec![index(0), index(1), index(2), index(3)];
-    battle
-        .select_team(SideId::P1, selected.clone())
-        .expect("P1 selection should be valid");
-    battle
-        .select_team(SideId::P2, selected)
-        .expect("P2 selection should be valid");
-    battle
+    builder
+        .select_teams(selected.clone(), selected)
+        .expect("selections should be valid");
+    builder.build().expect("fixture should be stable")
 }
 
 fn move_at(target: ActionTarget) -> PokemonAction {
@@ -178,6 +175,15 @@ fn choices() -> (TurnChoice, TurnChoice) {
             ],
         },
     )
+}
+
+fn run_turn(battle: &BattleState, p1: TurnChoice, p2: TurnChoice) -> rotom_core::StepResult {
+    step(
+        battle,
+        &JointAction::Turn { p1, p2 },
+        &Mechanics::new(&TestData, &EffectRegistry::new()),
+    )
+    .expect("turn should resolve")
 }
 
 #[test]
@@ -217,13 +223,14 @@ fn pinned_showdown_fixture_matches_common_condition_rules() {
     );
     assert_eq!(fixture.paralysis.before_move_chance, [1, 8]);
 
-    let mut battle = battle(31);
-    battle.rng.enable_trace();
+    let mut builder = BattleStateBuilder::from_state(battle(31)).unwrap();
+    builder.enable_rng_trace();
     let target = PokemonRef::new(SideId::P1, index(0));
-    battle
+    builder
         .apply_major_status(target, MajorStatus::Sleep)
         .unwrap();
-    let sample_index = usize::try_from(battle.rng.trace().unwrap()[0].result).unwrap();
+    let battle = builder.build().unwrap();
+    let sample_index = usize::try_from(battle.rng().trace().unwrap()[0].result).unwrap();
     assert_eq!(
         battle
             .side(SideId::P1)
@@ -249,36 +256,37 @@ fn pinned_showdown_fixture_matches_common_condition_rules() {
 
 #[test]
 fn status_application_initializes_champions_counters_and_is_exclusive() {
-    let mut battle = battle(7);
-    battle.rng.enable_trace();
+    let mut builder = BattleStateBuilder::from_state(battle(7)).unwrap();
+    builder.enable_rng_trace();
     let target = PokemonRef::new(SideId::P1, index(0));
 
-    battle
+    builder
         .apply_major_status(target, MajorStatus::Sleep)
         .expect("sleep should apply");
-    let state = battle.side(SideId::P1).pokemon(index(0)).unwrap();
+    let state = builder.state().side(SideId::P1).pokemon(index(0)).unwrap();
     assert!(matches!(state.status_state.sleep_turns, 2 | 3));
     assert_eq!(state.status, Some(MajorStatus::Sleep));
-    assert!(battle
+    assert!(builder
         .apply_major_status(target, MajorStatus::Burn)
         .is_err());
     assert_eq!(
-        battle.rng.draws(),
+        builder.state().rng().draws(),
         1,
         "failed replacement must not draw RNG"
     );
     assert_eq!(
-        battle.rng.trace().unwrap()[0].reason,
+        builder.state().rng().trace().unwrap()[0].reason,
         RngReason::SleepDuration
     );
 
     assert_eq!(
-        battle.cure_major_status(target).unwrap(),
+        builder.cure_major_status(target).unwrap(),
         Some(MajorStatus::Sleep)
     );
-    battle
+    builder
         .apply_major_status(target, MajorStatus::Freeze)
         .expect("freeze should apply after curing sleep");
+    let battle = builder.build().unwrap();
     assert_eq!(
         battle
             .side(SideId::P1)
@@ -292,14 +300,24 @@ fn status_application_initializes_champions_counters_and_is_exclusive() {
 
 #[test]
 fn speed_stages_and_paralysis_feed_the_action_queue() {
-    let mut battle = battle(3);
-    let state = battle.side_mut(SideId::P1).pokemon_mut(index(0)).unwrap();
-    state.stat_stages.change(BattleStat::Speed, 2);
-    state
-        .set_major_status(MajorStatus::Paralysis, StatusState::default())
+    let mut builder = BattleStateBuilder::from_state(battle(3)).unwrap();
+    builder
+        .edit_pokemon(PokemonRef::new(SideId::P1, index(0)), |state| {
+            state.stat_stages.change(BattleStat::Speed, 2);
+        })
         .unwrap();
+    builder
+        .set_major_status(
+            PokemonRef::new(SideId::P1, index(0)),
+            MajorStatus::Paralysis,
+            StatusState::default(),
+        )
+        .unwrap();
+    let battle = builder.build().unwrap();
     let (p1, p2) = choices();
-    let queue = battle.queue_turn(p1, p2).expect("turn should queue");
+    let queue = battle
+        .inspect_turn_queue(p1, p2, &Mechanics::new(&TestData, &EffectRegistry::new()))
+        .expect("turn should queue");
     let action = queue
         .actions
         .iter()
@@ -316,12 +334,10 @@ fn speed_stages_and_paralysis_feed_the_action_queue() {
 
 #[test]
 fn sleep_wake_and_freeze_cap_run_before_pp_consumption() {
-    let mut battle = battle(11);
-    battle
-        .side_mut(SideId::P1)
-        .pokemon_mut(index(0))
-        .unwrap()
+    let mut builder = BattleStateBuilder::from_state(battle(11)).unwrap();
+    builder
         .set_major_status(
+            PokemonRef::new(SideId::P1, index(0)),
             MajorStatus::Sleep,
             StatusState {
                 sleep_turns: 2,
@@ -329,11 +345,9 @@ fn sleep_wake_and_freeze_cap_run_before_pp_consumption() {
             },
         )
         .unwrap();
-    battle
-        .side_mut(SideId::P1)
-        .pokemon_mut(index(1))
-        .unwrap()
+    builder
         .set_major_status(
+            PokemonRef::new(SideId::P1, index(1)),
             MajorStatus::Freeze,
             StatusState {
                 freeze_turns: 1,
@@ -341,9 +355,9 @@ fn sleep_wake_and_freeze_cap_run_before_pp_consumption() {
             },
         )
         .unwrap();
+    let battle = builder.build().unwrap();
     let (p1, p2) = choices();
-    battle.queue_turn(p1, p2).unwrap();
-    battle.resolve_turn(&TestData).unwrap();
+    let battle = run_turn(&battle, p1, p2).state;
 
     let sleeping = battle.side(SideId::P1).pokemon(index(0)).unwrap();
     let thawed = battle.side(SideId::P1).pokemon(index(1)).unwrap();
@@ -356,20 +370,21 @@ fn sleep_wake_and_freeze_cap_run_before_pp_consumption() {
 
 #[test]
 fn champions_paralysis_uses_one_in_eight_rng() {
-    let mut battle = battle(19);
-    battle.rng.enable_trace();
-    battle
-        .side_mut(SideId::P1)
-        .pokemon_mut(index(0))
-        .unwrap()
-        .set_major_status(MajorStatus::Paralysis, StatusState::default())
+    let mut builder = BattleStateBuilder::from_state(battle(19)).unwrap();
+    builder.enable_rng_trace();
+    builder
+        .set_major_status(
+            PokemonRef::new(SideId::P1, index(0)),
+            MajorStatus::Paralysis,
+            StatusState::default(),
+        )
         .unwrap();
+    let battle = builder.build().unwrap();
     let (p1, p2) = choices();
-    battle.queue_turn(p1, p2).unwrap();
-    battle.resolve_turn(&TestData).unwrap();
+    let battle = run_turn(&battle, p1, p2).state;
 
     let paralysis = battle
-        .rng
+        .rng()
         .trace()
         .unwrap()
         .iter()
@@ -409,34 +424,39 @@ fn burn_halves_physical_damage_after_the_normal_formula() {
 
 #[test]
 fn residual_statuses_and_volatile_durations_are_ordered_and_reported() {
-    let mut battle = battle(23);
+    let mut builder = BattleStateBuilder::from_state(battle(23)).unwrap();
     for (side, pokemon, status) in [
         (SideId::P1, index(0), MajorStatus::Poison),
         (SideId::P1, index(1), MajorStatus::Burn),
         (SideId::P2, index(0), MajorStatus::BadlyPoisoned),
     ] {
-        battle
-            .side_mut(side)
-            .pokemon_mut(pokemon)
-            .unwrap()
-            .set_major_status(status, StatusState::default())
+        builder
+            .set_major_status(
+                PokemonRef::new(side, pokemon),
+                status,
+                StatusState::default(),
+            )
             .unwrap();
     }
-    battle
-        .side_mut(SideId::P1)
-        .pokemon_mut(index(0))
-        .unwrap()
-        .add_volatile(ConditionState::new(ConditionId::new(9), Some(1)))
+    builder
+        .edit_pokemon(PokemonRef::new(SideId::P1, index(0)), |pokemon| {
+            pokemon
+                .add_volatile(ConditionState::new(ConditionId::new(9), Some(1)))
+                .unwrap();
+        })
         .unwrap();
-    battle
-        .side_mut(SideId::P1)
-        .pokemon_mut(index(1))
-        .unwrap()
-        .add_volatile(ConditionState::new(ConditionId::new(10), Some(2)))
+    builder
+        .edit_pokemon(PokemonRef::new(SideId::P1, index(1)), |pokemon| {
+            pokemon
+                .add_volatile(ConditionState::new(ConditionId::new(10), Some(2)))
+                .unwrap();
+        })
         .unwrap();
+    let battle = builder.build().unwrap();
     let (p1, p2) = choices();
-    battle.queue_turn(p1, p2).unwrap();
-    let resolution = battle.resolve_turn(&TestData).unwrap();
+    let result = run_turn(&battle, p1, p2);
+    let resolution = result.diagnostics.turn.as_ref().unwrap();
+    let battle = result.state;
 
     assert_eq!(
         resolution
@@ -472,18 +492,27 @@ fn residual_statuses_and_volatile_durations_are_ordered_and_reported() {
 
 #[test]
 fn residual_knockout_enters_forced_switch_and_clears_status() {
-    let mut battle = battle(29);
-    let poisoned = battle.side_mut(SideId::P1).pokemon_mut(index(0)).unwrap();
-    poisoned.current_hp = 1;
-    poisoned
-        .set_major_status(MajorStatus::Poison, StatusState::default())
+    let mut builder = BattleStateBuilder::from_state(battle(29)).unwrap();
+    builder
+        .edit_pokemon(PokemonRef::new(SideId::P1, index(0)), |pokemon| {
+            pokemon.current_hp = 1;
+        })
         .unwrap();
+    builder
+        .set_major_status(
+            PokemonRef::new(SideId::P1, index(0)),
+            MajorStatus::Poison,
+            StatusState::default(),
+        )
+        .unwrap();
+    let battle = builder.build().unwrap();
     let (p1, p2) = choices();
-    battle.queue_turn(p1, p2).unwrap();
-    let resolution = battle.resolve_turn(&TestData).unwrap();
+    let result = run_turn(&battle, p1, p2);
+    let resolution = result.diagnostics.turn.as_ref().unwrap();
+    let battle = result.state;
 
     assert_eq!(resolution.residual_damage[0].damage, 1);
-    assert_eq!(battle.phase, BattlePhase::ForcedSwitch);
+    assert_eq!(battle.phase(), BattlePhase::ForcedSwitch);
     assert_eq!(battle.side(SideId::P1).active[0], None);
     let fainted = battle.side(SideId::P1).pokemon(index(0)).unwrap();
     assert!(fainted.is_fainted());
@@ -492,12 +521,10 @@ fn residual_knockout_enters_forced_switch_and_clears_status() {
 
 #[test]
 fn toxic_counter_is_preserved_on_exit_and_reset_on_reentry() {
-    let mut battle = battle(37);
-    battle
-        .side_mut(SideId::P1)
-        .pokemon_mut(index(0))
-        .unwrap()
+    let mut builder = BattleStateBuilder::from_state(battle(37)).unwrap();
+    builder
         .set_major_status(
+            PokemonRef::new(SideId::P1, index(0)),
             MajorStatus::BadlyPoisoned,
             StatusState {
                 toxic_counter: 3,
@@ -505,6 +532,7 @@ fn toxic_counter_is_preserved_on_exit_and_reset_on_reentry() {
             },
         )
         .unwrap();
+    let battle = builder.build().unwrap();
     let p1_switch_out = TurnChoice {
         actions: [
             PokemonAction::Switch { pokemon: index(2) },
@@ -512,8 +540,7 @@ fn toxic_counter_is_preserved_on_exit_and_reset_on_reentry() {
         ],
     };
     let (_, p2) = choices();
-    battle.queue_turn(p1_switch_out, p2).unwrap();
-    battle.resolve_turn(&TestData).unwrap();
+    let battle = run_turn(&battle, p1_switch_out, p2).state;
     assert_eq!(
         battle
             .side(SideId::P1)
@@ -531,8 +558,7 @@ fn toxic_counter_is_preserved_on_exit_and_reset_on_reentry() {
         ],
     };
     let (_, p2) = choices();
-    battle.queue_turn(p1_switch_in, p2).unwrap();
-    battle.resolve_turn(&TestData).unwrap();
+    let battle = run_turn(&battle, p1_switch_in, p2).state;
     assert_eq!(
         battle
             .side(SideId::P1)

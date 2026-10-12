@@ -1,7 +1,8 @@
 use rotom_core::{
-    AbilityId, ActionTarget, ActiveSlot, BattleError, BattleState, BattleStats, FaintTarget,
-    MoveId, MoveSlot, MoveSlotIndex, MoveTarget, PokemonAction, PokemonIndex, PokemonPosition,
-    PokemonState, SideId, SideState, SpeciesId, StatStages, StatusState, TeamState, TurnChoice,
+    AbilityId, ActionTarget, ActiveSlot, BattleError, BattleState, BattleStateBuilder, BattleStats,
+    FaintTarget, MoveId, MoveSlot, MoveSlotIndex, MoveTarget, PokemonAction, PokemonIndex,
+    PokemonPosition, PokemonRef, PokemonState, SideId, SideState, SpeciesId, StatStages,
+    StatusState, TeamState, TurnChoice,
 };
 
 fn index(value: u8) -> PokemonIndex {
@@ -53,30 +54,27 @@ fn battle(picked_team_size: usize) -> BattleState {
     .expect("fixture should be a valid preview state")
 }
 
-fn select(state: &mut BattleState, size: u8) {
+fn select(state: BattleState, size: u8) -> BattleState {
     let selection = (0..size).map(index).collect::<Vec<_>>();
-    state
-        .select_team(SideId::P1, selection.clone())
-        .expect("P1 selection should be legal");
-    state
-        .select_team(SideId::P2, selection)
-        .expect("P2 selection should be legal");
+    let mut builder = BattleStateBuilder::from_state(state).expect("fixture should be stable");
+    builder
+        .select_teams(selection.clone(), selection)
+        .expect("selections should be legal");
+    builder.build().expect("selected fixture should be stable")
 }
 
 #[test]
 fn ordinary_actions_include_targets_switches_and_single_mega_combinations() {
-    let mut state = battle(4);
-    select(&mut state, 4);
-    state
-        .side_mut(SideId::P1)
-        .pokemon_mut(index(0))
-        .expect("left lead should exist")
-        .can_mega_evolve = true;
-    state
-        .side_mut(SideId::P1)
-        .pokemon_mut(index(1))
-        .expect("right lead should exist")
-        .can_mega_evolve = true;
+    let state = select(battle(4), 4);
+    let mut builder = BattleStateBuilder::from_state(state).unwrap();
+    for active in [index(0), index(1)] {
+        builder
+            .edit_pokemon(PokemonRef::new(SideId::P1, active), |pokemon| {
+                pokemon.can_mega_evolve = true;
+            })
+            .unwrap();
+    }
+    let state = builder.build().unwrap();
 
     let legal = state
         .legal_actions(SideId::P1)
@@ -107,7 +105,9 @@ fn ordinary_actions_include_targets_switches_and_single_mega_combinations() {
             <= 1
     }));
 
-    state.side_mut(SideId::P1).mega_evolution_used = true;
+    let mut builder = BattleStateBuilder::from_state(state).unwrap();
+    builder.edit_side(SideId::P1, |side| side.mega_evolution_used = true);
+    let state = builder.build().unwrap();
     let after_mega = state
         .legal_actions(SideId::P1)
         .expect("ordinary choices should remain available after Mega Evolution");
@@ -119,15 +119,16 @@ fn ordinary_actions_include_targets_switches_and_single_mega_combinations() {
 
 #[test]
 fn disabled_and_empty_moves_fall_back_to_struggle_while_trapping_blocks_switches() {
-    let mut state = battle(4);
-    select(&mut state, 4);
-    let pokemon = state
-        .side_mut(SideId::P1)
-        .pokemon_mut(index(0))
+    let state = select(battle(4), 4);
+    let mut builder = BattleStateBuilder::from_state(state).unwrap();
+    builder
+        .edit_pokemon(PokemonRef::new(SideId::P1, index(0)), |pokemon| {
+            pokemon.moves[0].pp = 0;
+            pokemon.can_mega_evolve = true;
+            pokemon.trapped = true;
+        })
         .expect("left lead should exist");
-    pokemon.moves[0].pp = 0;
-    pokemon.can_mega_evolve = true;
-    pokemon.trapped = true;
+    let state = builder.build().unwrap();
 
     let legal = state
         .legal_actions(SideId::P1)
@@ -138,15 +139,16 @@ fn disabled_and_empty_moves_fall_back_to_struggle_while_trapping_blocks_switches
 
 #[test]
 fn duplicate_switch_targets_and_double_mega_are_rejected() {
-    let mut state = battle(4);
-    select(&mut state, 4);
+    let state = select(battle(4), 4);
+    let mut builder = BattleStateBuilder::from_state(state).unwrap();
     for active in [index(0), index(1)] {
-        state
-            .side_mut(SideId::P1)
-            .pokemon_mut(active)
-            .expect("active should exist")
-            .can_mega_evolve = true;
+        builder
+            .edit_pokemon(PokemonRef::new(SideId::P1, active), |pokemon| {
+                pokemon.can_mega_evolve = true;
+            })
+            .expect("active should exist");
     }
+    let state = builder.build().unwrap();
 
     let duplicate_switch = TurnChoice {
         actions: [
@@ -181,14 +183,15 @@ fn duplicate_switch_targets_and_double_mega_are_rejected() {
 
 #[test]
 fn forced_switch_enumeration_assigns_one_reserve_to_either_empty_slot() {
-    let mut state = battle(3);
-    select(&mut state, 3);
-    state
+    let state = select(battle(3), 3);
+    let mut builder = BattleStateBuilder::from_state(state).unwrap();
+    builder
         .process_faints(&[
             FaintTarget::new(SideId::P1, ActiveSlot::Left),
             FaintTarget::new(SideId::P1, ActiveSlot::Right),
         ])
         .expect("both leads should faint");
+    let state = builder.build().unwrap();
 
     let legal = state
         .legal_actions(SideId::P1)
@@ -220,14 +223,14 @@ fn action_enumeration_rejects_team_preview() {
 
 #[test]
 fn automatic_target_moves_do_not_accept_a_selected_target() {
-    let mut state = battle(4);
-    select(&mut state, 4);
-    state
-        .side_mut(SideId::P1)
-        .pokemon_mut(index(0))
-        .expect("left lead should exist")
-        .moves[0]
-        .target = MoveTarget::Self_;
+    let state = select(battle(4), 4);
+    let mut builder = BattleStateBuilder::from_state(state).unwrap();
+    builder
+        .edit_pokemon(PokemonRef::new(SideId::P1, index(0)), |pokemon| {
+            pokemon.moves[0].target = MoveTarget::Self_;
+        })
+        .expect("left lead should exist");
+    let state = builder.build().unwrap();
 
     let legal = state
         .legal_actions(SideId::P1)

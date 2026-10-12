@@ -1,6 +1,7 @@
 use crate::{
-    AbilityId, BattleError, BattleState, ConditionId, ItemId, MajorStatus, MoveId, PokemonIndex,
-    PokemonPosition, SideId,
+    kernel::StateKernel, AbilityId, BattleError, BattleRng, BattleStat, BattleState, ConditionId,
+    ConditionState, ItemId, MajorStatus, MoveId, PokemonIndex, PokemonPosition, RngReason, SideId,
+    StatStageChange, StatusState,
 };
 use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
@@ -229,9 +230,170 @@ impl EventDispatch {
     }
 }
 
+/// Controlled state access supplied to one effect callback.
+///
+/// Effects may inspect the complete battle and request typed, invariant-safe
+/// mutations. The internal mutation kernel and unrestricted mutable battle
+/// references are intentionally not exposed to registry consumers.
+pub struct EffectState<'a> {
+    battle: &'a mut BattleState,
+}
+
+impl EffectState<'_> {
+    #[must_use]
+    pub const fn battle(&self) -> &BattleState {
+        self.battle
+    }
+
+    #[must_use]
+    pub const fn rng(&self) -> &BattleRng {
+        &self.battle.rng
+    }
+
+    /// Draws one mechanics-owned Bernoulli outcome.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the probability is invalid.
+    pub fn chance(
+        &mut self,
+        reason: RngReason,
+        numerator: u64,
+        denominator: u64,
+    ) -> Result<bool, BattleError> {
+        self.battle.rng.chance(reason, numerator, denominator)
+    }
+
+    /// Applies clamped HP loss and returns the actual loss.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the target is invalid.
+    pub fn damage_hp(&mut self, target: PokemonRef, requested: u16) -> Result<u16, BattleError> {
+        Ok(StateKernel::new(self.battle)
+            .damage_hp(target, requested)?
+            .applied)
+    }
+
+    /// Applies a bounded stat-stage change.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the target is invalid.
+    pub fn change_stat_stage(
+        &mut self,
+        target: PokemonRef,
+        stat: BattleStat,
+        delta: i8,
+    ) -> Result<StatStageChange, BattleError> {
+        StateKernel::new(self.battle).change_stat_stage(target, stat, delta)
+    }
+
+    /// Installs a coherent major-status and counter state.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error for an invalid target or incoherent status state.
+    pub fn set_major_status(
+        &mut self,
+        target: PokemonRef,
+        status: MajorStatus,
+        state: StatusState,
+    ) -> Result<(), BattleError> {
+        StateKernel::new(self.battle).set_major_status(target, status, state)
+    }
+
+    /// Cures a major status and its associated counters.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the target is invalid.
+    pub fn cure_major_status(
+        &mut self,
+        target: PokemonRef,
+    ) -> Result<Option<MajorStatus>, BattleError> {
+        StateKernel::new(self.battle).cure_major_status(target)
+    }
+
+    /// Decrements a nonzero sleep counter.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the target or counter state is invalid.
+    pub fn decrement_sleep_turns(&mut self, target: PokemonRef) -> Result<u8, BattleError> {
+        StateKernel::new(self.battle).decrement_sleep_turns(target)
+    }
+
+    /// Decrements a nonzero freeze counter.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the target or counter state is invalid.
+    pub fn decrement_freeze_turns(&mut self, target: PokemonRef) -> Result<u8, BattleError> {
+        StateKernel::new(self.battle).decrement_freeze_turns(target)
+    }
+
+    /// Increments the toxic counter within its representation bounds.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the target or status state is invalid.
+    pub fn increment_toxic_counter(&mut self, target: PokemonRef) -> Result<u8, BattleError> {
+        StateKernel::new(self.battle).increment_toxic_counter(target)
+    }
+
+    /// Adds one unique volatile condition.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error for an invalid target or condition.
+    pub fn add_volatile(
+        &mut self,
+        target: PokemonRef,
+        condition: ConditionState,
+    ) -> Result<(), BattleError> {
+        StateKernel::new(self.battle).add_volatile(target, condition)
+    }
+
+    /// Removes one volatile condition when present.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the target is invalid.
+    pub fn remove_volatile(
+        &mut self,
+        target: PokemonRef,
+        condition: ConditionId,
+    ) -> Result<Option<ConditionState>, BattleError> {
+        StateKernel::new(self.battle).remove_volatile(target, condition)
+    }
+
+    /// Replaces the held item and returns the previous value.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the target is invalid.
+    pub fn set_item(
+        &mut self,
+        target: PokemonRef,
+        item: Option<ItemId>,
+    ) -> Result<Option<ItemId>, BattleError> {
+        StateKernel::new(self.battle).set_item(target, item)
+    }
+
+    /// Adds one unique field condition.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the condition is invalid or duplicated.
+    pub fn add_field_condition(&mut self, condition: ConditionState) -> Result<(), BattleError> {
+        StateKernel::new(self.battle).add_field_condition(condition)
+    }
+}
+
 /// A stateless effect function registered in the engine behavior registry.
 pub type EffectCallback = fn(
-    &mut BattleState,
+    &mut EffectState<'_>,
     &EffectInvocation,
     &EventContext,
     &mut EventDispatch,
@@ -306,7 +468,7 @@ impl EffectRegistry {
     /// # Errors
     ///
     /// Propagates the first callback error.
-    pub fn dispatch(
+    pub(crate) fn dispatch(
         &self,
         battle: &mut BattleState,
         event: BattleEvent,
@@ -321,7 +483,8 @@ impl EffectRegistry {
         let mut dispatch = EventDispatch::new(event, context, value);
         for handler in handlers {
             dispatch.invocations.push(handler.invocation);
-            (handler.callback)(battle, &handler.invocation, &context, &mut dispatch)?;
+            let mut state = EffectState { battle };
+            (handler.callback)(&mut state, &handler.invocation, &context, &mut dispatch)?;
             contract.validate_value(event, dispatch.value)?;
             if !contract.mutable_relay && dispatch.value != initial_value {
                 return Err(BattleError::InvalidState(format!(

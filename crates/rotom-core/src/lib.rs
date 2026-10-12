@@ -29,16 +29,17 @@ pub use combat::{
 pub use error::BattleError;
 pub use event::{
     BattleEvent, EffectCallback, EffectInvocation, EffectOrder, EffectOwner, EffectRegistry,
-    EffectSource, EventContext, EventContract, EventDispatch, EventRelay, EventValue, PokemonRef,
+    EffectSource, EffectState, EventContext, EventContract, EventDispatch, EventRelay, EventValue,
+    PokemonRef,
 };
 pub use id::{AbilityId, ConditionId, FormId, ItemId, MoveId, NatureId, SpeciesId};
 pub use rng::{BattleRng, RngOperation, RngReason, RngTraceEntry};
 pub use side::SideId;
 pub use state::{
-    ActionOrder, ActionQueue, ActiveSlot, BattlePhase, BattleStat, BattleState, BattleStats,
-    ConditionState, FaintTarget, FieldState, MajorStatus, MoveSlot, PokemonIndex, PokemonPosition,
-    PokemonState, QueuedAction, ReplacementRequest, SideState, StatStageChange, StatStages,
-    StatusState, TeamState,
+    ActionOrder, ActionQueue, ActiveSlot, BattlePhase, BattleStat, BattleState, BattleStateBuilder,
+    BattleStats, ConditionState, FaintTarget, FieldState, MajorStatus, MoveSlot, PokemonIndex,
+    PokemonPosition, PokemonState, QueuedAction, ReplacementRequest, SideState, StatStageChange,
+    StatStages, StatusState, TeamState,
 };
 pub use team::{Gender, PokemonSet, StatAllocation, TeamDefinition};
 pub use transition::{step, JointAction, Mechanics, StepDiagnostics, StepResult, TeamSelection};

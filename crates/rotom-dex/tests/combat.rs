@@ -1,7 +1,7 @@
 use rotom_core::{
-    calculate_move_damage, ActionTarget, BattlePhase, BattleState, FormId, Gender, MoveSlotIndex,
-    PokemonAction, PokemonIndex, PokemonSet, RngOperation, RngReason, SideId, SideState,
-    StatAllocation, StatStages, TeamState, TurnChoice,
+    calculate_move_damage, step, ActionTarget, BattlePhase, BattleStateBuilder, EffectRegistry,
+    FormId, Gender, JointAction, Mechanics, MoveSlotIndex, PokemonAction, PokemonIndex, PokemonSet,
+    RngOperation, RngReason, SideId, SideState, StatAllocation, StatStages, TeamState, TurnChoice,
 };
 use rotom_dex::champions_reg_mc;
 use serde::Deserialize;
@@ -209,19 +209,19 @@ fn queued_turn_consumes_pp_and_updates_hp() {
             pokemon,
         ]))
     };
-    let mut battle = BattleState::new_with_seed(make_side(), make_side(), 4, 19).expect("battle");
+    let mut builder =
+        BattleStateBuilder::new_with_seed(make_side(), make_side(), 4, 19).expect("battle");
     let selection = vec![
         PokemonIndex::new(0),
         PokemonIndex::new(1),
         PokemonIndex::new(2),
         PokemonIndex::new(3),
     ];
-    battle
-        .select_team(SideId::P1, selection.clone())
-        .expect("p1 preview");
-    battle
-        .select_team(SideId::P2, selection)
-        .expect("p2 preview");
+    builder
+        .select_teams(selection.clone(), selection)
+        .expect("preview");
+    builder.enable_rng_trace();
+    let battle = builder.build().expect("selected battle");
     let p1 = TurnChoice {
         actions: [
             PokemonAction::Move {
@@ -250,18 +250,21 @@ fn queued_turn_consumes_pp_and_updates_hp() {
             },
         ],
     };
-    battle.queue_turn(p1, p2).expect("queue");
-    battle.rng.enable_trace();
-    let mut replay = battle.clone();
-    let outcome = battle.resolve_turn(&dex).expect("resolution");
-    let replay_outcome = replay.resolve_turn(&dex).expect("replayed resolution");
+    let replay = battle.clone();
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let result = step(&battle, &JointAction::Turn { p1, p2 }, &mechanics).expect("resolution");
+    let replay_result =
+        step(&replay, &JointAction::Turn { p1, p2 }, &mechanics).expect("replayed resolution");
+    let outcome = result.diagnostics.turn.as_ref().unwrap();
+    let replay_outcome = replay_result.diagnostics.turn.as_ref().unwrap();
+    let battle = result.state;
 
     assert_eq!(outcome, replay_outcome);
-    assert_eq!(battle, replay);
+    assert_eq!(battle, replay_result.state);
     assert_eq!(outcome.actions.len(), 4);
-    assert_eq!(battle.phase, BattlePhase::TurnSelection);
-    assert_eq!(battle.turn, 2);
-    assert_eq!(battle.queue.actions.len(), 0);
+    assert_eq!(battle.phase(), BattlePhase::TurnSelection);
+    assert_eq!(battle.turn(), 2);
+    assert_eq!(battle.queue().actions.len(), 0);
     for side in [SideId::P1, SideId::P2] {
         for index in [PokemonIndex::new(0), PokemonIndex::new(1)] {
             let pokemon = battle.side(side).pokemon(index).expect("active");
@@ -270,12 +273,15 @@ fn queued_turn_consumes_pp_and_updates_hp() {
             assert!(pokemon.current_hp > 0);
         }
     }
-    assert_combat_rng_trace(battle.rng.trace().expect("enabled trace"));
+    assert_combat_rng_trace(battle.rng().trace().expect("enabled trace"));
 }
 
 fn assert_combat_rng_trace(trace: &[rotom_core::RngTraceEntry]) {
-    assert_eq!(trace.len(), 12);
-    for action_trace in trace.chunks_exact(3) {
+    assert_eq!(trace.len(), 15);
+    assert!(trace[..3]
+        .iter()
+        .all(|entry| entry.reason == RngReason::SpeedTie));
+    for action_trace in trace[3..].chunks_exact(3) {
         assert_eq!(action_trace[0].reason, RngReason::Accuracy);
         assert_eq!(
             action_trace[0].operation,
@@ -324,17 +330,18 @@ fn unsupported_move_resolution_is_atomic() {
             pokemon,
         ]))
     };
-    let mut battle = BattleState::new_with_seed(make_side(), make_side(), 4, 7).expect("battle");
+    let mut builder =
+        BattleStateBuilder::new_with_seed(make_side(), make_side(), 4, 7).expect("battle");
     let selection = vec![
         PokemonIndex::new(0),
         PokemonIndex::new(1),
         PokemonIndex::new(2),
         PokemonIndex::new(3),
     ];
-    battle
-        .select_team(SideId::P1, selection.clone())
+    builder
+        .select_teams(selection.clone(), selection)
         .expect("preview");
-    battle.select_team(SideId::P2, selection).expect("preview");
+    let battle = builder.build().unwrap();
     let choice = TurnChoice {
         actions: [
             PokemonAction::Move {
@@ -349,11 +356,17 @@ fn unsupported_move_resolution_is_atomic() {
             },
         ],
     };
-    battle.queue_turn(choice, choice).expect("queue");
     let before = battle.clone();
 
     assert!(matches!(
-        battle.resolve_turn(&dex),
+        step(
+            &battle,
+            &JointAction::Turn {
+                p1: choice,
+                p2: choice
+            },
+            &Mechanics::new(&dex, &EffectRegistry::new())
+        ),
         Err(rotom_core::BattleError::UnsupportedMechanic(_))
     ));
     assert_eq!(battle, before);
@@ -390,42 +403,46 @@ fn combat_damage_processes_faints_and_requests_replacements() {
             pokemon,
         ]))
     };
-    let mut battle = BattleState::new_with_seed(make_side(&attacker), make_side(&defender), 4, 31)
-        .expect("battle");
+    let mut builder =
+        BattleStateBuilder::new_with_seed(make_side(&attacker), make_side(&defender), 4, 31)
+            .expect("battle");
     let selection = vec![
         PokemonIndex::new(0),
         PokemonIndex::new(1),
         PokemonIndex::new(2),
         PokemonIndex::new(3),
     ];
-    battle
-        .select_team(SideId::P1, selection.clone())
+    builder
+        .select_teams(selection.clone(), selection)
         .expect("preview");
-    battle.select_team(SideId::P2, selection).expect("preview");
+    let battle = builder.build().unwrap();
     let attack = |target| PokemonAction::Move {
         move_slot: MoveSlotIndex::new(0),
         target: ActionTarget::Foe(target),
         mega: false,
     };
-    battle
-        .queue_turn(
-            TurnChoice {
+    let result = step(
+        &battle,
+        &JointAction::Turn {
+            p1: TurnChoice {
                 actions: [
                     attack(rotom_core::ActiveSlot::Left),
                     attack(rotom_core::ActiveSlot::Right),
                 ],
             },
-            TurnChoice {
+            p2: TurnChoice {
                 actions: [
                     attack(rotom_core::ActiveSlot::Left),
                     attack(rotom_core::ActiveSlot::Right),
                 ],
             },
-        )
-        .expect("queue");
-    battle.resolve_turn(&dex).expect("resolution");
+        },
+        &Mechanics::new(&dex, &EffectRegistry::new()),
+    )
+    .expect("resolution");
+    let battle = result.state;
 
-    assert_eq!(battle.phase, BattlePhase::ForcedSwitch);
+    assert_eq!(battle.phase(), BattlePhase::ForcedSwitch);
     assert!(battle
         .side(SideId::P2)
         .pokemon(PokemonIndex::new(0))

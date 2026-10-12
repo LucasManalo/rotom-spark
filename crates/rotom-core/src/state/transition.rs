@@ -42,7 +42,7 @@ impl BattleState {
     ///
     /// Returns an error outside team preview, on a repeated submission, or if
     /// the selection has the wrong size, duplicates, or invalid team indexes.
-    pub fn select_team(
+    pub(crate) fn select_team(
         &mut self,
         side: SideId,
         selection: Vec<PokemonIndex>,
@@ -81,7 +81,7 @@ impl BattleState {
     ///
     /// Returns an error outside turn selection or when the target is not a
     /// living, selected, inactive team member.
-    pub fn switch_active(
+    pub(crate) fn switch_active(
         &mut self,
         side: SideId,
         slot: ActiveSlot,
@@ -123,7 +123,7 @@ impl BattleState {
     ///
     /// Returns an error during team preview or after battle end, for duplicate
     /// targets, or when a target does not identify a current active Pokémon.
-    pub fn process_faints(&mut self, targets: &[FaintTarget]) -> Result<(), BattleError> {
+    pub(crate) fn process_faints(&mut self, targets: &[FaintTarget]) -> Result<(), BattleError> {
         if matches!(
             self.phase,
             BattlePhase::TeamPreview | BattlePhase::BattleEnd
@@ -203,7 +203,7 @@ impl BattleState {
     ///
     /// Returns an error outside forced switching or when the chosen slot or
     /// Pokémon is not present in the current replacement request.
-    pub fn replace_fainted(
+    pub(crate) fn replace_fainted(
         &mut self,
         side: SideId,
         slot: ActiveSlot,

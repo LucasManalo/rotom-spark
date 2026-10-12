@@ -1,7 +1,7 @@
 use crate::{
     kernel::StateKernel, BattleError, BattleEvent, BattleState, EffectInvocation, EffectOrder,
-    EffectOwner, EffectRegistry, EffectSource, EventContext, EventDispatch, EventValue,
-    MajorStatus, PokemonPosition, PokemonRef, RngReason, StatusState,
+    EffectOwner, EffectRegistry, EffectSource, EffectState, EventContext, EventDispatch,
+    EventValue, MajorStatus, PokemonPosition, PokemonRef, RngReason, StatusState,
 };
 
 const CHAMPIONS_SLEEP_DURATIONS: [u8; 3] = [2, 3, 3];
@@ -65,7 +65,7 @@ impl BattleState {
     ///
     /// Returns an error for a missing or fainted target, an existing status,
     /// or an invalid RNG operation.
-    pub fn apply_major_status(
+    pub(crate) fn apply_major_status(
         &mut self,
         target: PokemonRef,
         status: MajorStatus,
@@ -113,7 +113,7 @@ impl BattleState {
     /// # Errors
     ///
     /// Returns an error when the target index is outside its team.
-    pub fn cure_major_status(
+    pub(crate) fn cure_major_status(
         &mut self,
         target: PokemonRef,
     ) -> Result<Option<MajorStatus>, BattleError> {
@@ -122,7 +122,7 @@ impl BattleState {
 }
 
 fn paralysis_speed(
-    _: &mut BattleState,
+    _: &mut EffectState<'_>,
     invocation: &EffectInvocation,
     context: &EventContext,
     dispatch: &mut EventDispatch,
@@ -140,7 +140,7 @@ fn paralysis_speed(
 }
 
 fn sleep_before_move(
-    battle: &mut BattleState,
+    state: &mut EffectState<'_>,
     invocation: &EffectInvocation,
     context: &EventContext,
     dispatch: &mut EventDispatch,
@@ -148,7 +148,7 @@ fn sleep_before_move(
     let Some(pokemon) = matching_source(invocation, context) else {
         return Ok(());
     };
-    let turns = StateKernel::new(battle).decrement_sleep_turns(pokemon)?;
+    let turns = state.decrement_sleep_turns(pokemon)?;
     if turns > 0 {
         dispatch.cancel();
     }
@@ -156,7 +156,7 @@ fn sleep_before_move(
 }
 
 fn freeze_before_move(
-    battle: &mut BattleState,
+    state: &mut EffectState<'_>,
     invocation: &EffectInvocation,
     context: &EventContext,
     dispatch: &mut EventDispatch,
@@ -164,32 +164,30 @@ fn freeze_before_move(
     let Some(pokemon) = matching_source(invocation, context) else {
         return Ok(());
     };
-    let turns = StateKernel::new(battle).decrement_freeze_turns(pokemon)?;
-    let thawed = turns == 0 || battle.rng.chance(RngReason::Freeze, 1, 4)?;
+    let turns = state.decrement_freeze_turns(pokemon)?;
+    let thawed = turns == 0 || state.chance(RngReason::Freeze, 1, 4)?;
     if !thawed {
         dispatch.cancel();
     } else if turns > 0 {
-        StateKernel::new(battle).cure_major_status(pokemon)?;
+        state.cure_major_status(pokemon)?;
     }
     Ok(())
 }
 
 fn paralysis_before_move(
-    battle: &mut BattleState,
+    state: &mut EffectState<'_>,
     invocation: &EffectInvocation,
     context: &EventContext,
     dispatch: &mut EventDispatch,
 ) -> Result<(), BattleError> {
-    if matching_source(invocation, context).is_some()
-        && battle.rng.chance(RngReason::Paralysis, 1, 8)?
-    {
+    if matching_source(invocation, context).is_some() && state.chance(RngReason::Paralysis, 1, 8)? {
         dispatch.cancel();
     }
     Ok(())
 }
 
 fn status_residual(
-    battle: &mut BattleState,
+    effect_state: &mut EffectState<'_>,
     invocation: &EffectInvocation,
     _: &EventContext,
     _: &mut EventDispatch,
@@ -198,7 +196,8 @@ fn status_residual(
         return Ok(());
     };
     let (max_hp, status) = {
-        let state = battle
+        let state = effect_state
+            .battle()
             .side(pokemon.side)
             .pokemon(pokemon.pokemon)
             .ok_or_else(|| {
@@ -211,12 +210,12 @@ fn status_residual(
         Some(MajorStatus::Poison) => (max_hp / 8).max(1),
         Some(MajorStatus::Burn) => unit,
         Some(MajorStatus::BadlyPoisoned) => {
-            let counter = StateKernel::new(battle).increment_toxic_counter(pokemon)?;
+            let counter = effect_state.increment_toxic_counter(pokemon)?;
             unit.saturating_mul(u16::from(counter))
         }
         Some(MajorStatus::Freeze | MajorStatus::Paralysis | MajorStatus::Sleep) | None => 0,
     };
-    StateKernel::new(battle).damage_hp(pokemon, damage)?;
+    effect_state.damage_hp(pokemon, damage)?;
     Ok(())
 }
 

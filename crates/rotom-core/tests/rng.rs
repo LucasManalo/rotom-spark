@@ -73,19 +73,24 @@ fn equal_seeds_and_calls_reproduce_the_same_stream() {
 
 #[test]
 fn rng_is_battle_owned_cloneable_and_serializable() {
-    let mut original = battle(42);
-    let first = original
-        .rng
+    let mut builder =
+        rotom_core::BattleStateBuilder::from_state(battle(42)).expect("fixture should be stable");
+    let first = builder
+        .rng_mut()
         .range(RngReason::SpeedTie, 0..2)
         .expect("speed tie range should be valid");
+    let original = builder.build().expect("rng draw preserves validity");
     let json = serde_json::to_string(&original).expect("battle should serialize");
-    let mut restored: BattleState = serde_json::from_str(&json).expect("battle should deserialize");
-    let mut cloned = original.clone();
+    let restored: BattleState = serde_json::from_str(&json).expect("battle should deserialize");
+    let cloned = original.clone();
 
     assert!(first < 2);
-    let expected = sequence(&mut original.rng);
-    assert_eq!(expected, sequence(&mut restored.rng));
-    assert_eq!(expected, sequence(&mut cloned.rng));
+    let mut original_builder = rotom_core::BattleStateBuilder::from_state(original).unwrap();
+    let mut restored_builder = rotom_core::BattleStateBuilder::from_state(restored).unwrap();
+    let mut cloned_builder = rotom_core::BattleStateBuilder::from_state(cloned).unwrap();
+    let expected = sequence(original_builder.rng_mut());
+    assert_eq!(expected, sequence(restored_builder.rng_mut()));
+    assert_eq!(expected, sequence(cloned_builder.rng_mut()));
 }
 
 #[test]

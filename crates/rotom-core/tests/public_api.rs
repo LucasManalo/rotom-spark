@@ -1,9 +1,9 @@
 use rotom_core::{
     AbilityId, ActionOrder, ActionQueue, BattleEvent, BattlePhase, BattleRng, BattleState,
-    CombatMove, ConditionId, DamageResult, EffectOrder, EffectRegistry, EffectSource, EventContext,
-    EventContract, EventRelay, EventValue, FieldState, FormId, Gender, ItemId, MoveId, NatureId,
-    PokemonSet, PokemonType, QueuedAction, RngReason, SideId, SideState, SpeciesId, StatAllocation,
-    TeamDefinition, TeamState, TurnResolution,
+    BattleStateBuilder, CombatMove, ConditionId, DamageResult, EffectOrder, EffectRegistry,
+    EffectSource, EffectState, EventContext, EventContract, EventRelay, EventValue, FieldState,
+    FormId, Gender, ItemId, MoveId, NatureId, PokemonSet, PokemonType, QueuedAction, RngReason,
+    SideId, SideState, SpeciesId, StatAllocation, TeamDefinition, TeamState, TurnResolution,
 };
 
 #[test]
@@ -23,6 +23,8 @@ fn foundational_types_are_available_from_the_crate_root() {
         members: Vec::new(),
     };
     let _: Option<BattleState> = None;
+    let _: Option<BattleStateBuilder> = None;
+    let _: Option<&EffectState<'_>> = None;
     let _: Option<SideState> = None;
     let _: TeamState = TeamState::default();
     let _: BattlePhase = BattlePhase::TeamPreview;

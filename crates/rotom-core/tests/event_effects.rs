@@ -1,10 +1,11 @@
 use rotom_core::{
-    AbilityId, ActionTarget, ActiveSlot, BattleError, BattleEvent, BattleState, BattleStats,
-    CombatData, CombatMove, ConditionId, ConditionState, EffectInvocation, EffectOrder,
-    EffectRegistry, EffectSource, EventContext, EventDispatch, EventValue, FormId, ItemId, MoveId,
-    MoveSlot, MoveSlotIndex, MoveSupport, MoveTarget, PokemonAction, PokemonIndex, PokemonPosition,
+    step, AbilityId, ActionTarget, ActiveSlot, BattleError, BattleEvent, BattleState,
+    BattleStateBuilder, BattleStats, CombatData, CombatMove, ConditionId, ConditionState,
+    EffectInvocation, EffectOrder, EffectRegistry, EffectSource, EffectState, EventContext,
+    EventDispatch, EventValue, FormId, ItemId, JointAction, Mechanics, MoveId, MoveSlot,
+    MoveSlotIndex, MoveSupport, MoveTarget, PokemonAction, PokemonIndex, PokemonPosition,
     PokemonRef, PokemonState, PokemonType, PokemonTypes, SideId, SideState, SpeciesId, StatStages,
-    StatusState, TeamState, TurnChoice,
+    StatusState, StepResult, TeamState, TurnChoice,
 };
 use serde::Deserialize;
 
@@ -111,7 +112,7 @@ fn battle(seed: u64) -> BattleState {
         pokemon(103, 50, 7, None),
         pokemon(104, 40, 8, None),
     ];
-    let mut battle = BattleState::new_with_seed(
+    let mut builder = BattleStateBuilder::new_with_seed(
         SideState::new(TeamState::new(p1)),
         SideState::new(TeamState::new(p2)),
         4,
@@ -119,18 +120,15 @@ fn battle(seed: u64) -> BattleState {
     )
     .expect("fixture should create a valid battle");
     let selection = vec![index(0), index(1), index(2), index(3)];
-    battle
-        .select_team(SideId::P1, selection.clone())
-        .expect("P1 preview selection should be valid");
-    battle
-        .select_team(SideId::P2, selection)
-        .expect("P2 preview selection should be valid");
-    battle
+    builder
+        .select_teams(selection.clone(), selection)
+        .expect("preview selection should be valid");
+    builder.build().expect("fixture should be stable")
 }
 
 #[allow(clippy::unnecessary_wraps)]
 fn no_op(
-    _: &mut BattleState,
+    _: &mut EffectState<'_>,
     _: &EffectInvocation,
     _: &EventContext,
     _: &mut EventDispatch,
@@ -140,7 +138,7 @@ fn no_op(
 
 #[allow(clippy::unnecessary_wraps)]
 fn cancel(
-    _: &mut BattleState,
+    _: &mut EffectState<'_>,
     _: &EffectInvocation,
     _: &EventContext,
     dispatch: &mut EventDispatch,
@@ -150,7 +148,7 @@ fn cancel(
 }
 
 fn add_one_damage(
-    _: &mut BattleState,
+    _: &mut EffectState<'_>,
     _: &EffectInvocation,
     _: &EventContext,
     dispatch: &mut EventDispatch,
@@ -165,7 +163,7 @@ fn add_one_damage(
 }
 
 fn boost_own_action(
-    _: &mut BattleState,
+    _: &mut EffectState<'_>,
     invocation: &EffectInvocation,
     context: &EventContext,
     dispatch: &mut EventDispatch,
@@ -190,12 +188,12 @@ fn boost_own_action(
 }
 
 fn fail_after_mutation(
-    battle: &mut BattleState,
+    state: &mut EffectState<'_>,
     _: &EffectInvocation,
     _: &EventContext,
     _: &mut EventDispatch,
 ) -> Result<(), BattleError> {
-    battle.turn += 100;
+    state.add_field_condition(ConditionState::new(ConditionId::new(99), None))?;
     Err(BattleError::UnsupportedMechanic(
         "test handler failure".to_owned(),
     ))
@@ -203,7 +201,7 @@ fn fail_after_mutation(
 
 #[allow(clippy::unnecessary_wraps)]
 fn set_boolean_relay(
-    _: &mut BattleState,
+    _: &mut EffectState<'_>,
     _: &EffectInvocation,
     _: &EventContext,
     dispatch: &mut EventDispatch,
@@ -214,7 +212,7 @@ fn set_boolean_relay(
 
 #[allow(clippy::unnecessary_wraps)]
 fn set_negative_integer(
-    _: &mut BattleState,
+    _: &mut EffectState<'_>,
     _: &EffectInvocation,
     _: &EventContext,
     dispatch: &mut EventDispatch,
@@ -225,7 +223,7 @@ fn set_negative_integer(
 
 #[allow(clippy::unnecessary_wraps)]
 fn set_large_integer(
-    _: &mut BattleState,
+    _: &mut EffectState<'_>,
     _: &EffectInvocation,
     _: &EventContext,
     dispatch: &mut EventDispatch,
@@ -235,7 +233,7 @@ fn set_large_integer(
 }
 
 fn add_two(
-    _: &mut BattleState,
+    _: &mut EffectState<'_>,
     _: &EffectInvocation,
     _: &EventContext,
     dispatch: &mut EventDispatch,
@@ -250,7 +248,7 @@ fn add_two(
 }
 
 fn triple(
-    _: &mut BattleState,
+    _: &mut EffectState<'_>,
     _: &EffectInvocation,
     _: &EventContext,
     dispatch: &mut EventDispatch,
@@ -266,45 +264,37 @@ fn triple(
 
 #[allow(clippy::unnecessary_wraps)]
 fn record_41(
-    battle: &mut BattleState,
+    state: &mut EffectState<'_>,
     _: &EffectInvocation,
     _: &EventContext,
     _: &mut EventDispatch,
 ) -> Result<(), BattleError> {
-    battle
-        .field
-        .conditions
-        .push(ConditionState::new(ConditionId::new(41), None));
-    Ok(())
+    state.add_field_condition(ConditionState::new(ConditionId::new(41), None))
 }
 
 #[allow(clippy::unnecessary_wraps)]
 fn record_42(
-    battle: &mut BattleState,
+    state: &mut EffectState<'_>,
     _: &EffectInvocation,
     _: &EventContext,
     _: &mut EventDispatch,
 ) -> Result<(), BattleError> {
-    battle
-        .field
-        .conditions
-        .push(ConditionState::new(ConditionId::new(42), None));
-    Ok(())
+    state.add_field_condition(ConditionState::new(ConditionId::new(42), None))
 }
 
 fn record_42_and_cancel(
-    battle: &mut BattleState,
+    state: &mut EffectState<'_>,
     invocation: &EffectInvocation,
     context: &EventContext,
     dispatch: &mut EventDispatch,
 ) -> Result<(), BattleError> {
-    record_42(battle, invocation, context, dispatch)?;
+    record_42(state, invocation, context, dispatch)?;
     dispatch.cancel();
     Ok(())
 }
 
 fn observe_lifecycle(
-    battle: &mut BattleState,
+    state: &mut EffectState<'_>,
     _: &EffectInvocation,
     context: &EventContext,
     dispatch: &mut EventDispatch,
@@ -315,11 +305,13 @@ fn observe_lifecycle(
     let target = context
         .target
         .ok_or_else(|| BattleError::InvalidState("lifecycle target is missing".to_owned()))?;
-    let source_state = battle
+    let source_state = state
+        .battle()
         .side(source.side)
         .pokemon(source.pokemon)
         .ok_or_else(|| BattleError::InvalidState("lifecycle source is invalid".to_owned()))?;
-    let target_state = battle
+    let target_state = state
+        .battle()
         .side(target.side)
         .pokemon(target.pokemon)
         .ok_or_else(|| BattleError::InvalidState("lifecycle target is invalid".to_owned()))?;
@@ -351,12 +343,12 @@ fn observe_lifecycle(
 }
 
 fn observe_turn_boundary(
-    battle: &mut BattleState,
+    state: &mut EffectState<'_>,
     _: &EffectInvocation,
     _: &EventContext,
     dispatch: &mut EventDispatch,
 ) -> Result<(), BattleError> {
-    if battle.phase != rotom_core::BattlePhase::ResolvingTurn {
+    if state.battle().phase() != rotom_core::BattlePhase::ResolvingTurn {
         return Err(BattleError::InvalidState(format!(
             "{:?} ran outside turn resolution",
             dispatch.event
@@ -367,24 +359,16 @@ fn observe_turn_boundary(
         BattleEvent::Residual => 52,
         _ => return Ok(()),
     };
-    battle
-        .field
-        .conditions
-        .push(ConditionState::new(ConditionId::new(marker), None));
-    Ok(())
+    state.add_field_condition(ConditionState::new(ConditionId::new(marker), None))
 }
 
 fn remove_slower_item(
-    battle: &mut BattleState,
+    state: &mut EffectState<'_>,
     _: &EffectInvocation,
     _: &EventContext,
     _: &mut EventDispatch,
 ) -> Result<(), BattleError> {
-    battle
-        .side_mut(SideId::P1)
-        .pokemon_mut(index(0))
-        .ok_or_else(|| BattleError::InvalidState("fixture holder is missing".to_owned()))?
-        .item = None;
+    state.set_item(PokemonRef::new(SideId::P1, index(0)), None)?;
     Ok(())
 }
 
@@ -399,13 +383,41 @@ fn both_attack_left() -> TurnChoice {
     }
 }
 
+fn resolve_turn(
+    battle: &BattleState,
+    p1: TurnChoice,
+    p2: TurnChoice,
+    effects: &EffectRegistry,
+) -> Result<StepResult, BattleError> {
+    step(
+        battle,
+        &JointAction::Turn { p1, p2 },
+        &Mechanics::new(&TestData, effects),
+    )
+}
+
+fn dispatch_effect(
+    registry: &EffectRegistry,
+    battle: &mut BattleState,
+    event: BattleEvent,
+    context: EventContext,
+    value: EventValue,
+) -> Result<EventDispatch, BattleError> {
+    let mut builder = BattleStateBuilder::from_state(battle.clone())?;
+    let dispatch = builder.dispatch_effect_for_fixture(registry, event, context, value)?;
+    *battle = builder.build()?;
+    Ok(dispatch)
+}
+
 #[test]
 fn dispatch_collects_active_sources_in_showdown_order() {
-    let mut battle = battle(1);
-    battle
-        .field
-        .conditions
-        .push(ConditionState::new(ConditionId::new(30), Some(2)));
+    let mut builder = BattleStateBuilder::from_state(battle(1)).expect("fixture should be stable");
+    builder.edit_field(|field| {
+        field
+            .conditions
+            .push(ConditionState::new(ConditionId::new(30), Some(2)));
+    });
+    let mut battle = builder.build().expect("fixture edit should be stable");
     let mut registry = EffectRegistry::new();
     registry.register(
         BattleEvent::Residual,
@@ -438,14 +450,14 @@ fn dispatch_collects_active_sources_in_showdown_order() {
         no_op,
     );
 
-    let dispatch = registry
-        .dispatch(
-            &mut battle,
-            BattleEvent::Residual,
-            EventContext::default(),
-            EventValue::None,
-        )
-        .expect("registered effects should dispatch");
+    let dispatch = dispatch_effect(
+        &registry,
+        &mut battle,
+        BattleEvent::Residual,
+        EventContext::default(),
+        EventValue::None,
+    )
+    .expect("registered effects should dispatch");
     let sources = dispatch
         .invocations
         .iter()
@@ -490,24 +502,25 @@ fn ordering_keys_match_the_pinned_showdown_comparator_fixture() {
     ];
 
     for test_case in fixture.cases {
-        let mut battle = battle(1);
+        let mut builder =
+            BattleStateBuilder::from_state(battle(1)).expect("fixture should be stable");
         for (offset, holder) in holders.into_iter().enumerate() {
-            let state = battle
-                .side_mut(holder.side)
-                .pokemon_mut(holder.pokemon)
+            builder
+                .edit_pokemon(holder, |state| {
+                    state.ability = AbilityId::new(
+                        1_000 + u32::try_from(offset).expect("fixture offset should fit in u32"),
+                    );
+                })
                 .expect("fixture holder should exist");
-            state.ability = AbilityId::new(
-                1_000 + u32::try_from(offset).expect("fixture offset should fit in u32"),
-            );
         }
         let mut registry = EffectRegistry::new();
         for (handler, holder) in test_case.handlers.iter().zip(holders) {
-            let state = battle
-                .side_mut(holder.side)
-                .pokemon_mut(holder.pokemon)
+            builder
+                .edit_pokemon(holder, |state| {
+                    state.ability = AbilityId::new(handler.label);
+                    state.stats.spe = handler.speed;
+                })
                 .expect("fixture holder should exist");
-            state.ability = AbilityId::new(handler.label);
-            state.stats.spe = handler.speed;
             registry.register(
                 BattleEvent::Residual,
                 EffectSource::Ability(AbilityId::new(handler.label)),
@@ -519,15 +532,16 @@ fn ordering_keys_match_the_pinned_showdown_comparator_fixture() {
                 no_op,
             );
         }
+        let mut battle = builder.build().expect("fixture edits should be stable");
 
-        let dispatch = registry
-            .dispatch(
-                &mut battle,
-                BattleEvent::Residual,
-                EventContext::default(),
-                EventValue::None,
-            )
-            .unwrap_or_else(|error| panic!("{} failed: {error}", test_case.name));
+        let dispatch = dispatch_effect(
+            &registry,
+            &mut battle,
+            BattleEvent::Residual,
+            EventContext::default(),
+            EventValue::None,
+        )
+        .unwrap_or_else(|error| panic!("{} failed: {error}", test_case.name));
         let actual = dispatch
             .invocations
             .iter()
@@ -557,14 +571,14 @@ fn cancellation_stops_later_handlers() {
         no_op,
     );
 
-    let dispatch = registry
-        .dispatch(
-            &mut battle,
-            BattleEvent::TryHit,
-            EventContext::default(),
-            EventValue::Boolean(true),
-        )
-        .expect("cancellation is a successful dispatch");
+    let dispatch = dispatch_effect(
+        &registry,
+        &mut battle,
+        BattleEvent::TryHit,
+        EventContext::default(),
+        EventValue::Boolean(true),
+    )
+    .expect("cancellation is a successful dispatch");
 
     assert!(dispatch.cancelled);
     assert_eq!(dispatch.invocations.len(), 1);
@@ -572,15 +586,19 @@ fn cancellation_stops_later_handlers() {
 
 #[test]
 fn move_damage_hook_changes_combat_and_emits_inspectable_events() {
-    let mut baseline = battle(7);
-    baseline
-        .queue_turn(both_attack_left(), both_attack_left())
-        .expect("baseline choices should queue");
-    let mut modified = baseline.clone();
-
-    let baseline_resolution = baseline
-        .resolve_turn(&TestData)
-        .expect("baseline turn should resolve");
+    let baseline = battle(7);
+    let modified = baseline.clone();
+    let baseline_result = resolve_turn(
+        &baseline,
+        both_attack_left(),
+        both_attack_left(),
+        &EffectRegistry::new(),
+    )
+    .expect("baseline turn should resolve");
+    let baseline_resolution = baseline_result
+        .diagnostics
+        .turn
+        .expect("turn diagnostics should be present");
     let mut registry = EffectRegistry::new();
     registry.register(
         BattleEvent::ModifyDamage,
@@ -588,17 +606,23 @@ fn move_damage_hook_changes_combat_and_emits_inspectable_events() {
         EffectOrder::default(),
         add_one_damage,
     );
-    let modified_resolution = modified
-        .resolve_turn_with_effects(&TestData, &registry)
-        .expect("effectful turn should resolve");
+    let modified_result =
+        resolve_turn(&modified, both_attack_left(), both_attack_left(), &registry)
+            .expect("effectful turn should resolve");
+    let modified_resolution = modified_result
+        .diagnostics
+        .turn
+        .expect("turn diagnostics should be present");
 
     for side in [SideId::P1, SideId::P2] {
-        let baseline_hp = baseline
+        let baseline_hp = baseline_result
+            .state
             .side(side)
             .pokemon(index(0))
             .expect("fixture target should exist")
             .current_hp;
-        let modified_hp = modified
+        let modified_hp = modified_result
+            .state
             .side(side)
             .pokemon(index(0))
             .expect("fixture target should exist")
@@ -622,7 +646,7 @@ fn move_damage_hook_changes_combat_and_emits_inspectable_events() {
 
 #[test]
 fn queue_hooks_modify_priority_and_speed_before_sorting() {
-    let mut battle = battle(8);
+    let battle = battle(8);
     let mut registry = EffectRegistry::new();
     for event in [BattleEvent::ModifyPriority, BattleEvent::ModifySpeed] {
         registry.register(
@@ -634,7 +658,11 @@ fn queue_hooks_modify_priority_and_speed_before_sorting() {
     }
 
     let queue = battle
-        .queue_turn_with_effects(both_attack_left(), both_attack_left(), &registry)
+        .inspect_turn_queue(
+            both_attack_left(),
+            both_attack_left(),
+            &Mechanics::new(&TestData, &registry),
+        )
         .expect("queue modifiers should produce valid ordering values");
 
     assert_eq!(queue.actions[0].side, SideId::P1);
@@ -648,7 +676,7 @@ fn queue_hooks_modify_priority_and_speed_before_sorting() {
 
 #[test]
 fn switch_actions_skip_move_priority_hooks() {
-    let mut battle = battle(8);
+    let battle = battle(8);
     let mut registry = EffectRegistry::new();
     registry.register(
         BattleEvent::ModifyPriority,
@@ -664,7 +692,11 @@ fn switch_actions_skip_move_priority_hooks() {
     };
 
     let queue = battle
-        .queue_turn_with_effects(p1, both_attack_left(), &registry)
+        .inspect_turn_queue(
+            p1,
+            both_attack_left(),
+            &Mechanics::new(&TestData, &registry),
+        )
         .expect("mixed switch and move choices should queue");
     let switching = PokemonRef::new(SideId::P1, index(0));
 
@@ -675,8 +707,10 @@ fn switch_actions_skip_move_priority_hooks() {
 
 #[test]
 fn invalid_active_indexes_fail_effect_collection_explicitly() {
-    let mut battle = battle(8);
-    battle.side_mut(SideId::P1).active[0] = Some(index(99));
+    let mut value = serde_json::to_value(battle(8)).expect("fixture should serialize");
+    value["sides"][0]["active"][0] = serde_json::json!(99);
+    let mut battle: BattleState =
+        serde_json::from_value(value).expect("negative fixture should deserialize unchecked");
     let mut registry = EffectRegistry::new();
     registry.register(
         BattleEvent::Residual,
@@ -686,7 +720,8 @@ fn invalid_active_indexes_fail_effect_collection_explicitly() {
     );
 
     assert!(matches!(
-        registry.dispatch(
+        dispatch_effect(
+            &registry,
             &mut battle,
             BattleEvent::Residual,
             EventContext::default(),
@@ -712,16 +747,16 @@ fn equal_keys_use_stable_registration_order_and_sub_order_precedes_it() {
         EffectOrder::default(),
         record_42,
     );
-    tied_registry
-        .dispatch(
-            &mut tied,
-            BattleEvent::Residual,
-            EventContext::default(),
-            EventValue::None,
-        )
-        .expect("tied handlers should dispatch");
+    dispatch_effect(
+        &tied_registry,
+        &mut tied,
+        BattleEvent::Residual,
+        EventContext::default(),
+        EventValue::None,
+    )
+    .expect("tied handlers should dispatch");
     assert_eq!(
-        tied.field
+        tied.field()
             .conditions
             .iter()
             .map(|condition| condition.id)
@@ -743,17 +778,17 @@ fn equal_keys_use_stable_registration_order_and_sub_order_precedes_it() {
         EffectOrder::new(i16::MAX, 0, 1),
         record_41,
     );
-    sub_order_registry
-        .dispatch(
-            &mut sub_ordered,
-            BattleEvent::Residual,
-            EventContext::default(),
-            EventValue::None,
-        )
-        .expect("sub-ordered handlers should dispatch");
+    dispatch_effect(
+        &sub_order_registry,
+        &mut sub_ordered,
+        BattleEvent::Residual,
+        EventContext::default(),
+        EventValue::None,
+    )
+    .expect("sub-ordered handlers should dispatch");
     assert_eq!(
         sub_ordered
-            .field
+            .field()
             .conditions
             .iter()
             .map(|condition| condition.id)
@@ -764,12 +799,13 @@ fn equal_keys_use_stable_registration_order_and_sub_order_precedes_it() {
 
 #[test]
 fn multiple_holders_of_one_effect_are_ordered_by_speed() {
-    let mut battle = battle(11);
-    battle
-        .side_mut(SideId::P1)
-        .pokemon_mut(index(1))
-        .expect("fixture holder should exist")
-        .ability = AbilityId::new(1);
+    let mut builder = BattleStateBuilder::from_state(battle(11)).expect("fixture should be stable");
+    builder
+        .edit_pokemon(PokemonRef::new(SideId::P1, index(1)), |pokemon| {
+            pokemon.ability = AbilityId::new(1);
+        })
+        .expect("fixture holder should exist");
+    let mut battle = builder.build().expect("fixture edit should be stable");
     let mut registry = EffectRegistry::new();
     registry.register(
         BattleEvent::Residual,
@@ -778,14 +814,14 @@ fn multiple_holders_of_one_effect_are_ordered_by_speed() {
         no_op,
     );
 
-    let dispatch = registry
-        .dispatch(
-            &mut battle,
-            BattleEvent::Residual,
-            EventContext::default(),
-            EventValue::None,
-        )
-        .expect("both holders should dispatch");
+    let dispatch = dispatch_effect(
+        &registry,
+        &mut battle,
+        BattleEvent::Residual,
+        EventContext::default(),
+        EventValue::None,
+    )
+    .expect("both holders should dispatch");
 
     assert_eq!(dispatch.invocations.len(), 2);
     assert_eq!(dispatch.invocations[0].speed, 200);
@@ -794,22 +830,21 @@ fn multiple_holders_of_one_effect_are_ordered_by_speed() {
 
 #[test]
 fn discovery_distinguishes_holders_and_ignores_benched_effects() {
-    let mut battle = battle(12);
+    let mut builder = BattleStateBuilder::from_state(battle(12)).expect("fixture should be stable");
     let condition = ConditionId::new(60);
-    battle
-        .field
-        .conditions
-        .extend([ConditionState::new(condition, None); 2]);
-    battle
-        .side_mut(SideId::P1)
-        .side_conditions
-        .extend([ConditionState::new(condition, None); 2]);
-    battle
-        .side_mut(SideId::P1)
-        .pokemon_mut(index(0))
-        .expect("active fixture should exist")
-        .volatiles
-        .extend([ConditionState::new(condition, None); 2]);
+    builder.edit_field(|field| {
+        field.conditions.push(ConditionState::new(condition, None));
+    });
+    builder.edit_side(SideId::P1, |side| {
+        side.side_conditions
+            .push(ConditionState::new(condition, None));
+    });
+    builder
+        .edit_pokemon(PokemonRef::new(SideId::P1, index(0)), |pokemon| {
+            pokemon.volatiles.push(ConditionState::new(condition, None));
+        })
+        .expect("active fixture should exist");
+    let mut battle = builder.build().expect("fixture edits should be stable");
     let mut registry = EffectRegistry::new();
     registry.register(
         BattleEvent::Residual,
@@ -824,14 +859,14 @@ fn discovery_distinguishes_holders_and_ignores_benched_effects() {
         no_op,
     );
 
-    let dispatch = registry
-        .dispatch(
-            &mut battle,
-            BattleEvent::Residual,
-            EventContext::default(),
-            EventValue::None,
-        )
-        .expect("condition holders should dispatch");
+    let dispatch = dispatch_effect(
+        &registry,
+        &mut battle,
+        BattleEvent::Residual,
+        EventContext::default(),
+        EventValue::None,
+    )
+    .expect("condition holders should dispatch");
     let owners = dispatch
         .invocations
         .iter()
@@ -851,33 +886,35 @@ fn discovery_distinguishes_holders_and_ignores_benched_effects() {
         .iter()
         .all(|invocation| invocation.source != EffectSource::Ability(AbilityId::new(3))));
 
-    battle.field.conditions.clear();
-    battle.side_mut(SideId::P1).side_conditions.clear();
-    battle
-        .side_mut(SideId::P1)
-        .pokemon_mut(index(0))
-        .expect("active fixture should exist")
-        .volatiles
-        .clear();
-    let removed = registry
-        .dispatch(
-            &mut battle,
-            BattleEvent::Residual,
-            EventContext::default(),
-            EventValue::None,
-        )
-        .expect("removed effects should not fail dispatch");
+    let mut builder = BattleStateBuilder::from_state(battle).expect("fixture should be stable");
+    builder.edit_field(|field| field.conditions.clear());
+    builder.edit_side(SideId::P1, |side| side.side_conditions.clear());
+    builder
+        .edit_pokemon(PokemonRef::new(SideId::P1, index(0)), |pokemon| {
+            pokemon.volatiles.clear();
+        })
+        .expect("active fixture should exist");
+    let mut battle = builder.build().expect("fixture edits should be stable");
+    let removed = dispatch_effect(
+        &registry,
+        &mut battle,
+        BattleEvent::Residual,
+        EventContext::default(),
+        EventValue::None,
+    )
+    .expect("removed effects should not fail dispatch");
     assert_eq!(removed.invocations.len(), 0);
 }
 
 #[test]
 fn collected_handlers_remain_eligible_for_the_current_dispatch() {
-    let mut battle = battle(13);
-    battle
-        .side_mut(SideId::P1)
-        .pokemon_mut(index(1))
-        .expect("fixture holder should exist")
-        .item = Some(ItemId::new(11));
+    let mut builder = BattleStateBuilder::from_state(battle(13)).expect("fixture should be stable");
+    builder
+        .edit_pokemon(PokemonRef::new(SideId::P1, index(1)), |pokemon| {
+            pokemon.item = Some(ItemId::new(11));
+        })
+        .expect("fixture holder should exist");
+    let mut battle = builder.build().expect("fixture edit should be stable");
     let mut registry = EffectRegistry::new();
     registry.register(
         BattleEvent::Residual,
@@ -886,14 +923,14 @@ fn collected_handlers_remain_eligible_for_the_current_dispatch() {
         remove_slower_item,
     );
 
-    let dispatch = registry
-        .dispatch(
-            &mut battle,
-            BattleEvent::Residual,
-            EventContext::default(),
-            EventValue::None,
-        )
-        .expect("snapshotted handlers should finish dispatch");
+    let dispatch = dispatch_effect(
+        &registry,
+        &mut battle,
+        BattleEvent::Residual,
+        EventContext::default(),
+        EventValue::None,
+    )
+    .expect("snapshotted handlers should finish dispatch");
 
     assert_eq!(dispatch.invocations.len(), 2);
     assert_eq!(dispatch.invocations[0].speed, 200);
@@ -937,14 +974,21 @@ fn relay_contract_rejects_wrong_types_illegal_cancellation_and_read_only_changes
             callback,
         );
         assert!(matches!(
-            registry.dispatch(&mut battle, event, EventContext::default(), value),
+            dispatch_effect(
+                &registry,
+                &mut battle,
+                event,
+                EventContext::default(),
+                value
+            ),
             Err(BattleError::InvalidState(_))
         ));
     }
 
     let mut battle = battle(14);
     assert!(matches!(
-        EffectRegistry::new().dispatch(
+        dispatch_effect(
+            &EffectRegistry::new(),
             &mut battle,
             BattleEvent::ModifyDamage,
             EventContext::default(),
@@ -971,20 +1015,20 @@ fn cancellation_in_the_middle_preserves_prior_mutation_and_stops_later_handlers(
         );
     }
 
-    let dispatch = registry
-        .dispatch(
-            &mut battle,
-            BattleEvent::BeforeMove,
-            EventContext::default(),
-            EventValue::None,
-        )
-        .expect("middle cancellation should complete dispatch");
+    let dispatch = dispatch_effect(
+        &registry,
+        &mut battle,
+        BattleEvent::BeforeMove,
+        EventContext::default(),
+        EventValue::None,
+    )
+    .expect("middle cancellation should complete dispatch");
 
     assert!(dispatch.cancelled);
     assert_eq!(dispatch.invocations.len(), 2);
     assert_eq!(
         battle
-            .field
+            .field()
             .conditions
             .iter()
             .map(|condition| condition.id)
@@ -1019,9 +1063,14 @@ fn every_event_contract_accepts_its_declared_initial_relay() {
             rotom_core::EventRelay::Boolean => EventValue::Boolean(true),
             rotom_core::EventRelay::Integer => EventValue::Integer(1),
         };
-        EffectRegistry::new()
-            .dispatch(&mut battle(14), event, EventContext::default(), value)
-            .expect("declared relay should satisfy its event contract");
+        dispatch_effect(
+            &EffectRegistry::new(),
+            &mut battle(14),
+            event,
+            EventContext::default(),
+            value,
+        )
+        .expect("declared relay should satisfy its event contract");
     }
 }
 
@@ -1035,14 +1084,14 @@ fn event_dispatch_trace_round_trips_through_json() {
         EffectOrder::default(),
         no_op,
     );
-    let dispatch = registry
-        .dispatch(
-            &mut battle,
-            BattleEvent::Residual,
-            EventContext::default(),
-            EventValue::None,
-        )
-        .expect("trace should dispatch");
+    let dispatch = dispatch_effect(
+        &registry,
+        &mut battle,
+        BattleEvent::Residual,
+        EventContext::default(),
+        EventValue::None,
+    )
+    .expect("trace should dispatch");
 
     let json = serde_json::to_string(&dispatch).expect("trace should serialize");
     let decoded: EventDispatch = serde_json::from_str(&json).expect("trace should deserialize");
@@ -1051,14 +1100,18 @@ fn event_dispatch_trace_round_trips_through_json() {
 
 #[test]
 fn sequential_integer_modifiers_use_ordered_relay_results() {
-    let mut baseline = battle(15);
-    baseline
-        .queue_turn(both_attack_left(), both_attack_left())
-        .expect("baseline choices should queue");
-    let mut modified = baseline.clone();
-    let baseline_resolution = baseline
-        .resolve_turn(&TestData)
-        .expect("baseline should resolve");
+    let baseline = battle(15);
+    let modified = baseline.clone();
+    let baseline_resolution = resolve_turn(
+        &baseline,
+        both_attack_left(),
+        both_attack_left(),
+        &EffectRegistry::new(),
+    )
+    .expect("baseline should resolve")
+    .diagnostics
+    .turn
+    .expect("turn diagnostics should be present");
     let mut registry = EffectRegistry::new();
     registry.register(
         BattleEvent::ModifyDamage,
@@ -1072,9 +1125,12 @@ fn sequential_integer_modifiers_use_ordered_relay_results() {
         EffectOrder::default(),
         triple,
     );
-    let modified_resolution = modified
-        .resolve_turn_with_effects(&TestData, &registry)
-        .expect("ordered modifiers should resolve");
+    let modified_resolution =
+        resolve_turn(&modified, both_attack_left(), both_attack_left(), &registry)
+            .expect("ordered modifiers should resolve")
+            .diagnostics
+            .turn
+            .expect("turn diagnostics should be present");
     let baseline_damage = baseline_resolution.actions.iter().filter_map(|action| {
         if let rotom_core::ResolvedAction::Damaged { damage, .. } = action {
             Some(damage.final_damage)
@@ -1107,7 +1163,7 @@ fn invalid_numeric_outputs_roll_back_queue_and_resolution() {
         ),
     ];
     for (event, callback) in queue_cases {
-        let mut battle = battle(16);
+        let battle = battle(16);
         let before = battle.clone();
         let mut registry = EffectRegistry::new();
         registry.register(
@@ -1117,7 +1173,11 @@ fn invalid_numeric_outputs_roll_back_queue_and_resolution() {
             callback,
         );
         assert!(matches!(
-            battle.queue_turn_with_effects(both_attack_left(), both_attack_left(), &registry),
+            battle.inspect_turn_queue(
+                both_attack_left(),
+                both_attack_left(),
+                &Mechanics::new(&TestData, &registry),
+            ),
             Err(BattleError::InvalidState(_))
         ));
         assert_eq!(battle, before);
@@ -1127,10 +1187,7 @@ fn invalid_numeric_outputs_roll_back_queue_and_resolution() {
         set_negative_integer as rotom_core::EffectCallback,
         set_large_integer as rotom_core::EffectCallback,
     ] {
-        let mut battle = battle(16);
-        battle
-            .queue_turn(both_attack_left(), both_attack_left())
-            .expect("choices should queue");
+        let battle = battle(16);
         let before = battle.clone();
         let mut registry = EffectRegistry::new();
         registry.register(
@@ -1140,7 +1197,7 @@ fn invalid_numeric_outputs_roll_back_queue_and_resolution() {
             callback,
         );
         assert!(matches!(
-            battle.resolve_turn_with_effects(&TestData, &registry),
+            resolve_turn(&battle, both_attack_left(), both_attack_left(), &registry,),
             Err(BattleError::InvalidState(_))
         ));
         assert_eq!(battle, before);
@@ -1149,16 +1206,13 @@ fn invalid_numeric_outputs_roll_back_queue_and_resolution() {
 
 #[test]
 fn switch_hooks_see_pre_exit_and_post_entry_state_in_order() {
-    let mut battle = battle(17);
+    let battle = battle(17);
     let p1 = TurnChoice {
         actions: [
             PokemonAction::Switch { pokemon: index(2) },
             both_attack_left().actions[1],
         ],
     };
-    battle
-        .queue_turn(p1, both_attack_left())
-        .expect("mixed choices should queue");
     let mut registry = EffectRegistry::new();
     for event in [BattleEvent::SwitchOut, BattleEvent::SwitchIn] {
         registry.register(
@@ -1169,9 +1223,12 @@ fn switch_hooks_see_pre_exit_and_post_entry_state_in_order() {
         );
     }
 
-    let resolution = battle
-        .resolve_turn_with_effects(&TestData, &registry)
+    let result = resolve_turn(&battle, p1, both_attack_left(), &registry)
         .expect("switch lifecycle should resolve");
+    let resolution = result
+        .diagnostics
+        .turn
+        .expect("turn diagnostics should be present");
     let switch_events = resolution
         .events
         .iter()
@@ -1188,21 +1245,18 @@ fn switch_hooks_see_pre_exit_and_post_entry_state_in_order() {
         switch_events,
         vec![BattleEvent::SwitchOut, BattleEvent::SwitchIn]
     );
-    assert_eq!(battle.side(SideId::P1).active[0], Some(index(2)));
+    assert_eq!(result.state.side(SideId::P1).active[0], Some(index(2)));
 }
 
 #[test]
 fn cancelling_switch_out_preserves_positions_and_skips_switch_in() {
-    let mut battle = battle(18);
+    let battle = battle(18);
     let p1 = TurnChoice {
         actions: [
             PokemonAction::Switch { pokemon: index(2) },
             both_attack_left().actions[1],
         ],
     };
-    battle
-        .queue_turn(p1, both_attack_left())
-        .expect("mixed choices should queue");
     let mut registry = EffectRegistry::new();
     registry.register(
         BattleEvent::SwitchOut,
@@ -1211,13 +1265,17 @@ fn cancelling_switch_out_preserves_positions_and_skips_switch_in() {
         cancel,
     );
 
-    let resolution = battle
-        .resolve_turn_with_effects(&TestData, &registry)
+    let result = resolve_turn(&battle, p1, both_attack_left(), &registry)
         .expect("cancelling a switch is a valid resolution");
+    let resolution = result
+        .diagnostics
+        .turn
+        .expect("turn diagnostics should be present");
 
-    assert_eq!(battle.side(SideId::P1).active[0], Some(index(0)));
+    assert_eq!(result.state.side(SideId::P1).active[0], Some(index(0)));
     assert_eq!(
-        battle
+        result
+            .state
             .side(SideId::P1)
             .pokemon(index(2))
             .expect("switch target should exist")
@@ -1241,11 +1299,8 @@ fn cancelling_switch_out_preserves_positions_and_skips_switch_in() {
 
 #[test]
 fn before_move_cancellation_preserves_pp_hp_and_rng() {
-    let mut battle = battle(18);
-    battle
-        .queue_turn(both_attack_left(), both_attack_left())
-        .expect("choices should queue");
-    let before_rng = battle.rng.clone();
+    let battle = battle(18);
+    let before_rng = battle.rng().clone();
     let before_hp = battle
         .side(SideId::P2)
         .pokemon(index(0))
@@ -1259,21 +1314,26 @@ fn before_move_cancellation_preserves_pp_hp_and_rng() {
         cancel,
     );
 
-    let resolution = battle
-        .resolve_turn_with_effects(&TestData, &registry)
+    let result = resolve_turn(&battle, both_attack_left(), both_attack_left(), &registry)
         .expect("before-move cancellation should resolve");
+    let resolution = result
+        .diagnostics
+        .turn
+        .expect("turn diagnostics should be present");
 
-    assert_eq!(battle.rng, before_rng);
+    assert_eq!(result.state.rng(), &before_rng);
     assert_eq!(
-        battle
+        result
+            .state
             .side(SideId::P2)
             .pokemon(index(0))
             .expect("target should exist")
             .current_hp,
         before_hp
     );
-    assert!(battle
-        .sides
+    assert!(result
+        .state
+        .sides()
         .iter()
         .all(|side| side.active.iter().flatten().all(|index| side
             .pokemon(*index)
@@ -1286,11 +1346,8 @@ fn before_move_cancellation_preserves_pp_hp_and_rng() {
 
 #[test]
 fn try_hit_cancellation_occurs_after_pp_but_before_damage_rng() {
-    let mut battle = battle(18);
-    battle
-        .queue_turn(both_attack_left(), both_attack_left())
-        .expect("choices should queue");
-    let before_rng = battle.rng.clone();
+    let battle = battle(18);
+    let before_rng = battle.rng().clone();
     let before_hp = battle
         .side(SideId::P2)
         .pokemon(index(0))
@@ -1304,21 +1361,22 @@ fn try_hit_cancellation_occurs_after_pp_but_before_damage_rng() {
         cancel,
     );
 
-    battle
-        .resolve_turn_with_effects(&TestData, &registry)
+    let result = resolve_turn(&battle, both_attack_left(), both_attack_left(), &registry)
         .expect("try-hit cancellation should resolve");
 
-    assert_eq!(battle.rng, before_rng);
+    assert_eq!(result.state.rng(), &before_rng);
     assert_eq!(
-        battle
+        result
+            .state
             .side(SideId::P2)
             .pokemon(index(0))
             .expect("target should exist")
             .current_hp,
         before_hp
     );
-    assert!(battle
-        .sides
+    assert!(result
+        .state
+        .sides()
         .iter()
         .all(|side| side.active.iter().flatten().all(|index| side
             .pokemon(*index)
@@ -1327,12 +1385,13 @@ fn try_hit_cancellation_occurs_after_pp_but_before_damage_rng() {
 
 #[test]
 fn faint_and_after_damage_hooks_run_before_the_target_leaves_the_field() {
-    let mut battle = battle(19);
-    battle
-        .side_mut(SideId::P2)
-        .pokemon_mut(index(0))
-        .expect("faint target should exist")
-        .current_hp = 1;
+    let mut builder = BattleStateBuilder::from_state(battle(19)).expect("fixture should be stable");
+    builder
+        .edit_pokemon(PokemonRef::new(SideId::P2, index(0)), |pokemon| {
+            pokemon.current_hp = 1;
+        })
+        .expect("faint target should exist");
+    let battle = builder.build().expect("fixture edit should be stable");
     let p1 = TurnChoice {
         actions: [
             PokemonAction::Move {
@@ -1361,7 +1420,6 @@ fn faint_and_after_damage_hooks_run_before_the_target_leaves_the_field() {
             },
         ],
     };
-    battle.queue_turn(p1, p2).expect("choices should queue");
     let mut registry = EffectRegistry::new();
     for event in [BattleEvent::AfterDamage, BattleEvent::Faint] {
         registry.register(
@@ -1372,18 +1430,21 @@ fn faint_and_after_damage_hooks_run_before_the_target_leaves_the_field() {
         );
     }
 
-    let resolution = battle
-        .resolve_turn_with_effects(&TestData, &registry)
-        .expect("fainting turn should resolve");
+    let result = resolve_turn(&battle, p1, p2, &registry).expect("fainting turn should resolve");
+    let resolution = result
+        .diagnostics
+        .turn
+        .expect("turn diagnostics should be present");
     let faint = resolution
         .events
         .iter()
         .position(|dispatch| dispatch.event == BattleEvent::Faint)
         .expect("faint event should be emitted");
     assert_eq!(resolution.events[faint - 1].event, BattleEvent::AfterDamage);
-    assert_eq!(battle.side(SideId::P2).active[0], None);
+    assert_eq!(result.state.side(SideId::P2).active[0], None);
     assert_eq!(
-        battle
+        result
+            .state
             .side(SideId::P2)
             .pokemon(index(0))
             .expect("fainted target should exist")
@@ -1394,10 +1455,7 @@ fn faint_and_after_damage_hooks_run_before_the_target_leaves_the_field() {
 
 #[test]
 fn turn_boundary_hooks_run_in_resolution_before_actions_and_after_them() {
-    let mut battle = battle(20);
-    battle
-        .queue_turn(both_attack_left(), both_attack_left())
-        .expect("choices should queue");
+    let battle = battle(20);
     let mut registry = EffectRegistry::new();
     for event in [BattleEvent::BeforeTurn, BattleEvent::Residual] {
         registry.register(
@@ -1408,17 +1466,21 @@ fn turn_boundary_hooks_run_in_resolution_before_actions_and_after_them() {
         );
     }
 
-    let resolution = battle
-        .resolve_turn_with_effects(&TestData, &registry)
+    let result = resolve_turn(&battle, both_attack_left(), both_attack_left(), &registry)
         .expect("turn boundary hooks should resolve");
+    let resolution = result
+        .diagnostics
+        .turn
+        .expect("turn diagnostics should be present");
     assert_eq!(resolution.events[0].event, BattleEvent::BeforeTurn);
     assert_eq!(
         resolution.events.last().map(|dispatch| dispatch.event),
         Some(BattleEvent::Residual)
     );
     assert_eq!(
-        battle
-            .field
+        result
+            .state
+            .field()
             .conditions
             .iter()
             .map(|condition| condition.id)
@@ -1429,10 +1491,8 @@ fn turn_boundary_hooks_run_in_resolution_before_actions_and_after_them() {
 
 #[test]
 fn cloned_battles_with_one_registry_reproduce_state_rng_and_event_trace() {
-    let mut left = battle(21);
-    left.queue_turn(both_attack_left(), both_attack_left())
-        .expect("choices should queue");
-    let mut right = left.clone();
+    let left = battle(21);
+    let right = left.clone();
     let mut registry = EffectRegistry::new();
     registry.register(
         BattleEvent::ModifyDamage,
@@ -1441,24 +1501,19 @@ fn cloned_battles_with_one_registry_reproduce_state_rng_and_event_trace() {
         add_one_damage,
     );
 
-    let left_resolution = left
-        .resolve_turn_with_effects(&TestData, &registry)
+    let left_result = resolve_turn(&left, both_attack_left(), both_attack_left(), &registry)
         .expect("left clone should resolve");
-    let right_resolution = right
-        .resolve_turn_with_effects(&TestData, &registry)
+    let right_result = resolve_turn(&right, both_attack_left(), both_attack_left(), &registry)
         .expect("right clone should resolve");
 
-    assert_eq!(left_resolution, right_resolution);
-    assert_eq!(left, right);
-    assert_eq!(left.rng, right.rng);
+    assert_eq!(left_result.diagnostics, right_result.diagnostics);
+    assert_eq!(left_result.state, right_result.state);
+    assert_eq!(left_result.state.rng(), right_result.state.rng());
 }
 
 #[test]
 fn handler_errors_roll_back_battle_and_rng_state() {
-    let mut battle = battle(9);
-    battle
-        .queue_turn(both_attack_left(), both_attack_left())
-        .expect("choices should queue");
+    let battle = battle(9);
     let before = battle.clone();
     let mut registry = EffectRegistry::new();
     registry.register(
@@ -1469,7 +1524,7 @@ fn handler_errors_roll_back_battle_and_rng_state() {
     );
 
     assert!(matches!(
-        battle.resolve_turn_with_effects(&TestData, &registry),
+        resolve_turn(&battle, both_attack_left(), both_attack_left(), &registry,),
         Err(BattleError::UnsupportedMechanic(_))
     ));
     assert_eq!(battle, before);

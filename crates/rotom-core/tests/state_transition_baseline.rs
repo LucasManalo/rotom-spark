@@ -1,9 +1,10 @@
 use rotom_core::{
-    AbilityId, ActionTarget, ActiveSlot, BattlePhase, BattleState, BattleStats, CombatData,
-    CombatMove, ConditionId, ConditionState, FormId, MajorStatus, MoveAccuracy, MoveCategory,
-    MoveId, MoveSlot, MoveSlotIndex, MoveSupport, MoveTarget, PokemonAction, PokemonIndex,
-    PokemonPosition, PokemonState, PokemonType, PokemonTypes, RngReason, SideId, SideState,
-    SpeciesId, StatStages, StatusState, TeamState, TurnChoice,
+    step, AbilityId, ActionTarget, ActiveSlot, BattlePhase, BattleState, BattleStateBuilder,
+    BattleStats, CombatData, CombatMove, ConditionId, ConditionState, EffectRegistry, FormId,
+    JointAction, MajorStatus, Mechanics, MoveAccuracy, MoveCategory, MoveId, MoveSlot,
+    MoveSlotIndex, MoveSupport, MoveTarget, PokemonAction, PokemonIndex, PokemonPosition,
+    PokemonRef, PokemonState, PokemonType, PokemonTypes, RngReason, SideId, SideState, SpeciesId,
+    StatStages, StatusState, TeamState, TurnChoice,
 };
 
 const MOVE_ID: MoveId = MoveId::new(1);
@@ -85,7 +86,7 @@ fn battle(seed: u64) -> BattleState {
         .into_iter()
         .map(|(species, speed)| pokemon(species, speed))
         .collect();
-    let mut state = BattleState::new_with_seed(
+    let mut builder = BattleStateBuilder::new_with_seed(
         SideState::new(TeamState::new(p1)),
         SideState::new(TeamState::new(p2)),
         4,
@@ -93,13 +94,10 @@ fn battle(seed: u64) -> BattleState {
     )
     .expect("baseline fixture should create a valid battle");
     let selected = vec![index(0), index(1), index(2), index(3)];
-    state
-        .select_team(SideId::P1, selected.clone())
-        .expect("P1 preview should be valid");
-    state
-        .select_team(SideId::P2, selected)
-        .expect("P2 preview should be valid");
-    state
+    builder
+        .select_teams(selected.clone(), selected)
+        .expect("preview should be valid");
+    builder.build().expect("baseline fixture should be stable")
 }
 
 fn move_at(target: ActiveSlot) -> PokemonAction {
@@ -124,28 +122,30 @@ fn attacking_choices() -> (TurnChoice, TurnChoice) {
 #[test]
 fn normal_turn_replays_state_resolution_and_rng_trace_exactly() {
     let mut first = battle(0x5eed);
-    first.rng.enable_trace();
-    let mut replay = first.clone();
+    first.enable_rng_trace();
+    let replay = first.clone();
     let (p1, p2) = attacking_choices();
 
-    first.queue_turn(p1, p2).expect("turn should queue");
-    replay.queue_turn(p1, p2).expect("replay should queue");
-    let first_resolution = first
-        .resolve_turn(&TestData { base_power: 20 })
-        .expect("turn should resolve");
-    let replay_resolution = replay
-        .resolve_turn(&TestData { base_power: 20 })
-        .expect("replay should resolve");
+    let data = TestData { base_power: 20 };
+    let mechanics = Mechanics::new(&data, &EffectRegistry::new());
+    let first_result =
+        step(&first, &JointAction::Turn { p1, p2 }, &mechanics).expect("turn should resolve");
+    let replay_result =
+        step(&replay, &JointAction::Turn { p1, p2 }, &mechanics).expect("replay should resolve");
+    let first_resolution = first_result.diagnostics.turn.as_ref().unwrap();
+    let replay_resolution = replay_result.diagnostics.turn.as_ref().unwrap();
+    let first = first_result.state;
+    let replay = replay_result.state;
 
     assert_eq!(first_resolution, replay_resolution);
     assert_eq!(first, replay);
-    assert_eq!(first.phase, BattlePhase::TurnSelection);
+    assert_eq!(first.phase(), BattlePhase::TurnSelection);
     first
         .validate_stable_state()
         .expect("resolved turn should be a stable state");
-    assert_eq!(first.turn, 2);
-    assert_eq!(first.queue.actions, Vec::new());
-    assert_eq!(first.queue.events, Vec::new());
+    assert_eq!(first.turn(), 2);
+    assert_eq!(first.queue().actions, Vec::new());
+    assert_eq!(first.queue().events, Vec::new());
     assert_eq!(first_resolution.actions.len(), 4);
     for side in [SideId::P1, SideId::P2] {
         for pokemon in [index(0), index(1)] {
@@ -155,7 +155,7 @@ fn normal_turn_replays_state_resolution_and_rng_trace_exactly() {
         }
     }
     let reasons = first
-        .rng
+        .rng()
         .trace()
         .expect("trace should remain enabled")
         .iter()
@@ -169,13 +169,11 @@ fn normal_turn_replays_state_resolution_and_rng_trace_exactly() {
 
 #[test]
 fn switching_and_status_upkeep_preserve_the_current_state_contract() {
-    let mut state = battle(0x51de);
-    let outgoing = state
-        .side_mut(SideId::P1)
-        .pokemon_mut(index(0))
-        .expect("left lead exists");
-    outgoing
+    let state = battle(0x51de);
+    let mut builder = BattleStateBuilder::from_state(state).unwrap();
+    builder
         .set_major_status(
+            PokemonRef::new(SideId::P1, index(0)),
             MajorStatus::BadlyPoisoned,
             StatusState {
                 toxic_counter: 3,
@@ -183,16 +181,22 @@ fn switching_and_status_upkeep_preserve_the_current_state_contract() {
             },
         )
         .expect("toxic fixture is valid");
-    outgoing.stat_stages.atk = 4;
-    outgoing
-        .add_volatile(ConditionState::new(ConditionId::new(9), Some(2)))
-        .expect("volatile fixture is valid");
-    state
-        .side_mut(SideId::P1)
-        .pokemon_mut(index(1))
-        .expect("right lead exists")
-        .set_major_status(MajorStatus::Poison, StatusState::default())
+    builder
+        .edit_pokemon(PokemonRef::new(SideId::P1, index(0)), |outgoing| {
+            outgoing.stat_stages.atk = 4;
+            outgoing
+                .add_volatile(ConditionState::new(ConditionId::new(9), Some(2)))
+                .unwrap();
+        })
+        .unwrap();
+    builder
+        .set_major_status(
+            PokemonRef::new(SideId::P1, index(1)),
+            MajorStatus::Poison,
+            StatusState::default(),
+        )
         .expect("poison fixture is valid");
+    let state = builder.build().unwrap();
 
     let p1 = TurnChoice {
         actions: [
@@ -201,10 +205,15 @@ fn switching_and_status_upkeep_preserve_the_current_state_contract() {
         ],
     };
     let (_, p2) = attacking_choices();
-    state.queue_turn(p1, p2).expect("turn should queue");
-    let resolution = state
-        .resolve_turn(&TestData { base_power: 20 })
-        .expect("turn should resolve");
+    let data = TestData { base_power: 20 };
+    let result = step(
+        &state,
+        &JointAction::Turn { p1, p2 },
+        &Mechanics::new(&data, &EffectRegistry::new()),
+    )
+    .expect("turn should resolve");
+    let resolution = result.diagnostics.turn.as_ref().unwrap();
+    let state = result.state;
 
     assert_eq!(state.side(SideId::P1).active[0], Some(index(2)));
     assert_eq!(
@@ -229,14 +238,19 @@ fn switching_and_status_upkeep_preserve_the_current_state_contract() {
 
 #[test]
 fn damage_faints_settle_positions_and_request_replacements() {
-    let mut state = battle(0xfa17);
+    let state = battle(0xfa17);
     let (p1, p2) = attacking_choices();
-    state.queue_turn(p1, p2).expect("turn should queue");
-    let resolution = state
-        .resolve_turn(&TestData { base_power: 1_000 })
-        .expect("turn should resolve");
+    let data = TestData { base_power: 1_000 };
+    let result = step(
+        &state,
+        &JointAction::Turn { p1, p2 },
+        &Mechanics::new(&data, &EffectRegistry::new()),
+    )
+    .expect("turn should resolve");
+    let resolution = result.diagnostics.turn.as_ref().unwrap();
+    let state = result.state;
 
-    assert_eq!(state.phase, BattlePhase::ForcedSwitch);
+    assert_eq!(state.phase(), BattlePhase::ForcedSwitch);
     assert_eq!(state.side(SideId::P2).active, [None, None]);
     for pokemon in [index(0), index(1)] {
         let pokemon = state.side(SideId::P2).pokemon(pokemon).unwrap();

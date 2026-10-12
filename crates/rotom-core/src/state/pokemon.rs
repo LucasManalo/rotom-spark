@@ -387,7 +387,7 @@ impl TeamState {
     }
 
     #[must_use]
-    pub fn pokemon_mut(&mut self, index: PokemonIndex) -> Option<&mut PokemonState> {
+    pub(crate) fn pokemon_mut(&mut self, index: PokemonIndex) -> Option<&mut PokemonState> {
         self.members.get_mut(usize::from(index.get()))
     }
 }

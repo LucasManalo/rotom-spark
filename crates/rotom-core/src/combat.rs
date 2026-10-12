@@ -195,47 +195,6 @@ struct DamageApplication {
 }
 
 impl BattleState {
-    /// Resolves the queued normal turn transactionally using static combat data.
-    ///
-    /// If unsupported or inconsistent data is encountered, the original battle
-    /// remains unchanged, including its RNG stream.
-    ///
-    /// # Errors
-    ///
-    /// Returns an illegal-choice error outside resolution, an explicit
-    /// unsupported-mechanic error for mechanics outside this slice, or a data
-    /// or state error when referenced combat state is inconsistent.
-    pub fn resolve_turn<D: CombatData>(&mut self, data: &D) -> Result<TurnResolution, BattleError> {
-        self.resolve_turn_with_effects(data, &EffectRegistry::new())
-    }
-
-    /// Resolves a queued turn through the registered event/effect handlers.
-    ///
-    /// The registry is static behavior, not battle state. Handler errors roll
-    /// back state, RNG, and event output together with the rest of the turn.
-    ///
-    /// # Errors
-    ///
-    /// Returns the same errors as [`Self::resolve_turn`] and propagates errors
-    /// returned by effect handlers.
-    pub fn resolve_turn_with_effects<D: CombatData>(
-        &mut self,
-        data: &D,
-        effects: &EffectRegistry,
-    ) -> Result<TurnResolution, BattleError> {
-        if self.phase != BattlePhase::ResolvingTurn {
-            return Err(BattleError::IllegalChoice(format!(
-                "cannot resolve a turn during {:?}",
-                self.phase
-            )));
-        }
-        let effects = crate::conditions::composed_registry(effects);
-        let mut next = self.clone();
-        let result = next.resolve_turn_inner(data, &effects)?;
-        *self = next;
-        Ok(result)
-    }
-
     pub(crate) fn resolve_turn_inner<D: CombatData>(
         &mut self,
         data: &D,

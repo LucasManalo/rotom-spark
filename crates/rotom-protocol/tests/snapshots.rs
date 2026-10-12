@@ -1,7 +1,7 @@
 use rotom_core::{
-    AbilityId, ActionTarget, ActiveSlot, BattlePhase, BattleState, BattleStats, MoveId, MoveSlot,
-    MoveSlotIndex, MoveTarget, PokemonAction, PokemonIndex, PokemonPosition, PokemonState,
-    RngReason, SideId, SideState, SpeciesId, StatStages, StatusState, TeamState, TurnChoice,
+    AbilityId, BattlePhase, BattleState, BattleStateBuilder, BattleStats, MoveId, MoveSlot,
+    MoveTarget, PokemonIndex, PokemonPosition, PokemonRef, PokemonState, RngReason, SideId,
+    SideState, SpeciesId, StatStages, StatusState, TeamState,
 };
 use rotom_protocol::{BattleSnapshot, BattleStateSnapshot};
 
@@ -69,35 +69,39 @@ fn snapshot_is_normalized_and_serializable() {
 
 #[test]
 fn snapshot_does_not_alias_mutable_battle_state() {
-    let mut state = battle();
+    let state = battle();
     let snapshot = state.snapshot();
 
-    state
-        .side_mut(SideId::P1)
-        .pokemon_mut(PokemonIndex::new(0))
-        .expect("fixture has a first Pokémon")
-        .current_hp = 1;
+    let mut builder = BattleStateBuilder::from_state(state).unwrap();
+    builder
+        .edit_pokemon(
+            PokemonRef::new(SideId::P1, PokemonIndex::new(0)),
+            |pokemon| pokemon.current_hp = 1,
+        )
+        .unwrap();
+    let _state = builder.build().unwrap();
 
     assert_eq!(snapshot.sides[0].team[0].current_hp, 120);
 }
 
 #[test]
 fn snapshot_captures_replay_relevant_rng_state() {
-    let mut state = battle();
-    state
-        .rng
+    let mut builder = BattleStateBuilder::from_state(battle()).unwrap();
+    builder
+        .rng_mut()
         .range(RngReason::SpeedTie, 0..2)
         .expect("speed tie range should be valid");
+    let state = builder.build().unwrap();
 
     let snapshot = state.snapshot();
     assert_eq!(snapshot.rng.seed, 0);
-    assert_eq!(snapshot.rng.state, state.rng.state());
+    assert_eq!(snapshot.rng.state, state.rng().state());
     assert_eq!(snapshot.rng.draws, 1);
 }
 
 #[test]
 fn snapshot_exposes_preview_order_and_initial_leads() {
-    let mut state = battle();
+    let mut builder = BattleStateBuilder::from_state(battle()).unwrap();
     let p1 = vec![
         PokemonIndex::new(3),
         PokemonIndex::new(1),
@@ -110,12 +114,10 @@ fn snapshot_exposes_preview_order_and_initial_leads() {
         PokemonIndex::new(3),
         PokemonIndex::new(1),
     ];
-    state
-        .select_team(SideId::P1, p1)
-        .expect("P1 preview choice should be valid");
-    state
-        .select_team(SideId::P2, p2)
-        .expect("P2 preview choice should be valid");
+    builder
+        .select_teams(p1, p2)
+        .expect("preview choices should be valid");
+    let state = builder.build().unwrap();
 
     let snapshot = state.snapshot();
     assert_eq!(snapshot.turn, 1);
@@ -126,37 +128,20 @@ fn snapshot_exposes_preview_order_and_initial_leads() {
 }
 
 #[test]
-fn snapshot_exposes_the_pending_action_queue() {
-    let mut state = battle();
+fn stable_snapshot_has_no_pending_internal_action_queue() {
+    let mut builder = BattleStateBuilder::from_state(battle()).unwrap();
     let selection = vec![
         PokemonIndex::new(0),
         PokemonIndex::new(1),
         PokemonIndex::new(2),
         PokemonIndex::new(3),
     ];
-    state
-        .select_team(SideId::P1, selection.clone())
-        .expect("P1 preview choice should be valid");
-    state
-        .select_team(SideId::P2, selection)
-        .expect("P2 preview choice should be valid");
-    let action = PokemonAction::Move {
-        move_slot: MoveSlotIndex::new(0),
-        target: ActionTarget::Foe(ActiveSlot::Left),
-        mega: false,
-    };
-    let choice = TurnChoice {
-        actions: [action, action],
-    };
-    state
-        .queue_turn(choice, choice)
-        .expect("ordinary move choices should queue");
+    builder
+        .select_teams(selection.clone(), selection)
+        .expect("preview choices should be valid");
+    let state = builder.build().unwrap();
 
     let snapshot = state.snapshot();
-    assert_eq!(snapshot.phase, BattlePhase::ResolvingTurn);
-    assert_eq!(snapshot.queue.len(), 4);
-    assert!(snapshot
-        .queue
-        .iter()
-        .all(|queued| queued.choice == action && queued.speed == 94));
+    assert_eq!(snapshot.phase, BattlePhase::TurnSelection);
+    assert_eq!(snapshot.queue, Vec::new());
 }

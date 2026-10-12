@@ -146,14 +146,14 @@ pub enum PositionSnapshot {
 #[must_use]
 pub fn snapshot(state: &BattleState) -> BattleSnapshot {
     BattleSnapshot {
-        turn: state.turn,
-        picked_team_size: state.picked_team_size,
-        phase: state.phase,
+        turn: state.turn(),
+        picked_team_size: state.picked_team_size(),
+        phase: state.phase(),
         field: FieldSnapshot {
-            weather: state.field.weather.map(ConditionSnapshot::from),
-            terrain: state.field.terrain.map(ConditionSnapshot::from),
+            weather: state.field().weather.map(ConditionSnapshot::from),
+            terrain: state.field().terrain.map(ConditionSnapshot::from),
             conditions: state
-                .field
+                .field()
                 .conditions
                 .iter()
                 .copied()
@@ -161,12 +161,12 @@ pub fn snapshot(state: &BattleState) -> BattleSnapshot {
                 .collect(),
         },
         rng: RngSnapshot {
-            seed: state.rng.seed(),
-            state: state.rng.state(),
-            draws: state.rng.draws(),
+            seed: state.rng().seed(),
+            state: state.rng().state(),
+            draws: state.rng().draws(),
         },
         queue: state
-            .queue
+            .queue()
             .actions
             .iter()
             .map(|action| QueuedActionSnapshot {
@@ -180,10 +180,10 @@ pub fn snapshot(state: &BattleState) -> BattleSnapshot {
             })
             .collect(),
         sides: [
-            SideSnapshot::from_state(SideId::P1, &state.sides[0]),
-            SideSnapshot::from_state(SideId::P2, &state.sides[1]),
+            SideSnapshot::from_state(SideId::P1, &state.sides()[0]),
+            SideSnapshot::from_state(SideId::P2, &state.sides()[1]),
         ],
-        winner: state.winner,
+        winner: state.winner(),
     }
 }
 

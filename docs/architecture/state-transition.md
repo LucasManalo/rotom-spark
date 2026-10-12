@@ -1,10 +1,10 @@
 # Battle-state transition contract
 
-Status: PR D mechanics integration for milestone 11.5. PR A established this
-contract, PR B added the internal mutation kernel and stable-state validation,
-and PR C implemented the canonical phase-aware API. PR D routes supported
-mechanics writes through the kernel without changing the public transition
-contract or supported behavior.
+Status: PR E encapsulation for milestone 11.5. PR A established this contract,
+PR B added the internal mutation kernel and stable-state validation, PR C
+implemented the canonical phase-aware API, and PR D routed supported mechanics
+writes through the kernel. PR E closes ordinary downstream mutation escapes
+while preserving inspection, cloning, Serde, and controlled fixture setup.
 
 ## Transition model
 
@@ -72,12 +72,11 @@ settlement and stable-state validation. An error returns no partially advanced
 state, RNG, queue, or diagnostics. A later in-place optimization may exist,
 but only if it provides the same error atomicity.
 
-The current `select_team`, `queue_turn`, `resolve_turn`, `switch_active`,
-`process_faints`, and `replace_fainted` methods remain migration-era low-level
-compatibility entry points. They are not the target application-facing
-protocol. The canonical normal-turn path calls the existing queue and resolver
-internals on one cloned state, avoiding the two transactional clones performed
-by sequential compatibility calls.
+Low-level preview, queue/resolver, switch, faint, and replacement methods are
+crate-internal. The canonical normal-turn path calls those internals on one
+cloned state. `BattleState::inspect_turn_queue` remains a pure public inspection
+helper: it validates and clones the input, constructs a queue on the clone, and
+returns only that queue without advancing authoritative state or RNG.
 
 ## Meaning of one step
 
@@ -106,6 +105,14 @@ Serde round trips. It does not decide Pokémon rules. Team definitions and
 immutable Dex/format data remain outside it. A future player observation is a
 projection and must never replace hidden authoritative data.
 
+Authoritative `BattleState` fields and nested mutable access are crate-private.
+Downstream callers use read-only getters and `side`; RNG trace toggles are the
+only public in-place changes and affect diagnostics only. `BattleStateBuilder`
+owns a detached state for structurally valid scenario and differential-fixture
+setup and validates all stable invariants before returning it. Deliberately
+invalid tests corrupt a serialized fixture explicitly and assert rejection;
+there is no normalizing constructor.
+
 ### Mutation kernel
 
 The PR B kernel will own how authoritative state changes. It will provide
@@ -124,9 +131,11 @@ should be reused.
 
 Mechanics own why and when a mutation happens: eligibility, formulas,
 ordering, random requests, callbacks, and consequences such as faint
-processing after HP reaches zero. Event handlers may calculate or request a
-change but production handlers must apply it through the kernel after PR D.
-The typed event registry and its ordering semantics are retained.
+processing after HP reaches zero. Event handlers use `EffectState`, which
+provides immutable battle inspection, mechanics-owned RNG requests, and narrow
+typed kernel-backed mutations. Callbacks no longer receive unrestricted
+`&mut BattleState`. The typed event registry and its ordering semantics are
+retained.
 
 ### Transition layer
 
@@ -265,12 +274,27 @@ The checked differential fixtures are pinned to Showdown commit
 - `Mechanics` composes built-in and custom immutable effects once at
   construction and reuses that registry across transitions as well as within
   queue construction and resolution.
-- PR E still owns public-field encapsulation and replacement of unrestricted
-  callback/fixture mutation escapes.
+- PR E owns public-field encapsulation and replacement of unrestricted
+  callback/fixture mutation escapes, as documented below.
+
+## PR E implementation notes
+
+- `BattleState` gameplay fields, `side_mut`, and nested `pokemon_mut` access are
+  crate-private; read-only getters preserve inspection and snapshot support.
+- Low-level queue/resolution and lifecycle mutation entry points are internal.
+  Public advancement remains `step`; pure queue inspection is available for
+  tooling and tests.
+- `BattleStateBuilder` supports validated scenario setup, including status,
+  switch/faint/replacement, field/side/Pokémon edits, and explicit replay RNG
+  setup. `build` never repairs invalid state and returns an error instead.
+- `EffectState` replaces unrestricted mutable battle access in callbacks and
+  exposes only typed kernel operations plus immutable observation.
+- Serde deserialization intentionally remains representationally faithful and
+  unchecked. Negative tests use visibly corrupted serialized fixtures, while
+  every public transition validates before work and rejects them atomically.
 
 ## PR sequencing gate
 
-PR E may begin after review confirms PR D preserves the public transition
-types, phase semantics, event/RNG ordering, compatibility parity, and stable
-state invariants.
+PR F may begin after review confirms the encapsulated public surface preserves
+phase semantics, event/RNG ordering, stable invariants, and fixture coverage.
 
