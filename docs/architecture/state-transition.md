@@ -312,7 +312,7 @@ on failure and do not replace the source-backed fixture suites.
 | Structural invariants | Kernel property tests for bounded HP, PP, stages, references, and conditions; every successful transition property case calls `validate_stable_state` |
 | Sequential-path parity | `canonical_turn_matches_internal_queue_then_resolve_sequence` compares `step` with the crate-internal legacy sequence |
 | Supported mechanics parity | `state_transition_baseline.rs`, `common_conditions.rs`, `event_effects.rs`, and `rotom-dex/tests/combat.rs` preserve damage, condition, event, switch, faint, and RNG behavior |
-| Pinned Showdown parity | Checked basic-damage, event-order, and common-condition fixtures at the pinned commit |
+| Pinned Showdown parity | CI checks basic-damage, event-order, and common-condition fixtures after building the pinned Showdown commit |
 | Complete supported battle | `supported_battle_runs_from_preview_through_replacements_to_terminal` runs preview, ordinary turn, forced replacements, a second turn, and terminal settlement only through `step` |
 
 The PR F property cases intentionally target representation and transaction

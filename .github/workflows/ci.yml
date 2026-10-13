@@ -34,6 +34,12 @@ jobs:
       - name: Validate Regulation M-C team fixture against Showdown
         run: node tools/showdown-reference/validate-team.cjs data/fixtures/teams/valid-reg-mc.txt
 
+      - name: Verify pinned Showdown differential fixtures
+        run: |
+          node tools/showdown-reference/basic-damage.cjs --check
+          node tools/showdown-reference/event-order.cjs --check
+          node tools/showdown-reference/common-conditions.cjs --check
+
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
