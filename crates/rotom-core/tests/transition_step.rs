@@ -1,3 +1,4 @@
+use proptest::prelude::*;
 use rotom_core::{
     step, AbilityId, ActionTarget, ActiveSlot, BattleError, BattlePhase, BattleState, BattleStats,
     CombatData, CombatMove, EffectRegistry, FormId, JointAction, Mechanics, MoveAccuracy,
@@ -303,4 +304,91 @@ fn phase_mismatch_is_rejected_before_transition_work() {
     assert!(matches!(error, BattleError::IllegalChoice(_)));
     assert_eq!(initial.phase(), BattlePhase::TeamPreview);
     assert_eq!(initial.rng().draws(), 0);
+}
+
+#[test]
+fn differently_seeded_branches_are_independent_and_reproducible() {
+    let effects = EffectRegistry::new();
+    let data = TestData::basic(20);
+    let mechanics = Mechanics::new(&data, &effects);
+    let left = started(0x1111);
+    let right = started(0x2222);
+
+    let left_first = step(&left, &attacking_turn(), &mechanics).unwrap();
+    let left_replay = step(&left, &attacking_turn(), &mechanics).unwrap();
+    let right_first = step(&right, &attacking_turn(), &mechanics).unwrap();
+    let right_replay = step(&right, &attacking_turn(), &mechanics).unwrap();
+
+    assert_eq!(left_first, left_replay);
+    assert_eq!(right_first, right_replay);
+    assert_ne!(
+        left_first.state.rng().state(),
+        right_first.state.rng().state()
+    );
+    assert_eq!(left.rng().draws(), 0);
+    assert_eq!(right.rng().draws(), 0);
+}
+
+#[test]
+fn supported_battle_runs_from_preview_through_replacements_to_terminal() {
+    let effects = EffectRegistry::new();
+    let data = TestData::basic(1_000);
+    let mechanics = Mechanics::new(&data, &effects);
+    let preview = preview(0xf011, 4);
+
+    let selected = step(&preview, &preview_action(4), &mechanics).unwrap();
+    selected.state.validate_stable_state().unwrap();
+    assert_eq!(selected.state.phase(), BattlePhase::TurnSelection);
+
+    let first_turn = step(&selected.state, &attacking_turn(), &mechanics).unwrap();
+    first_turn.state.validate_stable_state().unwrap();
+    assert_eq!(first_turn.state.phase(), BattlePhase::ForcedSwitch);
+
+    let replacements = JointAction::ForcedSwitch {
+        p1: TurnChoice {
+            actions: [PokemonAction::Pass, PokemonAction::Pass],
+        },
+        p2: TurnChoice {
+            actions: [
+                PokemonAction::Switch { pokemon: index(2) },
+                PokemonAction::Switch { pokemon: index(3) },
+            ],
+        },
+    };
+    let replaced = step(&first_turn.state, &replacements, &mechanics).unwrap();
+    replaced.state.validate_stable_state().unwrap();
+    assert_eq!(replaced.state.phase(), BattlePhase::TurnSelection);
+
+    let terminal = step(&replaced.state, &attacking_turn(), &mechanics).unwrap();
+    terminal.state.validate_stable_state().unwrap();
+    assert_eq!(terminal.state.phase(), BattlePhase::BattleEnd);
+    assert_eq!(terminal.state.winner(), Some(SideId::P1));
+    assert_eq!(terminal.state.turn(), 2);
+    assert_eq!(terminal.state.queue().actions, Vec::new());
+}
+
+proptest! {
+    #![proptest_config(ProptestConfig::with_cases(64))]
+
+    #[test]
+    fn successful_public_turns_are_pure_deterministic_and_stable(
+        seed in any::<u64>(),
+        base_power in 1_u16..=200,
+    ) {
+        let effects = EffectRegistry::new();
+        let data = TestData::basic(base_power);
+        let mechanics = Mechanics::new(&data, &effects);
+        let current = started(seed);
+        let before = current.clone();
+
+        let first = step(&current, &attacking_turn(), &mechanics).unwrap();
+        let replay = step(&current, &attacking_turn(), &mechanics).unwrap();
+
+        prop_assert_eq!(&current, &before);
+        prop_assert_eq!(&first, &replay);
+        prop_assert!(first.state.validate_stable_state().is_ok());
+        prop_assert_ne!(first.state.phase(), BattlePhase::ResolvingTurn);
+        prop_assert_eq!(first.state.queue().actions.len(), 0);
+        prop_assert_eq!(first.state.queue().events.len(), 0);
+    }
 }

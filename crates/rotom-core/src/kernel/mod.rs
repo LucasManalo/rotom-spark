@@ -500,6 +500,7 @@ mod tests {
         AbilityId, BattlePhase, BattleStats, MoveId, MoveSlot, MoveTarget, PokemonIndex,
         PokemonState, SideState, SpeciesId, StatStages, TeamState,
     };
+    use proptest::prelude::*;
 
     fn index(value: u8) -> PokemonIndex {
         PokemonIndex::new(value)
@@ -760,5 +761,61 @@ mod tests {
             .unwrap();
         assert_eq!(battle.side(SideId::P1).active[1], Some(index(3)));
         assert_eq!(battle.phase, BattlePhase::TurnSelection);
+    }
+
+    proptest! {
+        #[test]
+        fn hp_mutations_are_bounded_and_report_exact_changes(
+            damage in any::<u16>(),
+            healing in any::<u16>(),
+        ) {
+            let mut battle = battle();
+            let target = PokemonRef::new(SideId::P1, index(0));
+            let mut kernel = StateKernel::new(&mut battle);
+
+            let damaged = kernel.damage_hp(target, damage).unwrap();
+            let expected_after_damage = 100_u16.saturating_sub(damage);
+            prop_assert_eq!(damaged.previous, 100);
+            prop_assert_eq!(damaged.current, expected_after_damage);
+            prop_assert_eq!(damaged.applied, 100 - expected_after_damage);
+
+            if expected_after_damage > 0 {
+                let healed = kernel.heal_hp(target, healing).unwrap();
+                let expected_after_healing = expected_after_damage.saturating_add(healing).min(100);
+                prop_assert_eq!(healed.current, expected_after_healing);
+                prop_assert_eq!(healed.applied, expected_after_healing - expected_after_damage);
+            }
+        }
+
+        #[test]
+        fn pp_stages_references_and_conditions_preserve_local_invariants(
+            pp in any::<u8>(),
+            delta in any::<i8>(),
+            invalid_index in 4_u8..=u8::MAX,
+            condition_id in 1_u32..=u32::MAX,
+            duration in 1_u8..=u8::MAX,
+        ) {
+            let mut battle = battle();
+            let target = PokemonRef::new(SideId::P1, index(0));
+            let invalid_target = PokemonRef::new(SideId::P1, index(invalid_index));
+            let condition = ConditionState::new(ConditionId::new(condition_id), Some(duration));
+            let mut kernel = StateKernel::new(&mut battle);
+
+            let pp_result = kernel.set_pp(target, MoveSlotIndex::new(0), pp);
+            if pp <= 16 {
+                prop_assert_eq!(pp_result.unwrap().current, pp);
+            } else {
+                prop_assert!(pp_result.is_err());
+            }
+
+            let stage = kernel.change_stat_stage(target, BattleStat::Attack, delta).unwrap();
+            prop_assert!((-6..=6).contains(&stage.current));
+            prop_assert!(kernel.damage_hp(invalid_target, 1).is_err());
+            prop_assert_eq!(kernel.battle.side(SideId::P1).team.members.len(), 4);
+
+            kernel.add_field_condition(condition).unwrap();
+            prop_assert!(kernel.add_field_condition(condition).is_err());
+            prop_assert_eq!(kernel.remove_field_condition(condition.id), Some(condition));
+        }
     }
 }

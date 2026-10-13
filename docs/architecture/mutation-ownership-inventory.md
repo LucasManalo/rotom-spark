@@ -1,6 +1,6 @@
 # Authoritative mutation ownership inventory
 
-Status: Updated for PR E encapsulation. Line references are
+Status: Final PR F ownership audit for milestone 11.5. Line references are
 descriptive migration anchors; ownership classifications are authoritative.
 
 This inventory treats battle fields, nested side/team/Pokémon/condition data,
@@ -12,10 +12,10 @@ future simulation.
 
 - **Construction:** initializes a new state or test fixture; it does not mutate
   an already-running production battle.
-- **Kernel candidate:** a structurally meaningful production write that PR B
-  should represent with a typed, invariant-preserving operation.
-- **Mechanics write:** a rule/effect currently writes state directly. PR D must
-  route it through the kernel while preserving ordering and RNG use.
+- **Kernel primitive:** a structurally meaningful production write represented
+  by a typed, invariant-preserving operation.
+- **Mechanics write:** a rule/effect-owned write, limited here to requests on
+  the one authoritative RNG; gameplay-state changes route through the kernel.
 - **Test/fixture only:** direct setup, observation, or deliberate corruption in
   tests. Ordinary fixture setup uses the validating builder; intentionally
   invalid-state tests use explicit serialized corruption.
@@ -49,7 +49,7 @@ future simulation.
 | `state/pokemon.rs:230-254` | Installs/cures status and coherent counters | Kernel primitive | Retained invariant methods called only through the kernel in supported production mechanics |
 | `state/pokemon.rs:256-304` | Adds/removes/ticks unique volatile conditions | Kernel primitive | Retained invariant methods called through the kernel in supported production upkeep |
 | `state/pokemon.rs:328-340` | Clears switch-out state; resets toxic counter on entry | Kernel primitive | Called inside atomic kernel position operations; mechanics decides switch timing |
-| `rng.rs:87-107`, `rng.rs:207-223` | Enables/disables/clears trace; advances stream state/draw count and appends trace | Kernel candidate (RNG-local) | `BattleRng` remains the sole RNG authority; gameplay kernel never draws RNG |
+| `rng.rs:87-107`, `rng.rs:207-223` | Enables/disables/clears trace; advances stream state/draw count and appends trace | RNG-local | `BattleRng` remains the sole RNG authority; gameplay kernel never draws RNG |
 
 `EffectCallback` receives `&mut EffectState`, not `&mut BattleState`.
 `EffectState` permits immutable observation, documented mechanics RNG requests,
@@ -136,4 +136,11 @@ primitives, or mechanics-owned RNG advancement. Integration fixtures now use
 corruption and verifies rejection. Registry composition remains immutable
 behavior outside battle state; `Mechanics` composes built-in and caller-provided
 effects once and reuses that registry across transitions.
+
+PR F's final audit found no new production mutation escape. Property coverage
+now exercises bounded kernel writes and invalid references across generated
+inputs, while transition tests cover pure branching, error atomicity,
+sequential-path equivalence, and a complete supported battle. Remaining direct
+writes are the justified categories above and require no further migration in
+milestone 11.5.
 

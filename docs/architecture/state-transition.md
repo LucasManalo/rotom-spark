@@ -1,10 +1,11 @@
 # Battle-state transition contract
 
-Status: PR E encapsulation for milestone 11.5. PR A established this contract,
-PR B added the internal mutation kernel and stable-state validation, PR C
-implemented the canonical phase-aware API, and PR D routed supported mechanics
-writes through the kernel. PR E closes ordinary downstream mutation escapes
-while preserving inspection, cloning, Serde, and controlled fixture setup.
+Status: PR F equivalence verification completes milestone 11.5. PR A
+established this contract, PR B added the internal mutation kernel and
+stable-state validation, PR C implemented the canonical phase-aware API, PR D
+routed supported mechanics writes through the kernel, and PR E closed ordinary
+downstream mutation escapes. PR F verifies those boundaries without expanding
+the supported mechanics set.
 
 ## Transition model
 
@@ -115,11 +116,11 @@ there is no normalizing constructor.
 
 ### Mutation kernel
 
-The PR B kernel will own how authoritative state changes. It will provide
+The mutation kernel owns how authoritative state changes. It provides
 small typed operations for HP, PP, status and counters, stat stages,
-volatiles, positions/active slots, field/side conditions, queue/phase
-settlement, and related coupled writes. It will enforce local representation
-invariants and return actual applied changes where mechanics need them.
+volatiles, positions/active slots, field/side conditions, and related coupled
+writes. It enforces local representation invariants and returns actual applied
+changes where mechanics need them.
 
 The kernel must not consume RNG, dispatch events, calculate damage, decide
 immunity or legality, choose targets, or encode move/ability/item rules. It is
@@ -293,8 +294,43 @@ The checked differential fixtures are pinned to Showdown commit
   unchecked. Negative tests use visibly corrupted serialized fixtures, while
   every public transition validates before work and rejects them atomically.
 
-## PR sequencing gate
+## PR F verification matrix
 
-PR F may begin after review confirms the encapsulated public surface preserves
-phase semantics, event/RNG ordering, stable invariants, and fixture coverage.
+PR F closes the refactor with an executable mapping from each acceptance
+property to focused coverage. Property tests use deterministic proptest seeds
+on failure and do not replace the source-backed fixture suites.
+
+| Property | Verification |
+| --- | --- |
+| Determinism and pure API | `successful_public_turns_are_pure_deterministic_and_stable` and `replay_and_serde_resume_are_deterministic_and_leave_input_unchanged` in `transition_step.rs` |
+| Error atomicity | Invalid phase/action and unsupported-mechanic checks in `transition_step.rs`; callback rollback in `event_effects.rs` |
+| Replay after serialization | `replay_and_serde_resume_are_deterministic_and_leave_input_unchanged` |
+| State branch isolation | Clone-isolation coverage in `battle_state.rs` plus the transition property test |
+| RNG branch independence and reproducibility | `differently_seeded_branches_are_independent_and_reproducible` |
+| Diagnostic isolation | `rng_tracing_does_not_change_transition_outcomes_or_draws` |
+| Phase coverage | `step_advances_preview_turn_and_forced_switch_phases` and `supported_battle_runs_from_preview_through_replacements_to_terminal` |
+| Structural invariants | Kernel property tests for bounded HP, PP, stages, references, and conditions; every successful transition property case calls `validate_stable_state` |
+| Sequential-path parity | `canonical_turn_matches_internal_queue_then_resolve_sequence` compares `step` with the crate-internal legacy sequence |
+| Supported mechanics parity | `state_transition_baseline.rs`, `common_conditions.rs`, `event_effects.rs`, and `rotom-dex/tests/combat.rs` preserve damage, condition, event, switch, faint, and RNG behavior |
+| Pinned Showdown parity | Checked basic-damage, event-order, and common-condition fixtures at the pinned commit |
+| Complete supported battle | `supported_battle_runs_from_preview_through_replacements_to_terminal` runs preview, ordinary turn, forced replacements, a second turn, and terminal settlement only through `step` |
+
+The PR F property cases intentionally target representation and transaction
+invariants rather than inventing new Pokémon behavior. The complete-battle
+case uses only the explicitly supported basic-damage vertical slice.
+
+## Milestone 11.5 gate result
+
+The state-transition refactor now has one public phase-aware advancement API,
+one embedded authoritative RNG, kernel-routed supported mechanics writes,
+validated stable outputs, error-atomic failure paths, and an encapsulated
+authoritative state. The equivalence matrix above is the regression gate for
+future mechanics work.
+
+Known limitations remain explicit: the engine still covers only the supported
+milestone-11 mechanics subset; Serde can deserialize representationally invalid
+data but `step` rejects it before work; and current differential verification
+uses the three checked pinned-Showdown adapters rather than a generalized
+randomized `tools/differential` harness. Those are later-milestone concerns,
+not silent fallbacks in this refactor.
 

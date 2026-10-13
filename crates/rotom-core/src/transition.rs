@@ -169,3 +169,138 @@ fn apply_replacements(
     }
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{
+        AbilityId, ActionTarget, BattleStats, CombatMove, FormId, MoveAccuracy, MoveCategory,
+        MoveId, MoveSlot, MoveSlotIndex, MoveSupport, MoveTarget, PokemonPosition, PokemonState,
+        PokemonType, PokemonTypes, SideState, SpeciesId, StatStages, StatusState, TeamState,
+    };
+
+    const MOVE_ID: MoveId = MoveId::new(1);
+
+    struct TestData;
+
+    impl CombatData for TestData {
+        fn move_data(&self, move_id: MoveId) -> Option<CombatMove> {
+            (move_id == MOVE_ID).then_some(CombatMove {
+                move_type: PokemonType::Normal,
+                category: MoveCategory::Physical,
+                base_power: 20,
+                accuracy: MoveAccuracy::Always,
+                crit_ratio: 0,
+                target: MoveTarget::Normal,
+                support: MoveSupport::BasicDamage,
+            })
+        }
+
+        fn pokemon_types(&self, _: SpeciesId, _: Option<FormId>) -> Option<PokemonTypes> {
+            Some(PokemonTypes {
+                primary: PokemonType::Normal,
+                secondary: None,
+            })
+        }
+
+        fn type_modifier(&self, _: PokemonType, _: PokemonType) -> Option<i8> {
+            Some(0)
+        }
+    }
+
+    fn pokemon(species: u32, speed: u16) -> PokemonState {
+        PokemonState {
+            species: SpeciesId::new(species),
+            form: None,
+            level: 50,
+            stats: BattleStats {
+                hp: 120,
+                atk: 100,
+                def: 100,
+                spa: 100,
+                spd: 100,
+                spe: speed,
+            },
+            current_hp: 120,
+            ability: AbilityId::new(1),
+            item: None,
+            moves: vec![MoveSlot {
+                move_id: MOVE_ID,
+                target: MoveTarget::Normal,
+                priority: 0,
+                pp: 16,
+                max_pp: 16,
+                disabled: false,
+            }],
+            status: None,
+            status_state: StatusState::default(),
+            stat_stages: StatStages::default(),
+            volatiles: Vec::new(),
+            can_mega_evolve: false,
+            trapped: false,
+            position: PokemonPosition::Team,
+        }
+    }
+
+    fn move_at(target: ActiveSlot) -> PokemonAction {
+        PokemonAction::Move {
+            move_slot: MoveSlotIndex::new(0),
+            target: ActionTarget::Foe(target),
+            mega: false,
+        }
+    }
+
+    #[test]
+    fn canonical_turn_matches_internal_queue_then_resolve_sequence() {
+        let p1 = vec![pokemon(1, 140), pokemon(2, 130)];
+        let p2 = vec![pokemon(101, 100), pokemon(102, 90)];
+        let mut current = BattleState::new_with_seed(
+            SideState::new(TeamState::new(p1)),
+            SideState::new(TeamState::new(p2)),
+            2,
+            0x5eed,
+        )
+        .unwrap();
+        current
+            .select_team(SideId::P1, vec![PokemonIndex::new(0), PokemonIndex::new(1)])
+            .unwrap();
+        current
+            .select_team(SideId::P2, vec![PokemonIndex::new(0), PokemonIndex::new(1)])
+            .unwrap();
+
+        let p1_choice = TurnChoice {
+            actions: [move_at(ActiveSlot::Left), move_at(ActiveSlot::Right)],
+        };
+        let p2_choice = TurnChoice {
+            actions: [move_at(ActiveSlot::Left), move_at(ActiveSlot::Right)],
+        };
+        let effects = EffectRegistry::new();
+        let mechanics = Mechanics::new(&TestData, &effects);
+
+        let mut sequential = current.clone();
+        sequential
+            .queue_turn_inner(p1_choice, p2_choice, mechanics.effects())
+            .unwrap();
+        let queue_events = sequential.queue.events.clone();
+        let turn = sequential
+            .resolve_turn_inner(mechanics.data(), mechanics.effects())
+            .unwrap();
+        sequential.validate_stable_state().unwrap();
+
+        let canonical = step(
+            &current,
+            &JointAction::Turn {
+                p1: p1_choice,
+                p2: p2_choice,
+            },
+            &mechanics,
+        )
+        .unwrap();
+
+        assert_eq!(canonical.state, sequential);
+        assert_eq!(canonical.diagnostics.queue_events, queue_events);
+        assert_eq!(canonical.diagnostics.turn, Some(turn));
+        assert_eq!(current.rng.draws(), 0);
+        assert_eq!(current.queue.actions, Vec::new());
+    }
+}
