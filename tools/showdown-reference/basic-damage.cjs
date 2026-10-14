@@ -18,6 +18,12 @@ const cases = [
 		target: {species: 'Arcanine', ability: 'flashfire', nature: 'Serious', statPoints: points({hp: 32})},
 	},
 	{
+		name: 'dragon-claw-neutral-stab',
+		move: 'dragonclaw',
+		source: {species: 'Garchomp', ability: 'roughskin', nature: 'Adamant', statPoints: points({atk: 32})},
+		target: {species: 'Arcanine', ability: 'flashfire', nature: 'Serious', statPoints: points({hp: 32})},
+	},
+	{
 		name: 'power-gem-quad-effective-stab',
 		move: 'powergem',
 		source: {species: 'Glimmora', ability: 'corrosion', nature: 'Modest', statPoints: points({spa: 32})},

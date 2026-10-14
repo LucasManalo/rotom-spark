@@ -2,10 +2,10 @@ use rotom_core::{
     step, AbilityId, ActionTarget, ActiveSlot, BattleState, BattleStateBuilder, BattleStats,
     CombatData, CombatMove, ConditionId, ConditionState, EffectRegistry, ExpiredCondition,
     FieldEffectIds, FormId, ItemId, JointAction, MajorStatus, Mechanics, MoveAccuracy,
-    MoveCategory, MoveId, MoveSlot, MoveSlotIndex, MoveSupport, MoveTarget, PokemonAction,
-    PokemonIndex, PokemonPosition, PokemonRef, PokemonState, PokemonType, PokemonTypes,
-    ResolvedAction, RngOperation, RngReason, SideId, SideState, SpeciesId, StatStages, StatusState,
-    TeamState, TurnChoice,
+    MoveCapabilities, MoveCategory, MoveId, MoveOperation, MoveSlot, MoveSlotIndex, MoveTarget,
+    PokemonAction, PokemonIndex, PokemonPosition, PokemonRef, PokemonState, PokemonType,
+    PokemonTypes, ResolvedAction, RngOperation, RngReason, SideId, SideState, SpeciesId,
+    StatStages, StatusState, TeamState, TurnChoice,
 };
 
 const MOVE: MoveId = MoveId::new(1);
@@ -82,7 +82,8 @@ impl CombatData for TestData {
             accuracy: self.accuracy,
             crit_ratio: 0,
             target: MoveTarget::Normal,
-            support: MoveSupport::BasicDamage,
+            operation: MoveOperation::StandardDamage,
+            required_capabilities: MoveCapabilities::PR_13_1,
         })
     }
 

@@ -334,3 +334,13 @@ uses the three checked pinned-Showdown adapters rather than a generalized
 randomized `tools/differential` harness. Those are later-milestone concerns,
 not silent fallbacks in this refactor.
 
+## PR 13.1 move-executor extension
+
+PR 13.1 preserves this complete transition contract while replacing the
+seven-ID `BasicDamage` runtime gate with one capability-preflighted
+`execute_move` lifecycle. The queue, embedded RNG, effect registry, kernel,
+faint settlement and stable output validation remain the same authorities.
+Intrinsic behavior missing from the executor is rejected before PP or move RNG
+within the private transaction. See `unified-move-executor.md` for the detailed
+mapping, interfaces, and deferred capabilities.
+

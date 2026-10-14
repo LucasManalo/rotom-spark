@@ -146,3 +146,10 @@ sequential-path equivalence, and a complete supported battle. Remaining direct
 writes are the justified categories above and require no further migration in
 milestone 11.5.
 
+PR 13.1 adds no authoritative write path. Unified move execution still uses
+`StateKernel::set_pp` and `StateKernel::damage_hp`; registered hooks still use
+the existing `EffectState` façade. Move operations/capabilities and the
+ephemeral `MoveExecutionContext` are immutable or temporary calculation data,
+not battle state. `AfterDamage` now receives the kernel-reported applied HP
+delta rather than the requested pre-clamp amount.
+

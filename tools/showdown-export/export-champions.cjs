@@ -5,6 +5,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const {execFileSync} = require('node:child_process');
+const {moveBehavior} = require('./move-capabilities.cjs');
 
 const repositoryRoot = path.resolve(__dirname, '..', '..');
 const showdownRoot = path.join(repositoryRoot, 'vendor', 'pokemon-showdown');
@@ -223,6 +224,7 @@ function exportMoves(dex, validator) {
 			damage: normalizeDamage(move.damage),
 			status: optional(move.status),
 			volatile_status: optional(move.volatileStatus),
+			behavior: moveBehavior(move),
 			is_nonstandard: move.isNonstandard || null,
 			legal: banReason == null,
 			ban_reason: banReason || null,
@@ -321,7 +323,7 @@ function buildExport(version, Showdown) {
 	const species = exportSpecies(dex, validator);
 
 	return {
-		schema_version: 3,
+		schema_version: 4,
 		source: {repo: version.repo, commit: version.commit},
 		format: {
 			id: format.id,

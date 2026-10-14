@@ -148,6 +148,148 @@
       ]
     },
     {
+      "name": "dragon-claw-neutral-stab",
+      "move": "dragonclaw",
+      "critical": false,
+      "source": {
+        "species": "garchomp",
+        "ability": "roughskin",
+        "nature": "adamant",
+        "stat_points": {
+          "hp": 0,
+          "atk": 32,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        },
+        "stages": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0,
+          "accuracy": 0,
+          "evasion": 0
+        },
+        "level": 50,
+        "stats": {
+          "hp": 183,
+          "atk": 200,
+          "def": 115,
+          "spa": 90,
+          "spd": 105,
+          "spe": 122
+        },
+        "types": [
+          "Dragon",
+          "Ground"
+        ]
+      },
+      "target": {
+        "species": "arcanine",
+        "ability": "flashfire",
+        "nature": "serious",
+        "stat_points": {
+          "hp": 32,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        },
+        "stages": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0,
+          "accuracy": 0,
+          "evasion": 0
+        },
+        "level": 50,
+        "stats": {
+          "hp": 197,
+          "atk": 130,
+          "def": 100,
+          "spa": 120,
+          "spd": 100,
+          "spe": 115
+        },
+        "types": [
+          "Fire"
+        ]
+      },
+      "rolls": [
+        {
+          "percent": 85,
+          "damage": 91
+        },
+        {
+          "percent": 86,
+          "damage": 91
+        },
+        {
+          "percent": 87,
+          "damage": 93
+        },
+        {
+          "percent": 88,
+          "damage": 94
+        },
+        {
+          "percent": 89,
+          "damage": 96
+        },
+        {
+          "percent": 90,
+          "damage": 96
+        },
+        {
+          "percent": 91,
+          "damage": 97
+        },
+        {
+          "percent": 92,
+          "damage": 99
+        },
+        {
+          "percent": 93,
+          "damage": 99
+        },
+        {
+          "percent": 94,
+          "damage": 100
+        },
+        {
+          "percent": 95,
+          "damage": 102
+        },
+        {
+          "percent": 96,
+          "damage": 103
+        },
+        {
+          "percent": 97,
+          "damage": 103
+        },
+        {
+          "percent": 98,
+          "damage": 105
+        },
+        {
+          "percent": 99,
+          "damage": 106
+        },
+        {
+          "percent": 100,
+          "damage": 108
+        }
+      ]
+    },
+    {
       "name": "power-gem-quad-effective-stab",
       "move": "powergem",
       "critical": false,

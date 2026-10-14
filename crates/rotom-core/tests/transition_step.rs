@@ -2,9 +2,10 @@ use proptest::prelude::*;
 use rotom_core::{
     step, AbilityId, ActionTarget, ActiveSlot, BattleError, BattlePhase, BattleState, BattleStats,
     CombatData, CombatMove, EffectRegistry, FormId, JointAction, Mechanics, MoveAccuracy,
-    MoveCategory, MoveId, MoveSlot, MoveSlotIndex, MoveSupport, MoveTarget, PokemonAction,
-    PokemonIndex, PokemonPosition, PokemonState, PokemonType, PokemonTypes, SideId, SideState,
-    SpeciesId, StatStages, StatusState, StepDiagnostics, TeamSelection, TeamState, TurnChoice,
+    MoveCapabilities, MoveCapability, MoveCategory, MoveId, MoveOperation, MoveSlot, MoveSlotIndex,
+    MoveTarget, PokemonAction, PokemonIndex, PokemonPosition, PokemonState, PokemonType,
+    PokemonTypes, SideId, SideState, SpeciesId, StatStages, StatusState, StepDiagnostics,
+    TeamSelection, TeamState, TurnChoice,
 };
 
 const MOVE_ID: MoveId = MoveId::new(1);
@@ -12,14 +13,14 @@ const MOVE_ID: MoveId = MoveId::new(1);
 #[derive(Clone, Copy)]
 struct TestData {
     base_power: u16,
-    support: MoveSupport,
+    required_capabilities: MoveCapabilities,
 }
 
 impl TestData {
     const fn basic(base_power: u16) -> Self {
         Self {
             base_power,
-            support: MoveSupport::BasicDamage,
+            required_capabilities: MoveCapabilities::PR_13_1,
         }
     }
 }
@@ -33,7 +34,8 @@ impl CombatData for TestData {
             accuracy: MoveAccuracy::Always,
             crit_ratio: 0,
             target: MoveTarget::Normal,
-            support: self.support,
+            operation: MoveOperation::StandardDamage,
+            required_capabilities: self.required_capabilities,
         })
     }
 
@@ -233,7 +235,7 @@ fn transition_errors_are_atomic_and_terminal_battles_reject_actions() {
     let effects = EffectRegistry::new();
     let unsupported = TestData {
         base_power: 20,
-        support: MoveSupport::Unsupported,
+        required_capabilities: MoveCapabilities::PR_13_1.with(MoveCapability::SecondaryEffect),
     };
     let current = started(0xdead);
     let before = current.clone();

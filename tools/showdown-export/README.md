@@ -32,11 +32,15 @@ node tools/showdown-export/generate-mechanics-manifest.cjs --next-research
 node --test tools/showdown-export/mechanics-manifest.test.cjs
 ```
 
-`data/mechanics-coverage.json` contains reviewed implementation claims.
-Generated scope entries default to `unsupported` / `not_tested`; a Dex entry is
-never treated as implemented merely because it is legal. Dynamic callbacks
-whose reachability closure cannot be proven from structured data are reported
-under `unresolved_reachability` for source-backed follow-up.
+`data/mechanics-coverage.json` contains reviewed implementation and verification
+claims. Move implementation status is derived from the complete operation and
+capability requirements exported from the resolved move: only the PR 13.1
+single-target, one-hit standard-damage capability set is automatically marked
+implemented. Reviewed claims may add stronger verification, but cannot mark a
+move implemented when its runtime requirements are unsupported. Other entries
+default to `unsupported` / `not_tested`. Dynamic callbacks whose reachability
+closure cannot be proven from structured data are reported under
+`unresolved_reachability` for source-backed follow-up.
 
 Format-level `legal` fields reflect the resolved Showdown ban and tag rules.
 The export also includes natures and each species' resolved move pool for the

@@ -2,10 +2,10 @@ use rotom_core::{
     step, AbilityId, ActionTarget, ActiveSlot, BattleError, BattleEvent, BattleState,
     BattleStateBuilder, BattleStats, CombatData, CombatMove, ConditionId, ConditionState,
     EffectInvocation, EffectOrder, EffectRegistry, EffectSource, EffectState, EventContext,
-    EventDispatch, EventValue, FormId, ItemId, JointAction, Mechanics, MoveId, MoveSlot,
-    MoveSlotIndex, MoveSupport, MoveTarget, PokemonAction, PokemonIndex, PokemonPosition,
-    PokemonRef, PokemonState, PokemonType, PokemonTypes, SideId, SideState, SpeciesId, StatStages,
-    StatusState, StepResult, TeamState, TurnChoice,
+    EventDispatch, EventValue, FormId, ItemId, JointAction, Mechanics, MoveCapabilities, MoveId,
+    MoveOperation, MoveSlot, MoveSlotIndex, MoveTarget, PokemonAction, PokemonIndex,
+    PokemonPosition, PokemonRef, PokemonState, PokemonType, PokemonTypes, SideId, SideState,
+    SpeciesId, StatStages, StatusState, StepResult, TeamState, TurnChoice,
 };
 use serde::Deserialize;
 
@@ -45,7 +45,8 @@ impl CombatData for TestData {
             accuracy: rotom_core::MoveAccuracy::Always,
             crit_ratio: 0,
             target: MoveTarget::Normal,
-            support: MoveSupport::BasicDamage,
+            operation: MoveOperation::StandardDamage,
+            required_capabilities: MoveCapabilities::PR_13_1,
         })
     }
 
@@ -1441,6 +1442,11 @@ fn faint_and_after_damage_hooks_run_before_the_target_leaves_the_field() {
         .position(|dispatch| dispatch.event == BattleEvent::Faint)
         .expect("faint event should be emitted");
     assert_eq!(resolution.events[faint - 1].event, BattleEvent::AfterDamage);
+    assert_eq!(
+        resolution.events[faint - 1].value,
+        EventValue::Integer(1),
+        "AfterDamage must relay actual clamped HP loss"
+    );
     assert_eq!(result.state.side(SideId::P2).active[0], None);
     assert_eq!(
         result

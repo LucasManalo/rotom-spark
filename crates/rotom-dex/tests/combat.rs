@@ -1,7 +1,8 @@
 use rotom_core::{
-    calculate_move_damage, step, ActionTarget, BattlePhase, BattleStateBuilder, EffectRegistry,
-    FormId, Gender, JointAction, Mechanics, MoveSlotIndex, PokemonAction, PokemonIndex, PokemonSet,
-    RngOperation, RngReason, SideId, SideState, StatAllocation, StatStages, TeamState, TurnChoice,
+    calculate_move_damage, step, ActionTarget, BattlePhase, BattleStateBuilder, CombatData,
+    EffectRegistry, FormId, Gender, JointAction, Mechanics, MoveCapabilities, MoveCapability,
+    MoveOperation, MoveSlotIndex, PokemonAction, PokemonIndex, PokemonSet, RngOperation, RngReason,
+    SideId, SideState, StatAllocation, StatStages, TeamState, TurnChoice,
 };
 use rotom_dex::champions_reg_mc;
 use serde::Deserialize;
@@ -131,6 +132,10 @@ fn champions_stats_and_damage_match_pinned_showdown_fixtures() {
         .cases
         .iter()
         .any(|case| case.source.stages.spa != 0 || case.target.stages.spd != 0));
+    assert!(fixture
+        .cases
+        .iter()
+        .any(|case| case.move_name == "dragonclaw"));
 
     for case in fixture.cases {
         let source_set = fixture_set(&dex, &case.source, &case.move_name);
@@ -192,7 +197,7 @@ fn fixture_set(dex: &rotom_dex::DexData, pokemon: &FixturePokemon, move_name: &s
 #[test]
 fn queued_turn_consumes_pp_and_updates_hp() {
     let dex = champions_reg_mc().expect("generated Dex");
-    let goodra = set(
+    let special_attacker = set(
         &dex,
         "goodra",
         "gooey",
@@ -200,8 +205,16 @@ fn queued_turn_consumes_pp_and_updates_hp() {
         "dragonpulse",
         StatAllocation::ZERO,
     );
-    let make_side = || {
-        let pokemon = dex.pokemon_state(&goodra).expect("state");
+    let physical_attacker = set(
+        &dex,
+        "goodra",
+        "gooey",
+        "adamant",
+        "dragonclaw",
+        StatAllocation::ZERO,
+    );
+    let make_side = |set: &PokemonSet| {
+        let pokemon = dex.pokemon_state(set).expect("state");
         SideState::new(TeamState::new(vec![
             pokemon.clone(),
             pokemon.clone(),
@@ -209,8 +222,13 @@ fn queued_turn_consumes_pp_and_updates_hp() {
             pokemon,
         ]))
     };
-    let mut builder =
-        BattleStateBuilder::new_with_seed(make_side(), make_side(), 4, 19).expect("battle");
+    let mut builder = BattleStateBuilder::new_with_seed(
+        make_side(&special_attacker),
+        make_side(&physical_attacker),
+        4,
+        19,
+    )
+    .expect("battle");
     let selection = vec![
         PokemonIndex::new(0),
         PokemonIndex::new(1),
@@ -276,6 +294,47 @@ fn queued_turn_consumes_pp_and_updates_hp() {
     assert_combat_rng_trace(battle.rng().trace().expect("enabled trace"));
 }
 
+#[test]
+fn resolved_dex_requirements_drive_support_without_a_move_id_allowlist() {
+    let dex = champions_reg_mc().expect("generated Dex");
+    let definition = |id: &str| {
+        let move_id = dex.resolve_move(id).expect("move identity").0;
+        <rotom_dex::DexData as CombatData>::move_data(&dex, move_id).expect("combat move")
+    };
+
+    let dragon_claw = definition("dragonclaw");
+    assert_eq!(dragon_claw.operation, MoveOperation::StandardDamage);
+    assert_eq!(
+        dragon_claw
+            .required_capabilities
+            .first_missing_from(MoveCapabilities::PR_13_1),
+        None
+    );
+
+    for (id, capability) in [
+        ("flamethrower", MoveCapability::SecondaryEffect),
+        ("shadowball", MoveCapability::SecondaryEffect),
+        ("facade", MoveCapability::CustomCallback),
+        ("surf", MoveCapability::AdvancedTargeting),
+        ("bulletseed", MoveCapability::MultiHit),
+        ("gigadrain", MoveCapability::Drain),
+        ("electroshot", MoveCapability::CustomCallback),
+    ] {
+        let move_data = definition(id);
+        assert!(
+            move_data.required_capabilities.contains(capability),
+            "{id} must retain its unsupported intrinsic behavior"
+        );
+        assert!(
+            move_data
+                .required_capabilities
+                .first_missing_from(MoveCapabilities::PR_13_1)
+                .is_some(),
+            "{id} must not degrade to plain damage"
+        );
+    }
+}
+
 fn assert_combat_rng_trace(trace: &[rotom_core::RngTraceEntry]) {
     assert_eq!(trace.len(), 15);
     assert!(trace[..3]
@@ -311,65 +370,82 @@ fn assert_combat_rng_trace(trace: &[rotom_core::RngTraceEntry]) {
 }
 
 #[test]
-fn unsupported_move_resolution_is_atomic() {
+fn unsupported_move_capabilities_are_explicit_and_atomic() {
     let dex = champions_reg_mc().expect("generated Dex");
-    let unsupported = set(
-        &dex,
-        "goodra",
-        "gooey",
-        "serious",
-        "flamethrower",
-        StatAllocation::ZERO,
-    );
-    let make_side = || {
-        let pokemon = dex.pokemon_state(&unsupported).expect("state");
-        SideState::new(TeamState::new(vec![
-            pokemon.clone(),
-            pokemon.clone(),
-            pokemon.clone(),
-            pokemon,
-        ]))
-    };
-    let mut builder =
-        BattleStateBuilder::new_with_seed(make_side(), make_side(), 4, 7).expect("battle");
-    let selection = vec![
-        PokemonIndex::new(0),
-        PokemonIndex::new(1),
-        PokemonIndex::new(2),
-        PokemonIndex::new(3),
-    ];
-    builder
-        .select_teams(selection.clone(), selection)
-        .expect("preview");
-    let battle = builder.build().unwrap();
-    let choice = TurnChoice {
-        actions: [
-            PokemonAction::Move {
+    for (move_name, expected_capability) in [
+        ("flamethrower", "secondary_effect"),
+        ("shadowball", "secondary_effect"),
+        ("facade", "custom_callback"),
+        ("surf", "advanced_targeting"),
+        ("bulletseed", "multi_hit"),
+        ("gigadrain", "drain"),
+        ("electroshot", "custom_callback"),
+    ] {
+        let unsupported = set(
+            &dex,
+            "goodra",
+            "gooey",
+            "serious",
+            move_name,
+            StatAllocation::ZERO,
+        );
+        let make_side = || {
+            let pokemon = dex.pokemon_state(&unsupported).expect("state");
+            SideState::new(TeamState::new(vec![
+                pokemon.clone(),
+                pokemon.clone(),
+                pokemon.clone(),
+                pokemon,
+            ]))
+        };
+        let mut builder =
+            BattleStateBuilder::new_with_seed(make_side(), make_side(), 4, 7).expect("battle");
+        let selection = vec![
+            PokemonIndex::new(0),
+            PokemonIndex::new(1),
+            PokemonIndex::new(2),
+            PokemonIndex::new(3),
+        ];
+        builder
+            .select_teams(selection.clone(), selection)
+            .expect("preview");
+        let battle = builder.build().unwrap();
+        let targets = if move_name == "surf" {
+            [ActionTarget::Automatic, ActionTarget::Automatic]
+        } else {
+            [
+                ActionTarget::Foe(rotom_core::ActiveSlot::Left),
+                ActionTarget::Foe(rotom_core::ActiveSlot::Right),
+            ]
+        };
+        let choice = TurnChoice {
+            actions: targets.map(|target| PokemonAction::Move {
                 move_slot: MoveSlotIndex::new(0),
-                target: ActionTarget::Foe(rotom_core::ActiveSlot::Left),
+                target,
                 mega: false,
-            },
-            PokemonAction::Move {
-                move_slot: MoveSlotIndex::new(0),
-                target: ActionTarget::Foe(rotom_core::ActiveSlot::Right),
-                mega: false,
-            },
-        ],
-    };
-    let before = battle.clone();
+            }),
+        };
+        let before = battle.clone();
 
-    assert!(matches!(
-        step(
+        let error = step(
             &battle,
             &JointAction::Turn {
                 p1: choice,
-                p2: choice
+                p2: choice,
             },
-            &Mechanics::new(&dex, &EffectRegistry::new())
-        ),
-        Err(rotom_core::BattleError::UnsupportedMechanic(_))
-    ));
-    assert_eq!(battle, before);
+            &Mechanics::new(&dex, &EffectRegistry::new()),
+        )
+        .unwrap_err();
+        assert!(
+            matches!(error, rotom_core::BattleError::UnsupportedMechanic(_)),
+            "{move_name}: {error}"
+        );
+        assert!(
+            error.to_string().contains(expected_capability),
+            "{move_name}: {error}"
+        );
+        assert_eq!(battle, before, "{move_name} mutated its public input");
+    }
 }
 
 #[test]

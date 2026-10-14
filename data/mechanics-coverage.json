@@ -23,6 +23,18 @@
       ]
     },
     {
+      "id": "dragonclaw",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "owner_pr": "PR 13.1",
+      "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "differential:data/fixtures/differential/basic-damage.json"
+      ]
+    },
+    {
       "id": "dragonpulse",
       "kind": "move",
       "implementation": "implemented",

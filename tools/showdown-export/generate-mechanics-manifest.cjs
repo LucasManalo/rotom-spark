@@ -5,6 +5,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const {execFileSync} = require('node:child_process');
+const {isPr131Supported, moveExecutionRequirements} = require('./move-capabilities.cjs');
 
 const repositoryRoot = path.resolve(__dirname, '..', '..');
 const showdownRoot = path.join(repositoryRoot, 'vendor', 'pokemon-showdown');
@@ -281,10 +282,6 @@ function coverageClaims() {
 	const source = readJson(coveragePath);
 	if (source.schema_version !== 1 || !Array.isArray(source.claims)) fail('Invalid mechanics coverage registry schema');
 	const claims = new Map();
-	const combatSource = fs.readFileSync(path.join(repositoryRoot, 'crates', 'rotom-dex', 'src', 'combat.rs'), 'utf8');
-	const allowlist = combatSource.match(/const BASIC_DAMAGE_MOVES: &\[&str\] = &\[([\s\S]*?)\];/);
-	if (!allowlist) fail('Could not read the runtime basic-damage support list');
-	const runtimeMoves = new Set([...allowlist[1].matchAll(/"([a-z0-9]+)"/g)].map(match => match[1]));
 	const fixture = readJson(path.join(repositoryRoot, 'data', 'fixtures', 'differential', 'basic-damage.json'));
 	const differentialMoves = new Set(fixture.cases.map(entry => entry.move));
 	for (const claim of source.claims) {
@@ -309,31 +306,33 @@ function coverageClaims() {
 		}
 		claims.set(key, claim);
 	}
-	for (const move of runtimeMoves) {
-		const claim = claims.get(`move:${move}`);
-		if (!claim || claim.implementation !== 'implemented') {
-			fail(`Runtime-supported move ${move} lacks an implemented coverage claim`);
-		}
-	}
-	for (const claim of claims.values()) {
-		if (claim.kind === 'move' && claim.implementation === 'implemented' && !runtimeMoves.has(claim.id)) {
-			fail(`Move ${claim.id} is claimed implemented but is absent from runtime support`);
-		}
-	}
 	return claims;
 }
 
 function entryWithCoverage(base, claims) {
+	const {pr_13_1_supported: pr131Supported = false, ...entry} = base;
 	const key = `${base.kind}:${base.id}`;
 	const claim = claims.get(key);
+	const automatic = pr131Supported ? {
+		implementation: 'implemented',
+		verification: 'not_tested',
+		owner_pr: 'PR 13.1',
+	} : defaultCoverage();
 	const coverage = claim ? {
 		implementation: claim.implementation,
 		verification: claim.verification,
 		owner_pr: claim.owner_pr,
-	} : defaultCoverage();
+	} : automatic;
 	return {
-		...base,
-		evidence: uniqueSorted([...(base.evidence || []), ...(claim?.evidence || [])]),
+		...entry,
+		evidence: uniqueSorted([
+			...(base.evidence || []),
+			...(pr131Supported ? [
+				'file:crates/rotom-core/src/combat.rs',
+				'file:crates/rotom-dex/src/combat.rs',
+			] : []),
+			...(claim?.evidence || []),
+		]),
 		...coverage,
 	};
 }
@@ -395,6 +394,7 @@ function buildManifest(version, Showdown) {
 
 	for (const [id, evidence] of moveEvidence) {
 		const move = dex.moves.get(id);
+		const requirements = moveExecutionRequirements(move);
 		entries.push(entryWithCoverage({
 			id,
 			name: move.name,
@@ -402,6 +402,9 @@ function buildManifest(version, Showdown) {
 			reachability: 'direct_legal_set',
 			evidence,
 			effect_families: moveFamilies(move),
+			operation: requirements.operation,
+			required_capabilities: requirements.required_capabilities,
+			pr_13_1_supported: isPr131Supported(move),
 		}, claims));
 		collectConditionReferences(move, `move/${id}`, conditions);
 		const callbackReferences = collectCallbackConditionReferences(move, `move/${id}`, conditions);
@@ -541,6 +544,13 @@ function buildManifest(version, Showdown) {
 	unresolved.sort((left, right) => compareStrings(left.kind, right.kind) || compareStrings(left.id, right.id));
 	for (const [key] of claims) {
 		if (!entries.some(entry => `${entry.kind}:${entry.id}` === key)) fail(`Coverage claim ${key} is not reachable`);
+	}
+	for (const claim of claims.values()) {
+		if (claim.kind !== 'move' || claim.implementation !== 'implemented') continue;
+		const move = dex.moves.get(claim.id);
+		if (!isPr131Supported(move)) {
+			fail(`Move ${claim.id} is claimed implemented but requires unsupported capabilities`);
+		}
 	}
 	return {
 		schema_version: 1,

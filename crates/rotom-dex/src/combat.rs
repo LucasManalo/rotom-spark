@@ -1,23 +1,15 @@
-use crate::{Accuracy, DexData, MoveData, SpeciesData, Stats};
+use crate::{Accuracy, DexData, MoveBehaviorKind, MoveData, SpeciesData, Stats};
 use rotom_core::{
     BattleError, BattleStats, CombatData, CombatMove, ConditionId, FieldEffectIds, MoveAccuracy,
-    MoveCategory, MoveId, MoveSlot, MoveSupport, PokemonPosition, PokemonSet, PokemonState,
-    PokemonType, PokemonTypes, StatAllocation, StatStages, StatusState,
+    MoveCapabilities, MoveCapability, MoveCategory, MoveId, MoveOperation, MoveSlot, MoveTarget,
+    PokemonPosition, PokemonSet, PokemonState, PokemonType, PokemonTypes, StatAllocation,
+    StatStages, StatusState,
 };
-
-const BASIC_DAMAGE_MOVES: &[&str] = &[
-    "aquajet",
-    "aquatail",
-    "dragonpulse",
-    "highhorsepower",
-    "powergem",
-    "powerwhip",
-    "seedbomb",
-];
 
 impl CombatData for DexData {
     fn move_data(&self, move_id: MoveId) -> Option<CombatMove> {
         let data = self.move_data(move_id)?;
+        let (operation, required_capabilities) = move_execution_requirements(data);
         Some(CombatMove {
             move_type: parse_type(&data.move_type)?,
             category: parse_category(&data.category)?,
@@ -28,11 +20,8 @@ impl CombatData for DexData {
             },
             crit_ratio: data.crit_ratio,
             target: data.target,
-            support: if BASIC_DAMAGE_MOVES.contains(&data.id.as_str()) {
-                MoveSupport::BasicDamage
-            } else {
-                MoveSupport::Unsupported
-            },
+            operation,
+            required_capabilities,
         })
     }
 
@@ -101,6 +90,125 @@ impl CombatData for DexData {
             blizzard: self.resolve_move("blizzard").map(|(id, _)| id),
         }
     }
+}
+
+fn move_execution_requirements(data: &MoveData) -> (MoveOperation, MoveCapabilities) {
+    let (operation, mut required) = match data.damage {
+        Some(crate::Damage::Fixed { .. }) => (
+            MoveOperation::FixedDamage,
+            MoveCapabilities::NONE.with(MoveCapability::FixedDamage),
+        ),
+        Some(crate::Damage::Level) => (
+            MoveOperation::LevelDamage,
+            MoveCapabilities::NONE.with(MoveCapability::FixedDamage),
+        ),
+        None if data.category != "Status" && data.base_power > 0 => (
+            MoveOperation::StandardDamage,
+            MoveCapabilities::NONE.with(MoveCapability::StandardDamage),
+        ),
+        None => (
+            MoveOperation::NonDamage,
+            MoveCapabilities::NONE.with(MoveCapability::NonDamagePrimary),
+        ),
+    };
+
+    required = required.with(MoveCapability::Accuracy);
+    required = required.with(target_capability(data.target));
+    if data.multi_hit.is_some() {
+        required = required.with(MoveCapability::MultiHit);
+    }
+    if data.drain.is_some() {
+        required = required.with(MoveCapability::Drain);
+    }
+    if data.recoil.is_some() {
+        required = required.with(MoveCapability::Recoil);
+    }
+    if data.status.is_some() {
+        required = required.with(MoveCapability::MajorStatus);
+    }
+    if data.volatile_status.is_some() {
+        required = required.with(MoveCapability::Volatile);
+    }
+    (operation, behavior_capabilities(data, required))
+}
+
+const fn target_capability(target: MoveTarget) -> MoveCapability {
+    match target {
+        MoveTarget::Normal | MoveTarget::Any | MoveTarget::AdjacentFoe => {
+            MoveCapability::SelectedSingleTarget
+        }
+        MoveTarget::AdjacentAlly
+        | MoveTarget::AdjacentAllyOrSelf
+        | MoveTarget::All
+        | MoveTarget::AllAdjacent
+        | MoveTarget::AllAdjacentFoes
+        | MoveTarget::Allies
+        | MoveTarget::AllySide
+        | MoveTarget::AllyTeam
+        | MoveTarget::FoeSide
+        | MoveTarget::RandomNormal
+        | MoveTarget::Scripted
+        | MoveTarget::Self_ => MoveCapability::AdvancedTargeting,
+    }
+}
+
+fn behavior_capabilities(data: &MoveData, mut required: MoveCapabilities) -> MoveCapabilities {
+    if data
+        .behavior
+        .effect_kinds
+        .contains(&MoveBehaviorKind::SecondaryEffect)
+    {
+        required = required.with(MoveCapability::SecondaryEffect);
+    }
+    if data
+        .behavior
+        .effect_kinds
+        .contains(&MoveBehaviorKind::SelfEffect)
+    {
+        required = required.with(MoveCapability::SelfEffect);
+    }
+    if data
+        .behavior
+        .effect_kinds
+        .contains(&MoveBehaviorKind::StatStage)
+    {
+        required = required.with(MoveCapability::StatStage);
+    }
+    if data
+        .behavior
+        .effect_kinds
+        .contains(&MoveBehaviorKind::Healing)
+    {
+        required = required.with(MoveCapability::Healing);
+    }
+    if data
+        .behavior
+        .effect_kinds
+        .contains(&MoveBehaviorKind::FieldOrSideCondition)
+    {
+        required = required.with(MoveCapability::FieldOrSideCondition);
+    }
+    if data
+        .behavior
+        .effect_kinds
+        .contains(&MoveBehaviorKind::CallsMove)
+    {
+        required = required.with(MoveCapability::CallsMove);
+    }
+    if data
+        .behavior
+        .effect_kinds
+        .contains(&MoveBehaviorKind::SwitchControl)
+    {
+        required = required.with(MoveCapability::SwitchControl);
+    }
+    if !data.behavior.callbacks.is_empty() {
+        required = required.with(MoveCapability::CustomCallback);
+    }
+    if !data.behavior.intrinsic_flags.is_empty() || !data.behavior.special_properties.is_empty() {
+        required = required.with(MoveCapability::SpecialBehavior);
+    }
+    required
 }
 
 impl DexData {

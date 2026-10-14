@@ -227,9 +227,10 @@ fn apply_replacements(
 mod tests {
     use super::*;
     use crate::{
-        AbilityId, ActionTarget, BattleStats, CombatMove, FormId, MoveAccuracy, MoveCategory,
-        MoveId, MoveSlot, MoveSlotIndex, MoveSupport, MoveTarget, PokemonPosition, PokemonState,
-        PokemonType, PokemonTypes, SideState, SpeciesId, StatStages, StatusState, TeamState,
+        AbilityId, ActionTarget, BattleStats, CombatMove, FormId, MoveAccuracy, MoveCapabilities,
+        MoveCategory, MoveId, MoveOperation, MoveSlot, MoveSlotIndex, MoveTarget, PokemonPosition,
+        PokemonState, PokemonType, PokemonTypes, SideState, SpeciesId, StatStages, StatusState,
+        TeamState,
     };
 
     const MOVE_ID: MoveId = MoveId::new(1);
@@ -245,7 +246,8 @@ mod tests {
                 accuracy: MoveAccuracy::Always,
                 crit_ratio: 0,
                 target: MoveTarget::Normal,
-                support: MoveSupport::BasicDamage,
+                operation: MoveOperation::StandardDamage,
+                required_capabilities: MoveCapabilities::PR_13_1,
             })
         }
 

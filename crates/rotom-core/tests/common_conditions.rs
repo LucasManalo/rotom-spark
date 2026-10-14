@@ -2,9 +2,10 @@ use rotom_core::{
     calculate_damage, step, AbilityId, ActionTarget, BattlePhase, BattleStat, BattleState,
     BattleStateBuilder, BattleStats, CombatData, CombatMove, ConditionId, ConditionState,
     EffectRegistry, FormId, JointAction, MajorStatus, Mechanics, Modifier, MoveAccuracy,
-    MoveCategory, MoveId, MoveSlot, MoveSlotIndex, MoveSupport, MoveTarget, PokemonAction,
-    PokemonIndex, PokemonPosition, PokemonRef, PokemonState, PokemonType, PokemonTypes,
-    RngOperation, RngReason, SideId, SideState, StatStages, StatusState, TeamState, TurnChoice,
+    MoveCapabilities, MoveCategory, MoveId, MoveOperation, MoveSlot, MoveSlotIndex, MoveTarget,
+    PokemonAction, PokemonIndex, PokemonPosition, PokemonRef, PokemonState, PokemonType,
+    PokemonTypes, RngOperation, RngReason, SideId, SideState, StatStages, StatusState, TeamState,
+    TurnChoice,
 };
 use serde::Deserialize;
 
@@ -71,7 +72,8 @@ impl CombatData for TestData {
             accuracy: MoveAccuracy::Always,
             crit_ratio: 0,
             target: MoveTarget::Normal,
-            support: MoveSupport::BasicDamage,
+            operation: MoveOperation::StandardDamage,
+            required_capabilities: MoveCapabilities::PR_13_1,
         })
     }
 

@@ -1,14 +1,27 @@
-use rotom_core::CombatData;
+use rotom_core::{CombatData, MoveCapabilities};
 use rotom_dex::{champions_reg_mc, Accuracy};
+use serde::Deserialize;
 use std::collections::HashSet;
 
 const SHOWDOWN_COMMIT: &str = "b79ce06d06b8f0dc8de8bb348bc9cab5d931553f";
+
+#[derive(Deserialize)]
+struct MechanicsManifest {
+    entries: Vec<MechanicsEntry>,
+}
+
+#[derive(Deserialize)]
+struct MechanicsEntry {
+    id: String,
+    kind: String,
+    implementation: String,
+}
 
 #[test]
 fn generated_data_has_expected_source_and_format() {
     let data = champions_reg_mc().expect("checked-in data should match the Rust schema");
 
-    assert_eq!(data.schema_version, 3);
+    assert_eq!(data.schema_version, 4);
     assert_eq!(data.source.commit, SHOWDOWN_COMMIT);
     assert_eq!(data.format.id, "gen9championsvgc2026regmc");
     assert_eq!(data.format.mod_name, "champions");
@@ -124,4 +137,32 @@ fn generated_data_resolves_core_field_effect_identities() {
     assert!(ids.levitate.is_some());
     assert!(ids.iron_ball.is_some());
     assert!(ids.air_balloon.is_some());
+}
+
+#[test]
+fn generated_move_coverage_matches_runtime_capability_preflight() {
+    let data = champions_reg_mc().expect("checked-in data should match the Rust schema");
+    let manifest: MechanicsManifest = serde_json::from_str(include_str!(
+        "../../../data/generated/reg-mc-mechanics-manifest.json"
+    ))
+    .expect("mechanics manifest should deserialize");
+
+    for entry in manifest.entries.iter().filter(|entry| entry.kind == "move") {
+        let move_id = data
+            .resolve_move(&entry.id)
+            .expect("reachable move in Dex")
+            .0;
+        let definition = <rotom_dex::DexData as CombatData>::move_data(&data, move_id)
+            .expect("reachable move has combat data");
+        let runtime_supported = definition
+            .required_capabilities
+            .first_missing_from(MoveCapabilities::PR_13_1)
+            .is_none();
+        assert_eq!(
+            entry.implementation == "implemented",
+            runtime_supported,
+            "{} coverage/runtime support drift",
+            entry.id
+        );
+    }
 }

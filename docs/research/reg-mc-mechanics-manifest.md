@@ -61,11 +61,14 @@ be queried with `--next-research`.
 
 ## Coverage claims
 
-`data/mechanics-coverage.json` is the reviewed claim input. The generator
-cross-checks implemented move claims against `BASIC_DAMAGE_MOVES`, requires
-evidence and an owner for non-unsupported claims, and verifies differential
-claims against the pinned basic-damage fixture. All other reachable entries
-default to `unsupported` and `not_tested`.
+`data/mechanics-coverage.json` is the reviewed claim input. PR 13.1 removes the
+old `BASIC_DAMAGE_MOVES` identity allowlist. The generator now derives each
+move's operation and required executor capabilities from the pinned resolved
+definition and automatically marks only the complete PR 13.1 capability subset
+implemented. Reviewed claims require evidence and an owner, cannot override an
+unsupported runtime requirement, and differential claims must occur in the
+pinned basic-damage fixture. Verification remains independent from structural
+implementation coverage.
 
 This PR inventories scope only. It does not claim behavior parity for an
 ability, item, form, condition, or unimplemented move.

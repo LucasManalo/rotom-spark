@@ -1,304 +1,449 @@
-# Rotom Spark — PR 13+ Mechanics Implementation Plan
+# Rotom Spark — PR 13+ Unified Mechanics Implementation Plan
 
-**Status:** Proposed execution plan for Codex agents  
+**Status:** Proposed replacement for `ROTOM_SPARK_PR13_MECHANICS_IMPLEMENTATION_PLAN.md`  
 **Target:** Pokémon Champions Regulation M-C, as represented by the pinned Pokémon Showdown Champions format  
-**Prerequisites:** Milestone 11.5 state-transition refactor complete; PR 12 field-effects primitives and tests available before dependent PR 13 work  
-**Source of truth:** `AGENTS.md`, `ROTOM_SPARK_IMPLEMENTATION_PLAN.md`, `ROTOM_SPARK_STATE_TRANSITION_REFACTOR_PLAN.md`, `docs/architecture/state-transition.md`, `SHOWDOWN_VERSION`
+**Prerequisites:** Milestone 11.5 state-transition refactor, PR 12 field-effects primitives, PR 13.0 mechanics inventory  
+**Architectural references:** `AGENTS.md`, `ROTOM_SPARK_STATE_TRANSITION_REFACTOR_PLAN.md`, `docs/architecture/state-transition.md`, `SHOWDOWN_VERSION`  
+**Principal change:** PR 13.1 establishes the **final unified move execution architecture** using single-target damage as its first vertical slice. All later mechanics extend it rather than replace it.
 
-## 1. Mission and scope
+## 1. Mission
 
-Implement **all battle mechanics reachable in legal Champions Regulation M-C battles**, not every mechanic present in Pokémon Showdown. Cover moves, abilities, items, transformations, and their interactions through the existing deterministic state-transition architecture.
+Implement **all mechanics reachable in legal Champions Regulation M-C battles**, including move-, ability-, item-, condition-, and form-driven interactions, through a deterministic event-driven state-transition engine. Do not implement the entire broad Showdown Dex merely because the exporter contains it.
 
-**Do not** rewrite the core battle engine, use Showdown at runtime, build a second Dex, or implement out-of-scope moves merely because they appear in the exported Dex.
-
-Target architectural contract:
+The core transition remains:
 
 ```text
-B_next = S_M(B_current, JointAction)
+(B_next, diagnostics) = step(B_current, JointAction, Mechanics)
 ```
 
-`BattleState` owns the authoritative RNG. `Mechanics` is immutable configuration. `step()` is the public phase-aware, error-atomic transition boundary; diagnostics are non-authoritative. State mutation flows through the typed kernel. Mechanics decide legality, effects, ordering, and RNG usage.
+`BattleState` embeds the only authoritative `BattleRng`. `Mechanics` contains immutable data and effect registrations. `step()` is the sole canonical public advancement boundary: phase-aware, deterministic, validated, and error-atomic. Diagnostics cannot influence outcomes.
 
-## 2. Non-negotiable development rules
+### The governing separation
 
-1. **Reachability first.** A move, ability, or item is in Phase 1 scope only when it can occur in a legal Regulation M-C battle, including effects that generate moves or transform Pokémon. Never equate “in the broad Dex” with “reachable.”
-2. **Use the pinned reference.** Research the **resolved Champions mod**, the applicable format, and its TeamValidator behavior. Do not assume standard cartridge Gen 9 behavior where Champions differs.
-3. **Preserve architecture.** All gameplay writes through `StateKernel` or its controlled `EffectState` façade. Event ordering is mechanics-owned. No direct downstream mutation of `BattleState`; no giant match statement covering all move IDs.
-4. **Explicit unsupported failures.** Do not silently treat an unimplemented effect as a generic basic-damage move or no-op. Expose accurate support status.
-5. **Deterministic RNG.** All random choices use the sole battle RNG. Preserve draw ordering; trace on/off must not alter outcomes.
-6. **Test behavior, not just compilation.** Each behavioral PR includes focused tests, representative pinned-Showdown differential cases, cross-mechanic interactions, and a full workspace regression pass.
-7. **No scope creep into AI.** Do not build a pilot, team builder, Python bindings, user interface, or network integration in this milestone.
-8. **Prefer small, reviewable PRs.** If a batch grows beyond a coherent rule family, split it further. Sub-PR names below describe milestones, not guaranteed single-commit changes.
+> **Mechanics decide whether, when, and why a change happens. The kernel alone performs authoritative state mutations and enforces representation invariants.**
 
-## 3. Scope source: a generated mechanics manifest
+Moves, abilities, held items, statuses, field effects and volatiles are **sources of effect behavior**, not competing state-mutation architectures. Events identify opportunities to execute ordered handlers. Not every handler mutates state, and not every operation needs an emitted event.
 
-### Required preparatory gate: PR 13.0 — scope and coverage infrastructure
+## 2. Final target architecture — non-negotiable
 
-If an equivalent manifest is already delivered by PR 12 preparation, **reuse it; do not implement it twice**.
+```text
+                            Immutable Mechanics
+               Resolved Dex + Format + Effect Registry
+                                      |
+(BattleState, JointAction)             |
+           |                          |
+           v                          v
+    +---------------------------------------------------+
+    | Canonical step / Transition Orchestrator          |
+    | phase validation, action queue, turn flow, commit |
+    | and stable-state validation                        |
+    +----------------------+----------------------------+
+                           |
+                           v
+    +---------------------------------------------------+
+    | Mechanics Execution                               |
+    | Move Executor + shared mechanics services         |
+    | target/hit resolution, formulas, rule eligibility  |
+    | RNG requests, effect sequencing, faint/switch flow|
+    +----------------------+----------------------------+
+                           |
+                +----------+-----------+
+                | Event Dispatcher     |
+                | ordered registrations|
+                | move/ability/item/   |
+                | status/field effects |
+                +----------+-----------+
+                           |
+                   rule outcomes, modifiers,
+                   typed mutation requests
+                           |
+                           v
+    +---------------------------------------------------+
+    | EffectState / controlled mechanics context        |
+    | read-only inspection, RNG service, typed writes   |
+    +----------------------+----------------------------+
+                           |
+                           v
+    +---------------------------------------------------+
+    | StateKernel                                       |
+    | HP, status, PP, boosts, volatiles, items, fields,  |
+    | positions/counters; representation invariants     |
+    | NO rule decisions, events, formulas, or RNG       |
+    +----------------------+----------------------------+
+                           |
+                           v
+                   Working BattleState
+                           |
+                settle + validate + commit
+                           v
+                 Next BattleState + Diagnostics
+```
 
-Retain `data/generated/champions-reg-mc.json` as the broad resolved data source. Add a separate deterministic, versioned artifact, e.g. `data/generated/reg-mc-mechanics-manifest.json`, generated by tooling.
+The dispatcher is a service used **inside** mechanics, not an alternative path around mechanics. Handlers may update *ephemeral execution context* directly, but authoritative gameplay writes must go through controlled kernel-backed operations. Avoid duplicating kernel mutation facades: extend existing `EffectState` and `StateKernel` facilities.
 
-Derive the manifest from:
+### Responsibility contract
 
-- Legal **starting** Pokémon and forms under the pinned format, not merely all `dex.species.all()` entries.
-- Legal abilities for those Pokémon, with form and ability-slot restrictions.
-- Actually legal moves for those Pokémon: learnset, Champions legality, form/event-only restrictions, and applicable format rules.
-- Held items legally usable in the target format.
-- Battle-only forms, Mega Evolution and any other accessible transformations.
-- **Reachability closure**: additional moves, effects, items, forms, conditions, and ability behavior invoked or generated by a legal battle effect (for example, move-calling effects). Record the reason for inclusion.
+| Layer | Owns | Must never own |
+| --- | --- | --- |
+| `BattleState` | Mutable authoritative battle facts, phases, embedded RNG, serialization | Rules, callback registration |
+| `StateKernel` | Typed invariant-preserving updates, reporting actual applied changes | Immunity/eligibility, damage formulas, events, RNG, move-specific logic |
+| Mechanics services | Checks, effective stats, accuracy, power/damage, status eligibility, ordering, consequences | Uncontrolled direct state writes |
+| Move executor | One common move lifecycle, target/hit/effect sequence, cancellation/repetition/continuation | Separate executors for physical/status/special moves |
+| Effect definitions | Declarative behavior and narrowly scoped exceptional handlers for moves, abilities, items, etc. | Direct unrestricted state mutation or independent battle loops |
+| Event registry/dispatcher | Handler collection and deterministically ordered invocation | Owning authoritative state or executing arbitrary commands |
+| Transition orchestrator | Phase/action validation, queue, faint/replacement scheduling, atomic final result | Per-move rule branches or duplicate battle mechanics |
 
-Avoid assuming that individual `legal` flags alone settle team legality; team-wide constraints and combination rules may change what is reachable. If reachability cannot be resolved automatically, label it `needs_research`, conservatively include it when necessary for correctness, and document the reasoning. Treat the pinned Showdown mod as the Phase 1 behavioral oracle; do not assert confirmed parity with Nintendo's live implementation.
+### Critical distinctions
 
-For each entry, record at least:
+1. **Definition vs event:** Flamethrower is a *move definition*. `TryHit`, `ModifyBasePower`, `AfterHit`, etc. are *events/hook points*. The definition describes operations and can register handlers for the appropriate hooks.
+2. **Primary operation vs damage class:** Damage is an optional primary operation, **not** a fundamental class of move. Swords Dance, Protect, Flamethrower and Facade all enter the same move executor. Fixed damage and OHKO moves use alternative *damage operations*, not alternative full executors.
+3. **Ephemeral modification vs persistent mutation:** Facade's conditional base-power modifier changes `MoveContext`/damage calculation. A stat boost changes `BattleState` through the kernel.
+4. **Shared mechanics vs kernel:** `try_inflict_status(Burn)` checks immunities, prevention, active conditions, and hooks; only then does it call a kernel operation. `kernel.apply_status` only preserves storage invariants.
+5. **Error atomicity vs individual writes:** A move can perform several kernel writes while resolving on a private working state. Unexpected errors must return **no** partly committed public state or RNG. Ordinary in-battle failures (misses, blocked effects) are modeled as successful outcomes, not engine errors.
+6. **No invented universal event order:** Exact ordering and cancellations come from the pinned Champions Showdown behavior. The pipeline is a semantic framework; it is not a promise that every effect executes in seven unconditional loops.
 
-```json
-{
-  "id": "examplemove",
-  "kind": "move",
-  "reachability": "direct_legal_set",
-  "evidence": ["species/example", "format/pinned"],
-  "implementation": "unsupported",
-  "verification": "not_tested",
-  "owner_pr": null
+## 3. Unified move pipeline contract
+
+### Logical phases and deferred capability boundaries
+
+| Stage | Meaning | PR 13.1 | Later work |
+| --- | --- | --- | --- |
+| Action/move eligibility | Phase, restrictions, PP, before-move blockers | Supported existing basics | Complex restrictions, ability/item/volatile rules |
+| Target resolution | Determine and validate applicable targets | Basic selected single target | Spread, redirection, retargeting, random/ally/field targeting |
+| Before-execution / prior operations | Setup, charging, power changes, context adjustments | Interfaces and compatible existing hooks only | Conditional power, boosts, charge, consumption |
+| Hit attempts | Accuracy/evasion, immunities, blocking, per-target/per-hit checks | Basic single-target accuracy and applicable checks | Protect, multiaccuracy, per-hit and per-target variants |
+| Primary operations | Damage, status, boost, healing, field conditions, switching | **Shared ordinary formula and kernel HP application only** | Non-damage, fixed damage, special damage operations |
+| Secondary / reactive effects | Chance-based and on-hit effects; reactions from other effect sources | Defined hook/ordering seams, no false execution | Status chances, stat drops, on-hit/contact reactions |
+| Completion / continuation | Drain, recoil, self-switch, queue changes, cleanup | Existing relevant cleanup/faints | Complex after-effects, multi-turn and pivot control |
+
+**These stages are logical ownership boundaries, not a rigid unconditional sequence.** Mechanics must support guarded branching, skipped steps, repeated hits, interrupted actions, and well-defined callback/hook points *within* damage calculation and HP application. Some effects (e.g., abilities/items) affect a calculation before damage is committed; others react to actual applied damage. All ordering is explicit and tested.
+
+### Proposed *conceptual* interfaces (not mandatory exact Rust shapes)
+
+```rust
+// Illustrative types only. Reuse and evolve existing rotom-core interfaces.
+struct MoveDefinition {
+    targeting: TargetRule,
+    hit_sequence: HitSequenceRule,
+    operations: Vec<MoveOperation>,
+    required_capabilities: CapabilitySet,
+}
+
+enum MoveOperation {
+    StandardDamage,
+    FixedDamage(FixedDamageRule),
+    ModifyPower(PowerRule),
+    ApplyMajorStatus(StatusRule),
+    ModifyStatStage(StatStageRule),
+    Heal(HealingRule),
+    ApplyCondition(ConditionRule),
+    // Additional typed operations as the manifest requires.
+}
+
+struct MoveContext {
+    // Ephemeral source/target/action context, effective power/modifiers,
+    // hit and damage outcomes, cancellation/continuation state.
+}
+
+enum ExecutionFlow {
+    Continue,
+    SkipOperation,
+    StopMove,
+    SuspendForFutureTurn,
+    RepeatHit,
+    RequestDecision,
 }
 ```
 
-Use separate `implementation` and `verification` fields (such as `unsupported`, `partial`, `implemented` and `not_tested`, `unit_tested`, `differential_verified`). Track **effect families and interaction coverage**, not merely the presence of an ID. Generate summary counts and outstanding work from the manifest, rather than manually estimating a completion percentage.
+Design review must decide concrete storage and representation **based on existing Rust data structures and cost of cloning**. A typed, compact descriptor and shared operation helpers are preferred over allocations or dynamic dispatch in every damage event. Do not add a general bytecode interpreter, scripting runtime, redundant Dex, or generic mutation command bus. Most moves should be declarative/shared; truly exceptional behaviors get narrow handler implementations with explicit hook ownership.
 
-**Acceptance gate:** regenerate twice with byte-identical output; validate IDs/references, format pin, legal reachability reasons, and no missing direct-legal move/ability/item/form entries; output human-readable coverage report. Record unresolved reachability separately.
+`required_capabilities` is a *coverage guard*, not a move taxonomy: avoid treating `OrdinaryDamage`, `StatusMove`, `SpecialDamage`, etc. as competing executor types. Capability reports identify exactly which mechanic is unsupported. Before accepting an action as executable, verify **all** reachable operations, relevant hooks and required behaviors, including behavior from current items, abilities and conditions as appropriate to supported scope. Missing behavior must not silently become a no-op or plain damage.
 
-## 4. Dependency graph and sequence
+### Worked examples to verify composition
+
+| Move/effect | Prior/context operations | Primary operation | Later/reaction operations |
+| --- | --- | --- | --- |
+| Dragon Pulse | Basic modifiers | Standard damage | Normal hit consequences |
+| Facade | Conditional **base-power** modifier for qualifying user status | Standard damage | Normal hit consequences |
+| Flamethrower | Standard modifiers | Standard damage | Chance to burn, eligibility checked by mechanics, status applied through kernel |
+| Shadow Ball | Standard modifiers | Standard damage | Chance to lower Sp. Def through mechanics/kernel |
+| Swords Dance | None | Self Attack boost through mechanics/kernel | None |
+| Surf | Multi-target selection/spread context | Per-target standard damage | Per-target reactions |
+| Bullet Seed | Determine hit count | Repeated per-hit standard damage | Per-hit hooks, faint handling, RNG ordering |
+| Giga Drain | Standard modifiers | Standard damage | Heal from **actual applicable damage**, via mechanics/kernel |
+| Electro Shot | Charge/Sp. Atk boost; rain/other skip-charge rules | Standard damage on attack turn | Move continuation/cancellation handling |
+| Protect | Priority/eligibility/repeat-use checks | Apply guarding volatile/condition via kernel | Block appropriate incoming attempts |
+
+These examples are design fixtures, **not claims of implementation or complete pinned rule details**. Differential research determines precise execution order, immunities, conditions and RNG draws. Do not model spread modifiers solely from targets whose HP decreased; do not implement multi-hit as `damage * n` or reroll only a final modifier.
+
+### Mechanic service pattern
 
 ```text
-PR 12: field effects, lifecycle, ordering, weather/terrain/side conditions
-                 |
-            PR 13.0 scope manifest + coverage tooling
-                 |
-          PR 13.1 basic move generalization
-                 |
-      +----------+--------------------+
-      |          |                    |
-  13.2 targeting  13.3 move state    13.4 damage families
-      |          |                    |
-      +----------+--------------------+
-                 |
-        13.5 ability foundations
-                 |
-           13.6 items
-                 |
-     13.7 switching + complex moves
-                 |
-     13.8 remaining reachable content
-                 |
-    13.9 interaction/completeness gate
-                 |
-    Separate Mega / Champions-special PR (where needed)
-                 |
-      Full differential corpus + performance phase
+Move operation: AttemptBurn(target)
+   -> Mechanics: check trigger + target status eligibility + ordered prevention hooks
+   -> Mechanics: request battle RNG roll at the reference-defined point
+   -> (if allowed and chance succeeds) EffectState -> StateKernel.apply_status
+   -> Mechanics: dispatch successful status/reaction events as required
 ```
 
-Some independent batches can proceed in parallel **only after stable shared interfaces and disjoint file ownership are agreed upon**. A verification agent may research and add oracle fixtures concurrently, but overlapping edits to `combat.rs`, `event.rs`, and the kernel should not happen independently.
+The kernel **never** decides whether a target is immune to burn; it does reject structurally invalid status representations. `ModifyBasePower`, `ModifyDamage`, `TryHit`, `AfterDamage`, etc. should operate through existing or narrowly extended typed event contexts. Use actual applied HP delta when downstream behavior depends on it. Events must not accidentally recurse without controlled ordering and a termination guard.
 
-## 5. PR-by-PR implementation
+## 4. Scope and coverage: preserve PR 13.0
 
-### PR 13.0 — Mechanics inventory, reachability, and coverage registry
+PR 13.0's generated inventory and coverage reporting remain the source of *what must eventually work*. Keep `data/generated/champions-reg-mc.json` as the resolved broad export and `data/generated/reg-mc-mechanics-manifest.json` (or existing equivalent) as the distinct reachability/coverage product. Do not rebuild 13.0 because 13.1 changes execution architecture.
 
-**Goal:** Precisely define the finite Phase 1 feature set.
+Scope is derived from legal starting species/forms, legal move learnsets, ability slots, usable items, format/team constraints, battle-only forms and transformations, and **reachability closure** for effects invoking/generated moves or other mechanics. Ambiguous reachability stays `needs_research`; no automatic claim of legality or support from a broad Dex record.
 
-**Implement:** exporter/validator integration, generated manifest, provenance and version pin, coverage report, checks preventing unsupported claims, tests for legal/unavailable/battle-generated examples.
+Maintain independent `implementation` (`unsupported`/`partial`/`implemented`) and `verification` (`not_tested`/`unit_tested`/`differential_verified`) statuses. **Also track required operation/hook capabilities** and interaction coverage for each reachable identity. Coverage is granted only when the move and all of its behavior—not simply the damage operation—are supported. `ordinary_damage` may remain temporarily as an informational classification for migration, but must not become an intrinsic runtime category or the final support criterion.
 
-**Do not:** add substantial battle mechanics.
+**Acceptance:** deterministic byte-identical regeneration; pinned provenance; accurate reachability; no unsupported entries falsely marked implemented; report can answer "which required operation/hook is missing?" for each reachable move/ability/item.
 
-**Done when:** agents can query “what is the next unsupported *reachable* mechanic?” and the report has defensible counts.
+## 5. Sequencing and dependency plan
 
-### PR 13.1 — Generalize ordinary move execution
+```text
+PR 12 existing field/effect lifecycle + Milestone 11.5 state kernel/step
+                          |
+                 PR 13.0 inventory (retain)
+                          |
+          PR 13.1 FINAL UNIFIED MOVE EXECUTOR FOUNDATION
+            single-target standard damage vertical slice
+                          |
+       +------------------+------------------+
+       |                  |                  |
+  PR 13.2 targeting   PR 13.3 primary    PR 13.4 conditional,
+  and protection      non-damage ops     secondary, hit-sequence
+       |                  |                  |
+       +------------------+------------------+
+                          |
+                 PR 13.5 abilities
+                          |
+                 PR 13.6 items
+                          |
+          PR 13.7 complex move/queue flow
+                          |
+         PR 13.8 remaining reachable effects
+                          |
+       Mega/Champions-special gate if necessary
+                          |
+           PR 13.9 full interaction/completeness
+```
 
-**Goal:** Remove the artificial seven-move `BASIC_DAMAGE_MOVES` bottleneck **without pretending all damage moves are equivalent**.
+Tasks inside 13.2–13.4 may overlap **only after** the 13.1 shared interfaces are reviewed and agents own disjoint code. The graph expresses logical dependencies, not mandatory serialization of independent fixture research. Abilities/items can require new hooks introduced by earlier phases; revise event interfaces narrowly without introducing a new executor.
 
-**Implement:** classify directly reachable moves by actual behavioral support, shared ordinary damaging-move execution and metadata, precise unsupported detection for nontrivial effects, target/accuracy/PP verification. Avoid adding every move to a blanket allowlist just because `base_power > 0`.
+## 6. PR-by-PR implementation specifications
 
-**Tests:** ordinary physical/special moves across types, immunities, accuracy, priority, recoil-free basics, misses, fainting, RNG traces, and rejected special-effect moves.
+### PR 13.0 — Scope inventory and coverage registry (retain)
 
-**Done when:** the supported ordinary-damage family is data-driven or systematically categorized, and every newly enabled move has evidence that its entire relevant behavior is supported.
+**Goal:** Finite legal Regulation M-C target set with pinned-Showdown provenance.
 
-### PR 13.2 — Targeting, protection, and redirection
+**Work:** Preserve exporter, legality/reachability closure, deterministic manifest, evidence, owners, human-readable coverage, fixture checks. Adapt schema/report for shared operations and hooks without destroying existing reachability work.
 
-**Goal:** Correct doubles move interaction at the moment a move attempts to hit.
+**Done:** Every directly legal and conservatively included battle-reachable entry is represented; unresolved research and coverage are explicit.
 
-**Implement:** applicable spread targeting and spread modifiers, Protect-family behavior (including repeat-use semantics where applicable), move-blocking and immunity ordering, Follow Me/Rage Powder–style redirection if reachable, target changes, target invalidation and no-target behavior.
+### PR 13.1 — Unified move executor foundation: single-target damage
 
-**Tests:** single/spread targeting, protected and unprotected adjacent targets, fainted targets, competing redirection, priority ordering, accuracy/RNG usage and combined effects.
+**Goal:** Establish **the permanent move execution architecture**, using one-target, one-hit standard damage as its first verified vertical slice. Do not create a separate `OrdinaryDamage` runtime class or a seven-move-specific pipeline.
 
-**Dependencies:** PR 12 for field interactions; PR 13.1 for move processing.
+**Implementation:**
 
-### PR 13.3 — Status, stat-change, healing, and field-setting moves
+1. Inventory existing `combat.rs`, `event.rs`, `EffectState`, `StateKernel`, Dex/combat mapping, queue and `step()`; document which functions will be **reused**, **adapted** and **retired**. Preserve the Milestone 11.5 contract.
+2. Introduce/reshape a single `MoveExecutor` (name flexible) invoked by the existing transition/queue machinery for all supported move actions, regardless of category. Define minimal typed move descriptor/operation data and ephemeral execution context, with well-owned seams for targeting, before-effects, hit resolution, primary effects, later effects and completion/control flow.
+3. For **this PR only**, execute basic player-selected single-target **one-hit** Physical/Special operations whose entire intrinsic behavior and currently applicable supporting hooks are implemented. Reuse the existing standard damage formula, status/stat-stage effects already in the engine, type chart, applicable weather/field hooks, accuracy/PP, faint processing and kernel-backed HP changes. Preserve correct rounding and RNG ordering.
+4. No manual per-move allowlist as the final behavior definition. Generate or derive support from complete implemented *capabilities/requirements*, including base-power callbacks, intrinsic effects, flags that require active cross-effects, and applicable target behavior. Reuse existing move metadata instead of inventing a parallel Dex or copying long move definitions by hand.
+5. Establish **narrow, tested extension points** for conditional power, non-damage primary operations, secondaries, repeated hit sequences and control flow. Defer their runtime behavior; don't build broad placeholder systems or empty no-op handlers that falsely mark support.
+6. Move temporary calculation values into execution context; persistent state updates go through `EffectState`/kernel. The engine's rule checks, RNG and event dispatch remain outside the kernel.
+7. Retire/migrate `MoveSupport::BasicDamage` and `ordinary_damage` as architectural identity/execution switches. If a temporary compatibility field is required, document its deprecation and ensure it cannot be used to claim entire-move support incorrectly.
+8. Preflight missing required mechanics **before irreversible internal resolution**, returning a clear unsupported-mechanic error without exposing partial public state or RNG. Normal misses/immunities are successful move outcomes, not unsupported errors.
+9. Keep one canonical `step()` and deterministic action queue. Do not change public phase semantics, implement Mega, or add a second run loop.
 
-**Goal:** Reusable non-damaging move-effect families.
+**Representative tests:** Dragon Pulse/Dragon Claw or equivalent eligible standard attacks; physical/special, various types, STAB, resist/immunity, accuracy/evasion, misses, critical rolls, field modifiers, priority, PP exhaustion, fainting, skipped actions, invalid targets; equality of replay/trace modes. Explicitly **reject** Flamethrower (burn secondary), Shadow Ball (stat-drop secondary), Facade (conditional power), Surf (spread), Bullet Seed (multi-hit), Giga Drain (drain), and Electro Shot (charge), pending capabilities. These are acceptance examples subject to resolved Champions data and format reachability; if an example isn't reachable, use a comparable reachable fixture plus a unit-level representation test.
 
-**Implement:** major status infliction and prevention; boosts/drops; healing; volatile application and expiration; compatible weather/terrain/side-condition setting moves; effect eligibility and failure paths. Reuse PR 12 lifecycles and existing common-conditions logic rather than creating parallel duration systems.
+**Acceptance gates:**
 
-**Tests:** status immunity, failed status attempts, staged changes at bounds, heal caps, volatile duration, correct event timing and deterministic random secondary effects.
+- One executor entry path for all supported move resolution; status/non-damage operations can be represented or correctly rejected but do not need to execute yet.
+- Complete **supported** single-target damage semantics match pinned differential fixtures; no missing side effects are silently discarded.
+- Existing Milestone 11.5/PR 12 tests remain green; damage algorithm is not rewritten gratuitously.
+- Instrumented tests prove kernel-only authoritative writes and mechanics-owned checks/RNG.
+- Next PR can add a status/boost operation **inside the same executor** without replacing damage architecture.
 
-### PR 13.4 — Damage-dependent special move families
+### PR 13.2 — Target resolution, protection and redirection
 
-**Goal:** Support reachable moves that cannot be described by plain base-power damage.
+**Goal:** Upgrade the same move pipeline from single-target to doubles-aware target sets.
 
-**Implement:** conditional power, fixed/level-based damage if reachable, multi-hit, recoil, draining, damage-plus-secondary-effects, multi-turn actions, self-KO and other distinct families as the manifest demands.
+**Implement:** target-set and per-target execution context; spread targeting and modifier rules; valid ally/self/field targets if reachable; Protect and related guards, eligibility and repeated-use odds; Follow Me/Rage Powder and other reachable redirection; retargeting and missing-target cases; target-/hit-level immunity ordering. Distinguish selected targets, attempted targets, actual hits and applied HP loss.
 
-**Tests:** exact rounding, hit counts, per-hit callbacks, item/ability trigger points, accuracy/critical/damage RNG draws, KO timing and residual effects.
+**Tests:** mixed protected/unprotected targets, two/one target modifier cases, switching/fainting before execution, redirection conflicts, independent accuracy, immunities and RNG draws; source-backed differential corpus.
 
-**Rule:** split into 13.4a/13.4b/etc. when a family requires more than a reviewable unit.
+**Done:** Expansion is through target resolution and hit hooks, not a `SpreadMoveExecutor` or separate spread damage formula.
 
-### PR 13.5 — Ability activation and shared effect capabilities
+### PR 13.3 — Reusable primary non-damage operations
 
-**Goal:** Implement reachable abilities in *behavioral families* and fill shared event gaps.
+**Goal:** Use the unified executor for moves that do **not** deal ordinary damage.
 
-**Suggested order:** switch-in activation → offensive/defensive modifiers → speed/stat modifiers → immunity and status prevention → weather/terrain interactions → redirection/contact/reactions → suppression/override and remaining exceptional abilities.
+**Implement:** status eligibility/infliction/cure, stat boosts/drops, healing, volatiles, weather, terrain and side conditions (reuse PR 12 lifecycles), move failure conditions, target distinctions. Operations call mechanics services, which invoke kernel writes only after rules permit. Reuse effects for primary and later secondary applications.
 
-**Implement:** ability activation predicates, ownership, ordering, activation/suppression, appropriate hooks, single-source state changes through `EffectState`/kernel. Abilities may require augmenting event context or effect identity; make narrowly scoped changes with compatibility tests.
+**Tests:** Swords Dance and reachable comparable moves, status immunity/ability prevention, already-statused targets, stat bounds, heal caps, field duration, failed effects, primary vs secondary timing; no standard-damage operation required.
 
-**Tests:** abilities in isolation and against representative items, moves, weather, terrain and other abilities; order-sensitive and suppression cases.
+**Done:** Both damaging and non-damaging moves work through **one** executor and event system, with zero category-specific turn loops.
 
-**Done when:** each marked-verified reachable ability has end-to-end differential fixtures; no blanket “ability exists” flag substitutes for behavior coverage.
+### PR 13.4 — Prior effects, secondary effects and hit-sequence operations
 
-### PR 13.6 — Held item mechanics
+**Goal:** Extend the same pipeline with flexible sequencing and shared specialized operations.
 
-**Goal:** Implement all reachable held-item behaviors, including consumable and action-restriction rules.
+**Split by cohesive behavior if large:**
 
-**Suggested order:** stat/damage multipliers → choice locks and move eligibility → recovery/consumption → defensive/survival items → reactive effects → duration and special interactions.
+- **13.4a:** `ModifyBasePower`/conditional power and effective offensive/defensive stat overrides where reachable; ephemeral context versus kernel writes; Facade-like examples.
+- **13.4b:** Chance-based secondaries, per-target effects, status and stat-drop reactions; Flamethrower/Shadow Ball-like examples. Trigger only where reference rules allow; do not always roll or always apply.
+- **13.4c:** Multi-hit sequence control, fixed/level damage, multiaccuracy, crit/damage/ability/item checks and faint handling per hit as appropriate.
+- **13.4d:** Draining, recoil, self-damage, self-KO, damage-dependent healing, and other completion operations. Base dependent effects on **actual** applied results, with reference rounding.
+- **13.4e (if interfaces allow; otherwise PR 13.7):** Charging/recharge and conditional skip-charge, including Electro Shot-like prior stat changes; persisted multi-turn continuation state only when required.
 
-**Implement:** item activation state, consumption, suppression, effective stats, choice locks and restriction-aware legal actions, switch/faint effects where applicable. Add state only for behavior that cannot be derived from existing authoritative state.
+**Tests:** RNG draw count and order, hook order, criticals and random damage per hit, HP deltas, partial interruptions, status/ability prevention, dependency on applied damage, KO between hits, sequencing against existing field mechanics.
 
-**Tests:** one-time use, turn and switch boundaries, item removal, item/ability interaction, correct rule ordering, legal-action mask parity, transactional failure.
+**Done:** All effects are composable operations/hooks in the shared executor; no move-identity giant match and no formula duplication.
 
-### PR 13.7 — Switching, pivoting, trapping, and complex turn control
+### PR 13.5 — Ability handlers using the same mechanics/event fabric
 
-**Goal:** Handle special flow changes during queue execution.
+**Goal:** Implement legal reachable abilities as registrations responding to events and shared mechanic operations; they must not require a new mutation path.
 
-**Implement:** reachable pivot moves, forced switches, switching after hit, trapping and switch prevention, replacement decisions, redirection of pending actions where appropriate, multi-turn lock and charge/recharge semantics.
+**Suggested batches:** switch-in/out → stat/priority/speed modifiers → attack/defense/damage modifiers → hit immunity/absorption → status prevention → terrain/weather → contact/on-hit reactions → suppression/copy/override exceptions.
 
-**Design gate:** verify whether the current one-`JointAction`-per-stable-decision-phase contract needs another explicit decision phase for mid-turn forced input; never invent a hidden choice, silently auto-select a replacement, or expose unstable `ResolvingTurn` publicly. Document and approve any phase-model extension before implementation.
+**Work:** stable handler identity and owner, activation/suppression checks, explicit event ordering, narrow typed context, accurate cross-source interactions. Prefer shared `try_inflict_status`, `modify_effective_stat`, `resolve_damage`, etc., rather than reimplementing rules per ability. Flash Fire-type checks must occur at the appropriate hit/immunity hook, not as a post-damage undo.
 
-**Tests:** two-sided simultaneous choices, switching before/after damage, active-slot consistency, queue continuation, faint interruptions, RNG and serialized replay.
+**Tests:** every verified ability in isolation and with representative moves, items, field conditions and other abilities; ordering/suppression and deterministic replay.
 
-### PR 13.8 — Exhaustive reachable mechanics batches
+### PR 13.6 — Item handlers using the same mechanics/event fabric
 
-**Goal:** Complete the long tail, not the whole Showdown Dex.
+**Goal:** Implement reachable held items as event handlers and rule capabilities, not a second item executor.
 
-**Implement:** automatically select the next unsupported reachable group from the manifest; batch by shared hooks or logic, not by alphabetic IDs alone. This stage may be repeated as PR 13.8a, 13.8b, etc.
+**Suggested batches:** stat/damage modifiers → move locks/action legality → consumables, recovery and status cure → survival and defensive effects → reactive/contact effects → edge cases and suppression.
 
-Each batch includes an explicit list of IDs and associated rule families, pinned-Showdown source links or source-file references, focused tests, differential fixtures and coverage updates.
+**Work:** use existing state/kernel operations for item consume/transfer/removal and status/HP changes; model authoritative item activation state only if needed; distinguish timing of item trigger from timing of actual kernel writes. Lum Berry-like status cures should react to the appropriate event without Flamethrower knowing about the item.
 
-**Done when:** no direct-legal or battle-reachable move/ability/item remains `unsupported` or `needs_research` within the defined target ruleset.
+**Tests:** one-time consumption, actual applied HP/status changes, switch/faint behavior, ability/item stacking and priority, legal-action masks, errors/replay.
 
-### PR 13.9 — Cross-mechanic verification and completeness gate
+### PR 13.7 — Complex move control, switching and decision phases
 
-**Goal:** Prove the supported rules compose correctly.
+**Goal:** Extend move execution control outcomes without breaking canonical `step()` or unstable-state encapsulation.
 
-**Implement:** systematic interaction fixtures for priority, speed, multiple modifiers, immunities, damage order, status, protection, switches, weather, terrain, items, abilities and transformations; randomized legal-state tests; replay after serialization; failed-transition atomicity; trace independence.
+**Implement:** pivoting, forced switching, trapping, ongoing multi-turn locks/charge/recharge, move interruption/cancellation, scheduled effects, any needed mid-turn choices, reachable move-calling/copying effects. Keep decisions explicit and orderly; represent continuation with minimal authoritative state and kernel operations.
 
-**Done when:** the manifest is fully accounted for, all required differential fixtures pass, reachable unsupported behavior is zero (subject to formally documented exceptions), and complete legal battles finish without unsupported-mechanic failures for the supported regulation.
+**Design gate:** If a move demands player input during resolution, document an explicit stable decision-phase extension and its replay semantics before coding. Never silently auto-pick a replacement, expose `ResolvingTurn`, or store a hidden pending action outside authoritative transition/state.
 
-## 6. Mechanics addition pattern
+**Tests:** queue continuation after pivot/KO, chained switches, target invalidation, canceled charges, simultaneous decisions, serialized replay, failure atomicity.
 
-For **every** new behavior:
+### PR 13.8 — Remaining reachable behaviors (repeatable batches)
 
-1. Identify the rule and its pinned-Showdown implementation, including format overrides.
-2. Determine reachability and the *precise* event/decision phase where it applies.
-3. Determine whether an existing event hook and `EffectState` method suffice.
-4. Add narrowly targeted mechanics logic; use typed kernel writes only.
-5. Add focused tests for success, failure, boundaries, timing, and RNG consumption.
-6. Add a differential fixture for representative and adversarial cases.
-7. Add at least one interaction test where the feature depends on another mechanic.
-8. Update manifest status only to the level actually demonstrated.
-9. Record unsupported adjacent behavior explicitly.
+**Goal:** Clear uncovered manifest requirements without implementing unrelated broad-Dex mechanics.
 
-Avoid copying large chunks of Showdown code or encoding mechanics as generic string-based commands.
+Choose the next missing *operation/hook/interaction family* from the manifest, record exact reachable IDs and pinned source evidence, then implement using existing mechanics services and kernel-backed effects. Exceptional move-specific handlers are acceptable only when generic composition does not faithfully represent the rule; they still use the **same** executor and event system. Track any newly discovered cross-source interaction as a coverage dependency.
 
-## 7. Global acceptance criteria per PR
+**Done:** No unaccounted directly legal or battle-reachable move, ability, item or condition behavior remains.
 
-Required commands (or documented equivalent):
+### Transformation / Champions-specific gate (before final acceptance)
+
+If reachable Mega Evolution, forms, transformation, or Champions-specific behavior require new authoritative state or turn sequencing, deliver a separate reviewed PR *before* PR 13.9. Preserve canonical API/error atomicity and reuse effect/transition/kernel boundaries. Do not declare PR 13 complete with reachable transformations unresolved.
+
+### PR 13.9 — Differential and architectural completeness gate
+
+**Goal:** Demonstrate faithful composition rather than a superficial count of implemented move IDs.
+
+**Implement/test:** systematic cross-source coverage for move+ability+item+field+status interactions; ordering among hooks, hit/damage application and triggered reactions; opponent action order, speed ties, priority, immunities, Protect, multi-hit, status, switching, residuals and transformations; randomized legal-state comparisons; complete battle corpora; replay/serialization, structural invariants and failed-transition atomicity.
+
+**Done:** Every reachable behavior is implemented and verified or has a formally documented, accepted exclusion; complete valid Regulation M-C battles progress through `step()` without unaccounted unsupported mechanics.
+
+## 7. Safety, correctness and scope rules for every PR
+
+1. **Pinned reference only:** use resolved Champions mod, pinned Showdown revision and selected format. Record source files/functions and relevant format overrides; live Champions parity must not be asserted without separate evidence.
+2. **Reachability first:** legal Regulation M-C starting content + battle-generated closure; don't expand to all Showdown content.
+3. **Kernel purity:** no move/ability/item/condition rule checks, event dispatch or RNG in `StateKernel`; no downstream direct authoritative writes outside controlled setup/kernel.
+4. **Single execution fabric:** no duplicate move execution loops, per-move full resolvers, or opaque strings interpreted into state mutations.
+5. **Explicit unsupported:** no auto-fallback to plain damage or no-op for omitted intrinsic effects; distinguish ordinary gameplay misses/failures from engine unsupported errors.
+6. **Deterministic RNG:** one embedded stream; preserve Showdown-relevant order, reason traces and draw counts. Trace toggles cannot affect outcomes.
+7. **Precise hook order:** target selection, ability/item prevention, calculations, HP application, consequences and faint settlement at correct points; add regression for each confirmed discrepancy.
+8. **Atomic public boundary:** error returns no state/diagnostics/RNG mutation; `step()` validates stable output before exposing it.
+9. **Lean interfaces:** reuse `CombatData`, `EffectRegistry`, `EffectState`, `StateKernel`, and existing queue/transition contracts. Add structs/enums only when ownership and measured needs justify them.
+10. **Tests are implementation work:** source-backed focused cases, adversarial failures, interactions, differential fixtures, full workspace regressions.
+
+## 8. Review checkpoints and acceptance commands
+
+Every behavioral PR supplies exact results (not assumed results) for:
 
 ```bash
 cargo fmt --all -- --check
 cargo clippy --workspace --all-targets --all-features -- -D warnings
 cargo test --workspace
-# Run pinned-Showdown exporter/reference generation/checks as applicable.
-# Run all applicable normalized differential fixture comparisons.
-# Regenerate/check manifest and coverage report.
+# Pinned Showdown exporters and reference fixture generation/checks as applicable
+# Mechanics-manifest regeneration and byte-for-byte reproducibility checks
+# Applicable normalized differential comparisons
 ```
 
-In addition, verify:
+Reviewers must additionally answer:
 
-- Identical `(BattleState, JointAction, Mechanics)` produces identical next gameplay state and RNG stream.
-- Trace enabled/disabled does not alter outcomes or number of draws.
-- Failed transitions do not mutate caller state or RNG.
-- Public state is stable, serializable, and satisfies position/HP/PP/status invariants.
-- Legal-action enumeration reflects newly introduced move/item/ability restrictions.
-- No unauthorized direct authoritative writes outside construction/kernel paths.
-- No newly supported out-of-scope behavior is falsely claimed as part of Phase 1 scope.
+- Does this feature use the **existing unified move executor**, or introduce a second one?
+- Can every state mutation be traced to a kernel operation (`EffectState` may forward it)?
+- Are checks/formulas/hooks outside the kernel and bounded by typed interfaces?
+- Are the move's full effect requirements either implemented or explicitly unsupported?
+- Does event ordering match pinned reference, including no-op/miss/reaction cases?
+- Does replay from identical state + joint action + mechanics produce identical state and RNG?
+- Is the public input unchanged on errors, and does serialization preserve continuation?
+- Do legal-action masks reflect new locks, targeting and restrictions?
+- Is implementation and verification status supported by actual evidence?
 
-## 8. Required Codex handoff/report format
+## 9. Codex agent handoff template
 
-Each agent's PR description must contain:
+Every agent must report:
 
 ```markdown
-## Scope
-- Targeted reachable mechanic IDs / families:
-- Reference version / format:
-- Explicit exclusions:
+## Scope and provenance
+- PR / reachable mechanics IDs / effect capabilities:
+- Pinned Showdown revision, format and source locations:
+- Explicitly deferred adjacent behaviors:
 
-## Implemented
-- Behavior and event hooks:
-- State/kernel changes (if any):
-- Interaction handling:
+## Architecture impact
+- Existing functions/types reused:
+- Executor phase / event hooks / execution-control changes:
+- Mechanics rule checks and calculations:
+- Kernel-backed mutation methods used:
+- Ephemeral context vs authoritative state fields:
+- No parallel executor or direct mutation paths (evidence):
 
-## Tests & differential evidence
-- Unit/integration cases:
-- Pinned Showdown fixtures:
-- RNG / ordering cases:
-- Exact verification commands and results:
+## Behavioral implementation
+- Success, failure, immunity, interruption and reaction semantics:
+- Callback/event ordering and RNG ordering:
+- Interaction with existing abilities/items/field effects:
 
-## Coverage registry
-- Entries changed:
-- Verified coverage delta:
-- Unresolved / unsupported reachable cases:
+## Verification
+- Focused test cases and expected values:
+- Normalized Showdown differential fixtures:
+- Negative/unsupported and transactional-failure tests:
+- Commands actually executed and actual results:
 
-## Architecture review
-- Mutation ownership audit:
-- Canonical step / phase contract preserved?:
-- Any new state fields and why they are authoritative:
-- Risks and follow-ups:
+## Coverage
+- Manifest entries and operation/hook requirements changed:
+- Implementation and verification statuses supported by evidence:
+- Known omissions, blockers and proposed next PR:
 ```
 
-## 9. Parallel-agent coordination
+## 10. Parallelism and migration of existing PR 13.1
 
-- **Research/fixtures agent:** inspect pinned Showdown and author expected behavior and edge-case fixtures; no independent battle-architecture changes.
-- **Mechanics implementation agent:** implement one coherent family against agreed interfaces; own affected mechanics files.
-- **Verification agent:** review source-based semantics, direct writes, invariant tests, differential results, and manifest status; do not certify unexecuted tests.
-- **Integrator:** resolve conflicts, run entire suite, merge only after gates pass.
+**Migration is a correction of architecture, not a reimplementation of all earlier milestones.** Reuse pinned Dex data, PR 13.0 manifest, PR 12 field lifecycle, existing battle damage calculation, event registry, state mutation kernel, replay contract, and valuable PR 13.1 tests. Remove or deprecate only the `ordinary_damage`/`BasicDamage` *architectural gating* that assumes a permanent move family.
 
-Do not assign multiple implementation agents simultaneous unsynchronized changes to `combat.rs`, `event.rs`, `state/transition.rs`, or `kernel/mod.rs`.
+Do **not** automatically reset/revert Git history as part of this plan; maintainers choose whether to revert PR 13.1 or refactor atop it. Preserve a reviewable commit and test baseline either way. PR 13.1 is accepted only once it satisfies the **new** gates, not merely the original 37-move classification count.
 
-## 10. Explicit non-goals and deferred work
+Parallel agents: research/fixtures can run alongside disjoint implementation; no unsynchronized simultaneous edits of `combat.rs`, event/registry, transition/queue, or kernel modules. The integrator owns final architecture audit and complete workspace checks.
 
-- Implementing every Showdown Pokémon, move, ability, item, or historical format.
-- Claiming complete parity with live Champions solely from Showdown fixtures.
-- Building a new runtime legality-filtered Dex solely for speed.
-- AI policy training, team-building models, networking, bots, and UI.
-- Premature optimization before profiling.
+## 11. Non-goals
 
-**Separate planned milestone:** Mega Evolution, form changes and any Champions-specific mechanics should have their own implementation/verification gate where they require new state or transition semantics. Include their reachability in the manifest immediately; do **not** mark PR 13 complete with unresolved reachable transformation behavior. Integrate this special-mechanics milestone before the final completeness gate if necessary.
+- Runtime calls to Showdown, a second Dex, all-generation move implementation or speculative legality expansion.
+- Separate damage/status/special executors or a plugin scripting VM.
+- Putting status immunity, damage calculations, targeting, RNG or Pokémon rules into the mutation kernel.
+- Treating an unimplemented secondary or prior operation as optional merely to expand supported ID counts.
+- Implementing the training/pilot model, teambuilder, networking, Python bindings, or UI here.
+- Unmeasured optimization that sacrifices readability, deterministic behavior or differential correctness.
 
-## 11. Completion definition for PR 13+
+## 12. Definition of completion
 
-PR 13+ is complete only when:
+PR 13+ is complete when the pinned Regulation M-C reachability inventory is reproducible; all reachable move/ability/item/field/form behaviors and required interactions are implemented or formally excluded; every effect executes via shared mechanics/event contracts and kernel-controlled mutation; substantial normalized pinned-Showdown differential and full-battle suites pass; valid battles advance from preview to termination via the canonical `step()` without unaccounted unsupported behavior; and RNG determinism, atomic errors, serialization, legal-action enumeration, and state invariants remain intact.
 
-- The pinned-Regulation M-C reachability manifest is reproducible and its scope has been reviewed.
-- Every reachable move, ability, and item is implemented and verified or explicitly identified as a formally approved exclusion.
-- Battle-generated effects and accessible form transformations are accounted for.
-- Cross-mechanic interaction tests and a substantial normalized Showdown differential corpus pass.
-- Complete valid Regulation M-C battles can advance from preview to terminal state through `step()` without unsupported behavior within scope.
-- Determinism, atomic errors, serialization, invariant preservation and accurate legal-action enumeration remain intact.
-
-**Guiding principle:** implement the smallest complete ruleset that faithfully simulates **all legal Regulation M-C battles**, rather than the largest collection of loosely implemented Showdown mechanics.
+**Guiding principle:** The engine does not implement *move categories*. It executes a deterministic sequence of rule-checked effects. Mechanics decide what is allowed; the kernel changes state; the transition function produces the next stable battle state.

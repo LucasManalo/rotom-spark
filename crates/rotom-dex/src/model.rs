@@ -276,9 +276,36 @@ pub struct MoveData {
     pub damage: Option<Damage>,
     pub status: Option<String>,
     pub volatile_status: Option<String>,
+    pub behavior: MoveBehaviorData,
     pub is_nonstandard: Option<String>,
     pub legal: bool,
     pub ban_reason: Option<String>,
+}
+
+/// Resolved move behavior that is not captured by the ordinary numeric fields.
+///
+/// The exporter records these facts from the pinned resolved Showdown move so
+/// runtime support can be derived from required capabilities instead of a
+/// hand-maintained move-ID allowlist.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct MoveBehaviorData {
+    pub effect_kinds: Vec<MoveBehaviorKind>,
+    pub callbacks: Vec<String>,
+    pub intrinsic_flags: Vec<String>,
+    pub special_properties: Vec<String>,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum MoveBehaviorKind {
+    SecondaryEffect,
+    SelfEffect,
+    StatStage,
+    Healing,
+    FieldOrSideCondition,
+    CallsMove,
+    SwitchControl,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]

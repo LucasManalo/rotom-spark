@@ -59,6 +59,30 @@ test('coverage claims do not confuse implementation with verification', () => {
 	assert.equal(entry('move', 'protect').verification, 'not_tested');
 });
 
+test('move support is derived from complete executor capabilities', () => {
+	const dragonClaw = entry('move', 'dragonclaw');
+	assert.equal(dragonClaw.operation, 'standard_damage');
+	assert.deepEqual(
+		dragonClaw.required_capabilities,
+		['standard_damage', 'selected_single_target', 'accuracy']
+	);
+	assert.equal(dragonClaw.implementation, 'implemented');
+	assert.equal(dragonClaw.owner_pr, 'PR 13.1');
+
+	for (const [id, capability] of [
+		['flamethrower', 'secondary_effect'],
+		['facade', 'custom_callback'],
+		['surf', 'advanced_targeting'],
+		['bulletseed', 'multi_hit'],
+		['gigadrain', 'drain'],
+		['electroshot', 'custom_callback'],
+	]) {
+		const move = entry('move', id);
+		assert.ok(move.required_capabilities.includes(capability), `${id} should require ${capability}`);
+		assert.equal(move.implementation, 'unsupported');
+	}
+});
+
 test('structured generated conditions retain their provenance', () => {
 	const protect = entry('condition', 'protect');
 	assert.equal(protect.reachability, 'battle_generated');

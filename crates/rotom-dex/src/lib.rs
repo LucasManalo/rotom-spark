@@ -11,8 +11,9 @@ mod model;
 pub use error::DexLoadError;
 pub use model::{
     AbilityData, Accuracy, ComplexBan, Damage, DexData, Fling, FormData, FormatData, Fraction,
-    GenderRatio, ItemData, ItemFlag, KeyValue, MoveData, MultiHit, NaturalGift, NatureData,
-    RuleEntry, SourceMetadata, SpeciesData, Stats, TypeData, ValueRule,
+    GenderRatio, ItemData, ItemFlag, KeyValue, MoveBehaviorData, MoveBehaviorKind, MoveData,
+    MultiHit, NaturalGift, NatureData, RuleEntry, SourceMetadata, SpeciesData, Stats, TypeData,
+    ValueRule,
 };
 
 const CHAMPIONS_REG_MC_JSON: &str = include_str!("../../../data/generated/champions-reg-mc.json");

@@ -6,6 +6,7 @@ use crate::{
 };
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
+use std::fmt;
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
@@ -48,9 +49,126 @@ pub enum MoveAccuracy {
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
-pub enum MoveSupport {
-    BasicDamage,
-    Unsupported,
+pub enum MoveOperation {
+    /// The shared level/power/Attack-or-Sp. Atk damage formula.
+    StandardDamage,
+    /// A numeric fixed-damage operation. Execution is deferred past PR 13.1.
+    FixedDamage,
+    /// A level-based damage operation. Execution is deferred past PR 13.1.
+    LevelDamage,
+    /// A move whose primary behavior does not use the standard damage formula.
+    NonDamage,
+}
+
+/// A move-execution facility required by a resolved move definition.
+#[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
+#[repr(u32)]
+#[serde(rename_all = "snake_case")]
+pub enum MoveCapability {
+    StandardDamage = 1 << 0,
+    SelectedSingleTarget = 1 << 1,
+    Accuracy = 1 << 2,
+    FixedDamage = 1 << 3,
+    NonDamagePrimary = 1 << 4,
+    AdvancedTargeting = 1 << 5,
+    MultiHit = 1 << 6,
+    SecondaryEffect = 1 << 7,
+    SelfEffect = 1 << 8,
+    Drain = 1 << 9,
+    Recoil = 1 << 10,
+    MajorStatus = 1 << 11,
+    Volatile = 1 << 12,
+    StatStage = 1 << 13,
+    Healing = 1 << 14,
+    FieldOrSideCondition = 1 << 15,
+    SwitchControl = 1 << 16,
+    CallsMove = 1 << 17,
+    CustomCallback = 1 << 18,
+    SpecialBehavior = 1 << 19,
+}
+
+impl MoveCapability {
+    const ALL: [Self; 20] = [
+        Self::StandardDamage,
+        Self::SelectedSingleTarget,
+        Self::Accuracy,
+        Self::FixedDamage,
+        Self::NonDamagePrimary,
+        Self::AdvancedTargeting,
+        Self::MultiHit,
+        Self::SecondaryEffect,
+        Self::SelfEffect,
+        Self::Drain,
+        Self::Recoil,
+        Self::MajorStatus,
+        Self::Volatile,
+        Self::StatStage,
+        Self::Healing,
+        Self::FieldOrSideCondition,
+        Self::SwitchControl,
+        Self::CallsMove,
+        Self::CustomCallback,
+        Self::SpecialBehavior,
+    ];
+}
+
+impl fmt::Display for MoveCapability {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let name = match self {
+            Self::StandardDamage => "standard_damage",
+            Self::SelectedSingleTarget => "selected_single_target",
+            Self::Accuracy => "accuracy",
+            Self::FixedDamage => "fixed_damage",
+            Self::NonDamagePrimary => "non_damage_primary",
+            Self::AdvancedTargeting => "advanced_targeting",
+            Self::MultiHit => "multi_hit",
+            Self::SecondaryEffect => "secondary_effect",
+            Self::SelfEffect => "self_effect",
+            Self::Drain => "drain",
+            Self::Recoil => "recoil",
+            Self::MajorStatus => "major_status",
+            Self::Volatile => "volatile",
+            Self::StatStage => "stat_stage",
+            Self::Healing => "healing",
+            Self::FieldOrSideCondition => "field_or_side_condition",
+            Self::SwitchControl => "switch_control",
+            Self::CallsMove => "calls_move",
+            Self::CustomCallback => "custom_callback",
+            Self::SpecialBehavior => "special_behavior",
+        };
+        formatter.write_str(name)
+    }
+}
+
+/// Compact set of required move-executor capabilities.
+#[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(transparent)]
+pub struct MoveCapabilities(u32);
+
+impl MoveCapabilities {
+    pub const NONE: Self = Self(0);
+    pub const PR_13_1: Self = Self(
+        MoveCapability::StandardDamage as u32
+            | MoveCapability::SelectedSingleTarget as u32
+            | MoveCapability::Accuracy as u32,
+    );
+
+    #[must_use]
+    pub const fn with(self, capability: MoveCapability) -> Self {
+        Self(self.0 | capability as u32)
+    }
+
+    #[must_use]
+    pub const fn contains(self, capability: MoveCapability) -> bool {
+        self.0 & capability as u32 != 0
+    }
+
+    #[must_use]
+    pub fn first_missing_from(self, supported: Self) -> Option<MoveCapability> {
+        MoveCapability::ALL
+            .into_iter()
+            .find(|capability| self.contains(*capability) && !supported.contains(*capability))
+    }
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -62,7 +180,8 @@ pub struct CombatMove {
     pub accuracy: MoveAccuracy,
     pub crit_ratio: u8,
     pub target: MoveTarget,
-    pub support: MoveSupport,
+    pub operation: MoveOperation,
+    pub required_capabilities: MoveCapabilities,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -205,7 +324,7 @@ pub struct FieldHpChange {
 }
 
 #[derive(Clone, Copy)]
-struct QueuedMove {
+struct QueuedMoveAction {
     side: SideId,
     slot: ActiveSlot,
     move_slot: MoveSlotIndex,
@@ -213,8 +332,8 @@ struct QueuedMove {
 }
 
 #[derive(Clone, Copy)]
-struct BasicMoveContext {
-    queued: QueuedMove,
+struct MoveExecutionContext {
+    queued: QueuedMoveAction,
     source: PokemonRef,
     target: PokemonRef,
     target_slot: ActiveSlot,
@@ -292,9 +411,9 @@ impl BattleState {
                     target,
                     mega: false,
                 } => {
-                    self.resolve_basic_move(
+                    self.execute_move(
                         data,
-                        QueuedMove {
+                        QueuedMoveAction {
                             side: action.side,
                             slot: action.slot,
                             move_slot,
@@ -364,15 +483,16 @@ impl BattleState {
         Ok(())
     }
 
-    fn resolve_basic_move<D: CombatData>(
+    /// Executes every supported move action through the shared move lifecycle.
+    fn execute_move<D: CombatData>(
         &mut self,
         data: &D,
-        queued: QueuedMove,
+        queued: QueuedMoveAction,
         effects: &EffectRegistry,
         field_effects: &FieldEffectIds,
         resolution: &mut TurnResolution,
     ) -> Result<(), BattleError> {
-        let move_context = self.prepare_basic_move(data, queued)?;
+        let move_context = self.prepare_move_execution(data, queued)?;
         let source_index = move_context.source.pokemon;
         let context = EventContext {
             source: Some(move_context.source),
@@ -460,14 +580,14 @@ impl BattleState {
             return Ok(());
         }
 
-        self.resolve_basic_damage(data, move_context, effects, field_effects, resolution)
+        self.execute_primary_operation(data, move_context, effects, field_effects, resolution)
     }
 
-    fn prepare_basic_move<D: CombatData>(
+    fn prepare_move_execution<D: CombatData>(
         &self,
         data: &D,
-        queued: QueuedMove,
-    ) -> Result<BasicMoveContext, BattleError> {
+        queued: QueuedMoveAction,
+    ) -> Result<MoveExecutionContext, BattleError> {
         let source_index = self.side(queued.side).active[queued.slot.index()].ok_or_else(|| {
             BattleError::InvalidState("queued move source is no longer active".to_owned())
         })?;
@@ -490,14 +610,14 @@ impl BattleState {
         let move_data = data.move_data(move_id).ok_or_else(|| {
             BattleError::DataMismatch(format!("missing combat data for move {move_id}"))
         })?;
-        validate_basic_move(move_id, move_data)?;
+        preflight_move(move_id, move_data)?;
         let (target_side, target_slot) = resolve_target(queued.side, queued.slot, queued.target)?;
         let target_index = self.side(target_side).active[target_slot.index()].ok_or_else(|| {
             BattleError::UnsupportedMechanic(
                 "retargeting after an empty or fainted target is deferred".to_owned(),
             )
         })?;
-        Ok(BasicMoveContext {
+        Ok(MoveExecutionContext {
             queued,
             source: PokemonRef::new(queued.side, source_index),
             target: PokemonRef::new(target_side, target_index),
@@ -509,15 +629,36 @@ impl BattleState {
         })
     }
 
-    fn resolve_basic_damage<D: CombatData>(
+    fn execute_primary_operation<D: CombatData>(
         &mut self,
         data: &D,
-        move_context: BasicMoveContext,
+        move_context: MoveExecutionContext,
         effects: &EffectRegistry,
         field_effects: &FieldEffectIds,
         resolution: &mut TurnResolution,
     ) -> Result<(), BattleError> {
-        let BasicMoveContext {
+        match move_context.move_data.operation {
+            MoveOperation::StandardDamage => {
+                self.execute_standard_damage(data, move_context, effects, field_effects, resolution)
+            }
+            MoveOperation::FixedDamage | MoveOperation::LevelDamage | MoveOperation::NonDamage => {
+                Err(BattleError::UnsupportedMechanic(format!(
+                    "move {} reached an unsupported primary operation after preflight",
+                    move_context.move_id
+                )))
+            }
+        }
+    }
+
+    fn execute_standard_damage<D: CombatData>(
+        &mut self,
+        data: &D,
+        move_context: MoveExecutionContext,
+        effects: &EffectRegistry,
+        field_effects: &FieldEffectIds,
+        resolution: &mut TurnResolution,
+    ) -> Result<(), BattleError> {
+        let MoveExecutionContext {
             queued,
             source,
             target,
@@ -531,7 +672,7 @@ impl BattleState {
             move_id: Some(move_id),
         };
 
-        let mut damage = self.calculate_field_damage(data, field_effects, move_context)?;
+        let mut damage = self.calculate_standard_damage(data, field_effects, move_context)?;
         let modify_damage = effects.dispatch(
             self,
             BattleEvent::ModifyDamage,
@@ -585,13 +726,13 @@ impl BattleState {
         Ok(())
     }
 
-    fn calculate_field_damage<D: CombatData>(
+    fn calculate_standard_damage<D: CombatData>(
         &mut self,
         data: &D,
         field_effects: &FieldEffectIds,
-        move_context: BasicMoveContext,
+        move_context: MoveExecutionContext,
     ) -> Result<DamageResult, BattleError> {
-        let BasicMoveContext {
+        let MoveExecutionContext {
             source,
             target,
             move_id,
@@ -673,12 +814,14 @@ impl BattleState {
             pokemon,
             damage,
         } = application;
-        StateKernel::new(self).damage_hp(PokemonRef::new(side, pokemon), damage)?;
+        let applied = StateKernel::new(self)
+            .damage_hp(PokemonRef::new(side, pokemon), damage)?
+            .applied;
         resolution.events.push(effects.dispatch(
             self,
             BattleEvent::AfterDamage,
             context,
-            EventValue::Integer(i64::from(damage)),
+            EventValue::Integer(i64::from(applied)),
         )?);
         let fainted = self
             .side(side)
@@ -738,7 +881,7 @@ impl BattleState {
         &self,
         data: &D,
         field_effects: &FieldEffectIds,
-        context: BasicMoveContext,
+        context: MoveExecutionContext,
     ) -> Result<bool, BattleError> {
         if !field_effects.field_has(self, field_effects.psychic_terrain)
             || context.source.side == context.target.side
@@ -1337,8 +1480,8 @@ fn apply_type_modifier(damage: u32, exponent: Option<i8>) -> (u32, Modifier) {
 ///
 /// # Errors
 ///
-/// Returns an error when static data is missing, the move is outside the
-/// supported basic-damage slice, or damage inputs are invalid.
+/// Returns an error when static data is missing, the move requires a capability
+/// outside the PR 13.1 executor slice, or damage inputs are invalid.
 pub fn calculate_move_damage<D: CombatData>(
     data: &D,
     source: &PokemonState,
@@ -1350,11 +1493,7 @@ pub fn calculate_move_damage<D: CombatData>(
     let move_data = data.move_data(move_id).ok_or_else(|| {
         BattleError::DataMismatch(format!("missing combat data for move {move_id}"))
     })?;
-    if move_data.support != MoveSupport::BasicDamage {
-        return Err(BattleError::UnsupportedMechanic(format!(
-            "move {move_id} does not have a basic-damage implementation"
-        )));
-    }
+    preflight_move(move_id, move_data)?;
     let source_types = data
         .pokemon_types(source.species, source.form)
         .ok_or_else(|| BattleError::DataMismatch("missing source type data".to_owned()))?;
@@ -1382,21 +1521,29 @@ fn staged_stat(stat: u16, stage: i8) -> u32 {
     }
 }
 
-fn validate_basic_move(move_id: MoveId, move_data: CombatMove) -> Result<(), BattleError> {
-    if move_data.support != MoveSupport::BasicDamage
+fn preflight_move(move_id: MoveId, move_data: CombatMove) -> Result<(), BattleError> {
+    if let Some(missing) = move_data
+        .required_capabilities
+        .first_missing_from(MoveCapabilities::PR_13_1)
+    {
+        return Err(BattleError::UnsupportedMechanic(format!(
+            "move {move_id} requires unsupported capability {missing}"
+        )));
+    }
+    if move_data.operation != MoveOperation::StandardDamage
         || move_data.category == MoveCategory::Status
         || move_data.base_power == 0
     {
-        return Err(BattleError::UnsupportedMechanic(format!(
-            "move {move_id} does not have an ordinary basic-damage implementation"
+        return Err(BattleError::DataMismatch(format!(
+            "move {move_id} declares inconsistent standard-damage metadata"
         )));
     }
     if !matches!(
         move_data.target,
         MoveTarget::Normal | MoveTarget::Any | MoveTarget::AdjacentFoe
     ) {
-        return Err(BattleError::UnsupportedMechanic(format!(
-            "move {move_id} uses unsupported multi-target behavior"
+        return Err(BattleError::DataMismatch(format!(
+            "move {move_id} declares selected-target support for an incompatible target"
         )));
     }
     Ok(())
@@ -1455,5 +1602,51 @@ fn resolve_target(
         ActionTarget::Automatic => Err(BattleError::UnsupportedMechanic(
             "automatic or spread targeting is deferred".to_owned(),
         )),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn standard_move() -> CombatMove {
+        CombatMove {
+            move_type: PokemonType::Dragon,
+            category: MoveCategory::Physical,
+            base_power: 80,
+            accuracy: MoveAccuracy::Percent { value: 100 },
+            crit_ratio: 1,
+            target: MoveTarget::Normal,
+            operation: MoveOperation::StandardDamage,
+            required_capabilities: MoveCapabilities::PR_13_1,
+        }
+    }
+
+    #[test]
+    fn move_preflight_accepts_the_foundation_and_names_missing_capabilities() {
+        let move_id = MoveId::new(1);
+        assert_eq!(preflight_move(move_id, standard_move()), Ok(()));
+
+        let mut secondary = standard_move();
+        secondary.required_capabilities = secondary
+            .required_capabilities
+            .with(MoveCapability::SecondaryEffect);
+        let error = preflight_move(move_id, secondary).unwrap_err();
+        assert_eq!(
+            error,
+            BattleError::UnsupportedMechanic(
+                "move 1 requires unsupported capability secondary_effect".to_owned()
+            )
+        );
+    }
+
+    #[test]
+    fn move_preflight_rejects_inconsistent_definition_data() {
+        let mut inconsistent = standard_move();
+        inconsistent.category = MoveCategory::Status;
+        assert!(matches!(
+            preflight_move(MoveId::new(1), inconsistent),
+            Err(BattleError::DataMismatch(_))
+        ));
     }
 }
