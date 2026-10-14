@@ -1,8 +1,8 @@
 use crate::{Accuracy, DexData, MoveData, SpeciesData, Stats};
 use rotom_core::{
-    BattleError, BattleStats, CombatData, CombatMove, MoveAccuracy, MoveCategory, MoveId, MoveSlot,
-    MoveSupport, PokemonPosition, PokemonSet, PokemonState, PokemonType, PokemonTypes,
-    StatAllocation, StatStages, StatusState,
+    BattleError, BattleStats, CombatData, CombatMove, ConditionId, FieldEffectIds, MoveAccuracy,
+    MoveCategory, MoveId, MoveSlot, MoveSupport, PokemonPosition, PokemonSet, PokemonState,
+    PokemonType, PokemonTypes, StatAllocation, StatStages, StatusState,
 };
 
 const BASIC_DAMAGE_MOVES: &[&str] = &[
@@ -61,6 +61,44 @@ impl CombatData for DexData {
             1 => Some(1),
             2 => Some(-1),
             3..=u8::MAX => None,
+        }
+    }
+
+    fn field_effect_ids(&self) -> FieldEffectIds {
+        let condition = |id: &str| {
+            self.resolve_move(id)
+                .map(|(move_id, _)| ConditionId::new(move_id.get()))
+        };
+        FieldEffectIds {
+            rain: condition("raindance"),
+            sun: condition("sunnyday"),
+            sandstorm: condition("sandstorm"),
+            snow: condition("snowscape"),
+            electric_terrain: condition("electricterrain"),
+            grassy_terrain: condition("grassyterrain"),
+            psychic_terrain: condition("psychicterrain"),
+            misty_terrain: condition("mistyterrain"),
+            reflect: condition("reflect"),
+            light_screen: condition("lightscreen"),
+            aurora_veil: condition("auroraveil"),
+            tailwind: condition("tailwind"),
+            trick_room: condition("trickroom"),
+            gravity: condition("gravity"),
+            magic_room: condition("magicroom"),
+            wonder_room: condition("wonderroom"),
+            ingrain: condition("ingrain"),
+            smack_down: condition("smackdown"),
+            magnet_rise: condition("magnetrise"),
+            telekinesis: condition("telekinesis"),
+            levitate: self.resolve_ability("levitate").map(|(id, _)| id),
+            iron_ball: self.resolve_item("ironball").map(|(id, _)| id),
+            air_balloon: self.resolve_item("airballoon").map(|(id, _)| id),
+            earthquake: self.resolve_move("earthquake").map(|(id, _)| id),
+            bulldoze: self.resolve_move("bulldoze").map(|(id, _)| id),
+            magnitude: self.resolve_move("magnitude").map(|(id, _)| id),
+            thunder: self.resolve_move("thunder").map(|(id, _)| id),
+            hurricane: self.resolve_move("hurricane").map(|(id, _)| id),
+            blizzard: self.resolve_move("blizzard").map(|(id, _)| id),
         }
     }
 }

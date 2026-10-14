@@ -1,0 +1,73 @@
+{
+  "showdown_commit": "b79ce06d06b8f0dc8de8bb348bc9cab5d931553f",
+  "format": "gen9championsvgc2026regmc",
+  "source": "resolved champions conditions and move-condition callbacks",
+  "weather": {
+    "duration": 5,
+    "rain_water": 1.5,
+    "rain_fire": 0.5,
+    "sun_fire": 1.5,
+    "sun_water": 0.5,
+    "sand_special_defense": 1.5,
+    "sand_residual_order": 1,
+    "snow_physical_defense": 1.5
+  },
+  "terrain": {
+    "duration": 5,
+    "electric_power": [
+      5325,
+      4096
+    ],
+    "grassy_power": [
+      5325,
+      4096
+    ],
+    "grassy_earthquake": 0.5,
+    "psychic_power": [
+      5325,
+      4096
+    ],
+    "misty_dragon": 0.5,
+    "residual_order": 27
+  },
+  "side_conditions": {
+    "reflect_duration": 5,
+    "reflect_doubles": [
+      2732,
+      4096
+    ],
+    "light_screen_doubles": [
+      2732,
+      4096
+    ],
+    "aurora_veil_doubles": [
+      2732,
+      4096
+    ],
+    "tailwind_duration": 4,
+    "tailwind_speed": 2,
+    "residual_order": 26
+  },
+  "rooms": {
+    "gravity": {
+      "duration": 5,
+      "residual_order": 27,
+      "residual_sub_order": 2
+    },
+    "magicroom": {
+      "duration": 5,
+      "residual_order": 27,
+      "residual_sub_order": 6
+    },
+    "trickroom": {
+      "duration": 5,
+      "residual_order": 27,
+      "residual_sub_order": 1
+    },
+    "wonderroom": {
+      "duration": 5,
+      "residual_order": 27,
+      "residual_sub_order": 5
+    }
+  }
+}

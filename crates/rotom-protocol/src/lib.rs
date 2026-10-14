@@ -132,6 +132,7 @@ pub struct StatStagesSnapshot {
 pub struct ConditionSnapshot {
     pub id: u32,
     pub turns_remaining: Option<u8>,
+    pub layers: u8,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -288,6 +289,7 @@ impl From<rotom_core::ConditionState> for ConditionSnapshot {
         Self {
             id: state.id.get(),
             turns_remaining: state.turns_remaining,
+            layers: state.layers,
         }
     }
 }

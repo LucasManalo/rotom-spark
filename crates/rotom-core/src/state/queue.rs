@@ -49,8 +49,8 @@ impl BattleState {
     /// battle-owned RNG cloned for inspection.
     ///
     /// Current `BattleStats::spe` values are the base effective speeds. The
-    /// effect-aware entry point applies registered priority and Speed hooks;
-    /// Trick Room remains deferred to its field-effect milestone.
+    /// effect-aware entry point applies registered priority and Speed hooks,
+    /// followed by Tailwind and Trick Room field ordering.
     ///
     /// # Errors
     ///
@@ -64,7 +64,7 @@ impl BattleState {
     ) -> Result<ActionQueue, BattleError> {
         self.validate_stable_state()?;
         let mut next = self.clone();
-        next.queue_turn_inner(p1, p2, mechanics.effects())?;
+        next.queue_turn_inner(p1, p2, mechanics.effects(), mechanics.field_effects())?;
         Ok(next.queue)
     }
 
@@ -73,6 +73,7 @@ impl BattleState {
         p1: TurnChoice,
         p2: TurnChoice,
         effects: &EffectRegistry,
+        field_effects: &crate::FieldEffectIds,
     ) -> Result<(), BattleError> {
         if self.phase != BattlePhase::TurnSelection {
             return Err(BattleError::IllegalChoice(format!(
@@ -85,8 +86,22 @@ impl BattleState {
 
         let mut actions = Vec::with_capacity(4);
         let mut events = Vec::new();
-        self.expand_choice(SideId::P1, p1, effects, &mut actions, &mut events)?;
-        self.expand_choice(SideId::P2, p2, effects, &mut actions, &mut events)?;
+        self.expand_choice(
+            SideId::P1,
+            p1,
+            effects,
+            field_effects,
+            &mut actions,
+            &mut events,
+        )?;
+        self.expand_choice(
+            SideId::P2,
+            p2,
+            effects,
+            field_effects,
+            &mut actions,
+            &mut events,
+        )?;
         actions.sort_by(compare_actions);
         self.shuffle_speed_ties(&mut actions)?;
 
@@ -100,6 +115,7 @@ impl BattleState {
         side: SideId,
         choice: TurnChoice,
         effects: &EffectRegistry,
+        field_effects: &crate::FieldEffectIds,
         output: &mut Vec<QueuedAction>,
         events: &mut Vec<EventDispatch>,
     ) -> Result<(), BattleError> {
@@ -152,7 +168,11 @@ impl BattleState {
                 context,
                 EventValue::Integer(i64::from(speed)),
             )?;
-            let speed = event_u16(&speed_event, BattleEvent::ModifySpeed)?;
+            let speed = field_effects.action_speed(
+                self,
+                side,
+                event_u16(&speed_event, BattleEvent::ModifySpeed)?,
+            );
             events.push(speed_event);
             output.push(QueuedAction {
                 side,

@@ -45,6 +45,8 @@ future simulation.
 | `conditions.rs` | Decrements sleep/freeze counters, cures status, advances freeze RNG | Kernel-routed | Condition callbacks decide; kernel applies counter/status changes; RNG stays mechanics-owned |
 | `conditions.rs:191-201` | Advances paralysis RNG and may cancel action | Mechanics write | Condition mechanics; no kernel write except future consequence APIs |
 | `conditions.rs` | Increments toxic counter and subtracts residual HP | Kernel-routed | Residual formula/order stays mechanics; kernel applies bounded counter and HP changes |
+| `field_effects.rs`, `combat.rs` | Evaluates groundedness, field modifiers, weather/terrain residuals, and expiry order | Mechanics / kernel-routed | Static IDs and Pokémon rules stay in mechanics; HP and duration writes use `StateKernel` |
+| `kernel/mod.rs` | Decrements/removes weather, terrain, field, and side-condition durations | Kernel primitive | Mechanically ignorant lifecycle write; turn ordering remains in `combat.rs` |
 | `state/pokemon.rs:154-165` | Writes one bounded stat stage | Kernel primitive | Retained invariant method called by `StateKernel::change_stat_stage`; no supported production effect changes stages yet |
 | `state/pokemon.rs:230-254` | Installs/cures status and coherent counters | Kernel primitive | Retained invariant methods called only through the kernel in supported production mechanics |
 | `state/pokemon.rs:256-304` | Adds/removes/ticks unique volatile conditions | Kernel primitive | Retained invariant methods called through the kernel in supported production upkeep |

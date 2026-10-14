@@ -319,8 +319,8 @@ fn validate_single_condition(
     state: Option<ConditionState>,
     label: &str,
 ) -> Result<(), BattleError> {
-    if state.is_some_and(|state| state.turns_remaining == Some(0)) {
-        return invalid(format!("{label} cannot have zero turns remaining"));
+    if state.is_some_and(|state| state.turns_remaining == Some(0) || state.layers == 0) {
+        return invalid(format!("{label} cannot have zero duration or layers"));
     }
     Ok(())
 }
@@ -451,6 +451,14 @@ mod tests {
         let condition = ConditionState::new(crate::ConditionId::new(9), Some(2));
         duplicate.field.conditions = vec![condition, condition];
         assert!(duplicate.validate_stable_state().is_err());
+
+        let mut zero_layers = started();
+        zero_layers.field.conditions = vec![ConditionState::with_layers(
+            crate::ConditionId::new(10),
+            None,
+            0,
+        )];
+        assert!(zero_layers.validate_stable_state().is_err());
 
         let mut duplicate_volatile = started();
         duplicate_volatile

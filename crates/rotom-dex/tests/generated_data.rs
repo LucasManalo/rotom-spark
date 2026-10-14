@@ -1,3 +1,4 @@
+use rotom_core::CombatData;
 use rotom_dex::{champions_reg_mc, Accuracy};
 use std::collections::HashSet;
 
@@ -105,4 +106,22 @@ fn format_legality_is_exported() {
         .ban_reason
         .as_deref()
         .is_some_and(|reason| reason.contains("Mythical")));
+}
+
+#[test]
+fn generated_data_resolves_core_field_effect_identities() {
+    let data = champions_reg_mc().expect("checked-in data should match the Rust schema");
+    let ids = data.field_effect_ids();
+
+    assert!(ids.rain.is_some());
+    assert!(ids.snow.is_some());
+    assert!(ids.electric_terrain.is_some());
+    assert!(ids.tailwind.is_some());
+    assert!(ids.trick_room.is_some());
+    assert!(ids.gravity.is_some());
+    assert!(ids.magic_room.is_some());
+    assert!(ids.wonder_room.is_some());
+    assert!(ids.levitate.is_some());
+    assert!(ids.iron_ball.is_some());
+    assert!(ids.air_balloon.is_some());
 }

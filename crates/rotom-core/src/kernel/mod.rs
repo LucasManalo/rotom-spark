@@ -388,6 +388,22 @@ impl<'a> StateKernel<'a> {
         Ok(std::mem::replace(&mut self.battle.field.terrain, terrain))
     }
 
+    pub(crate) fn tick_weather_duration(&mut self) -> Option<ConditionId> {
+        tick_single_condition(&mut self.battle.field.weather)
+    }
+
+    pub(crate) fn tick_terrain_duration(&mut self) -> Option<ConditionId> {
+        tick_single_condition(&mut self.battle.field.terrain)
+    }
+
+    pub(crate) fn tick_field_condition_durations(&mut self) -> Vec<ConditionId> {
+        tick_condition_durations(&mut self.battle.field.conditions)
+    }
+
+    pub(crate) fn tick_side_condition_durations(&mut self, side: SideId) -> Vec<ConditionId> {
+        tick_condition_durations(&mut self.battle.side_mut(side).side_conditions)
+    }
+
     fn pokemon_mut(&mut self, target: PokemonRef) -> Result<&mut crate::PokemonState, BattleError> {
         self.battle
             .side_mut(target.side)
@@ -476,12 +492,39 @@ fn validate_single_condition(
     condition: Option<ConditionState>,
     label: &str,
 ) -> Result<(), BattleError> {
-    if condition.is_some_and(|state| state.turns_remaining == Some(0)) {
+    if condition.is_some_and(|state| state.turns_remaining == Some(0) || state.layers == 0) {
         return Err(BattleError::InvalidState(format!(
-            "{label} cannot have zero turns remaining"
+            "{label} cannot have zero duration or layers"
         )));
     }
     Ok(())
+}
+
+fn tick_single_condition(condition: &mut Option<ConditionState>) -> Option<ConditionId> {
+    let state = condition.as_mut()?;
+    let turns = state.turns_remaining.as_mut()?;
+    *turns = turns.saturating_sub(1);
+    if *turns == 0 {
+        let expired = state.id;
+        *condition = None;
+        Some(expired)
+    } else {
+        None
+    }
+}
+
+fn tick_condition_durations(conditions: &mut Vec<ConditionState>) -> Vec<ConditionId> {
+    let mut expired = Vec::new();
+    for condition in conditions.iter_mut() {
+        if let Some(turns) = &mut condition.turns_remaining {
+            *turns = turns.saturating_sub(1);
+            if *turns == 0 {
+                expired.push(condition.id);
+            }
+        }
+    }
+    conditions.retain(|condition| condition.turns_remaining != Some(0));
+    expired
 }
 
 #[cfg_attr(not(test), allow(dead_code))]

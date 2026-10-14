@@ -1,6 +1,7 @@
 use crate::{
     ActiveSlot, BattleError, BattlePhase, BattleState, CombatData, EffectRegistry, EventDispatch,
-    PokemonAction, PokemonIndex, SideId, TurnChoice, TurnResolution,
+    FieldEffectIds, MajorStatus, PokemonAction, PokemonIndex, PokemonRef, SideId, TurnChoice,
+    TurnResolution,
 };
 use serde::{Deserialize, Serialize};
 
@@ -40,6 +41,7 @@ pub enum JointAction {
 pub struct Mechanics<'a, D: CombatData> {
     data: &'a D,
     effects: EffectRegistry,
+    field_effects: FieldEffectIds,
 }
 
 impl<'a, D: CombatData> Mechanics<'a, D> {
@@ -48,7 +50,15 @@ impl<'a, D: CombatData> Mechanics<'a, D> {
         Self {
             data,
             effects: crate::conditions::composed_registry(effects),
+            field_effects: data.field_effect_ids(),
         }
+    }
+
+    /// Replaces the data provider's field identity mapping.
+    #[must_use]
+    pub fn with_field_effects(mut self, field_effects: FieldEffectIds) -> Self {
+        self.field_effects = field_effects;
+        self
     }
 
     #[must_use]
@@ -59,6 +69,45 @@ impl<'a, D: CombatData> Mechanics<'a, D> {
     #[must_use]
     pub const fn effects(&self) -> &EffectRegistry {
         &self.effects
+    }
+
+    #[must_use]
+    pub const fn field_effects(&self) -> &FieldEffectIds {
+        &self.field_effects
+    }
+
+    /// Returns whether a target currently participates in grounded mechanics.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error for an invalid target or missing type data.
+    pub fn is_grounded(
+        &self,
+        battle: &BattleState,
+        target: PokemonRef,
+    ) -> Result<bool, BattleError> {
+        crate::field_effects::grounded(battle, self.data, &self.field_effects, target)
+    }
+
+    /// Checks the common Electric/Misty Terrain major-status prevention rule.
+    /// Other immunities remain owned by the status source and later mechanics.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error for an invalid target or missing type data.
+    pub fn terrain_allows_status(
+        &self,
+        battle: &BattleState,
+        target: PokemonRef,
+        status: MajorStatus,
+    ) -> Result<bool, BattleError> {
+        crate::field_effects::terrain_allows_status(
+            battle,
+            self.data,
+            &self.field_effects,
+            target,
+            status,
+        )
     }
 }
 
@@ -113,9 +162,13 @@ pub fn step<D: CombatData>(
             StepDiagnostics::default()
         }
         JointAction::Turn { p1, p2 } => {
-            next.queue_turn_inner(*p1, *p2, &mechanics.effects)?;
+            next.queue_turn_inner(*p1, *p2, &mechanics.effects, &mechanics.field_effects)?;
             let queue_events = next.queue.events.clone();
-            let turn = next.resolve_turn_inner(mechanics.data, &mechanics.effects)?;
+            let turn = next.resolve_turn_inner(
+                mechanics.data,
+                &mechanics.effects,
+                &mechanics.field_effects,
+            )?;
             StepDiagnostics {
                 queue_events,
                 turn: Some(turn),
@@ -279,11 +332,20 @@ mod tests {
 
         let mut sequential = current.clone();
         sequential
-            .queue_turn_inner(p1_choice, p2_choice, mechanics.effects())
+            .queue_turn_inner(
+                p1_choice,
+                p2_choice,
+                mechanics.effects(),
+                mechanics.field_effects(),
+            )
             .unwrap();
         let queue_events = sequential.queue.events.clone();
         let turn = sequential
-            .resolve_turn_inner(mechanics.data(), mechanics.effects())
+            .resolve_turn_inner(
+                mechanics.data(),
+                mechanics.effects(),
+                mechanics.field_effects(),
+            )
             .unwrap();
         sequential.validate_stable_state().unwrap();
 

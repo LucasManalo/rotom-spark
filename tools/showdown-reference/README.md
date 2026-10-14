@@ -32,3 +32,11 @@ resolved Champions status callbacks with controlled random outcomes:
 node tools/showdown-reference/common-conditions.cjs
 node tools/showdown-reference/common-conditions.cjs --check
 ```
+
+Regenerate or verify the field-effect callback constants, durations, and
+residual ordering metadata with:
+
+```text
+node tools/showdown-reference/field-effects.cjs
+node tools/showdown-reference/field-effects.cjs --check
+```

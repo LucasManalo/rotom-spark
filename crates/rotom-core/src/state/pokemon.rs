@@ -260,9 +260,9 @@ impl PokemonState {
     ///
     /// Returns an error for a zero-duration condition or duplicate identity.
     pub fn add_volatile(&mut self, condition: ConditionState) -> Result<(), BattleError> {
-        if condition.turns_remaining == Some(0) {
+        if condition.turns_remaining == Some(0) || condition.layers == 0 {
             return Err(BattleError::InvalidState(
-                "a volatile condition cannot start with zero turns remaining".to_owned(),
+                "a volatile condition cannot start with zero duration or layers".to_owned(),
             ));
         }
         if self.has_volatile(condition.id) {

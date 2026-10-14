@@ -9,6 +9,7 @@ mod combat;
 mod conditions;
 mod error;
 mod event;
+mod field_effects;
 mod id;
 mod kernel;
 mod rng;
@@ -22,9 +23,9 @@ pub use action::{
     TurnChoice,
 };
 pub use combat::{
-    calculate_damage, calculate_move_damage, CombatData, CombatMove, DamageResult, ExpiredVolatile,
-    Modifier, MoveAccuracy, MoveCategory, MoveSupport, PokemonType, PokemonTypes, ResidualDamage,
-    ResolvedAction, TurnResolution,
+    calculate_damage, calculate_move_damage, CombatData, CombatMove, DamageResult,
+    ExpiredCondition, ExpiredVolatile, FieldHpChange, Modifier, MoveAccuracy, MoveCategory,
+    MoveSupport, PokemonType, PokemonTypes, ResidualDamage, ResolvedAction, TurnResolution,
 };
 pub use error::BattleError;
 pub use event::{
@@ -32,6 +33,7 @@ pub use event::{
     EffectSource, EffectState, EventContext, EventContract, EventDispatch, EventRelay, EventValue,
     PokemonRef,
 };
+pub use field_effects::FieldEffectIds;
 pub use id::{AbilityId, ConditionId, FormId, ItemId, MoveId, NatureId, SpeciesId};
 pub use rng::{BattleRng, RngOperation, RngReason, RngTraceEntry};
 pub use side::SideId;

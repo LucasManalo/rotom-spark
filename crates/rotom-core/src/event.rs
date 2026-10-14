@@ -389,6 +389,55 @@ impl EffectState<'_> {
     pub fn add_field_condition(&mut self, condition: ConditionState) -> Result<(), BattleError> {
         StateKernel::new(self.battle).add_field_condition(condition)
     }
+
+    /// Replaces the current weather and returns the previous state.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error for a zero-duration or zero-layer condition.
+    pub fn set_weather(
+        &mut self,
+        weather: Option<ConditionState>,
+    ) -> Result<Option<ConditionState>, BattleError> {
+        StateKernel::new(self.battle).set_weather(weather)
+    }
+
+    /// Replaces the current terrain and returns the previous state.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error for a zero-duration or zero-layer condition.
+    pub fn set_terrain(
+        &mut self,
+        terrain: Option<ConditionState>,
+    ) -> Result<Option<ConditionState>, BattleError> {
+        StateKernel::new(self.battle).set_terrain(terrain)
+    }
+
+    /// Adds one unique condition to a side.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error for a duplicate or invalid condition.
+    pub fn add_side_condition(
+        &mut self,
+        side: SideId,
+        condition: ConditionState,
+    ) -> Result<(), BattleError> {
+        StateKernel::new(self.battle).add_side_condition(side, condition)
+    }
+
+    pub fn remove_field_condition(&mut self, condition: ConditionId) -> Option<ConditionState> {
+        StateKernel::new(self.battle).remove_field_condition(condition)
+    }
+
+    pub fn remove_side_condition(
+        &mut self,
+        side: SideId,
+        condition: ConditionId,
+    ) -> Option<ConditionState> {
+        StateKernel::new(self.battle).remove_side_condition(side, condition)
+    }
 }
 
 /// A stateless effect function registered in the engine behavior registry.
