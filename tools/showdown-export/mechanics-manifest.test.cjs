@@ -4,6 +4,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const test = require('node:test');
+const {generatedContents, nextResearch} = require('./generate-mechanics-manifest.cjs');
 
 const repositoryRoot = path.resolve(__dirname, '..', '..');
 const manifest = JSON.parse(fs.readFileSync(
@@ -25,7 +26,7 @@ test('manifest is pinned, sorted, and internally unique', () => {
 	assert.equal(manifest.summary.total, manifest.entries.length);
 	assert.deepEqual(
 		Object.fromEntries(Object.entries(manifest.summary.by_kind).map(([kind, value]) => [kind, value.total])),
-		{ability: 215, condition: 77, form: 153, item: 166, move: 510, species: 293}
+		{ability: 215, condition: 96, form: 153, item: 166, move: 510, species: 293}
 	);
 	assert.equal(manifest.team_wide_constraints.complex_team_bans, 0);
 	assert.ok(manifest.unresolved_reachability.every(candidate => candidate.reachability === 'needs_research'));
@@ -62,4 +63,42 @@ test('structured generated conditions retain their provenance', () => {
 	const protect = entry('condition', 'protect');
 	assert.equal(protect.reachability, 'battle_generated');
 	assert.ok(protect.evidence.includes('move/protect:volatileStatus'));
+});
+
+test('Transform and Imposter close over identities already reachable in battle', () => {
+	for (const [id, trigger] of [['transform', 'move/transform'], ['imposter', 'ability/imposter']]) {
+		const closure = manifest.reachability_closure.find(candidate => candidate.kind === 'state_copy' && candidate.id === id);
+		assert.equal(closure.trigger, trigger);
+		assert.ok(closure.copies.includes('species_or_form'));
+		assert.ok(closure.copies.includes('move_slots'));
+		assert.ok(closure.copies.includes('ability'));
+		assert.ok(closure.evidence.includes('showdown:sim/pokemon.ts:Pokemon.transformInto'));
+	}
+});
+
+test('literal callback-generated conditions retain callback provenance', () => {
+	const rain = entry('condition', 'raindance');
+	assert.ok(rain.evidence.includes('ability/drizzle:callback.setWeather'));
+	assert.equal(
+		manifest.unresolved_reachability.some(candidate => candidate.kind === 'ability_dynamic_effect' && candidate.id === 'drizzle'),
+		false
+	);
+});
+
+test('callback-generated forms retain their source ability', () => {
+	const blade = entry('form', 'aegislashblade');
+	assert.ok(blade.evidence.includes('ability/stancechange:callback.formeChange'));
+});
+
+test('unresolved reachability has a deterministic next-research query', () => {
+	const next = nextResearch(manifest);
+	assert.equal(next, manifest.unresolved_reachability[0]);
+	assert.equal(next.reachability, 'needs_research');
+});
+
+test('two complete generations are byte-identical', {timeout: 120_000}, () => {
+	const first = generatedContents({verifyCheckout: false});
+	const second = generatedContents({verifyCheckout: false});
+	assert.equal(first.manifestContents, second.manifestContents);
+	assert.equal(first.reportContents, second.reportContents);
 });

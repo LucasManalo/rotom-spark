@@ -19,7 +19,7 @@
     "starting_sets": "TeamValidator.validateSet over each resolved starting form, ability slot, and learnset move",
     "items": "TeamValidator.validateSet against at least one validated starting set",
     "battle_forms": "resolved battleOnly form with a reachable source and required held item",
-    "conditions": "structured condition references reachable from direct moves, abilities, and items",
+    "conditions": "structured and literal callback condition references reachable from direct moves, abilities, and items",
     "team_constraints": "existence is validated per set; Species Clause and Item Clause do not remove individual reachability"
   },
   "entries": [
@@ -3769,6 +3769,22 @@
       "owner_pr": null
     },
     {
+      "id": "allyswitch",
+      "name": "Ally Switch",
+      "kind": "condition",
+      "condition_type": "volatile",
+      "reachability": "battle_generated",
+      "evidence": [
+        "move/allyswitch:callback.addVolatile"
+      ],
+      "effect_families": [
+        "volatile"
+      ],
+      "implementation": "unsupported",
+      "verification": "not_tested",
+      "owner_pr": null
+    },
+    {
       "id": "aquaring",
       "name": "Aqua Ring",
       "kind": "condition",
@@ -3791,6 +3807,7 @@
       "condition_type": "volatile",
       "reachability": "battle_generated",
       "evidence": [
+        "ability/cutecharm:callback.addVolatile",
         "move/attract:volatileStatus"
       ],
       "effect_families": [
@@ -3833,13 +3850,32 @@
       "owner_pr": null
     },
     {
+      "id": "beakblast",
+      "name": "Beak Blast",
+      "kind": "condition",
+      "condition_type": "volatile",
+      "reachability": "battle_generated",
+      "evidence": [
+        "move/beakblast:callback.addVolatile"
+      ],
+      "effect_families": [
+        "volatile"
+      ],
+      "implementation": "unsupported",
+      "verification": "not_tested",
+      "owner_pr": null
+    },
+    {
       "id": "brn",
       "name": "brn",
       "kind": "condition",
       "condition_type": "major_status",
       "reachability": "battle_generated",
       "evidence": [
+        "ability/flamebody:callback.trySetStatus",
+        "move/beakblast:callback.trySetStatus",
         "move/blazekick:secondary.status",
+        "move/burningjealousy:callback.trySetStatus",
         "move/fireblast:secondary.status",
         "move/firefang:secondaries.0.status",
         "move/firepunch:secondary.status",
@@ -3869,7 +3905,40 @@
       "condition_type": "volatile",
       "reachability": "battle_generated",
       "evidence": [
+        "ability/electromorphosis:callback.addVolatile",
         "move/charge:volatileStatus"
+      ],
+      "effect_families": [
+        "volatile"
+      ],
+      "implementation": "unsupported",
+      "verification": "not_tested",
+      "owner_pr": null
+    },
+    {
+      "id": "chillyreception",
+      "name": "Chilly Reception",
+      "kind": "condition",
+      "condition_type": "volatile",
+      "reachability": "battle_generated",
+      "evidence": [
+        "move/chillyreception:callback.addVolatile"
+      ],
+      "effect_families": [
+        "volatile"
+      ],
+      "implementation": "unsupported",
+      "verification": "not_tested",
+      "owner_pr": null
+    },
+    {
+      "id": "choicelock",
+      "name": "choicelock",
+      "kind": "condition",
+      "condition_type": "volatile",
+      "reachability": "battle_generated",
+      "evidence": [
+        "item/choicescarf:callback.addVolatile"
       ],
       "effect_families": [
         "volatile"
@@ -3885,6 +3954,7 @@
       "condition_type": "volatile",
       "reachability": "battle_generated",
       "evidence": [
+        "move/alluringvoice:callback.addVolatile",
         "move/axekick:secondary.volatileStatus",
         "move/confuseray:volatileStatus",
         "move/dynamicpunch:secondary.volatileStatus",
@@ -3894,6 +3964,38 @@
         "move/sweetkiss:volatileStatus",
         "move/teeterdance:volatileStatus",
         "move/waterpulse:secondary.volatileStatus"
+      ],
+      "effect_families": [
+        "volatile"
+      ],
+      "implementation": "unsupported",
+      "verification": "not_tested",
+      "owner_pr": null
+    },
+    {
+      "id": "counter",
+      "name": "Counter",
+      "kind": "condition",
+      "condition_type": "volatile",
+      "reachability": "battle_generated",
+      "evidence": [
+        "move/counter:callback.addVolatile"
+      ],
+      "effect_families": [
+        "volatile"
+      ],
+      "implementation": "unsupported",
+      "verification": "not_tested",
+      "owner_pr": null
+    },
+    {
+      "id": "curse",
+      "name": "Curse",
+      "kind": "condition",
+      "condition_type": "volatile",
+      "reachability": "battle_generated",
+      "evidence": [
+        "move/curse:callback.addVolatile"
       ],
       "effect_families": [
         "volatile"
@@ -3925,6 +4027,7 @@
       "condition_type": "volatile",
       "reachability": "battle_generated",
       "evidence": [
+        "ability/cursedbody:callback.addVolatile",
         "move/disable:volatileStatus"
       ],
       "effect_families": [
@@ -3957,6 +4060,7 @@
       "condition_type": "terrain",
       "reachability": "battle_generated",
       "evidence": [
+        "ability/electricsurge:callback.setTerrain",
         "move/electricterrain:terrain"
       ],
       "effect_families": [
@@ -4031,6 +4135,22 @@
       "owner_pr": null
     },
     {
+      "id": "flashfire",
+      "name": "Flash Fire",
+      "kind": "condition",
+      "condition_type": "volatile",
+      "reachability": "battle_generated",
+      "evidence": [
+        "ability/flashfire:callback.addVolatile"
+      ],
+      "effect_families": [
+        "volatile"
+      ],
+      "implementation": "unsupported",
+      "verification": "not_tested",
+      "owner_pr": null
+    },
+    {
       "id": "flinch",
       "name": "flinch",
       "kind": "condition",
@@ -4067,6 +4187,22 @@
       "owner_pr": null
     },
     {
+      "id": "fling",
+      "name": "Fling",
+      "kind": "condition",
+      "condition_type": "volatile",
+      "reachability": "battle_generated",
+      "evidence": [
+        "move/fling:callback.addVolatile"
+      ],
+      "effect_families": [
+        "volatile"
+      ],
+      "implementation": "unsupported",
+      "verification": "not_tested",
+      "owner_pr": null
+    },
+    {
       "id": "focusenergy",
       "name": "Focus Energy",
       "kind": "condition",
@@ -4074,6 +4210,22 @@
       "reachability": "battle_generated",
       "evidence": [
         "move/focusenergy:volatileStatus"
+      ],
+      "effect_families": [
+        "volatile"
+      ],
+      "implementation": "unsupported",
+      "verification": "not_tested",
+      "owner_pr": null
+    },
+    {
+      "id": "focuspunch",
+      "name": "Focus Punch",
+      "kind": "condition",
+      "condition_type": "volatile",
+      "reachability": "battle_generated",
+      "evidence": [
+        "move/focuspunch:callback.addVolatile"
       ],
       "effect_families": [
         "volatile"
@@ -4134,6 +4286,22 @@
       "owner_pr": null
     },
     {
+      "id": "gem",
+      "name": "gem",
+      "kind": "condition",
+      "condition_type": "volatile",
+      "reachability": "battle_generated",
+      "evidence": [
+        "item/normalgem:callback.addVolatile"
+      ],
+      "effect_families": [
+        "volatile"
+      ],
+      "implementation": "unsupported",
+      "verification": "not_tested",
+      "owner_pr": null
+    },
+    {
       "id": "glaiverush",
       "name": "Glaive Rush",
       "kind": "condition",
@@ -4156,6 +4324,8 @@
       "condition_type": "terrain",
       "reachability": "battle_generated",
       "evidence": [
+        "ability/grassysurge:callback.setTerrain",
+        "ability/seedsower:callback.setTerrain",
         "move/grassyterrain:terrain"
       ],
       "effect_families": [
@@ -4329,6 +4499,22 @@
       "owner_pr": null
     },
     {
+      "id": "lockon",
+      "name": "Lock-On",
+      "kind": "condition",
+      "condition_type": "volatile",
+      "reachability": "battle_generated",
+      "evidence": [
+        "move/lockon:callback.addVolatile"
+      ],
+      "effect_families": [
+        "volatile"
+      ],
+      "implementation": "unsupported",
+      "verification": "not_tested",
+      "owner_pr": null
+    },
+    {
       "id": "magicroom",
       "name": "Magic Room",
       "kind": "condition",
@@ -4361,6 +4547,22 @@
       "owner_pr": null
     },
     {
+      "id": "metronome",
+      "name": "Metronome",
+      "kind": "condition",
+      "condition_type": "volatile",
+      "reachability": "battle_generated",
+      "evidence": [
+        "item/metronome:callback.addVolatile"
+      ],
+      "effect_families": [
+        "volatile"
+      ],
+      "implementation": "unsupported",
+      "verification": "not_tested",
+      "owner_pr": null
+    },
+    {
       "id": "minimize",
       "name": "Minimize",
       "kind": "condition",
@@ -4368,6 +4570,22 @@
       "reachability": "battle_generated",
       "evidence": [
         "move/minimize:volatileStatus"
+      ],
+      "effect_families": [
+        "volatile"
+      ],
+      "implementation": "unsupported",
+      "verification": "not_tested",
+      "owner_pr": null
+    },
+    {
+      "id": "mirrorcoat",
+      "name": "Mirror Coat",
+      "kind": "condition",
+      "condition_type": "volatile",
+      "reachability": "battle_generated",
+      "evidence": [
+        "move/mirrorcoat:callback.addVolatile"
       ],
       "effect_families": [
         "volatile"
@@ -4453,6 +4671,8 @@
       "condition_type": "major_status",
       "reachability": "battle_generated",
       "evidence": [
+        "ability/effectspore:callback.trySetStatus",
+        "ability/static:callback.trySetStatus",
         "item/lightball:fling.status",
         "move/bodyslam:secondary.status",
         "move/bounce:secondary.status",
@@ -4489,6 +4709,22 @@
         "move/snaptrap:volatileStatus",
         "move/whirlpool:volatileStatus",
         "move/wrap:volatileStatus"
+      ],
+      "effect_families": [
+        "volatile"
+      ],
+      "implementation": "unsupported",
+      "verification": "not_tested",
+      "owner_pr": null
+    },
+    {
+      "id": "perishsong",
+      "name": "Perish Song",
+      "kind": "condition",
+      "condition_type": "volatile",
+      "reachability": "battle_generated",
+      "evidence": [
+        "move/perishsong:callback.addVolatile"
       ],
       "effect_families": [
         "volatile"
@@ -4537,7 +4773,11 @@
       "condition_type": "major_status",
       "reachability": "battle_generated",
       "evidence": [
+        "ability/effectspore:callback.trySetStatus",
+        "ability/poisonpoint:callback.trySetStatus",
+        "ability/poisontouch:callback.trySetStatus",
         "item/poisonbarb:fling.status",
+        "move/banefulbunker:callback.trySetStatus",
         "move/barbbarrage:secondary.status",
         "move/crosspoison:secondary.status",
         "move/gunkshot:secondary.status",
@@ -4547,6 +4787,7 @@
         "move/shellsidearm:secondary.status",
         "move/sludgebomb:secondary.status",
         "move/sludgewave:secondary.status",
+        "move/toxicspikes:callback.trySetStatus",
         "move/toxicthread:status"
       ],
       "effect_families": [
@@ -4563,6 +4804,7 @@
       "condition_type": "terrain",
       "reachability": "battle_generated",
       "evidence": [
+        "ability/psychicsurge:callback.setTerrain",
         "move/psychicterrain:terrain"
       ],
       "effect_families": [
@@ -4611,6 +4853,7 @@
       "condition_type": "weather",
       "reachability": "battle_generated",
       "evidence": [
+        "ability/drizzle:callback.setWeather",
         "move/raindance:weather"
       ],
       "effect_families": [
@@ -4707,6 +4950,8 @@
       "condition_type": "weather",
       "reachability": "battle_generated",
       "evidence": [
+        "ability/sandspit:callback.setWeather",
+        "ability/sandstream:callback.setWeather",
         "move/sandstorm:weather"
       ],
       "effect_families": [
@@ -4723,9 +4968,12 @@
       "condition_type": "major_status",
       "reachability": "battle_generated",
       "evidence": [
+        "ability/effectspore:callback.trySetStatus",
         "move/hypnosis:status",
+        "move/rest:callback.setStatus",
         "move/sing:status",
-        "move/sleeppowder:status"
+        "move/sleeppowder:status",
+        "move/yawn:callback.trySetStatus"
       ],
       "effect_families": [
         "major_status"
@@ -4757,6 +5005,7 @@
       "condition_type": "weather",
       "reachability": "battle_generated",
       "evidence": [
+        "ability/snowwarning:callback.setWeather",
         "move/chillyreception:weather",
         "move/snowscape:weather"
       ],
@@ -4790,6 +5039,7 @@
       "condition_type": "side_condition",
       "reachability": "battle_generated",
       "evidence": [
+        "move/ceaselessedge:callback.addSideCondition",
         "move/spikes:sideCondition"
       ],
       "effect_families": [
@@ -4816,13 +5066,37 @@
       "owner_pr": null
     },
     {
+      "id": "stall",
+      "name": "stall",
+      "kind": "condition",
+      "condition_type": "volatile",
+      "reachability": "battle_generated",
+      "evidence": [
+        "move/banefulbunker:callback.addVolatile",
+        "move/detect:callback.addVolatile",
+        "move/endure:callback.addVolatile",
+        "move/kingsshield:callback.addVolatile",
+        "move/protect:callback.addVolatile",
+        "move/quickguard:callback.addVolatile",
+        "move/spikyshield:callback.addVolatile",
+        "move/wideguard:callback.addVolatile"
+      ],
+      "effect_families": [
+        "volatile"
+      ],
+      "implementation": "unsupported",
+      "verification": "not_tested",
+      "owner_pr": null
+    },
+    {
       "id": "stealthrock",
       "name": "Stealth Rock",
       "kind": "condition",
       "condition_type": "side_condition",
       "reachability": "battle_generated",
       "evidence": [
-        "move/stealthrock:sideCondition"
+        "move/stealthrock:sideCondition",
+        "move/stoneaxe:callback.addSideCondition"
       ],
       "effect_families": [
         "side_condition"
@@ -4887,6 +5161,7 @@
       "condition_type": "weather",
       "reachability": "battle_generated",
       "evidence": [
+        "ability/drought:callback.setWeather",
         "move/sunnyday:weather"
       ],
       "effect_families": [
@@ -4945,6 +5220,22 @@
       "owner_pr": null
     },
     {
+      "id": "throatchop",
+      "name": "Throat Chop",
+      "kind": "condition",
+      "condition_type": "volatile",
+      "reachability": "battle_generated",
+      "evidence": [
+        "move/throatchop:callback.addVolatile"
+      ],
+      "effect_families": [
+        "volatile"
+      ],
+      "implementation": "unsupported",
+      "verification": "not_tested",
+      "owner_pr": null
+    },
+    {
       "id": "torment",
       "name": "Torment",
       "kind": "condition",
@@ -4968,7 +5259,8 @@
       "reachability": "battle_generated",
       "evidence": [
         "move/poisonfang:secondary.status",
-        "move/toxic:status"
+        "move/toxic:status",
+        "move/toxicspikes:callback.trySetStatus"
       ],
       "effect_families": [
         "major_status"
@@ -4984,10 +5276,30 @@
       "condition_type": "side_condition",
       "reachability": "battle_generated",
       "evidence": [
+        "ability/toxicdebris:callback.addSideCondition",
         "move/toxicspikes:sideCondition"
       ],
       "effect_families": [
         "side_condition"
+      ],
+      "implementation": "unsupported",
+      "verification": "not_tested",
+      "owner_pr": null
+    },
+    {
+      "id": "trapped",
+      "name": "trapped",
+      "kind": "condition",
+      "condition_type": "volatile",
+      "reachability": "battle_generated",
+      "evidence": [
+        "move/block:callback.addVolatile",
+        "move/jawlock:callback.addVolatile",
+        "move/meanlook:callback.addVolatile",
+        "move/spiritshackle:callback.addVolatile"
+      ],
+      "effect_families": [
+        "volatile"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -5004,6 +5316,47 @@
       ],
       "effect_families": [
         "field_condition"
+      ],
+      "implementation": "unsupported",
+      "verification": "not_tested",
+      "owner_pr": null
+    },
+    {
+      "id": "twoturnmove",
+      "name": "twoturnmove",
+      "kind": "condition",
+      "condition_type": "volatile",
+      "reachability": "battle_generated",
+      "evidence": [
+        "move/bounce:callback.addVolatile",
+        "move/dig:callback.addVolatile",
+        "move/dive:callback.addVolatile",
+        "move/electroshot:callback.addVolatile",
+        "move/fly:callback.addVolatile",
+        "move/meteorbeam:callback.addVolatile",
+        "move/phantomforce:callback.addVolatile",
+        "move/skyattack:callback.addVolatile",
+        "move/solarbeam:callback.addVolatile",
+        "move/solarblade:callback.addVolatile"
+      ],
+      "effect_families": [
+        "volatile"
+      ],
+      "implementation": "unsupported",
+      "verification": "not_tested",
+      "owner_pr": null
+    },
+    {
+      "id": "unburden",
+      "name": "Unburden",
+      "kind": "condition",
+      "condition_type": "volatile",
+      "reachability": "battle_generated",
+      "evidence": [
+        "ability/unburden:callback.addVolatile"
+      ],
+      "effect_families": [
+        "volatile"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -5143,6 +5496,7 @@
       "kind": "form",
       "reachability": "battle_generated",
       "evidence": [
+        "ability/stancechange:callback.formeChange",
         "species/aegislash"
       ],
       "effect_families": [
@@ -39702,99 +40056,47 @@
       "evidence": [
         "move/sleeptalk"
       ]
+    },
+    {
+      "id": "imposter",
+      "kind": "state_copy",
+      "trigger": "ability/imposter",
+      "resolution": "copies only state identities already reachable on another active Pokemon",
+      "copies": [
+        "ability",
+        "move_slots",
+        "non_hp_stats",
+        "selected_volatiles",
+        "species_or_form",
+        "stat_stages",
+        "types"
+      ],
+      "evidence": [
+        "showdown:data/abilities.ts:imposter.onSwitchIn",
+        "showdown:sim/pokemon.ts:Pokemon.transformInto"
+      ]
+    },
+    {
+      "id": "transform",
+      "kind": "state_copy",
+      "trigger": "move/transform",
+      "resolution": "copies only state identities already reachable on another active Pokemon",
+      "copies": [
+        "ability",
+        "move_slots",
+        "non_hp_stats",
+        "selected_volatiles",
+        "species_or_form",
+        "stat_stages",
+        "types"
+      ],
+      "evidence": [
+        "showdown:data/moves.ts:transform.onHit",
+        "showdown:sim/pokemon.ts:Pokemon.transformInto"
+      ]
     }
   ],
   "unresolved_reachability": [
-    {
-      "id": "cursedbody",
-      "kind": "ability_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured ability metadata",
-      "evidence": [
-        "ability/cursedbody"
-      ]
-    },
-    {
-      "id": "cutecharm",
-      "kind": "ability_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured ability metadata",
-      "evidence": [
-        "ability/cutecharm"
-      ]
-    },
-    {
-      "id": "drizzle",
-      "kind": "ability_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured ability metadata",
-      "evidence": [
-        "ability/drizzle"
-      ]
-    },
-    {
-      "id": "drought",
-      "kind": "ability_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured ability metadata",
-      "evidence": [
-        "ability/drought"
-      ]
-    },
-    {
-      "id": "effectspore",
-      "kind": "ability_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured ability metadata",
-      "evidence": [
-        "ability/effectspore"
-      ]
-    },
-    {
-      "id": "electricsurge",
-      "kind": "ability_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured ability metadata",
-      "evidence": [
-        "ability/electricsurge"
-      ]
-    },
-    {
-      "id": "electromorphosis",
-      "kind": "ability_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured ability metadata",
-      "evidence": [
-        "ability/electromorphosis"
-      ]
-    },
-    {
-      "id": "flamebody",
-      "kind": "ability_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured ability metadata",
-      "evidence": [
-        "ability/flamebody"
-      ]
-    },
-    {
-      "id": "flashfire",
-      "kind": "ability_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured ability metadata",
-      "evidence": [
-        "ability/flashfire"
-      ]
-    },
-    {
-      "id": "grassysurge",
-      "kind": "ability_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured ability metadata",
-      "evidence": [
-        "ability/grassysurge"
-      ]
-    },
     {
       "id": "magicbounce",
       "kind": "ability_dynamic_effect",
@@ -39802,78 +40104,6 @@
       "reason": "callback may generate a condition or move not exposed as structured ability metadata",
       "evidence": [
         "ability/magicbounce"
-      ]
-    },
-    {
-      "id": "poisonpoint",
-      "kind": "ability_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured ability metadata",
-      "evidence": [
-        "ability/poisonpoint"
-      ]
-    },
-    {
-      "id": "poisontouch",
-      "kind": "ability_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured ability metadata",
-      "evidence": [
-        "ability/poisontouch"
-      ]
-    },
-    {
-      "id": "psychicsurge",
-      "kind": "ability_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured ability metadata",
-      "evidence": [
-        "ability/psychicsurge"
-      ]
-    },
-    {
-      "id": "sandspit",
-      "kind": "ability_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured ability metadata",
-      "evidence": [
-        "ability/sandspit"
-      ]
-    },
-    {
-      "id": "sandstream",
-      "kind": "ability_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured ability metadata",
-      "evidence": [
-        "ability/sandstream"
-      ]
-    },
-    {
-      "id": "seedsower",
-      "kind": "ability_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured ability metadata",
-      "evidence": [
-        "ability/seedsower"
-      ]
-    },
-    {
-      "id": "snowwarning",
-      "kind": "ability_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured ability metadata",
-      "evidence": [
-        "ability/snowwarning"
-      ]
-    },
-    {
-      "id": "static",
-      "kind": "ability_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured ability metadata",
-      "evidence": [
-        "ability/static"
       ]
     },
     {
@@ -39886,237 +40116,12 @@
       ]
     },
     {
-      "id": "toxicdebris",
-      "kind": "ability_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured ability metadata",
-      "evidence": [
-        "ability/toxicdebris"
-      ]
-    },
-    {
-      "id": "unburden",
-      "kind": "ability_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured ability metadata",
-      "evidence": [
-        "ability/unburden"
-      ]
-    },
-    {
-      "id": "choicescarf",
-      "kind": "item_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured item metadata",
-      "evidence": [
-        "item/choicescarf"
-      ]
-    },
-    {
-      "id": "metronome",
-      "kind": "item_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured item metadata",
-      "evidence": [
-        "item/metronome"
-      ]
-    },
-    {
-      "id": "normalgem",
-      "kind": "item_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured item metadata",
-      "evidence": [
-        "item/normalgem"
-      ]
-    },
-    {
-      "id": "alluringvoice",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/alluringvoice"
-      ]
-    },
-    {
-      "id": "allyswitch",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/allyswitch"
-      ]
-    },
-    {
-      "id": "banefulbunker",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/banefulbunker"
-      ]
-    },
-    {
-      "id": "beakblast",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/beakblast"
-      ]
-    },
-    {
-      "id": "block",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/block"
-      ]
-    },
-    {
-      "id": "bounce",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/bounce"
-      ]
-    },
-    {
-      "id": "burningjealousy",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/burningjealousy"
-      ]
-    },
-    {
-      "id": "ceaselessedge",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/ceaselessedge"
-      ]
-    },
-    {
-      "id": "chillyreception",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/chillyreception"
-      ]
-    },
-    {
-      "id": "copycat",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/copycat"
-      ]
-    },
-    {
-      "id": "counter",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/counter"
-      ]
-    },
-    {
-      "id": "curse",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/curse"
-      ]
-    },
-    {
-      "id": "detect",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/detect"
-      ]
-    },
-    {
-      "id": "dig",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/dig"
-      ]
-    },
-    {
       "id": "direclaw",
       "kind": "move_dynamic_effect",
       "reachability": "needs_research",
       "reason": "callback may generate a condition or move not exposed as structured move metadata",
       "evidence": [
         "move/direclaw"
-      ]
-    },
-    {
-      "id": "dive",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/dive"
-      ]
-    },
-    {
-      "id": "electroshot",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/electroshot"
-      ]
-    },
-    {
-      "id": "endure",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/endure"
-      ]
-    },
-    {
-      "id": "fling",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/fling"
-      ]
-    },
-    {
-      "id": "fly",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/fly"
-      ]
-    },
-    {
-      "id": "focuspunch",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/focuspunch"
       ]
     },
     {
@@ -40129,192 +40134,12 @@
       ]
     },
     {
-      "id": "jawlock",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/jawlock"
-      ]
-    },
-    {
-      "id": "kingsshield",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/kingsshield"
-      ]
-    },
-    {
-      "id": "lockon",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/lockon"
-      ]
-    },
-    {
-      "id": "meanlook",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/meanlook"
-      ]
-    },
-    {
-      "id": "meteorbeam",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/meteorbeam"
-      ]
-    },
-    {
-      "id": "mirrorcoat",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/mirrorcoat"
-      ]
-    },
-    {
-      "id": "perishsong",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/perishsong"
-      ]
-    },
-    {
-      "id": "phantomforce",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/phantomforce"
-      ]
-    },
-    {
-      "id": "protect",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/protect"
-      ]
-    },
-    {
       "id": "psychup",
       "kind": "move_dynamic_effect",
       "reachability": "needs_research",
       "reason": "callback may generate a condition or move not exposed as structured move metadata",
       "evidence": [
         "move/psychup"
-      ]
-    },
-    {
-      "id": "quickguard",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/quickguard"
-      ]
-    },
-    {
-      "id": "rest",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/rest"
-      ]
-    },
-    {
-      "id": "skyattack",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/skyattack"
-      ]
-    },
-    {
-      "id": "sleeptalk",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/sleeptalk"
-      ]
-    },
-    {
-      "id": "solarbeam",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/solarbeam"
-      ]
-    },
-    {
-      "id": "solarblade",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/solarblade"
-      ]
-    },
-    {
-      "id": "spikyshield",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/spikyshield"
-      ]
-    },
-    {
-      "id": "spiritshackle",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/spiritshackle"
-      ]
-    },
-    {
-      "id": "stoneaxe",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/stoneaxe"
-      ]
-    },
-    {
-      "id": "throatchop",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/throatchop"
-      ]
-    },
-    {
-      "id": "toxicspikes",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/toxicspikes"
       ]
     },
     {
@@ -40325,29 +40150,11 @@
       "evidence": [
         "move/triattack"
       ]
-    },
-    {
-      "id": "wideguard",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/wideguard"
-      ]
-    },
-    {
-      "id": "yawn",
-      "kind": "move_dynamic_effect",
-      "reachability": "needs_research",
-      "reason": "callback may generate a condition or move not exposed as structured move metadata",
-      "evidence": [
-        "move/yawn"
-      ]
     }
   ],
   "summary": {
-    "total": 1414,
-    "unresolved_reachability": 71,
+    "total": 1433,
+    "unresolved_reachability": 6,
     "by_kind": {
       "ability": {
         "total": 215,
@@ -40368,20 +40175,20 @@
         }
       },
       "condition": {
-        "total": 77,
+        "total": 96,
         "implementation": {
-          "unsupported": 77,
+          "unsupported": 96,
           "partial": 0,
           "implemented": 0
         },
         "verification": {
-          "not_tested": 77,
+          "not_tested": 96,
           "unit_tested": 0,
           "differential_verified": 0
         },
         "reachability": {
           "direct_legal_set": 0,
-          "battle_generated": 77,
+          "battle_generated": 96,
           "needs_research": 0
         }
       },

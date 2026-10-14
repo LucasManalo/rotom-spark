@@ -28,6 +28,7 @@ battle-only forms, abilities, and structured generated conditions:
 node tools/showdown-export/generate-mechanics-manifest.cjs
 node tools/showdown-export/generate-mechanics-manifest.cjs --check
 node tools/showdown-export/generate-mechanics-manifest.cjs --next=move
+node tools/showdown-export/generate-mechanics-manifest.cjs --next-research
 node --test tools/showdown-export/mechanics-manifest.test.cjs
 ```
 

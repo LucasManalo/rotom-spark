@@ -45,6 +45,20 @@ can dynamically add conditions or invoke moves are listed separately under
 `unresolved_reachability`; the manifest does not pretend structured metadata
 proved those closures.
 
+`Transform` (`data/moves.ts`, `transform.onHit`) and `Imposter`
+(`data/abilities.ts`, `imposter.onSwitchIn`) both call
+`sim/pokemon.ts::Pokemon.transformInto`. That function copies the target's
+species/form, types, non-HP stats, move slots with capped PP, stat stages,
+selected volatiles, and ability. Because the target must already be an active
+Pokémon in the same legal battle, these effects close over identities already
+present in the manifest rather than introducing arbitrary Dex content.
+
+Literal callback calls are also collected with provenance. For example,
+`Drizzle.onStart` calls `setWeather('raindance')`, and
+`Stance Change.onModifyMove` changes an eligible Aegislash to
+`Aegislash-Blade`. Non-literal callback targets remain `needs_research` and can
+be queried with `--next-research`.
+
 ## Coverage claims
 
 `data/mechanics-coverage.json` is the reviewed claim input. The generator

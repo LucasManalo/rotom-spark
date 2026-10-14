@@ -20,13 +20,18 @@ const CONDITION_KEYS = new Map([
 	['terrain', 'terrain'],
 	['pseudoWeather', 'field_condition'],
 ]);
+const CALLBACK_CONDITION_METHODS = new Map([
+	['setStatus', 'major_status'],
+	['trySetStatus', 'major_status'],
+	['addVolatile', 'volatile'],
+	['addSideCondition', 'side_condition'],
+	['addSlotCondition', 'slot_condition'],
+	['setWeather', 'weather'],
+	['setTerrain', 'terrain'],
+	['addPseudoWeather', 'field_condition'],
+]);
 const IMPLEMENTATION_VALUES = new Set(['unsupported', 'partial', 'implemented']);
 const VERIFICATION_VALUES = new Set(['not_tested', 'unit_tested', 'differential_verified']);
-const REACHABILITY_ORDER = new Map([
-	['direct_legal_set', 0],
-	['battle_generated', 1],
-	['needs_research', 2],
-]);
 
 function fail(message) {
 	throw new Error(message);
@@ -190,6 +195,7 @@ function battleGeneratedForms(dex, directSpecies, legalItems) {
 		if (species.requiredItem && !legalItems.has(dex.items.get(species.requiredItem).id)) continue;
 		const evidence = [`species/${source.id}`];
 		if (species.requiredItem) evidence.push(`item/${dex.items.get(species.requiredItem).id}`);
+		if (species.id === 'aegislashblade') evidence.push('ability/stancechange:callback.formeChange');
 		generated.set(species.id, uniqueSorted(evidence));
 	}
 	return generated;
@@ -217,13 +223,30 @@ function collectConditionReferences(value, evidencePrefix, target, seen = new Se
 	}
 }
 
-function hasDynamicReachability(value, seen = new Set()) {
-	if (!value || (typeof value !== 'object' && typeof value !== 'function') || seen.has(value)) return false;
+function collectCallbackConditionReferences(value, evidencePrefix, target, seen = new Set()) {
+	if (!value || (typeof value !== 'object' && typeof value !== 'function') || seen.has(value)) {
+		return {calls: 0, extracted: 0};
+	}
 	seen.add(value);
 	if (typeof value === 'function') {
-		return /(?:addVolatile|addSideCondition|addSlotCondition|addPseudoWeather|setWeather|setTerrain|setStatus|trySetStatus|useMove)\s*\(/.test(value.toString());
+		const source = value.toString();
+		let calls = 0;
+		let extracted = 0;
+		for (const [method, conditionType] of CALLBACK_CONDITION_METHODS) {
+			calls += [...source.matchAll(new RegExp(`\\b${method}\\s*\\(`, 'g'))].length;
+			const literalPattern = new RegExp(`\\b${method}\\s*\\(\\s*(['"])([a-zA-Z0-9 -]+)\\1`, 'g');
+			for (const match of source.matchAll(literalPattern)) {
+				addConditionReference(target, conditionType, match[2], `${evidencePrefix}:callback.${method}`);
+				extracted += 1;
+			}
+		}
+		if (/\buseMove\s*\(/.test(source)) calls += 1;
+		return {calls, extracted};
 	}
-	return Object.values(value).some(child => hasDynamicReachability(child, seen));
+	return Object.values(value).reduce((total, child) => {
+		const result = collectCallbackConditionReferences(child, evidencePrefix, target, seen);
+		return {calls: total.calls + result.calls, extracted: total.extracted + result.extracted};
+	}, {calls: 0, extracted: 0});
 }
 
 function moveFamilies(move) {
@@ -381,6 +404,7 @@ function buildManifest(version, Showdown) {
 			effect_families: moveFamilies(move),
 		}, claims));
 		collectConditionReferences(move, `move/${id}`, conditions);
+		const callbackReferences = collectCallbackConditionReferences(move, `move/${id}`, conditions);
 		if (move.callsMove && ['copycat', 'sleeptalk'].includes(id)) {
 			reachabilityClosure.push({
 				id,
@@ -397,7 +421,7 @@ function buildManifest(version, Showdown) {
 				evidence: [`move/${id}`],
 			});
 		}
-		if (hasDynamicReachability(move)) {
+		if (callbackReferences.calls > callbackReferences.extracted && !['copycat', 'sleeptalk'].includes(id)) {
 			unresolved.push({
 				id,
 				kind: 'move_dynamic_effect',
@@ -419,7 +443,8 @@ function buildManifest(version, Showdown) {
 			effect_families: ['ability_behavior'],
 		}, claims));
 		collectConditionReferences(ability, `ability/${id}`, conditions);
-		if (hasDynamicReachability(ability)) {
+		const callbackReferences = collectCallbackConditionReferences(ability, `ability/${id}`, conditions);
+		if (callbackReferences.calls > callbackReferences.extracted) {
 			unresolved.push({
 				id,
 				kind: 'ability_dynamic_effect',
@@ -441,7 +466,8 @@ function buildManifest(version, Showdown) {
 			effect_families: ['held_item_behavior'],
 		}, claims));
 		collectConditionReferences(item, `item/${id}`, conditions);
-		if (hasDynamicReachability(item)) {
+		const callbackReferences = collectCallbackConditionReferences(item, `item/${id}`, conditions);
+		if (callbackReferences.calls > callbackReferences.extracted) {
 			unresolved.push({
 				id,
 				kind: 'item_dynamic_effect',
@@ -490,6 +516,27 @@ function buildManifest(version, Showdown) {
 		}, claims));
 	}
 
+	for (const closure of [
+		{trigger: 'move/transform', id: 'transform'},
+		{trigger: 'ability/imposter', id: 'imposter'},
+	]) {
+		const [kind, id] = closure.trigger.split('/');
+		if (!entries.some(entry => entry.kind === kind && entry.id === id)) continue;
+		reachabilityClosure.push({
+			id: closure.id,
+			kind: 'state_copy',
+			trigger: closure.trigger,
+			resolution: 'copies only state identities already reachable on another active Pokemon',
+			copies: ['ability', 'move_slots', 'non_hp_stats', 'selected_volatiles', 'species_or_form', 'stat_stages', 'types'],
+			evidence: [
+				closure.trigger === 'move/transform'
+					? 'showdown:data/moves.ts:transform.onHit'
+					: 'showdown:data/abilities.ts:imposter.onSwitchIn',
+				'showdown:sim/pokemon.ts:Pokemon.transformInto',
+			],
+		});
+	}
+
 	entries.sort((left, right) => compareStrings(left.kind, right.kind) || compareStrings(left.id, right.id));
 	unresolved.sort((left, right) => compareStrings(left.kind, right.kind) || compareStrings(left.id, right.id));
 	for (const [key] of claims) {
@@ -509,7 +556,7 @@ function buildManifest(version, Showdown) {
 			starting_sets: 'TeamValidator.validateSet over each resolved starting form, ability slot, and learnset move',
 			items: 'TeamValidator.validateSet against at least one validated starting set',
 			battle_forms: 'resolved battleOnly form with a reachable source and required held item',
-			conditions: 'structured condition references reachable from direct moves, abilities, and items',
+			conditions: 'structured and literal callback condition references reachable from direct moves, abilities, and items',
 			team_constraints: 'existence is validated per set; Species Clause and Item Clause do not remove individual reachability',
 		},
 		entries,
@@ -546,6 +593,10 @@ function reportFor(manifest) {
 	return `${lines.join('\n')}\n`;
 }
 
+function nextResearch(manifest) {
+	return manifest.unresolved_reachability[0] || null;
+}
+
 function generatedContents(options = {}) {
 	const version = readVersionFile();
 	if (options.verifyCheckout !== false) verifyCheckout(version);
@@ -560,6 +611,11 @@ function generatedContents(options = {}) {
 function main() {
 	try {
 		const generated = generatedContents();
+		if (process.argv.includes('--next-research')) {
+			const next = nextResearch(generated.manifest);
+			console.log(next ? `${next.kind}/${next.id}\t${next.reason}` : 'none');
+			return;
+		}
 		if (process.argv.some(argument => argument === '--next' || argument.startsWith('--next='))) {
 			const option = process.argv.find(argument => argument.startsWith('--next='));
 			const kind = option?.slice('--next='.length);
@@ -594,6 +650,7 @@ module.exports = {
 	buildManifest,
 	directSetInventory,
 	generatedContents,
+	nextResearch,
 	reportFor,
 };
 
