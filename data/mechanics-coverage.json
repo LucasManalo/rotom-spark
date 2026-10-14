@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "claims": [
+    {
+      "id": "aquajet",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "owner_pr": "PR 9",
+      "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "differential:data/fixtures/differential/basic-damage.json"
+      ]
+    },
+    {
+      "id": "aquatail",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "not_tested",
+      "owner_pr": "PR 9",
+      "evidence": [
+        "file:crates/rotom-dex/src/combat.rs"
+      ]
+    },
+    {
+      "id": "dragonpulse",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "owner_pr": "PR 9",
+      "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "differential:data/fixtures/differential/basic-damage.json"
+      ]
+    },
+    {
+      "id": "highhorsepower",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "owner_pr": "PR 9",
+      "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "differential:data/fixtures/differential/basic-damage.json"
+      ]
+    },
+    {
+      "id": "powergem",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "owner_pr": "PR 9",
+      "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "differential:data/fixtures/differential/basic-damage.json"
+      ]
+    },
+    {
+      "id": "powerwhip",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "not_tested",
+      "owner_pr": "PR 9",
+      "evidence": [
+        "file:crates/rotom-dex/src/combat.rs"
+      ]
+    },
+    {
+      "id": "seedbomb",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "not_tested",
+      "owner_pr": "PR 9",
+      "evidence": [
+        "file:crates/rotom-dex/src/combat.rs"
+      ]
+    }
+  ]
+}

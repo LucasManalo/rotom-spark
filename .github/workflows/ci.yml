@@ -31,6 +31,11 @@ jobs:
       - name: Verify generated Champions data
         run: node tools/showdown-export/export-champions.cjs --check
 
+      - name: Verify Regulation M-C mechanics manifest
+        run: |
+          node tools/showdown-export/generate-mechanics-manifest.cjs --check
+          node --test tools/showdown-export/mechanics-manifest.test.cjs
+
       - name: Validate Regulation M-C team fixture against Showdown
         run: node tools/showdown-reference/validate-team.cjs data/fixtures/teams/valid-reg-mc.txt
 

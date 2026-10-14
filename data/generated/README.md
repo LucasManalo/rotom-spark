@@ -7,3 +7,8 @@ not be edited by hand.
 `tools/showdown-export/export-champions.cjs` from the exact Pokémon Showdown
 revision in `SHOWDOWN_VERSION`. Its source metadata is embedded in the file.
 
+`reg-mc-mechanics-manifest.json` is the narrower, validator-derived reachable
+mechanics inventory. `reg-mc-mechanics-coverage.md` is its human-readable
+coverage summary. Regenerate both with
+`tools/showdown-export/generate-mechanics-manifest.cjs`.
+
