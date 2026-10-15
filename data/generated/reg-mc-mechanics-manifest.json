@@ -20,7 +20,8 @@
     "items": "TeamValidator.validateSet against at least one validated starting set",
     "battle_forms": "resolved battleOnly form with a reachable source and required held item",
     "conditions": "structured and literal callback condition references reachable from direct moves, abilities, and items",
-    "team_constraints": "existence is validated per set; Species Clause and Item Clause do not remove individual reachability"
+    "team_constraints": "existence is validated per set; Species Clause and Item Clause do not remove individual reachability",
+    "verification_scope": "differential_verified records move-level pinned Showdown calculation evidence; it does not claim a complete Showdown battle-transition comparison"
   },
   "entries": [
     {

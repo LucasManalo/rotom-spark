@@ -214,11 +214,23 @@ test('coverage evidence requires real tests and move-specific fixture cases', ()
 			/no anchored unit-test evidence/
 		);
 		assert.throws(
+			() => validateCoverageClaims(registry([claim({verification: 'not_tested'})]), root),
+			/has verification evidence/
+		);
+		assert.throws(
 			() => validateCoverageClaims(registry([claim({
 				implementation: 'unsupported',
 				verification: 'unit_tested',
 			})]), root),
 			/cannot be marked verified/
+		);
+		assert.throws(
+			() => validateCoverageClaims(registry([claim({
+				implementation: 'unsupported',
+				verification: 'not_tested',
+				interaction_verification: 'unit_tested',
+			})]), root),
+			/cannot be marked interaction verified/
 		);
 		assert.throws(
 			() => validateCoverageClaims(registry([claim({
@@ -228,6 +240,30 @@ test('coverage evidence requires real tests and move-specific fixture cases', ()
 				],
 			})]), root),
 			/Duplicate evidence/
+		);
+		assert.throws(
+			() => validateCoverageClaims(registry([claim({
+				interaction_verification: 'unit_tested',
+			})]), root),
+			/no anchored interaction evidence/
+		);
+		assert.equal(validateCoverageClaims(registry([claim({
+			verification: 'not_tested',
+			interaction_verification: 'unit_tested',
+			evidence: [
+				'file:tests/combat.rs',
+				'interaction_unit:tests/combat.rs#verifies_dragon_claw',
+			],
+		})]), root).size, 1);
+		assert.throws(
+			() => validateCoverageClaims(registry([claim({
+				interaction_verification: 'not_tested',
+				evidence: [
+					'unit:tests/combat.rs#verifies_dragon_claw',
+					'interaction_unit:tests/combat.rs#verifies_dragon_claw',
+				],
+			})]), root),
+			/has interaction evidence/
 		);
 	} finally {
 		fs.rmSync(root, {recursive: true, force: true});

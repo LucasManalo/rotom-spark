@@ -19,8 +19,9 @@ node tools/showdown-reference/basic-damage.cjs --check
 
 Regenerate or verify the canonical-step case selection built from those pinned
 damage outcomes. This records independently selected RNG outcomes and expected
-HP/PP/faint consequences without claiming seed parity between Showdown and
-Rotom Spark:
+HP/PP/faint consequences for controlled-outcome Rotom Spark integration tests.
+It neither claims seed parity nor executes an independent complete Showdown
+battle transition:
 
 ```text
 node tools/showdown-reference/canonical-step.cjs

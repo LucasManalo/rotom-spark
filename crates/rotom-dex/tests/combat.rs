@@ -1,8 +1,9 @@
 use rotom_core::{
-    calculate_move_damage, step, ActionTarget, BattlePhase, BattleStateBuilder, CombatData,
-    EffectRegistry, FormId, Gender, JointAction, Mechanics, MoveCapabilities, MoveCapability,
-    MoveOperation, MoveSlotIndex, PokemonAction, PokemonIndex, PokemonSet, RngOperation, RngReason,
-    SideId, SideState, StatAllocation, StatStages, TeamState, TurnChoice,
+    calculate_move_damage, step, ActionTarget, BattlePhase, BattleState, BattleStateBuilder,
+    CombatData, EffectRegistry, FormId, Gender, JointAction, Mechanics, MoveCapabilities,
+    MoveCapability, MoveOperation, MoveSlotIndex, PokemonAction, PokemonIndex, PokemonPosition,
+    PokemonSet, RngOperation, RngReason, SideId, SideState, StatAllocation, StatStages, TeamState,
+    TurnChoice,
 };
 use rotom_dex::champions_reg_mc;
 use serde::Deserialize;
@@ -74,6 +75,9 @@ struct CanonicalStepFixture {
 
 #[derive(Debug, Deserialize)]
 struct StepMethodology {
+    damage_source: String,
+    integration_scope: String,
+    full_transition_comparison: String,
     rng_comparison: String,
     move_draw_order: Vec<String>,
 }
@@ -307,21 +311,20 @@ fn assert_step_state(
         rotom_core::ActiveSlot::Left => PokemonIndex::new(0),
         rotom_core::ActiveSlot::Right => PokemonIndex::new(1),
     };
+    let target_state = result
+        .state
+        .side(SideId::P2)
+        .pokemon(damaged_index)
+        .expect("target");
     assert_eq!(
-        result
-            .state
-            .side(SideId::P2)
-            .pokemon(damaged_index)
-            .expect("target")
-            .current_hp,
-        case.expected.target_hp,
+        target_state.current_hp, case.expected.target_hp,
         "{} applied HP loss",
         case.name
     );
     assert_eq!(
         case.expected.applied_hp_loss,
-        target.stats.hp - case.expected.target_hp,
-        "{}",
+        target.stats.hp - target_state.current_hp,
+        "{} actual applied HP loss",
         case.name
     );
     assert_eq!(
@@ -330,9 +333,26 @@ fn assert_step_state(
         "{}",
         case.name
     );
+    if case.expected.fainted {
+        assert_ko_state(result, target_state, damaged_slot, case);
+    } else {
+        assert_surviving_state(
+            result,
+            target_state,
+            target,
+            damaged_slot,
+            damaged_index,
+            case,
+        );
+    }
     assert_eq!(
-        case.expected.replacement_scheduled, case.expected.fainted,
-        "{}",
+        result
+            .state
+            .replacement_request(SideId::P2)
+            .expect("settled state should have valid replacement indexes")
+            .is_some(),
+        case.expected.replacement_scheduled,
+        "{} actual replacement scheduling",
         case.name
     );
     assert_eq!(
@@ -348,6 +368,111 @@ fn assert_step_state(
         case.name
     );
     assert_eq!(input.rng().draws(), 0, "{} input RNG changed", case.name);
+    assert_stable_serializable_state(&result.state, &case.name);
+}
+
+fn assert_ko_state(
+    result: &rotom_core::StepResult,
+    target_state: &rotom_core::PokemonState,
+    damaged_slot: rotom_core::ActiveSlot,
+    case: &CanonicalStepCase,
+) {
+    assert_eq!(target_state.current_hp, 0, "{} faint HP", case.name);
+    assert_eq!(
+        target_state.position,
+        PokemonPosition::Fainted,
+        "{} faint position",
+        case.name
+    );
+    assert_eq!(
+        result.state.side(SideId::P2).active[damaged_slot.index()],
+        None,
+        "{} cleared active slot",
+        case.name
+    );
+    assert_eq!(
+        result.state.phase(),
+        BattlePhase::ForcedSwitch,
+        "{} forced-switch phase",
+        case.name
+    );
+    let request = result
+        .state
+        .replacement_request(SideId::P2)
+        .expect("settled state should have valid replacement indexes")
+        .expect("fainted target's side should need a replacement");
+    assert!(
+        request.slots.contains(&damaged_slot),
+        "{} replacement request must include the cleared slot",
+        case.name
+    );
+    assert!(request.required > 0, "{} replacement count", case.name);
+    assert_eq!(
+        result
+            .state
+            .replacement_request(SideId::P1)
+            .expect("settled state should have valid replacement indexes"),
+        None,
+        "{} opposing side must not need a replacement",
+        case.name
+    );
+}
+
+fn assert_surviving_state(
+    result: &rotom_core::StepResult,
+    target_state: &rotom_core::PokemonState,
+    initial_target: &rotom_core::PokemonState,
+    damaged_slot: rotom_core::ActiveSlot,
+    damaged_index: PokemonIndex,
+    case: &CanonicalStepCase,
+) {
+    assert_eq!(
+        target_state.position,
+        PokemonPosition::Active { slot: damaged_slot },
+        "{} surviving target position",
+        case.name
+    );
+    assert_eq!(
+        result.state.side(SideId::P2).active[damaged_slot.index()],
+        Some(damaged_index),
+        "{} surviving target active slot",
+        case.name
+    );
+    assert_eq!(
+        result.state.phase(),
+        BattlePhase::TurnSelection,
+        "{} non-KO phase",
+        case.name
+    );
+    for side in [SideId::P1, SideId::P2] {
+        assert_eq!(
+            result
+                .state
+                .replacement_request(side)
+                .expect("settled state should have valid replacement indexes"),
+            None,
+            "{} non-KO replacement request for {side:?}",
+            case.name
+        );
+    }
+    if case.expected.damage == 0 {
+        assert_eq!(
+            target_state.current_hp, initial_target.stats.hp,
+            "{} immunity must preserve HP",
+            case.name
+        );
+    }
+}
+
+fn assert_stable_serializable_state(state: &BattleState, case_name: &str) {
+    state
+        .validate_stable_state()
+        .unwrap_or_else(|error| panic!("{case_name} unstable step output: {error}"));
+    let serialized = serde_json::to_string(state)
+        .unwrap_or_else(|error| panic!("{case_name} state serialization failed: {error}"));
+    let restored: BattleState = serde_json::from_str(&serialized)
+        .unwrap_or_else(|error| panic!("{case_name} state deserialization failed: {error}"));
+    assert_eq!(restored, *state, "{case_name} state round trip");
 }
 
 fn opposing_targets_choice() -> TurnChoice {
@@ -566,6 +691,18 @@ fn canonical_step_matches_preselected_physical_special_effective_immune_and_crit
         .methodology
         .rng_comparison
         .contains("no seed-level parity"));
+    assert!(step_fixture
+        .methodology
+        .damage_source
+        .contains("Battle.actions.getDamage"));
+    assert!(step_fixture
+        .methodology
+        .integration_scope
+        .contains("Rotom Spark public step()"));
+    assert!(step_fixture
+        .methodology
+        .full_transition_comparison
+        .contains("not performed"));
     assert_eq!(
         step_fixture.methodology.move_draw_order,
         ["accuracy", "critical_hit", "damage_roll"]

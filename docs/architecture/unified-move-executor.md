@@ -113,8 +113,11 @@ without a category-specific or move-specific run loop.
 - Coverage marks 37 reachable definitions structurally executable by the same
   PR 13.1 capabilities. Verification remains independent: unit claims name an
   anchored Rust test, differential claims name a pinned fixture containing the
-  move identity, and interaction verification is tracked separately. No PR
-  13.1 move currently claims complete ability/item interaction verification.
+  move identity and pinned damage-calculation evidence, and interaction
+  verification is tracked separately. The controlled-outcome `step()` fixtures
+  validate Rotom Spark state consequences but do not compare an independently
+  executed complete Showdown transition. No PR 13.1 move currently claims
+  full battle-transition or complete ability/item interaction verification.
 
 ## Unsupported after PR 13.1
 

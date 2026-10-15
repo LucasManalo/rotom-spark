@@ -51,6 +51,8 @@ const output = {
 	format: damageFixture.format,
 	methodology: {
 		damage_source: 'tools/showdown-reference/basic-damage.cjs using Battle.actions.getDamage',
+		integration_scope: 'controlled pinned damage outcomes applied through the Rotom Spark public step(); HP, PP, fainting, replacement, stable-state, and serialization consequences are asserted in Rust',
+		full_transition_comparison: 'not performed; this fixture does not execute or compare an independent complete Showdown battle transition',
 		rng_comparison: 'controlled outcomes; no seed-level parity claim',
 		rotom_rng: 'SplitMix64',
 		showdown_rng: 'Pokemon Showdown PRNG',
