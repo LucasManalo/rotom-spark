@@ -284,12 +284,27 @@ function defaultCoverage() {
 	};
 }
 
-function coverageClaims() {
-	const source = readJson(coveragePath);
+function escapedRegex(value) {
+	return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function rustTestExists(contents, anchor) {
+	if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(anchor)) return false;
+	const attributesThenTest = String.raw`(?:#\[[^\]\r\n]+\]\s*)*#\[test\](?:\s*#\[[^\]\r\n]+\])*\s*(?:pub(?:\([^)]*\))?\s+)?(?:async\s+)?fn\s+${escapedRegex(anchor)}\s*\(`;
+	const testThenAttributes = String.raw`#\[test\](?:\s*#\[[^\]\r\n]+\])*\s*(?:pub(?:\([^)]*\))?\s+)?(?:async\s+)?fn\s+${escapedRegex(anchor)}\s*\(`;
+	return new RegExp(`(?:${attributesThenTest})|(?:${testThenAttributes})`, 'm').test(contents);
+}
+
+function differentialFixtureCase(root, relativePath, anchor) {
+	if (!anchor) return null;
+	const fixture = readJson(path.join(root, relativePath));
+	if (!Array.isArray(fixture.cases)) return null;
+	return fixture.cases.find(entry => entry && (entry.name === anchor || entry.id === anchor)) || null;
+}
+
+function validateCoverageClaims(source, root = repositoryRoot) {
 	if (source.schema_version !== 1 || !Array.isArray(source.claims)) fail('Invalid mechanics coverage registry schema');
 	const claims = new Map();
-	const fixture = readJson(path.join(repositoryRoot, 'data', 'fixtures', 'differential', 'basic-damage.json'));
-	const differentialMoves = new Set(fixture.cases.map(entry => entry.move));
 	for (const claim of source.claims) {
 		const key = `${claim.kind}:${claim.id}`;
 		const interactionVerification = claim.interaction_verification || 'not_tested';
@@ -302,37 +317,73 @@ function coverageClaims() {
 		if (claim.implementation === 'unsupported' && claim.verification !== 'not_tested') {
 			fail(`Unsupported claim ${key} cannot be marked verified`);
 		}
+		if (claim.implementation === 'unsupported' && interactionVerification !== 'not_tested') {
+			fail(`Unsupported claim ${key} cannot be marked interaction verified`);
+		}
 		if (claim.implementation !== 'unsupported' && (!claim.owner_pr || !claim.evidence?.length)) {
 			fail(`Supported claim ${key} requires an owner and evidence`);
 		}
 		const unitEvidence = [];
 		const differentialEvidence = [];
+		const interactionUnitEvidence = [];
+		const interactionDifferentialEvidence = [];
+		const seenEvidence = new Set();
 		for (const evidence of claim.evidence || []) {
+			if (seenEvidence.has(evidence)) fail(`Duplicate evidence ${evidence} for ${key}`);
+			seenEvidence.add(evidence);
 			const separator = evidence.indexOf(':');
 			if (separator < 1) fail(`Invalid evidence ${evidence} for ${key}`);
 			const kind = evidence.slice(0, separator);
 			const location = evidence.slice(separator + 1);
-			const [relativePath, anchor] = location.split('#');
-			const filePath = path.join(repositoryRoot, relativePath);
+			const locationParts = location.split('#');
+			if (locationParts.length > 2 || !locationParts[0]) fail(`Invalid evidence ${evidence} for ${key}`);
+			const [relativePath, anchor] = locationParts;
+			const filePath = path.join(root, relativePath);
 			if (!fs.existsSync(filePath)) fail(`Missing evidence ${evidence} for ${key}`);
-			if (kind === 'unit') {
-				if (!anchor || !fs.readFileSync(filePath, 'utf8').includes(`fn ${anchor}(`)) {
+			if (kind === 'unit' || kind === 'interaction_unit') {
+				if (!anchor || !rustTestExists(fs.readFileSync(filePath, 'utf8'), anchor)) {
 					fail(`Unit evidence ${evidence} does not name an existing test for ${key}`);
 				}
-				unitEvidence.push(evidence);
+				(kind === 'unit' ? unitEvidence : interactionUnitEvidence).push(evidence);
 			}
-			if (kind === 'differential') differentialEvidence.push(evidence);
+			if (kind === 'differential' || kind === 'interaction_differential') {
+				const fixtureCase = differentialFixtureCase(root, relativePath, anchor);
+				if (!fixtureCase) fail(`Differential evidence ${evidence} does not name an existing fixture case for ${key}`);
+				if (claim.kind !== 'move' || fixtureCase.move !== claim.id) {
+					fail(`Differential evidence ${evidence} does not reference claimed move ${key}`);
+				}
+				(kind === 'differential' ? differentialEvidence : interactionDifferentialEvidence).push(evidence);
+			}
+			if (!['file', 'unit', 'differential', 'interaction_unit', 'interaction_differential'].includes(kind)) {
+				fail(`Unknown evidence kind ${kind} for ${key}`);
+			}
 		}
 		if (claim.verification === 'unit_tested' && !unitEvidence.length) {
 			fail(`Unit-tested claim ${key} has no anchored unit-test evidence`);
 		}
-		if (claim.verification === 'differential_verified' &&
-			(!differentialEvidence.length || claim.kind !== 'move' || !differentialMoves.has(claim.id))) {
-			fail(`Differential claim ${key} is absent from the pinned fixture`);
+		if (claim.verification === 'differential_verified' && !differentialEvidence.length) {
+			fail(`Differential claim ${key} has no anchored differential evidence`);
+		}
+		if (claim.verification === 'not_tested' && (unitEvidence.length || differentialEvidence.length)) {
+			fail(`Unverified claim ${key} has verification evidence`);
+		}
+		if (interactionVerification === 'unit_tested' && !interactionUnitEvidence.length) {
+			fail(`Interaction-unit-tested claim ${key} has no anchored interaction evidence`);
+		}
+		if (interactionVerification === 'differential_verified' && !interactionDifferentialEvidence.length) {
+			fail(`Interaction-differential claim ${key} has no anchored interaction evidence`);
+		}
+		if (interactionVerification === 'not_tested' &&
+			(interactionUnitEvidence.length || interactionDifferentialEvidence.length)) {
+			fail(`Interaction-unverified claim ${key} has interaction evidence`);
 		}
 		claims.set(key, {...claim, interaction_verification: interactionVerification});
 	}
 	return claims;
+}
+
+function coverageClaims() {
+	return validateCoverageClaims(readJson(coveragePath));
 }
 
 function entryWithCoverage(base, claims) {
@@ -694,6 +745,8 @@ module.exports = {
 	generatedContents,
 	nextResearch,
 	reportFor,
+	rustTestExists,
+	validateCoverageClaims,
 };
 
 if (require.main === module) main();

@@ -9,7 +9,7 @@
       "owner_pr": "PR 9",
       "evidence": [
         "file:crates/rotom-dex/src/combat.rs",
-        "differential:data/fixtures/differential/basic-damage.json"
+        "differential:data/fixtures/differential/basic-damage.json#aqua-jet-low-damage-quarter-resisted"
       ]
     },
     {
@@ -33,7 +33,7 @@
       "evidence": [
         "file:crates/rotom-core/src/combat.rs",
         "file:crates/rotom-dex/src/combat.rs",
-        "differential:data/fixtures/differential/basic-damage.json"
+        "differential:data/fixtures/differential/canonical-step.json#dragon-claw-physical-step"
       ]
     },
     {
@@ -44,7 +44,7 @@
       "owner_pr": "PR 9",
       "evidence": [
         "file:crates/rotom-dex/src/combat.rs",
-        "differential:data/fixtures/differential/basic-damage.json"
+        "differential:data/fixtures/differential/canonical-step.json#dragon-pulse-special-step"
       ]
     },
     {
@@ -55,7 +55,7 @@
       "owner_pr": "PR 9",
       "evidence": [
         "file:crates/rotom-dex/src/combat.rs",
-        "differential:data/fixtures/differential/basic-damage.json"
+        "differential:data/fixtures/differential/canonical-step.json#high-horsepower-effective-faint-step"
       ]
     },
     {
@@ -66,7 +66,7 @@
       "owner_pr": "PR 9",
       "evidence": [
         "file:crates/rotom-dex/src/combat.rs",
-        "differential:data/fixtures/differential/basic-damage.json"
+        "differential:data/fixtures/differential/canonical-step.json#power-gem-effective-faint-step"
       ]
     },
     {

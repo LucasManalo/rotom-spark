@@ -64,6 +64,48 @@ struct DamageRoll {
     damage: u16,
 }
 
+#[derive(Debug, Deserialize)]
+struct CanonicalStepFixture {
+    showdown_commit: String,
+    format: String,
+    methodology: StepMethodology,
+    cases: Vec<CanonicalStepCase>,
+}
+
+#[derive(Debug, Deserialize)]
+struct StepMethodology {
+    rng_comparison: String,
+    move_draw_order: Vec<String>,
+}
+
+#[derive(Debug, Deserialize)]
+struct CanonicalStepCase {
+    name: String,
+    #[serde(rename = "move")]
+    move_name: String,
+    damage_case: String,
+    rotom_seed: u64,
+    controlled_outcomes: ControlledOutcomes,
+    expected: StepExpectation,
+}
+
+#[derive(Debug, Deserialize)]
+struct ControlledOutcomes {
+    accuracy: String,
+    critical_hit: bool,
+    damage_percent: u8,
+}
+
+#[derive(Debug, Deserialize)]
+struct StepExpectation {
+    damage: u16,
+    applied_hp_loss: u16,
+    target_hp: u16,
+    pp_consumed: u8,
+    fainted: bool,
+    replacement_scheduled: bool,
+}
+
 impl From<FixtureStages> for StatStages {
     fn from(value: FixtureStages) -> Self {
         assert_eq!(value.hp, 0, "HP cannot have a battle stat stage");
@@ -207,6 +249,107 @@ fn four_selection() -> Vec<PokemonIndex> {
     (0..4).map(PokemonIndex::new).collect()
 }
 
+fn fixture_battle(
+    dex: &rotom_dex::DexData,
+    case: &DamageCase,
+    seed: u64,
+    trace_rng: bool,
+) -> (
+    rotom_core::BattleState,
+    rotom_core::PokemonState,
+    rotom_core::PokemonState,
+) {
+    let source_set = fixture_set(dex, &case.source, &case.move_name);
+    let target_set = fixture_set(dex, &case.target, &case.move_name);
+    let mut source = dex.pokemon_state(&source_set).expect("source state");
+    let mut target = dex.pokemon_state(&target_set).expect("target state");
+    source.stat_stages = case.source.stages.into();
+    target.stat_stages = case.target.stages.into();
+    let mut builder =
+        BattleStateBuilder::new_with_seed(repeated_side(&source), repeated_side(&target), 4, seed)
+            .expect("battle");
+    let selection = four_selection();
+    builder
+        .select_teams(selection.clone(), selection)
+        .expect("preview");
+    if trace_rng {
+        builder.enable_rng_trace();
+    }
+    (builder.build().expect("selected battle"), source, target)
+}
+
+fn p1_damage(
+    actions: &[rotom_core::ResolvedAction],
+) -> (rotom_core::ActiveSlot, rotom_core::DamageResult) {
+    actions
+        .iter()
+        .find_map(|action| match action {
+            rotom_core::ResolvedAction::Damaged {
+                side: SideId::P1,
+                target_slot,
+                damage,
+                ..
+            } => Some((*target_slot, *damage)),
+            _ => None,
+        })
+        .expect("P1 damage result")
+}
+
+fn assert_step_state(
+    result: &rotom_core::StepResult,
+    input: &rotom_core::BattleState,
+    source: &rotom_core::PokemonState,
+    target: &rotom_core::PokemonState,
+    damaged_slot: rotom_core::ActiveSlot,
+    case: &CanonicalStepCase,
+) {
+    let damaged_index = match damaged_slot {
+        rotom_core::ActiveSlot::Left => PokemonIndex::new(0),
+        rotom_core::ActiveSlot::Right => PokemonIndex::new(1),
+    };
+    assert_eq!(
+        result
+            .state
+            .side(SideId::P2)
+            .pokemon(damaged_index)
+            .expect("target")
+            .current_hp,
+        case.expected.target_hp,
+        "{} applied HP loss",
+        case.name
+    );
+    assert_eq!(
+        case.expected.applied_hp_loss,
+        target.stats.hp - case.expected.target_hp,
+        "{}",
+        case.name
+    );
+    assert_eq!(
+        case.expected.fainted,
+        case.expected.target_hp == 0,
+        "{}",
+        case.name
+    );
+    assert_eq!(
+        case.expected.replacement_scheduled, case.expected.fainted,
+        "{}",
+        case.name
+    );
+    assert_eq!(
+        result
+            .state
+            .side(SideId::P1)
+            .pokemon(PokemonIndex::new(0))
+            .expect("source")
+            .moves[0]
+            .pp,
+        source.moves[0].max_pp - case.expected.pp_consumed,
+        "{} PP",
+        case.name
+    );
+    assert_eq!(input.rng().draws(), 0, "{} input RNG changed", case.name);
+}
+
 fn opposing_targets_choice() -> TurnChoice {
     TurnChoice {
         actions: [rotom_core::ActiveSlot::Left, rotom_core::ActiveSlot::Right].map(|target| {
@@ -320,7 +463,7 @@ fn queued_turn_consumes_pp_and_updates_hp() {
 }
 
 #[test]
-fn canonical_step_damage_matches_a_pinned_showdown_roll() {
+fn canonical_step_matches_an_independently_selected_pinned_showdown_roll() {
     let dex = champions_reg_mc().expect("generated Dex");
     let fixture: DamageFixture = serde_json::from_str(include_str!(
         "../../../data/fixtures/differential/basic-damage.json"
@@ -331,20 +474,15 @@ fn canonical_step_damage_matches_a_pinned_showdown_roll() {
         .iter()
         .find(|case| case.name == "dragon-pulse-neutral-stab")
         .expect("neutral Dragon Pulse fixture");
-    let source_set = fixture_set(&dex, &case.source, &case.move_name);
-    let target_set = fixture_set(&dex, &case.target, &case.move_name);
-    let mut source = dex.pokemon_state(&source_set).expect("source state");
-    let mut target = dex.pokemon_state(&target_set).expect("target state");
-    source.stat_stages = case.source.stages.into();
-    target.stat_stages = case.target.stages.into();
-    let mut builder =
-        BattleStateBuilder::new_with_seed(repeated_side(&source), repeated_side(&target), 4, 19)
-            .expect("battle");
-    let selection = four_selection();
-    builder
-        .select_teams(selection.clone(), selection)
-        .expect("preview");
-    let battle = builder.build().expect("selected battle");
+    // Seed 19's SplitMix64 trace is asserted below. Rotom Spark does not claim
+    // seed parity with Showdown; the independently generated Showdown fixture
+    // supplies the expected result for the preselected 96% damage outcome.
+    let expected = case
+        .rolls
+        .iter()
+        .find(|roll| roll.percent == 96)
+        .expect("fixture's independently selected 96% roll");
+    let (battle, source, target) = fixture_battle(&dex, case, 19, true);
     let choice = opposing_targets_choice();
 
     let result = step(
@@ -356,29 +494,30 @@ fn canonical_step_damage_matches_a_pinned_showdown_roll() {
         &Mechanics::new(&dex, &EffectRegistry::new()),
     )
     .expect("canonical move lifecycle");
-    let damage = result
-        .diagnostics
-        .turn
-        .as_ref()
-        .expect("turn diagnostics")
-        .actions
-        .iter()
-        .find_map(|action| match action {
-            rotom_core::ResolvedAction::Damaged {
-                side: SideId::P1,
-                damage,
-                ..
-            } => Some(*damage),
-            _ => None,
-        })
-        .expect("P1 damage result");
+    let trace = result.state.rng().trace().expect("enabled RNG trace");
+    assert_eq!(
+        trace.iter().map(|entry| entry.result).collect::<Vec<_>>(),
+        [0, 2, 53, 1, 99, 11, 1, 85, 89, 10, 96, 9, 23, 98]
+    );
+    assert_eq!(trace[10].reason, RngReason::DamageRoll);
+    assert_eq!(
+        trace[10].operation,
+        RngOperation::Range {
+            start: 85,
+            end_exclusive: 101,
+        }
+    );
+    let (_, damage) = p1_damage(
+        &result
+            .diagnostics
+            .turn
+            .as_ref()
+            .expect("turn diagnostics")
+            .actions,
+    );
     assert_eq!(damage.critical_modifier, rotom_core::Modifier::NEUTRAL);
+    assert_eq!(damage.random_modifier.numerator, 96);
     assert_eq!(damage.random_modifier.denominator, 100);
-    let expected = case
-        .rolls
-        .iter()
-        .find(|roll| u16::from(roll.percent) == damage.random_modifier.numerator)
-        .expect("fixture roll for the authoritative RNG result");
     assert_eq!(damage.final_damage, expected.damage);
     assert_eq!(
         result
@@ -399,6 +538,104 @@ fn canonical_step_damage_matches_a_pinned_showdown_roll() {
             .pp,
         source.moves[0].max_pp
     );
+    assert_eq!(
+        result
+            .state
+            .side(SideId::P2)
+            .pokemon(PokemonIndex::new(0))
+            .expect("damaged target")
+            .current_hp,
+        target.stats.hp - expected.damage
+    );
+}
+
+#[test]
+fn canonical_step_matches_preselected_physical_special_effective_immune_and_critical_cases() {
+    let dex = champions_reg_mc().expect("generated Dex");
+    let damage_fixture: DamageFixture = serde_json::from_str(include_str!(
+        "../../../data/fixtures/differential/basic-damage.json"
+    ))
+    .expect("Showdown damage fixture should deserialize");
+    let step_fixture: CanonicalStepFixture = serde_json::from_str(include_str!(
+        "../../../data/fixtures/differential/canonical-step.json"
+    ))
+    .expect("canonical step fixture should deserialize");
+    assert_eq!(step_fixture.showdown_commit, SHOWDOWN_COMMIT);
+    assert_eq!(step_fixture.format, "gen9championsvgc2026regmc");
+    assert!(step_fixture
+        .methodology
+        .rng_comparison
+        .contains("no seed-level parity"));
+    assert_eq!(
+        step_fixture.methodology.move_draw_order,
+        ["accuracy", "critical_hit", "damage_roll"]
+    );
+
+    for step_case in step_fixture.cases {
+        let case = damage_fixture
+            .cases
+            .iter()
+            .find(|case| case.name == step_case.damage_case)
+            .unwrap_or_else(|| panic!("missing fixture case {}", step_case.damage_case));
+        assert_eq!(step_case.move_name, case.move_name, "{}", step_case.name);
+        assert_eq!(step_case.controlled_outcomes.accuracy, "hit");
+        assert_eq!(
+            step_case.controlled_outcomes.critical_hit, case.critical,
+            "{}",
+            step_case.name
+        );
+        let expected = case
+            .rolls
+            .iter()
+            .find(|roll| roll.percent == step_case.controlled_outcomes.damage_percent)
+            .unwrap_or_else(|| panic!("missing preselected roll for {}", step_case.name));
+        assert_eq!(
+            expected.damage, step_case.expected.damage,
+            "{}",
+            step_case.name
+        );
+        let (battle, source, target) = fixture_battle(&dex, case, step_case.rotom_seed, false);
+        let result = step(
+            &battle,
+            &JointAction::Turn {
+                p1: opposing_targets_choice(),
+                p2: opposing_targets_choice(),
+            },
+            &Mechanics::new(&dex, &EffectRegistry::new()),
+        )
+        .unwrap_or_else(|error| panic!("{}: {error}", step_case.name));
+        let (damaged_slot, damage) = p1_damage(
+            &result
+                .diagnostics
+                .turn
+                .as_ref()
+                .expect("turn diagnostics")
+                .actions,
+        );
+        assert_eq!(
+            damage.random_modifier.numerator,
+            u16::from(step_case.controlled_outcomes.damage_percent),
+            "{}",
+            step_case.name
+        );
+        assert_eq!(
+            damage.random_modifier.denominator, 100,
+            "{}",
+            step_case.name
+        );
+        assert_eq!(
+            damage.critical_modifier != rotom_core::Modifier::NEUTRAL,
+            step_case.controlled_outcomes.critical_hit,
+            "{} critical outcome",
+            step_case.name
+        );
+        assert_eq!(
+            damage.final_damage, step_case.expected.damage,
+            "{}",
+            step_case.name
+        );
+        assert_step_state(&result, &battle, &source, &target, damaged_slot, &step_case);
+    }
 }
 
 #[test]

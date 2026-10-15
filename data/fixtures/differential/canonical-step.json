@@ -1,0 +1,131 @@
+{
+  "showdown_commit": "b79ce06d06b8f0dc8de8bb348bc9cab5d931553f",
+  "format": "gen9championsvgc2026regmc",
+  "methodology": {
+    "damage_source": "tools/showdown-reference/basic-damage.cjs using Battle.actions.getDamage",
+    "rng_comparison": "controlled outcomes; no seed-level parity claim",
+    "rotom_rng": "SplitMix64",
+    "showdown_rng": "Pokemon Showdown PRNG",
+    "move_draw_order": [
+      "accuracy",
+      "critical_hit",
+      "damage_roll"
+    ]
+  },
+  "cases": [
+    {
+      "name": "dragon-claw-physical-step",
+      "move": "dragonclaw",
+      "damage_case": "dragon-claw-neutral-stab",
+      "rotom_seed": 19,
+      "controlled_outcomes": {
+        "accuracy": "hit",
+        "critical_hit": false,
+        "damage_percent": 99
+      },
+      "expected": {
+        "damage": 106,
+        "applied_hp_loss": 106,
+        "target_hp": 91,
+        "pp_consumed": 1,
+        "fainted": false,
+        "replacement_scheduled": false
+      }
+    },
+    {
+      "name": "dragon-pulse-special-step",
+      "move": "dragonpulse",
+      "damage_case": "dragon-pulse-neutral-stab",
+      "rotom_seed": 19,
+      "controlled_outcomes": {
+        "accuracy": "hit",
+        "critical_hit": false,
+        "damage_percent": 96
+      },
+      "expected": {
+        "damage": 97,
+        "applied_hp_loss": 97,
+        "target_hp": 100,
+        "pp_consumed": 1,
+        "fainted": false,
+        "replacement_scheduled": false
+      }
+    },
+    {
+      "name": "power-gem-effective-faint-step",
+      "move": "powergem",
+      "damage_case": "power-gem-quad-effective-stab",
+      "rotom_seed": 19,
+      "controlled_outcomes": {
+        "accuracy": "hit",
+        "critical_hit": false,
+        "damage_percent": 96
+      },
+      "expected": {
+        "damage": 396,
+        "applied_hp_loss": 185,
+        "target_hp": 0,
+        "pp_consumed": 1,
+        "fainted": true,
+        "replacement_scheduled": true
+      }
+    },
+    {
+      "name": "high-horsepower-effective-faint-step",
+      "move": "highhorsepower",
+      "damage_case": "high-horsepower-super-effective-stab",
+      "rotom_seed": 19,
+      "controlled_outcomes": {
+        "accuracy": "hit",
+        "critical_hit": false,
+        "damage_percent": 96
+      },
+      "expected": {
+        "damage": 236,
+        "applied_hp_loss": 197,
+        "target_hp": 0,
+        "pp_consumed": 1,
+        "fainted": true,
+        "replacement_scheduled": true
+      }
+    },
+    {
+      "name": "high-horsepower-immunity-step",
+      "move": "highhorsepower",
+      "damage_case": "high-horsepower-immunity",
+      "rotom_seed": 19,
+      "controlled_outcomes": {
+        "accuracy": "hit",
+        "critical_hit": false,
+        "damage_percent": 96
+      },
+      "expected": {
+        "damage": 0,
+        "applied_hp_loss": 0,
+        "target_hp": 185,
+        "pp_consumed": 1,
+        "fainted": false,
+        "replacement_scheduled": false
+      }
+    },
+    {
+      "name": "dragon-pulse-critical-step",
+      "move": "dragonpulse",
+      "damage_case": "dragon-pulse-critical",
+      "rotom_seed": 12,
+      "controlled_outcomes": {
+        "accuracy": "hit",
+        "critical_hit": true,
+        "damage_percent": 89
+      },
+      "expected": {
+        "damage": 135,
+        "applied_hp_loss": 135,
+        "target_hp": 62,
+        "pp_consumed": 1,
+        "fainted": false,
+        "replacement_scheduled": false
+      }
+    }
+  ]
+}

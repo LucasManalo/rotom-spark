@@ -2,9 +2,15 @@
 
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
+const os = require('node:os');
 const path = require('node:path');
 const test = require('node:test');
-const {generatedContents, nextResearch} = require('./generate-mechanics-manifest.cjs');
+const {
+	generatedContents,
+	nextResearch,
+	rustTestExists,
+	validateCoverageClaims,
+} = require('./generate-mechanics-manifest.cjs');
 
 const repositoryRoot = path.resolve(__dirname, '..', '..');
 const manifest = JSON.parse(fs.readFileSync(
@@ -143,4 +149,87 @@ test('two complete generations are byte-identical', {timeout: 120_000}, () => {
 	const second = generatedContents({verifyCheckout: false});
 	assert.equal(first.manifestContents, second.manifestContents);
 	assert.equal(first.reportContents, second.reportContents);
+});
+
+test('coverage evidence requires real tests and move-specific fixture cases', () => {
+	const root = fs.mkdtempSync(path.join(os.tmpdir(), 'rotom-evidence-'));
+	try {
+		fs.mkdirSync(path.join(root, 'tests'), {recursive: true});
+		fs.mkdirSync(path.join(root, 'fixtures'), {recursive: true});
+		fs.writeFileSync(path.join(root, 'tests', 'combat.rs'), [
+			'fn ordinary_helper() {}',
+			'#[test]',
+			'fn verifies_dragon_claw() {}',
+		].join('\n'));
+		fs.writeFileSync(path.join(root, 'fixtures', 'damage.json'), JSON.stringify({
+			cases: [
+				{name: 'dragon-claw-neutral', move: 'dragonclaw'},
+				{name: 'dragon-pulse-neutral', move: 'dragonpulse'},
+			],
+		}));
+
+		assert.equal(rustTestExists('#[test]\nfn actual_test() {}', 'actual_test'), true);
+		assert.equal(rustTestExists('fn actual_test() {}', 'actual_test'), false);
+
+		const claim = overrides => ({
+			id: 'dragonclaw',
+			kind: 'move',
+			implementation: 'implemented',
+			verification: 'unit_tested',
+			owner_pr: 'test',
+			evidence: ['file:tests/combat.rs', 'unit:tests/combat.rs#verifies_dragon_claw'],
+			...overrides,
+		});
+		const registry = claims => ({schema_version: 1, claims});
+
+		assert.equal(validateCoverageClaims(registry([claim({})]), root).size, 1);
+		assert.throws(
+			() => validateCoverageClaims(registry([claim({evidence: ['unit:tests/missing.rs#test']} )]), root),
+			/Missing evidence/
+		);
+		assert.throws(
+			() => validateCoverageClaims(registry([claim({evidence: ['unit:tests/combat.rs#missing_test']} )]), root),
+			/does not name an existing test/
+		);
+		assert.throws(
+			() => validateCoverageClaims(registry([claim({evidence: ['unit:tests/combat.rs#ordinary_helper']} )]), root),
+			/does not name an existing test/
+		);
+		assert.throws(
+			() => validateCoverageClaims(registry([claim({
+				verification: 'differential_verified',
+				evidence: ['differential:fixtures/damage.json#missing-case'],
+			})]), root),
+			/does not name an existing fixture case/
+		);
+		assert.throws(
+			() => validateCoverageClaims(registry([claim({
+				verification: 'differential_verified',
+				evidence: ['differential:fixtures/damage.json#dragon-pulse-neutral'],
+			})]), root),
+			/does not reference claimed move/
+		);
+		assert.throws(
+			() => validateCoverageClaims(registry([claim({verification: 'unit_tested', evidence: ['file:tests/combat.rs']})]), root),
+			/no anchored unit-test evidence/
+		);
+		assert.throws(
+			() => validateCoverageClaims(registry([claim({
+				implementation: 'unsupported',
+				verification: 'unit_tested',
+			})]), root),
+			/cannot be marked verified/
+		);
+		assert.throws(
+			() => validateCoverageClaims(registry([claim({
+				evidence: [
+					'unit:tests/combat.rs#verifies_dragon_claw',
+					'unit:tests/combat.rs#verifies_dragon_claw',
+				],
+			})]), root),
+			/Duplicate evidence/
+		);
+	} finally {
+		fs.rmSync(root, {recursive: true, force: true});
+	}
 });

@@ -1678,29 +1678,40 @@ mod tests {
     fn selected_targets_must_match_the_authoritative_move_definition() {
         let left = ActiveSlot::Left;
         let right = ActiveSlot::Right;
-        assert_eq!(
-            resolve_target(
-                SideId::P1,
-                left,
-                MoveTarget::Normal,
-                ActionTarget::Ally(right)
-            ),
-            Ok((SideId::P1, right))
-        );
-        assert_eq!(
-            resolve_target(SideId::P1, left, MoveTarget::Any, ActionTarget::Foe(left)),
-            Ok((SideId::P2, left))
-        );
-        assert_eq!(
-            resolve_target(
-                SideId::P1,
-                left,
-                MoveTarget::AdjacentFoe,
-                ActionTarget::Foe(right)
-            ),
-            Ok((SideId::P2, right))
-        );
+        for move_target in [MoveTarget::Normal, MoveTarget::Any] {
+            assert_eq!(
+                resolve_target(SideId::P1, left, move_target, ActionTarget::Ally(right)),
+                Ok((SideId::P1, right))
+            );
+            for foe in [left, right] {
+                assert_eq!(
+                    resolve_target(SideId::P1, left, move_target, ActionTarget::Foe(foe)),
+                    Ok((SideId::P2, foe))
+                );
+            }
+            for selected in [
+                ActionTarget::Ally(left),
+                ActionTarget::Self_,
+                ActionTarget::Automatic,
+            ] {
+                assert!(matches!(
+                    resolve_target(SideId::P1, left, move_target, selected),
+                    Err(BattleError::IllegalChoice(_))
+                ));
+            }
+        }
 
+        for foe in [left, right] {
+            assert_eq!(
+                resolve_target(
+                    SideId::P1,
+                    left,
+                    MoveTarget::AdjacentFoe,
+                    ActionTarget::Foe(foe)
+                ),
+                Ok((SideId::P2, foe))
+            );
+        }
         for selected in [
             ActionTarget::Ally(right),
             ActionTarget::Ally(left),
@@ -1712,9 +1723,5 @@ mod tests {
                 Err(BattleError::IllegalChoice(_))
             ));
         }
-        assert!(matches!(
-            resolve_target(SideId::P1, left, MoveTarget::Normal, ActionTarget::Self_),
-            Err(BattleError::IllegalChoice(_))
-        ));
     }
 }

@@ -11885,7 +11885,7 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
-        "differential:data/fixtures/differential/basic-damage.json",
+        "differential:data/fixtures/differential/basic-damage.json#aqua-jet-low-damage-quarter-resisted",
         "file:crates/rotom-core/src/combat.rs",
         "file:crates/rotom-dex/src/combat.rs",
         "species/azumarill",
@@ -16928,7 +16928,7 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
-        "differential:data/fixtures/differential/basic-damage.json",
+        "differential:data/fixtures/differential/canonical-step.json#dragon-claw-physical-step",
         "file:crates/rotom-core/src/combat.rs",
         "file:crates/rotom-dex/src/combat.rs",
         "species/aerodactyl",
@@ -17050,7 +17050,7 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
-        "differential:data/fixtures/differential/basic-damage.json",
+        "differential:data/fixtures/differential/canonical-step.json#dragon-pulse-special-step",
         "file:crates/rotom-core/src/combat.rs",
         "file:crates/rotom-dex/src/combat.rs",
         "species/aerodactyl",
@@ -22924,7 +22924,7 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
-        "differential:data/fixtures/differential/basic-damage.json",
+        "differential:data/fixtures/differential/canonical-step.json#high-horsepower-effective-faint-step",
         "file:crates/rotom-core/src/combat.rs",
         "file:crates/rotom-dex/src/combat.rs",
         "species/aggron",
@@ -28467,7 +28467,7 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
-        "differential:data/fixtures/differential/basic-damage.json",
+        "differential:data/fixtures/differential/canonical-step.json#power-gem-effective-faint-step",
         "file:crates/rotom-core/src/combat.rs",
         "file:crates/rotom-dex/src/combat.rs",
         "species/ampharos",

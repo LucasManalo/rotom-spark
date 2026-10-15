@@ -341,9 +341,8 @@ fn authoritative_target_mismatch_is_rejected_atomically() {
 }
 
 #[test]
-fn removed_selected_target_returns_reproducible_atomic_retargeting_error() {
+fn removed_selected_target_returns_reproducible_atomic_retargeting_error_for_supported_targets() {
     let effects = EffectRegistry::new();
-    let data = TestData::basic(1_000);
     let current = started(0xfeed);
     let before = current.clone();
     let action = JointAction::Turn {
@@ -354,17 +353,22 @@ fn removed_selected_target_returns_reproducible_atomic_retargeting_error() {
             actions: [move_at(ActiveSlot::Left), move_at(ActiveSlot::Right)],
         },
     };
-    let mechanics = Mechanics::new(&data, &effects);
-
-    let first = step(&current, &action, &mechanics).unwrap_err();
-    let replay = step(&current, &action, &mechanics).unwrap_err();
-    assert_eq!(first, replay);
-    assert!(matches!(first, BattleError::UnsupportedMechanic(_)));
-    assert!(first.to_string().contains("retargeting"));
-    assert_eq!(
-        current, before,
-        "failed resolution must not commit its first hit"
-    );
+    for target in [MoveTarget::Normal, MoveTarget::Any, MoveTarget::AdjacentFoe] {
+        let data = TestData {
+            target,
+            ..TestData::basic(1_000)
+        };
+        let mechanics = Mechanics::new(&data, &effects);
+        let first = step(&current, &action, &mechanics).unwrap_err();
+        let replay = step(&current, &action, &mechanics).unwrap_err();
+        assert_eq!(first, replay, "{target:?}");
+        assert!(matches!(first, BattleError::UnsupportedMechanic(_)));
+        assert!(first.to_string().contains("retargeting"));
+        assert_eq!(
+            current, before,
+            "{target:?} failed resolution must not commit its first hit, PP, or RNG"
+        );
+    }
 }
 
 #[test]
