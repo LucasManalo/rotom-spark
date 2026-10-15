@@ -14,6 +14,7 @@ const MOVE_ID: MoveId = MoveId::new(1);
 struct TestData {
     base_power: u16,
     required_capabilities: MoveCapabilities,
+    target: MoveTarget,
 }
 
 impl TestData {
@@ -21,6 +22,7 @@ impl TestData {
         Self {
             base_power,
             required_capabilities: MoveCapabilities::PR_13_1,
+            target: MoveTarget::Normal,
         }
     }
 }
@@ -33,7 +35,7 @@ impl CombatData for TestData {
             base_power: self.base_power,
             accuracy: MoveAccuracy::Always,
             crit_ratio: 0,
-            target: MoveTarget::Normal,
+            target: self.target,
             operation: MoveOperation::StandardDamage,
             required_capabilities: self.required_capabilities,
         })
@@ -236,6 +238,7 @@ fn transition_errors_are_atomic_and_terminal_battles_reject_actions() {
     let unsupported = TestData {
         base_power: 20,
         required_capabilities: MoveCapabilities::PR_13_1.with(MoveCapability::SecondaryEffect),
+        target: MoveTarget::Normal,
     };
     let current = started(0xdead);
     let before = current.clone();
@@ -263,6 +266,105 @@ fn transition_errors_are_atomic_and_terminal_battles_reject_actions() {
         Err(BattleError::IllegalChoice(_))
     ));
     assert_eq!(terminal, terminal_before);
+}
+
+#[test]
+fn normal_moves_accept_the_other_ally_as_a_selected_target() {
+    let effects = EffectRegistry::new();
+    let data = TestData::basic(20);
+    let current = started(0x4a11);
+    let ally_action = PokemonAction::Move {
+        move_slot: MoveSlotIndex::new(0),
+        target: ActionTarget::Ally(ActiveSlot::Right),
+        mega: false,
+    };
+    let action = JointAction::Turn {
+        p1: TurnChoice {
+            actions: [ally_action, move_at(ActiveSlot::Left)],
+        },
+        p2: TurnChoice {
+            actions: [move_at(ActiveSlot::Left), move_at(ActiveSlot::Right)],
+        },
+    };
+
+    let result = step(&current, &action, &Mechanics::new(&data, &effects)).unwrap();
+    let ally = result
+        .state
+        .side(SideId::P1)
+        .pokemon(index(1))
+        .expect("right ally");
+    assert!(ally.current_hp < ally.stats.hp);
+    assert_eq!(
+        result
+            .state
+            .side(SideId::P1)
+            .pokemon(index(0))
+            .expect("source")
+            .moves[0]
+            .pp,
+        15
+    );
+}
+
+#[test]
+fn authoritative_target_mismatch_is_rejected_atomically() {
+    let effects = EffectRegistry::new();
+    let data = TestData {
+        target: MoveTarget::AdjacentFoe,
+        ..TestData::basic(20)
+    };
+    let current = started(0x7a26);
+    let before = current.clone();
+    let action = JointAction::Turn {
+        p1: TurnChoice {
+            actions: [
+                PokemonAction::Move {
+                    move_slot: MoveSlotIndex::new(0),
+                    target: ActionTarget::Ally(ActiveSlot::Right),
+                    mega: false,
+                },
+                move_at(ActiveSlot::Left),
+            ],
+        },
+        p2: TurnChoice {
+            actions: [move_at(ActiveSlot::Left), move_at(ActiveSlot::Right)],
+        },
+    };
+
+    let error = step(&current, &action, &Mechanics::new(&data, &effects)).unwrap_err();
+    assert!(matches!(error, BattleError::IllegalChoice(_)));
+    assert!(error.to_string().contains("incompatible"));
+    assert_eq!(
+        current, before,
+        "state, PP, HP, and RNG must remain unchanged"
+    );
+}
+
+#[test]
+fn removed_selected_target_returns_reproducible_atomic_retargeting_error() {
+    let effects = EffectRegistry::new();
+    let data = TestData::basic(1_000);
+    let current = started(0xfeed);
+    let before = current.clone();
+    let action = JointAction::Turn {
+        p1: TurnChoice {
+            actions: [move_at(ActiveSlot::Left), move_at(ActiveSlot::Left)],
+        },
+        p2: TurnChoice {
+            actions: [move_at(ActiveSlot::Left), move_at(ActiveSlot::Right)],
+        },
+    };
+    let mechanics = Mechanics::new(&data, &effects);
+
+    let first = step(&current, &action, &mechanics).unwrap_err();
+    let replay = step(&current, &action, &mechanics).unwrap_err();
+    assert_eq!(first, replay);
+    assert!(matches!(first, BattleError::UnsupportedMechanic(_)));
+    assert!(first.to_string().contains("retargeting"));
+    assert_eq!(
+        current, before,
+        "failed resolution must not commit its first hit"
+    );
 }
 
 #[test]

@@ -16,10 +16,12 @@
       "id": "aquatail",
       "kind": "move",
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
+      "interaction_verification": "not_tested",
       "owner_pr": "PR 9",
       "evidence": [
-        "file:crates/rotom-dex/src/combat.rs"
+        "file:crates/rotom-dex/src/combat.rs",
+        "unit:crates/rotom-dex/tests/combat.rs#queued_turn_consumes_pp_and_updates_hp"
       ]
     },
     {

@@ -54,9 +54,14 @@ test('coverage claims do not confuse implementation with verification', () => {
 	assert.equal(entry('move', 'aquajet').implementation, 'implemented');
 	assert.equal(entry('move', 'aquajet').verification, 'differential_verified');
 	assert.equal(entry('move', 'aquatail').implementation, 'implemented');
-	assert.equal(entry('move', 'aquatail').verification, 'not_tested');
+	assert.equal(entry('move', 'aquatail').verification, 'unit_tested');
+	assert.ok(entry('move', 'aquatail').evidence.includes(
+		'unit:crates/rotom-dex/tests/combat.rs#queued_turn_consumes_pp_and_updates_hp'
+	));
+	assert.equal(entry('move', 'aquatail').interaction_verification, 'not_tested');
 	assert.equal(entry('move', 'protect').implementation, 'unsupported');
 	assert.equal(entry('move', 'protect').verification, 'not_tested');
+	assert.equal(entry('move', 'protect').interaction_verification, 'not_tested');
 });
 
 test('move support is derived from complete executor capabilities', () => {
@@ -68,6 +73,19 @@ test('move support is derived from complete executor capabilities', () => {
 	);
 	assert.equal(dragonClaw.implementation, 'implemented');
 	assert.equal(dragonClaw.owner_pr, 'PR 13.1');
+	assert.equal(manifest.summary.by_kind.move.implementation.implemented, 37);
+	assert.deepEqual(
+		manifest.summary.by_kind.move.verification,
+		{not_tested: 504, unit_tested: 1, differential_verified: 5}
+	);
+	const implementedMoves = manifest.entries.filter(candidate =>
+		candidate.kind === 'move' && candidate.implementation === 'implemented'
+	);
+	assert.equal(implementedMoves.filter(candidate => candidate.verification === 'not_tested').length, 31);
+	assert.deepEqual(
+		manifest.summary.by_kind.move.interaction_verification,
+		{not_tested: 510, unit_tested: 0, differential_verified: 0}
+	);
 
 	for (const [id, capability] of [
 		['flamethrower', 'secondary_effect'],

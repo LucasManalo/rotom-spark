@@ -5,14 +5,14 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 
 This report is generated from `reg-mc-mechanics-manifest.json`. Presence means reachable, not implemented.
 
-| Kind | Reachable | Implemented | Partial | Unsupported | Differential | Unit tested | Not tested |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| ability | 215 | 0 | 0 | 215 | 0 | 0 | 215 |
-| condition | 96 | 0 | 0 | 96 | 0 | 0 | 96 |
-| form | 153 | 0 | 0 | 153 | 0 | 0 | 153 |
-| item | 166 | 0 | 0 | 166 | 0 | 0 | 166 |
-| move | 510 | 37 | 0 | 473 | 5 | 0 | 505 |
-| species | 293 | 0 | 0 | 293 | 0 | 0 | 293 |
+| Kind | Reachable | Implemented | Partial | Unsupported | Differential | Unit tested | Not tested | Interaction verified |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| ability | 215 | 0 | 0 | 215 | 0 | 0 | 215 | 0 |
+| condition | 96 | 0 | 0 | 96 | 0 | 0 | 96 | 0 |
+| form | 153 | 0 | 0 | 153 | 0 | 0 | 153 | 0 |
+| item | 166 | 0 | 0 | 166 | 0 | 0 | 166 | 0 |
+| move | 510 | 37 | 0 | 473 | 5 | 1 | 504 | 0 |
+| species | 293 | 0 | 0 | 293 | 0 | 0 | 293 | 0 |
 
 ## Next unsupported reachable mechanics
 

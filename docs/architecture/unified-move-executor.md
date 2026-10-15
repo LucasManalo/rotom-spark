@@ -99,13 +99,22 @@ without a category-specific or move-specific run loop.
 - Capability preflight covers the complete intrinsic move definition and the
   already implemented condition/field/event fabric. General ability/item
   interaction coverage is not claimed; it remains PR 13.5/13.6 scope.
+- Legal-action enumeration remains the primary target selector. Move
+  preparation independently checks the selected `ActionTarget` against the
+  authoritative resolved definition so a stale or inconsistent move-slot
+  target cannot cross the executor boundary. In the current doubles slice,
+  `Normal` and `Any` accept either foe or the other ally, while `AdjacentFoe`
+  accepts foes only; self/automatic selections are rejected. Empty or fainted
+  selected slots still return the explicit deferred-retargeting error.
 - Move flags are retained in the Dex. Flags with intrinsic execution behavior
   (charge, recharge, future move, and similar) require `special_behavior`.
   Cross-source flag interactions such as contact abilities remain deferred
   with their source family rather than falsely implemented here.
 - Coverage marks 37 reachable definitions structurally executable by the same
-  PR 13.1 capabilities. Verification remains independent: only source-backed
-  fixtures/claims are marked differential verified.
+  PR 13.1 capabilities. Verification remains independent: unit claims name an
+  anchored Rust test, differential claims name a pinned fixture containing the
+  move identity, and interaction verification is tracked separately. No PR
+  13.1 move currently claims complete ability/item interaction verification.
 
 ## Unsupported after PR 13.1
 

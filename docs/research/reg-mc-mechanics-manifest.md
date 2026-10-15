@@ -68,7 +68,10 @@ definition and automatically marks only the complete PR 13.1 capability subset
 implemented. Reviewed claims require evidence and an owner, cannot override an
 unsupported runtime requirement, and differential claims must occur in the
 pinned basic-damage fixture. Verification remains independent from structural
-implementation coverage.
+implementation coverage. Unit-test evidence includes a checked test-function
+anchor, and interaction verification is an independent field that defaults to
+`not_tested`; structural executability or an isolated damage fixture does not
+imply cross-source ability/item coverage.
 
 This PR inventories scope only. It does not claim behavior parity for an
 ability, item, form, condition, or unimplemented move.

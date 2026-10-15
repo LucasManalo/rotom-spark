@@ -33,6 +33,7 @@ const CALLBACK_CONDITION_METHODS = new Map([
 ]);
 const IMPLEMENTATION_VALUES = new Set(['unsupported', 'partial', 'implemented']);
 const VERIFICATION_VALUES = new Set(['not_tested', 'unit_tested', 'differential_verified']);
+const INTERACTION_VERIFICATION_VALUES = new Set(['not_tested', 'unit_tested', 'differential_verified']);
 
 function fail(message) {
 	throw new Error(message);
@@ -275,7 +276,12 @@ function moveFamilies(move) {
 }
 
 function defaultCoverage() {
-	return {implementation: 'unsupported', verification: 'not_tested', owner_pr: null};
+	return {
+		implementation: 'unsupported',
+		verification: 'not_tested',
+		interaction_verification: 'not_tested',
+		owner_pr: null,
+	};
 }
 
 function coverageClaims() {
@@ -286,25 +292,45 @@ function coverageClaims() {
 	const differentialMoves = new Set(fixture.cases.map(entry => entry.move));
 	for (const claim of source.claims) {
 		const key = `${claim.kind}:${claim.id}`;
+		const interactionVerification = claim.interaction_verification || 'not_tested';
 		if (claims.has(key)) fail(`Duplicate coverage claim for ${key}`);
 		if (!IMPLEMENTATION_VALUES.has(claim.implementation)) fail(`Invalid implementation for ${key}`);
 		if (!VERIFICATION_VALUES.has(claim.verification)) fail(`Invalid verification for ${key}`);
+		if (!INTERACTION_VERIFICATION_VALUES.has(interactionVerification)) {
+			fail(`Invalid interaction verification for ${key}`);
+		}
 		if (claim.implementation === 'unsupported' && claim.verification !== 'not_tested') {
 			fail(`Unsupported claim ${key} cannot be marked verified`);
 		}
 		if (claim.implementation !== 'unsupported' && (!claim.owner_pr || !claim.evidence?.length)) {
 			fail(`Supported claim ${key} requires an owner and evidence`);
 		}
+		const unitEvidence = [];
+		const differentialEvidence = [];
 		for (const evidence of claim.evidence || []) {
 			const separator = evidence.indexOf(':');
 			if (separator < 1) fail(`Invalid evidence ${evidence} for ${key}`);
-			const filePath = path.join(repositoryRoot, evidence.slice(separator + 1));
+			const kind = evidence.slice(0, separator);
+			const location = evidence.slice(separator + 1);
+			const [relativePath, anchor] = location.split('#');
+			const filePath = path.join(repositoryRoot, relativePath);
 			if (!fs.existsSync(filePath)) fail(`Missing evidence ${evidence} for ${key}`);
+			if (kind === 'unit') {
+				if (!anchor || !fs.readFileSync(filePath, 'utf8').includes(`fn ${anchor}(`)) {
+					fail(`Unit evidence ${evidence} does not name an existing test for ${key}`);
+				}
+				unitEvidence.push(evidence);
+			}
+			if (kind === 'differential') differentialEvidence.push(evidence);
 		}
-		if (claim.verification === 'differential_verified' && (claim.kind !== 'move' || !differentialMoves.has(claim.id))) {
+		if (claim.verification === 'unit_tested' && !unitEvidence.length) {
+			fail(`Unit-tested claim ${key} has no anchored unit-test evidence`);
+		}
+		if (claim.verification === 'differential_verified' &&
+			(!differentialEvidence.length || claim.kind !== 'move' || !differentialMoves.has(claim.id))) {
 			fail(`Differential claim ${key} is absent from the pinned fixture`);
 		}
-		claims.set(key, claim);
+		claims.set(key, {...claim, interaction_verification: interactionVerification});
 	}
 	return claims;
 }
@@ -316,11 +342,13 @@ function entryWithCoverage(base, claims) {
 	const automatic = pr131Supported ? {
 		implementation: 'implemented',
 		verification: 'not_tested',
+		interaction_verification: 'not_tested',
 		owner_pr: 'PR 13.1',
 	} : defaultCoverage();
 	const coverage = claim ? {
 		implementation: claim.implementation,
 		verification: claim.verification,
+		interaction_verification: claim.interaction_verification,
 		owner_pr: claim.owner_pr,
 	} : automatic;
 	return {
@@ -344,11 +372,13 @@ function summarize(entries, unresolved) {
 			total: 0,
 			implementation: {unsupported: 0, partial: 0, implemented: 0},
 			verification: {not_tested: 0, unit_tested: 0, differential_verified: 0},
+			interaction_verification: {not_tested: 0, unit_tested: 0, differential_verified: 0},
 			reachability: {direct_legal_set: 0, battle_generated: 0, needs_research: 0},
 		};
 		kind.total += 1;
 		kind.implementation[entry.implementation] += 1;
 		kind.verification[entry.verification] += 1;
+		kind.interaction_verification[entry.interaction_verification] += 1;
 		kind.reachability[entry.reachability] += 1;
 		summary.by_kind[entry.kind] = kind;
 	}
@@ -585,11 +615,13 @@ function reportFor(manifest) {
 		'',
 		'This report is generated from `reg-mc-mechanics-manifest.json`. Presence means reachable, not implemented.',
 		'',
-		'| Kind | Reachable | Implemented | Partial | Unsupported | Differential | Unit tested | Not tested |',
-		'| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |',
+		'| Kind | Reachable | Implemented | Partial | Unsupported | Differential | Unit tested | Not tested | Interaction verified |',
+		'| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |',
 	];
 	for (const [kind, values] of Object.entries(manifest.summary.by_kind).sort(([a], [b]) => compareStrings(a, b))) {
-		lines.push(`| ${kind} | ${values.total} | ${values.implementation.implemented} | ${values.implementation.partial} | ${values.implementation.unsupported} | ${values.verification.differential_verified} | ${values.verification.unit_tested} | ${values.verification.not_tested} |`);
+		const interactionVerified = values.interaction_verification.unit_tested +
+			values.interaction_verification.differential_verified;
+		lines.push(`| ${kind} | ${values.total} | ${values.implementation.implemented} | ${values.implementation.partial} | ${values.implementation.unsupported} | ${values.verification.differential_verified} | ${values.verification.unit_tested} | ${values.verification.not_tested} | ${interactionVerified} |`);
 	}
 	lines.push('', '## Next unsupported reachable mechanics', '');
 	for (const kind of Object.keys(manifest.summary.by_kind).sort(compareStrings)) {

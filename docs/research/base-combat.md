@@ -51,6 +51,14 @@ comparisons, including critical hits, positive and negative offensive and
 defensive stages, Physical and Special representative moves, critical-stage
 bypass rules, minimum-one rounding, and an immunity.
 
+`canonical_step_damage_matches_a_pinned_showdown_roll` also drives a fixture
+case through the public `step()` boundary. It verifies that the authoritative
+RNG-selected damage percentage produces the pinned Showdown value while the
+same transition consumes PP and leaves its input state unchanged. The broader
+field, accuracy, miss, faint/replacement, replay, trace-isolation and atomicity
+matrix remains focused Rust integration coverage unless a test explicitly
+loads a pinned fixture; those tests are not reported as differential evidence.
+
 ## Deferred behavior
 
 Spread/random targeting, retargeting after a target leaves or faints, Struggle,

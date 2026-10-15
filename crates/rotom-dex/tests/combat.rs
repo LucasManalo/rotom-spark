@@ -194,6 +194,31 @@ fn fixture_set(dex: &rotom_dex::DexData, pokemon: &FixturePokemon, move_name: &s
     result
 }
 
+fn repeated_side(pokemon: &rotom_core::PokemonState) -> SideState {
+    SideState::new(TeamState::new(vec![
+        pokemon.clone(),
+        pokemon.clone(),
+        pokemon.clone(),
+        pokemon.clone(),
+    ]))
+}
+
+fn four_selection() -> Vec<PokemonIndex> {
+    (0..4).map(PokemonIndex::new).collect()
+}
+
+fn opposing_targets_choice() -> TurnChoice {
+    TurnChoice {
+        actions: [rotom_core::ActiveSlot::Left, rotom_core::ActiveSlot::Right].map(|target| {
+            PokemonAction::Move {
+                move_slot: MoveSlotIndex::new(0),
+                target: ActionTarget::Foe(target),
+                mega: false,
+            }
+        }),
+    }
+}
+
 #[test]
 fn queued_turn_consumes_pp_and_updates_hp() {
     let dex = champions_reg_mc().expect("generated Dex");
@@ -210,7 +235,7 @@ fn queued_turn_consumes_pp_and_updates_hp() {
         "goodra",
         "gooey",
         "adamant",
-        "dragonclaw",
+        "aquatail",
         StatAllocation::ZERO,
     );
     let make_side = |set: &PokemonSet| {
@@ -295,6 +320,88 @@ fn queued_turn_consumes_pp_and_updates_hp() {
 }
 
 #[test]
+fn canonical_step_damage_matches_a_pinned_showdown_roll() {
+    let dex = champions_reg_mc().expect("generated Dex");
+    let fixture: DamageFixture = serde_json::from_str(include_str!(
+        "../../../data/fixtures/differential/basic-damage.json"
+    ))
+    .expect("Showdown damage fixture should deserialize");
+    let case = fixture
+        .cases
+        .iter()
+        .find(|case| case.name == "dragon-pulse-neutral-stab")
+        .expect("neutral Dragon Pulse fixture");
+    let source_set = fixture_set(&dex, &case.source, &case.move_name);
+    let target_set = fixture_set(&dex, &case.target, &case.move_name);
+    let mut source = dex.pokemon_state(&source_set).expect("source state");
+    let mut target = dex.pokemon_state(&target_set).expect("target state");
+    source.stat_stages = case.source.stages.into();
+    target.stat_stages = case.target.stages.into();
+    let mut builder =
+        BattleStateBuilder::new_with_seed(repeated_side(&source), repeated_side(&target), 4, 19)
+            .expect("battle");
+    let selection = four_selection();
+    builder
+        .select_teams(selection.clone(), selection)
+        .expect("preview");
+    let battle = builder.build().expect("selected battle");
+    let choice = opposing_targets_choice();
+
+    let result = step(
+        &battle,
+        &JointAction::Turn {
+            p1: choice,
+            p2: choice,
+        },
+        &Mechanics::new(&dex, &EffectRegistry::new()),
+    )
+    .expect("canonical move lifecycle");
+    let damage = result
+        .diagnostics
+        .turn
+        .as_ref()
+        .expect("turn diagnostics")
+        .actions
+        .iter()
+        .find_map(|action| match action {
+            rotom_core::ResolvedAction::Damaged {
+                side: SideId::P1,
+                damage,
+                ..
+            } => Some(*damage),
+            _ => None,
+        })
+        .expect("P1 damage result");
+    assert_eq!(damage.critical_modifier, rotom_core::Modifier::NEUTRAL);
+    assert_eq!(damage.random_modifier.denominator, 100);
+    let expected = case
+        .rolls
+        .iter()
+        .find(|roll| u16::from(roll.percent) == damage.random_modifier.numerator)
+        .expect("fixture roll for the authoritative RNG result");
+    assert_eq!(damage.final_damage, expected.damage);
+    assert_eq!(
+        result
+            .state
+            .side(SideId::P1)
+            .pokemon(PokemonIndex::new(0))
+            .expect("source")
+            .moves[0]
+            .pp,
+        source.moves[0].max_pp - 1
+    );
+    assert_eq!(
+        battle
+            .side(SideId::P1)
+            .pokemon(PokemonIndex::new(0))
+            .expect("unchanged input source")
+            .moves[0]
+            .pp,
+        source.moves[0].max_pp
+    );
+}
+
+#[test]
 fn resolved_dex_requirements_drive_support_without_a_move_id_allowlist() {
     let dex = champions_reg_mc().expect("generated Dex");
     let definition = |id: &str| {
@@ -340,15 +447,18 @@ fn assert_combat_rng_trace(trace: &[rotom_core::RngTraceEntry]) {
     assert!(trace[..3]
         .iter()
         .all(|entry| entry.reason == RngReason::SpeedTie));
+    let mut accuracy_numerators = Vec::new();
     for action_trace in trace[3..].chunks_exact(3) {
         assert_eq!(action_trace[0].reason, RngReason::Accuracy);
-        assert_eq!(
-            action_trace[0].operation,
-            RngOperation::Chance {
-                numerator: 100,
-                denominator: 100,
-            }
-        );
+        let RngOperation::Chance {
+            numerator,
+            denominator,
+        } = action_trace[0].operation
+        else {
+            panic!("accuracy must use a chance draw")
+        };
+        assert_eq!(denominator, 100);
+        accuracy_numerators.push(numerator);
         assert_eq!(action_trace[1].reason, RngReason::CriticalHit);
         assert_eq!(
             action_trace[1].operation,
@@ -367,6 +477,8 @@ fn assert_combat_rng_trace(trace: &[rotom_core::RngTraceEntry]) {
         );
         assert!((85..=100).contains(&action_trace[2].result));
     }
+    accuracy_numerators.sort_unstable();
+    assert_eq!(accuracy_numerators, [90, 90, 100, 100]);
 }
 
 #[test]

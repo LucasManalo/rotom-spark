@@ -611,12 +611,22 @@ impl BattleState {
             BattleError::DataMismatch(format!("missing combat data for move {move_id}"))
         })?;
         preflight_move(move_id, move_data)?;
-        let (target_side, target_slot) = resolve_target(queued.side, queued.slot, queued.target)?;
+        let (target_side, target_slot) =
+            resolve_target(queued.side, queued.slot, move_data.target, queued.target)?;
         let target_index = self.side(target_side).active[target_slot.index()].ok_or_else(|| {
             BattleError::UnsupportedMechanic(
                 "retargeting after an empty or fainted target is deferred".to_owned(),
             )
         })?;
+        let target = self
+            .side(target_side)
+            .pokemon(target_index)
+            .ok_or_else(|| BattleError::InvalidState("move target is out of bounds".to_owned()))?;
+        if target.current_hp == 0 || target.is_fainted() {
+            return Err(BattleError::UnsupportedMechanic(
+                "retargeting after an empty or fainted target is deferred".to_owned(),
+            ));
+        }
         Ok(MoveExecutionContext {
             queued,
             source: PokemonRef::new(queued.side, source_index),
@@ -1593,15 +1603,29 @@ fn combined_type_modifier<D: CombatData>(
 fn resolve_target(
     source_side: SideId,
     source_slot: ActiveSlot,
-    target: ActionTarget,
+    move_target: MoveTarget,
+    selected_target: ActionTarget,
 ) -> Result<(SideId, ActiveSlot), BattleError> {
-    match target {
-        ActionTarget::Self_ => Ok((source_side, source_slot)),
-        ActionTarget::Ally(slot) => Ok((source_side, slot)),
-        ActionTarget::Foe(slot) => Ok((source_side.opponent(), slot)),
-        ActionTarget::Automatic => Err(BattleError::UnsupportedMechanic(
+    match (move_target, selected_target) {
+        (MoveTarget::Normal | MoveTarget::Any, ActionTarget::Ally(slot)) if slot != source_slot => {
+            Ok((source_side, slot))
+        }
+        (
+            MoveTarget::Normal | MoveTarget::Any | MoveTarget::AdjacentFoe,
+            ActionTarget::Foe(slot),
+        ) => Ok((source_side.opponent(), slot)),
+        (
+            MoveTarget::Normal | MoveTarget::Any | MoveTarget::AdjacentFoe,
+            ActionTarget::Automatic | ActionTarget::Self_ | ActionTarget::Ally(_),
+        ) => Err(BattleError::IllegalChoice(format!(
+            "selected target {selected_target:?} is incompatible with move target {move_target:?}"
+        ))),
+        (_, ActionTarget::Automatic) => Err(BattleError::UnsupportedMechanic(
             "automatic or spread targeting is deferred".to_owned(),
         )),
+        _ => Err(BattleError::IllegalChoice(format!(
+            "selected target {selected_target:?} is incompatible with move target {move_target:?}"
+        ))),
     }
 }
 
@@ -1647,6 +1671,50 @@ mod tests {
         assert!(matches!(
             preflight_move(MoveId::new(1), inconsistent),
             Err(BattleError::DataMismatch(_))
+        ));
+    }
+
+    #[test]
+    fn selected_targets_must_match_the_authoritative_move_definition() {
+        let left = ActiveSlot::Left;
+        let right = ActiveSlot::Right;
+        assert_eq!(
+            resolve_target(
+                SideId::P1,
+                left,
+                MoveTarget::Normal,
+                ActionTarget::Ally(right)
+            ),
+            Ok((SideId::P1, right))
+        );
+        assert_eq!(
+            resolve_target(SideId::P1, left, MoveTarget::Any, ActionTarget::Foe(left)),
+            Ok((SideId::P2, left))
+        );
+        assert_eq!(
+            resolve_target(
+                SideId::P1,
+                left,
+                MoveTarget::AdjacentFoe,
+                ActionTarget::Foe(right)
+            ),
+            Ok((SideId::P2, right))
+        );
+
+        for selected in [
+            ActionTarget::Ally(right),
+            ActionTarget::Ally(left),
+            ActionTarget::Self_,
+            ActionTarget::Automatic,
+        ] {
+            assert!(matches!(
+                resolve_target(SideId::P1, left, MoveTarget::AdjacentFoe, selected),
+                Err(BattleError::IllegalChoice(_))
+            ));
+        }
+        assert!(matches!(
+            resolve_target(SideId::P1, left, MoveTarget::Normal, ActionTarget::Self_),
+            Err(BattleError::IllegalChoice(_))
         ));
     }
 }
