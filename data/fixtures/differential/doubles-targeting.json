@@ -1,0 +1,61 @@
+{
+  "showdown_commit": "b79ce06d06b8f0dc8de8bb348bc9cab5d931553f",
+  "format": "gen9championsvgc2026regmc",
+  "source": {
+    "target_sets": "sim/pokemon.ts:Pokemon.getMoveTargets",
+    "retargeting": "sim/battle.ts:Battle.getTarget/getRandomTarget",
+    "hit_order": "sim/battle-actions.ts:BattleActions.trySpreadMoveHit",
+    "spread_modifier": "data/mods/champions/scripts.ts:BattleActions.modifyDamage",
+    "guards_and_redirection": "data/moves.ts:protect/followme/ragepowder and data/conditions.ts:stall"
+  },
+  "target_order": {
+    "all_adjacent": [
+      "adjacent_allies",
+      "adjacent_foes"
+    ],
+    "all_adjacent_foes": [
+      "adjacent_foes"
+    ]
+  },
+  "per_target_hit_order": [
+    "try_hit",
+    "type_immunity",
+    "move_immunity",
+    "accuracy",
+    "damage"
+  ],
+  "spread": {
+    "doubles_modifier": [
+      3,
+      4
+    ],
+    "determined_before_target_failures": true
+  },
+  "protect": {
+    "priority": 4,
+    "duration": 1,
+    "stall_duration": 2,
+    "repeat_chances": [
+      [
+        1,
+        3
+      ],
+      [
+        1,
+        9
+      ],
+      [
+        1,
+        27
+      ]
+    ],
+    "counter_multiplier": 3
+  },
+  "redirection": {
+    "follow_me_priority": 1,
+    "rage_powder_priority": 1,
+    "duration": 1,
+    "rage_powder_is_powder": true,
+    "spread_moves_redirected": false
+  }
+}

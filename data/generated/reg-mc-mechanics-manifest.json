@@ -11022,12 +11022,16 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.1"
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "acidarmor",
@@ -11113,7 +11117,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -11199,7 +11207,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -11327,12 +11339,16 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.1"
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "afteryou",
@@ -11477,6 +11493,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/beedrill",
         "species/charizard",
         "species/corviknight",
@@ -11528,12 +11546,17 @@
       "required_capabilities": [
         "standard_damage",
         "accuracy",
-        "advanced_targeting"
+        "advanced_targeting",
+        "target_set",
+        "spread_damage",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "airslash",
@@ -11606,7 +11629,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -11664,7 +11691,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -11821,7 +11852,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -11845,7 +11880,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -11873,12 +11912,16 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.1"
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "aquajet",
@@ -11918,7 +11961,11 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "differential_verified",
@@ -11977,7 +12024,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -12017,7 +12068,11 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "unit_tested",
@@ -12041,7 +12096,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "self_effect"
+        "self_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -12160,7 +12219,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -12306,12 +12369,16 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.1"
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "aurawheel",
@@ -12332,7 +12399,11 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -12425,7 +12496,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -12451,7 +12526,11 @@
         "accuracy",
         "secondary_effect",
         "custom_callback",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -12556,7 +12635,11 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -12665,7 +12748,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -12752,7 +12839,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -12799,6 +12890,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/grapploct",
         "species/inteleon",
         "species/pinsir",
@@ -12814,12 +12907,16 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "volatile"
+        "volatile",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "bite",
@@ -12911,7 +13008,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -12936,7 +13037,11 @@
         "selected_single_target",
         "accuracy",
         "drain",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -12960,7 +13065,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -12994,7 +13103,11 @@
         "selected_single_target",
         "accuracy",
         "self_effect",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -13026,7 +13139,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -13116,7 +13233,12 @@
         "accuracy",
         "advanced_targeting",
         "secondary_effect",
-        "custom_callback"
+        "custom_callback",
+        "target_set",
+        "spread_damage",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -13230,7 +13352,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -13418,7 +13544,11 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -13442,7 +13572,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "multi_hit"
+        "multi_hit",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -13455,6 +13589,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/chimecho",
         "species/kommoo",
         "species/noivern",
@@ -13471,12 +13607,17 @@
       "required_capabilities": [
         "standard_damage",
         "accuracy",
-        "advanced_targeting"
+        "advanced_targeting",
+        "target_set",
+        "spread_damage",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "bounce",
@@ -13520,7 +13661,11 @@
         "accuracy",
         "secondary_effect",
         "custom_callback",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -13563,7 +13708,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "recoil"
+        "recoil",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -13617,7 +13766,12 @@
         "standard_damage",
         "accuracy",
         "advanced_targeting",
-        "secondary_effect"
+        "secondary_effect",
+        "target_set",
+        "spread_damage",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -13748,7 +13902,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -13761,6 +13919,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/absol",
         "species/aegislash",
         "species/aerodactyl",
@@ -13828,12 +13988,17 @@
       "required_capabilities": [
         "standard_damage",
         "accuracy",
-        "advanced_targeting"
+        "advanced_targeting",
+        "target_set",
+        "spread_damage",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "bugbite",
@@ -13884,7 +14049,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -13936,7 +14105,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -14143,7 +14316,12 @@
         "standard_damage",
         "accuracy",
         "advanced_targeting",
-        "secondary_effect"
+        "secondary_effect",
+        "target_set",
+        "spread_damage",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -14173,12 +14351,16 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.1"
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "bulletseed",
@@ -14230,7 +14412,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "multi_hit"
+        "multi_hit",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -14279,7 +14465,12 @@
         "standard_damage",
         "accuracy",
         "advanced_targeting",
-        "secondary_effect"
+        "secondary_effect",
+        "target_set",
+        "spread_damage",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -14312,7 +14503,11 @@
         "accuracy",
         "self_effect",
         "custom_callback",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -14457,7 +14652,11 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -14568,7 +14767,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -14765,7 +14968,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -14824,7 +15031,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "switch_control"
+        "switch_control",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -14848,7 +15059,12 @@
         "standard_damage",
         "accuracy",
         "advanced_targeting",
-        "self_effect"
+        "self_effect",
+        "target_set",
+        "spread_damage",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -14906,7 +15122,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -14984,7 +15204,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "self_effect"
+        "self_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -15502,7 +15726,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -15528,12 +15756,16 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.1"
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "crosschop",
@@ -15558,12 +15790,16 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.1"
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "crosspoison",
@@ -15591,7 +15827,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -15686,7 +15926,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -15713,7 +15957,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -15865,7 +16113,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -15965,7 +16217,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -15978,6 +16234,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/alakazam",
         "species/alcremie",
         "species/alcremiecaramelswirl",
@@ -16038,12 +16296,17 @@
       "required_capabilities": [
         "standard_damage",
         "accuracy",
-        "advanced_targeting"
+        "advanced_targeting",
+        "target_set",
+        "spread_damage",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "decorate",
@@ -16354,7 +16617,11 @@
         "selected_single_target",
         "accuracy",
         "custom_callback",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -16378,7 +16645,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -16485,7 +16756,12 @@
         "standard_damage",
         "accuracy",
         "advanced_targeting",
-        "secondary_effect"
+        "secondary_effect",
+        "target_set",
+        "spread_damage",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -16540,7 +16816,11 @@
         "selected_single_target",
         "accuracy",
         "custom_callback",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -16692,7 +16972,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "recoil"
+        "recoil",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -16740,7 +17024,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "multi_hit"
+        "multi_hit",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -16765,7 +17053,11 @@
         "selected_single_target",
         "accuracy",
         "self_effect",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -16870,7 +17162,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "self_effect"
+        "self_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -16968,7 +17264,11 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "differential_verified",
@@ -17038,7 +17338,11 @@
         "selected_single_target",
         "accuracy",
         "multi_hit",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -17105,7 +17409,11 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "differential_verified",
@@ -17146,7 +17454,11 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -17202,7 +17514,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "switch_control"
+        "switch_control",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -17286,7 +17602,11 @@
         "selected_single_target",
         "accuracy",
         "drain",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -17367,7 +17687,11 @@
         "selected_single_target",
         "accuracy",
         "drain",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -17395,12 +17719,16 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.1"
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "drillrun",
@@ -17433,12 +17761,16 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.1"
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "drumbeating",
@@ -17457,7 +17789,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -17510,7 +17846,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "multi_hit"
+        "multi_hit",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -17545,7 +17885,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -17614,7 +17958,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -17627,6 +17975,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/abomasnow",
         "species/aerodactyl",
         "species/aggron",
@@ -17731,12 +18081,17 @@
       "required_capabilities": [
         "standard_damage",
         "accuracy",
-        "advanced_targeting"
+        "advanced_targeting",
+        "target_set",
+        "spread_damage",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "eerieimpulse",
@@ -17802,7 +18157,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -17948,7 +18307,11 @@
         "selected_single_target",
         "accuracy",
         "custom_callback",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -17997,7 +18360,12 @@
         "standard_damage",
         "accuracy",
         "advanced_targeting",
-        "secondary_effect"
+        "secondary_effect",
+        "target_set",
+        "spread_damage",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -18632,7 +19000,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -18700,7 +19072,12 @@
         "standard_damage",
         "accuracy",
         "advanced_targeting",
-        "custom_callback"
+        "custom_callback",
+        "target_set",
+        "spread_damage",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -18751,7 +19128,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -18784,7 +19165,12 @@
         "standard_damage",
         "accuracy",
         "advanced_targeting",
-        "special_behavior"
+        "special_behavior",
+        "target_set",
+        "spread_damage",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -18821,7 +19207,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -18848,12 +19238,16 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.1"
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "facade",
@@ -19158,7 +19552,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -19241,7 +19639,11 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -19386,6 +19788,10 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-2-doubles-targeting.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#rage_powder_respects_grass_overcoat_and_safety_goggles_and_feint_breaks_protect",
         "species/absol",
         "species/blaziken",
         "species/chesnaught",
@@ -19420,7 +19826,8 @@
         "species/talonflame",
         "species/tinkaton",
         "species/toxicroak",
-        "species/weavile"
+        "species/weavile",
+        "unit:crates/rotom-dex/tests/combat.rs#rage_powder_respects_grass_overcoat_and_safety_goggles_and_feint_breaks_protect"
       ],
       "effect_families": [
         "damage"
@@ -19430,12 +19837,15 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "special_behavior"
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "unit_tested",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "fellstinger",
@@ -19457,7 +19867,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -19480,7 +19894,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -19504,7 +19922,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -19620,7 +20042,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -19681,7 +20107,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -19705,7 +20135,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -19782,7 +20216,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -19795,6 +20233,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/altaria",
         "species/arcanine",
         "species/arcaninehisui",
@@ -19835,12 +20275,16 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "volatile"
+        "volatile",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "firstimpression",
@@ -19864,7 +20308,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -20023,7 +20471,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -20116,7 +20568,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -20169,7 +20625,11 @@
         "accuracy",
         "secondary_effect",
         "recoil",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -20233,7 +20693,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -20459,7 +20923,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "switch_control"
+        "switch_control",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -20482,7 +20950,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -20530,7 +21002,11 @@
         "selected_single_target",
         "accuracy",
         "custom_callback",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -20554,7 +21030,11 @@
         "selected_single_target",
         "accuracy",
         "custom_callback",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -20673,7 +21153,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -20830,7 +21314,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -20843,10 +21331,15 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-2-doubles-targeting.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#follow_me_redirects_single_target_moves_and_repeat_protect_uses_the_battle_rng",
         "species/clefable",
         "species/indeedeef",
         "species/maushold",
-        "species/mausholdfour"
+        "species/mausholdfour",
+        "unit:crates/rotom-dex/tests/combat.rs#follow_me_redirects_single_target_moves_and_repeat_protect_uses_the_battle_rng"
       ],
       "effect_families": [
         "custom_callback",
@@ -20855,17 +21348,14 @@
       ],
       "operation": "non_damage",
       "required_capabilities": [
-        "accuracy",
         "non_damage_primary",
-        "advanced_targeting",
         "volatile",
-        "custom_callback",
-        "special_behavior"
+        "redirection"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "unit_tested",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "forestscurse",
@@ -20976,7 +21466,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -21006,7 +21500,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -21040,7 +21538,11 @@
         "selected_single_target",
         "accuracy",
         "self_effect",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -21071,7 +21573,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -21123,7 +21629,11 @@
         "selected_single_target",
         "accuracy",
         "custom_callback",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -21258,7 +21768,11 @@
         "selected_single_target",
         "accuracy",
         "drain",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -21552,7 +22066,11 @@
         "selected_single_target",
         "accuracy",
         "self_effect",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -21575,7 +22093,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -21599,7 +22121,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "self_effect"
+        "self_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -21796,7 +22322,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -21871,7 +22401,11 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -22117,7 +22651,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -22212,7 +22750,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "self_effect"
+        "self_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -22336,7 +22878,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "self_effect"
+        "self_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -22370,7 +22916,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "recoil"
+        "recoil",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -22570,7 +23120,12 @@
         "standard_damage",
         "accuracy",
         "advanced_targeting",
-        "secondary_effect"
+        "secondary_effect",
+        "target_set",
+        "spread_damage",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -22912,7 +23467,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -22974,7 +23533,11 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "differential_verified",
@@ -23005,7 +23568,11 @@
         "selected_single_target",
         "accuracy",
         "custom_callback",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -23056,7 +23623,11 @@
         "selected_single_target",
         "accuracy",
         "drain",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -23166,7 +23737,11 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -23200,7 +23775,11 @@
         "selected_single_target",
         "accuracy",
         "self_effect",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -23274,12 +23853,16 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.1"
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "hyperbeam",
@@ -23566,7 +24149,11 @@
         "selected_single_target",
         "accuracy",
         "self_effect",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -23579,6 +24166,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/altaria",
         "species/arboliva",
         "species/arcanine",
@@ -23662,12 +24251,17 @@
       "required_capabilities": [
         "standard_damage",
         "accuracy",
-        "advanced_targeting"
+        "advanced_targeting",
+        "target_set",
+        "spread_damage",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "hypnosis",
@@ -23802,7 +24396,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -23858,7 +24456,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -23884,7 +24486,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "self_effect"
+        "self_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -23962,7 +24568,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -23996,12 +24606,16 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.1"
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "icespinner",
@@ -24039,7 +24653,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -24070,7 +24688,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -24109,7 +24731,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "multi_hit"
+        "multi_hit",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -24210,7 +24836,12 @@
         "standard_damage",
         "accuracy",
         "advanced_targeting",
-        "secondary_effect"
+        "secondary_effect",
+        "target_set",
+        "spread_damage",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -24317,7 +24948,11 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -24347,7 +24982,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -24360,6 +24999,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/araquanid",
         "species/ariados",
         "species/dragapult",
@@ -24375,12 +25016,16 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "volatile"
+        "volatile",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "ingrain",
@@ -24637,7 +25282,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -24752,7 +25401,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -24776,7 +25429,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -24800,12 +25457,16 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.1"
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "kingsshield",
@@ -24925,7 +25586,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -24949,12 +25614,16 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.1"
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "lashout",
@@ -25025,7 +25694,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -25081,7 +25754,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -25107,7 +25784,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -25137,7 +25818,12 @@
         "standard_damage",
         "accuracy",
         "advanced_targeting",
-        "secondary_effect"
+        "secondary_effect",
+        "target_set",
+        "spread_damage",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -25171,12 +25857,16 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.1"
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "leafstorm",
@@ -25221,7 +25911,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "self_effect"
+        "self_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -25257,7 +25951,11 @@
         "selected_single_target",
         "accuracy",
         "drain",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -25368,7 +26066,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "recoil"
+        "recoil",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -25581,7 +26283,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -25764,7 +26470,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -25788,7 +26498,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -25832,7 +26546,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -25861,12 +26579,16 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.1"
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "magicpowder",
@@ -26017,7 +26739,12 @@
         "standard_damage",
         "accuracy",
         "advanced_targeting",
-        "self_effect"
+        "self_effect",
+        "target_set",
+        "spread_damage",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -26045,7 +26772,12 @@
         "advanced_targeting",
         "secondary_effect",
         "drain",
-        "special_behavior"
+        "special_behavior",
+        "target_set",
+        "spread_damage",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -26121,12 +26853,16 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.1"
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "megakick",
@@ -26201,12 +26937,16 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.1"
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "memento",
@@ -26345,7 +27085,11 @@
         "selected_single_target",
         "accuracy",
         "self_effect",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -26386,7 +27130,11 @@
         "selected_single_target",
         "accuracy",
         "custom_callback",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -26412,7 +27160,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -26547,7 +27299,12 @@
         "accuracy",
         "advanced_targeting",
         "custom_callback",
-        "special_behavior"
+        "special_behavior",
+        "target_set",
+        "spread_damage",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -26642,7 +27399,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -26725,7 +27486,12 @@
         "accuracy",
         "advanced_targeting",
         "secondary_effect",
-        "custom_callback"
+        "custom_callback",
+        "target_set",
+        "spread_damage",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -26749,7 +27515,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -26803,7 +27573,12 @@
         "standard_damage",
         "accuracy",
         "advanced_targeting",
-        "secondary_effect"
+        "secondary_effect",
+        "target_set",
+        "spread_damage",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -26890,7 +27665,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -26981,7 +27760,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -27030,7 +27813,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -27147,7 +27934,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -27273,12 +28064,16 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.1"
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "nobleroar",
@@ -27363,7 +28158,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -27471,7 +28270,10 @@
         "standard_damage",
         "accuracy",
         "advanced_targeting",
-        "self_effect"
+        "self_effect",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -27484,6 +28286,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/toxtricity",
         "species/toxtricitylowkey"
       ],
@@ -27494,12 +28298,17 @@
       "required_capabilities": [
         "standard_damage",
         "accuracy",
-        "advanced_targeting"
+        "advanced_targeting",
+        "target_set",
+        "spread_damage",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "overheat",
@@ -27548,7 +28357,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "self_effect"
+        "self_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -27661,7 +28474,12 @@
         "accuracy",
         "advanced_targeting",
         "drain",
-        "special_behavior"
+        "special_behavior",
+        "target_set",
+        "spread_damage",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -27805,7 +28623,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -27848,6 +28670,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/arboliva",
         "species/floetteeternal",
         "species/florges",
@@ -27866,12 +28690,17 @@
       "required_capabilities": [
         "standard_damage",
         "accuracy",
-        "advanced_targeting"
+        "advanced_targeting",
+        "target_set",
+        "spread_damage",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "petaldance",
@@ -27896,7 +28725,10 @@
         "standard_damage",
         "accuracy",
         "advanced_targeting",
-        "self_effect"
+        "self_effect",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -27946,7 +28778,11 @@
         "selected_single_target",
         "accuracy",
         "custom_callback",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -27983,7 +28819,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "multi_hit"
+        "multi_hit",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -28063,7 +28903,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -28093,7 +28937,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -28122,7 +28970,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -28201,7 +29053,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -28301,7 +29157,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -28356,7 +29216,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -28382,7 +29246,11 @@
         "selected_single_target",
         "accuracy",
         "multi_hit",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -28455,7 +29323,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -28496,7 +29368,11 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "differential_verified",
@@ -28624,7 +29500,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -28661,7 +29541,11 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "not_tested",
@@ -28674,6 +29558,10 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-2-doubles-targeting.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#spread_damage_keeps_protected_targets_in_the_spread_modifier_and_ignores_redirection",
         "species/abomasnow",
         "species/absol",
         "species/aegislash",
@@ -28965,7 +29853,8 @@
         "species/wigglytuff",
         "species/wyrdeer",
         "species/zoroark",
-        "species/zoroarkhisui"
+        "species/zoroarkhisui",
+        "unit:crates/rotom-dex/tests/combat.rs#follow_me_redirects_single_target_moves_and_repeat_protect_uses_the_battle_rng"
       ],
       "effect_families": [
         "custom_callback",
@@ -28974,17 +29863,14 @@
       ],
       "operation": "non_damage",
       "required_capabilities": [
-        "accuracy",
         "non_damage_primary",
-        "advanced_targeting",
         "volatile",
-        "custom_callback",
-        "special_behavior"
+        "protection"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "unit_tested",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "psychic",
@@ -29099,7 +29985,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -29152,7 +30042,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -29201,7 +30095,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -29286,12 +30184,16 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.1"
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "psychup",
@@ -29403,7 +30305,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -29475,7 +30381,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -29500,7 +30410,11 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -29606,12 +30520,16 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.1"
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "quickguard",
@@ -29724,7 +30642,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -29737,6 +30659,10 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-2-doubles-targeting.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#rage_powder_respects_grass_overcoat_and_safety_goggles_and_feint_breaks_protect",
         "species/ariados",
         "species/scovillain",
         "species/sinistcha",
@@ -29761,7 +30687,8 @@
         "species/vivillonsavanna",
         "species/vivillonsun",
         "species/vivillontundra",
-        "species/volcarona"
+        "species/volcarona",
+        "unit:crates/rotom-dex/tests/combat.rs#rage_powder_respects_grass_overcoat_and_safety_goggles_and_feint_breaks_protect"
       ],
       "effect_families": [
         "custom_callback",
@@ -29770,17 +30697,14 @@
       ],
       "operation": "non_damage",
       "required_capabilities": [
-        "accuracy",
         "non_damage_primary",
-        "advanced_targeting",
         "volatile",
-        "custom_callback",
-        "special_behavior"
+        "redirection"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "unit_tested",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "ragingbull",
@@ -29802,7 +30726,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -29828,7 +30756,10 @@
         "standard_damage",
         "accuracy",
         "advanced_targeting",
-        "self_effect"
+        "self_effect",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -30095,7 +31026,11 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -30126,7 +31061,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -30815,7 +31754,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -30963,7 +31906,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "multi_hit"
+        "multi_hit",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -31124,7 +32071,12 @@
         "standard_damage",
         "accuracy",
         "advanced_targeting",
-        "secondary_effect"
+        "secondary_effect",
+        "target_set",
+        "spread_damage",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -31248,7 +32200,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -31273,7 +32229,11 @@
         "selected_single_target",
         "accuracy",
         "self_effect",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -31634,7 +32594,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -31660,7 +32624,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -31789,7 +32757,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -31888,6 +32860,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/aggron",
         "species/bastiodon",
         "species/diggersby",
@@ -31918,12 +32892,16 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "volatile"
+        "volatile",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "scald",
@@ -31962,7 +32940,11 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -32013,7 +32995,11 @@
         "selected_single_target",
         "accuracy",
         "multi_hit",
-        "self_effect"
+        "self_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -32213,7 +33199,11 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -32370,7 +33360,11 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "not_tested",
@@ -32448,7 +33442,12 @@
         "standard_damage",
         "accuracy",
         "advanced_targeting",
-        "special_behavior"
+        "special_behavior",
+        "target_set",
+        "spread_damage",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -32581,7 +33580,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -32667,12 +33670,16 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.1"
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "shadowpunch",
@@ -32700,12 +33707,16 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.1"
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "shadowsneak",
@@ -32742,12 +33753,16 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.1"
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "shedtail",
@@ -32828,7 +33843,11 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -33121,7 +34140,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -33158,7 +34181,11 @@
         "accuracy",
         "secondary_effect",
         "custom_callback",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -33250,12 +34277,16 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.1"
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "sleeppowder",
@@ -33687,7 +34718,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -33739,7 +34774,12 @@
         "standard_damage",
         "accuracy",
         "advanced_targeting",
-        "secondary_effect"
+        "secondary_effect",
+        "target_set",
+        "spread_damage",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -33752,6 +34792,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/annihilape",
         "species/arcaninehisui",
         "species/archaludon",
@@ -33801,12 +34843,16 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "volatile"
+        "volatile",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "smartstrike",
@@ -33840,12 +34886,16 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.1"
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "snaptrap",
@@ -33853,6 +34903,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/stunfiskgalar"
       ],
       "effect_families": [
@@ -33864,12 +34916,16 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "volatile"
+        "volatile",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "snarl",
@@ -33934,7 +34990,12 @@
         "standard_damage",
         "accuracy",
         "advanced_targeting",
-        "secondary_effect"
+        "secondary_effect",
+        "target_set",
+        "spread_damage",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -33957,7 +35018,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -34234,7 +35299,11 @@
         "accuracy",
         "secondary_effect",
         "custom_callback",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -34458,7 +35527,11 @@
         "selected_single_target",
         "accuracy",
         "custom_callback",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -34496,7 +35569,11 @@
         "selected_single_target",
         "accuracy",
         "custom_callback",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -34521,7 +35598,12 @@
         "accuracy",
         "advanced_targeting",
         "secondary_effect",
-        "custom_callback"
+        "custom_callback",
+        "target_set",
+        "spread_damage",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -34671,7 +35753,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -34695,7 +35781,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -34933,7 +36023,11 @@
         "selected_single_target",
         "accuracy",
         "custom_callback",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -34967,7 +36061,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -35014,7 +36112,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -35180,7 +36282,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -35205,7 +36311,11 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -35294,12 +36404,16 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.1"
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "storedpower",
@@ -35379,7 +36493,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -35407,7 +36525,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -35537,7 +36659,12 @@
         "standard_damage",
         "accuracy",
         "advanced_targeting",
-        "secondary_effect"
+        "secondary_effect",
+        "target_set",
+        "spread_damage",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -36001,7 +37128,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -36268,7 +37399,11 @@
         "selected_single_target",
         "accuracy",
         "custom_callback",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -36385,7 +37520,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "self_effect"
+        "self_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -36398,6 +37537,11 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:data/fixtures/differential/doubles-targeting.json",
+        "file:docs/research/pr-13-2-doubles-targeting.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#spread_damage_keeps_protected_targets_in_the_spread_modifier_and_ignores_redirection",
         "species/aggron",
         "species/araquanid",
         "species/audino",
@@ -36465,7 +37609,8 @@
         "species/toxapex",
         "species/tyranitar",
         "species/vaporeon",
-        "species/weavile"
+        "species/weavile",
+        "unit:crates/rotom-dex/tests/combat.rs#spread_damage_keeps_protected_targets_in_the_spread_modifier_and_ignores_redirection"
       ],
       "effect_families": [
         "damage"
@@ -36474,12 +37619,17 @@
       "required_capabilities": [
         "standard_damage",
         "accuracy",
-        "advanced_targeting"
+        "advanced_targeting",
+        "target_set",
+        "spread_damage",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "unit_tested",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "swagger",
@@ -36887,7 +38037,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -36917,7 +38071,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "multi_hit"
+        "multi_hit",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -37245,7 +38403,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -37278,7 +38440,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -37457,7 +38623,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -37514,7 +38684,10 @@
         "standard_damage",
         "accuracy",
         "advanced_targeting",
-        "self_effect"
+        "self_effect",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -37605,7 +38778,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -37695,7 +38872,11 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -37790,7 +38971,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -37850,7 +39035,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -37938,7 +39127,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -38171,7 +39364,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -38485,7 +39682,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -38553,7 +39754,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -38762,7 +39967,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -38802,7 +40011,11 @@
         "accuracy",
         "multi_hit",
         "custom_callback",
-        "special_behavior"
+        "special_behavior",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -38826,7 +40039,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -38850,7 +40067,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "multi_hit"
+        "multi_hit",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -38903,7 +40124,11 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -39015,7 +40240,10 @@
         "accuracy",
         "advanced_targeting",
         "self_effect",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -39113,7 +40341,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "switch_control"
+        "switch_control",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -39156,12 +40388,16 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.1"
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "venoshock",
@@ -39206,7 +40442,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -39252,7 +40492,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "switch_control"
+        "switch_control",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -39280,7 +40524,11 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
-        "recoil"
+        "recoil",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -39338,7 +40586,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -39412,7 +40664,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -39438,7 +40694,11 @@
         "selected_single_target",
         "accuracy",
         "multi_hit",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -39462,7 +40722,12 @@
         "standard_damage",
         "accuracy",
         "advanced_targeting",
-        "custom_callback"
+        "custom_callback",
+        "target_set",
+        "spread_damage",
+        "protection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -39493,7 +40758,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "recoil"
+        "recoil",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -39581,7 +40850,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback"
+        "custom_callback",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -39594,6 +40867,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/aggron",
         "species/azumarill",
         "species/barbaracle",
@@ -39636,12 +40911,16 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "volatile"
+        "volatile",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "whirlwind",
@@ -39797,7 +41076,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "recoil"
+        "recoil",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -40019,7 +41302,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "recoil"
+        "recoil",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -40070,6 +41357,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/arbok",
         "species/chimecho",
         "species/dragonite",
@@ -40089,12 +41378,16 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "volatile"
+        "volatile",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "xscissor",
@@ -40144,12 +41437,16 @@
       "required_capabilities": [
         "standard_damage",
         "selected_single_target",
-        "accuracy"
+        "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.1"
+      "owner_pr": "PR 13.2"
     },
     {
       "id": "yawn",
@@ -40238,7 +41535,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -40348,7 +41649,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -40372,7 +41677,11 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "secondary_effect"
+        "secondary_effect",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -45572,18 +46881,18 @@
       "move": {
         "total": 510,
         "implementation": {
-          "unsupported": 473,
+          "unsupported": 452,
           "partial": 0,
-          "implemented": 37
+          "implemented": 58
         },
         "verification": {
-          "not_tested": 504,
-          "unit_tested": 1,
+          "not_tested": 499,
+          "unit_tested": 6,
           "differential_verified": 5
         },
         "interaction_verification": {
-          "not_tested": 510,
-          "unit_tested": 0,
+          "not_tested": 505,
+          "unit_tested": 5,
           "differential_verified": 0
         },
         "reachability": {

@@ -41,6 +41,12 @@ pub struct FieldEffectIds {
     pub thunder: Option<MoveId>,
     pub hurricane: Option<MoveId>,
     pub blizzard: Option<MoveId>,
+    pub protect: Option<ConditionId>,
+    pub follow_me: Option<ConditionId>,
+    pub rage_powder: Option<ConditionId>,
+    pub stall: Option<ConditionId>,
+    pub overcoat: Option<AbilityId>,
+    pub safety_goggles: Option<ItemId>,
 }
 
 impl FieldEffectIds {
@@ -163,6 +169,10 @@ impl FieldEffectIds {
             self.smack_down,
             self.magnet_rise,
             self.telekinesis,
+            self.protect,
+            self.follow_me,
+            self.rage_powder,
+            self.stall,
         ]
         .into_iter()
         .flatten()

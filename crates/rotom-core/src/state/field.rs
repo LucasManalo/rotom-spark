@@ -15,6 +15,10 @@ pub struct ConditionState {
     /// Ordinary weather, terrain, rooms, screens, and volatiles use one.
     #[serde(default = "default_condition_layers")]
     pub layers: u8,
+    /// Optional mechanics-owned counter for conditions whose state is neither
+    /// a duration nor a layer count (for example Protect's stall chain).
+    #[serde(default)]
+    pub counter: Option<u16>,
 }
 
 impl ConditionState {
@@ -24,6 +28,7 @@ impl ConditionState {
             id,
             turns_remaining,
             layers: 1,
+            counter: None,
         }
     }
 
@@ -35,6 +40,17 @@ impl ConditionState {
             id,
             turns_remaining,
             layers,
+            counter: None,
+        }
+    }
+
+    #[must_use]
+    pub const fn with_counter(id: ConditionId, turns_remaining: Option<u8>, counter: u16) -> Self {
+        Self {
+            id,
+            turns_remaining,
+            layers: 1,
+            counter: Some(counter),
         }
     }
 }

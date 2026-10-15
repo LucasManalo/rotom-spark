@@ -341,7 +341,7 @@ fn authoritative_target_mismatch_is_rejected_atomically() {
 }
 
 #[test]
-fn removed_selected_target_returns_reproducible_atomic_retargeting_error_for_supported_targets() {
+fn removed_selected_foe_retargets_to_the_remaining_foe_reproducibly() {
     let effects = EffectRegistry::new();
     let current = started(0xfeed);
     let before = current.clone();
@@ -359,14 +359,19 @@ fn removed_selected_target_returns_reproducible_atomic_retargeting_error_for_sup
             ..TestData::basic(1_000)
         };
         let mechanics = Mechanics::new(&data, &effects);
-        let first = step(&current, &action, &mechanics).unwrap_err();
-        let replay = step(&current, &action, &mechanics).unwrap_err();
+        let first = step(&current, &action, &mechanics).unwrap();
+        let replay = step(&current, &action, &mechanics).unwrap();
         assert_eq!(first, replay, "{target:?}");
-        assert!(matches!(first, BattleError::UnsupportedMechanic(_)));
-        assert!(first.to_string().contains("retargeting"));
+        let outcomes = &first.diagnostics.turn.as_ref().unwrap().target_outcomes;
+        assert_eq!(outcomes.len(), 2);
+        assert_eq!(outcomes[1].target.side, SideId::P2);
+        assert_eq!(outcomes[1].target.pokemon, PokemonIndex::new(1));
+        assert!(outcomes
+            .iter()
+            .all(|outcome| outcome.result == rotom_core::TargetResult::Hit && outcome.fainted));
         assert_eq!(
             current, before,
-            "{target:?} failed resolution must not commit its first hit, PP, or RNG"
+            "{target:?} successful resolution must leave the input branch unchanged"
         );
     }
 }

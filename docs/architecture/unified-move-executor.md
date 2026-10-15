@@ -102,10 +102,10 @@ without a category-specific or move-specific run loop.
 - Legal-action enumeration remains the primary target selector. Move
   preparation independently checks the selected `ActionTarget` against the
   authoritative resolved definition so a stale or inconsistent move-slot
-  target cannot cross the executor boundary. In the current doubles slice,
-  `Normal` and `Any` accept either foe or the other ally, while `AdjacentFoe`
-  accepts foes only; self/automatic selections are rejected. Empty or fainted
-  selected slots still return the explicit deferred-retargeting error.
+  target cannot cross the executor boundary. PR 13.2 separates the selected
+  location from the resolved target set and per-target outcomes. Missing foe
+  locations retarget to the remaining foe; missing allies fail, except for the
+  reference-defined `AdjacentAllyOrSelf` fallback.
 - Move flags are retained in the Dex. Flags with intrinsic execution behavior
   (charge, recharge, future move, and similar) require `special_behavior`.
   Cross-source flag interactions such as contact abilities remain deferred
@@ -119,11 +119,27 @@ without a category-specific or move-specific run loop.
   executed complete Showdown transition. No PR 13.1 move currently claims
   full battle-transition or complete ability/item interaction verification.
 
-## Unsupported after PR 13.1
+## PR 13.2 target and guard extension
 
-The executor rejects non-damage primary operations, advanced/spread/random
-targeting, retargeting, fixed/level/OHKO damage, multi-hit, secondaries,
-self-effects, status/volatile/stat-stage/healing operations, drain/recoil,
+The same executor now expands doubles target sets in stable ally-then-foe
+order, records typed per-target outcomes, applies the spread modifier from the
+pre-filter target count, and resolves TryHit, protection, type immunity,
+accuracy, damage, reactions, and fainting per target. Protect, Follow Me, and
+Rage Powder are narrow supported non-damage intrinsics that install reusable
+one-turn volatiles through `StateKernel`; the repeat Protect counter remains
+authoritative volatile state and all odds use the battle RNG.
+
+Capability preflight distinguishes target sets, spread damage, per-target hit
+resolution, protection, redirection, and retargeting. Side/field, random, and
+scripted target categories remain explicit unsupported operations rather than
+falling through to a Pokémon target.
+
+## Unsupported after PR 13.2
+
+The executor rejects non-damage primary operations other than Protect and the
+two redirectors, random/scripted and side/field targeting, fixed/level/OHKO
+damage, multi-hit, secondaries, self-effects, broad
+status/volatile/stat-stage/healing operations, drain/recoil,
 field/side conditions, move calls, switch control, move-specific callbacks,
 charge/recharge and other special behavior. Struggle and Mega Evolution also
 remain explicit unsupported mechanics.

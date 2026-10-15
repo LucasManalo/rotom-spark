@@ -73,12 +73,30 @@ const CAPABILITY_ORDER = [
 	'calls_move',
 	'custom_callback',
 	'special_behavior',
+	'target_set',
+	'spread_damage',
+	'protection',
+	'redirection',
+	'retargeting',
+	'per_target_hit',
 ];
 
 const PR_13_1_CAPABILITIES = new Set([
 	'standard_damage',
 	'selected_single_target',
 	'accuracy',
+]);
+const PR_13_2_CAPABILITIES = new Set([
+	...PR_13_1_CAPABILITIES,
+	'advanced_targeting',
+	'non_damage_primary',
+	'volatile',
+	'target_set',
+	'spread_damage',
+	'protection',
+	'redirection',
+	'retargeting',
+	'per_target_hit',
 ]);
 
 function sortedStrings(values) {
@@ -107,6 +125,12 @@ function moveBehavior(move) {
 }
 
 function moveExecutionRequirements(move) {
+	if (move.id === 'protect') {
+		return {operation: 'non_damage', required_capabilities: ['non_damage_primary', 'volatile', 'protection']};
+	}
+	if (['followme', 'ragepowder'].includes(move.id)) {
+		return {operation: 'non_damage', required_capabilities: ['non_damage_primary', 'volatile', 'redirection']};
+	}
 	const behavior = moveBehavior(move);
 	const capabilities = new Set(['accuracy']);
 	let operation;
@@ -128,6 +152,17 @@ function moveExecutionRequirements(move) {
 	} else {
 		capabilities.add('advanced_targeting');
 	}
+	if (move.category !== 'Status' && move.basePower > 0) {
+		capabilities.add('per_target_hit');
+		capabilities.add('protection');
+		capabilities.add('retargeting');
+		if (['allAdjacent', 'allAdjacentFoes'].includes(move.target)) {
+			capabilities.add('target_set');
+			capabilities.add('spread_damage');
+		} else if (['normal', 'any', 'adjacentFoe'].includes(move.target)) {
+			capabilities.add('redirection');
+		}
+	}
 	if (move.multihit) capabilities.add('multi_hit');
 	if (move.drain) capabilities.add('drain');
 	if (move.recoil) capabilities.add('recoil');
@@ -135,7 +170,7 @@ function moveExecutionRequirements(move) {
 	if (move.volatileStatus) capabilities.add('volatile');
 	for (const effectKind of behavior.effect_kinds) capabilities.add(effectKind);
 	if (behavior.callbacks.length) capabilities.add('custom_callback');
-	if (behavior.intrinsic_flags.length || behavior.special_properties.length) {
+	if (behavior.intrinsic_flags.length || behavior.special_properties.some(property => property !== 'breaksProtect')) {
 		capabilities.add('special_behavior');
 	}
 	return {
@@ -149,4 +184,9 @@ function isPr131Supported(move) {
 		.every(capability => PR_13_1_CAPABILITIES.has(capability));
 }
 
-module.exports = {isPr131Supported, moveBehavior, moveExecutionRequirements};
+function isPr132Supported(move) {
+	return moveExecutionRequirements(move).required_capabilities
+		.every(capability => PR_13_2_CAPABILITIES.has(capability));
+}
+
+module.exports = {isPr131Supported, isPr132Supported, moveBehavior, moveExecutionRequirements};

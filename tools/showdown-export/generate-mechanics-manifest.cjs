@@ -5,7 +5,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const {execFileSync} = require('node:child_process');
-const {isPr131Supported, moveExecutionRequirements} = require('./move-capabilities.cjs');
+const {isPr131Supported, isPr132Supported, moveExecutionRequirements} = require('./move-capabilities.cjs');
 
 const repositoryRoot = path.resolve(__dirname, '..', '..');
 const showdownRoot = path.join(repositoryRoot, 'vendor', 'pokemon-showdown');
@@ -387,14 +387,18 @@ function coverageClaims() {
 }
 
 function entryWithCoverage(base, claims) {
-	const {pr_13_1_supported: pr131Supported = false, ...entry} = base;
+	const {
+		pr_13_1_supported: pr131Supported = false,
+		pr_13_2_supported: pr132Supported = false,
+		...entry
+	} = base;
 	const key = `${base.kind}:${base.id}`;
 	const claim = claims.get(key);
-	const automatic = pr131Supported ? {
+	const automatic = pr132Supported ? {
 		implementation: 'implemented',
 		verification: 'not_tested',
 		interaction_verification: 'not_tested',
-		owner_pr: 'PR 13.1',
+		owner_pr: pr131Supported ? 'PR 13.1' : 'PR 13.2',
 	} : defaultCoverage();
 	const coverage = claim ? {
 		implementation: claim.implementation,
@@ -406,7 +410,7 @@ function entryWithCoverage(base, claims) {
 		...entry,
 		evidence: uniqueSorted([
 			...(base.evidence || []),
-			...(pr131Supported ? [
+			...(pr132Supported ? [
 				'file:crates/rotom-core/src/combat.rs',
 				'file:crates/rotom-dex/src/combat.rs',
 			] : []),
@@ -485,6 +489,7 @@ function buildManifest(version, Showdown) {
 			effect_families: moveFamilies(move),
 			operation: requirements.operation,
 			required_capabilities: requirements.required_capabilities,
+			pr_13_2_supported: isPr132Supported(move),
 			pr_13_1_supported: isPr131Supported(move),
 		}, claims));
 		collectConditionReferences(move, `move/${id}`, conditions);
@@ -629,7 +634,7 @@ function buildManifest(version, Showdown) {
 	for (const claim of claims.values()) {
 		if (claim.kind !== 'move' || claim.implementation !== 'implemented') continue;
 		const move = dex.moves.get(claim.id);
-		if (!isPr131Supported(move)) {
+		if (!isPr132Supported(move)) {
 			fail(`Move ${claim.id} is claimed implemented but requires unsupported capabilities`);
 		}
 	}

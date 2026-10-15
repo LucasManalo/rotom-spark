@@ -88,6 +88,72 @@
       "evidence": [
         "file:crates/rotom-dex/src/combat.rs"
       ]
+    },
+    {
+      "id": "surf",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "unit_tested",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.2",
+      "evidence": [
+        "file:docs/research/pr-13-2-doubles-targeting.md",
+        "file:data/fixtures/differential/doubles-targeting.json",
+        "unit:crates/rotom-dex/tests/combat.rs#spread_damage_keeps_protected_targets_in_the_spread_modifier_and_ignores_redirection",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#spread_damage_keeps_protected_targets_in_the_spread_modifier_and_ignores_redirection"
+      ]
+    },
+    {
+      "id": "protect",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "unit_tested",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.2",
+      "evidence": [
+        "file:docs/research/pr-13-2-doubles-targeting.md",
+        "unit:crates/rotom-dex/tests/combat.rs#follow_me_redirects_single_target_moves_and_repeat_protect_uses_the_battle_rng",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#spread_damage_keeps_protected_targets_in_the_spread_modifier_and_ignores_redirection"
+      ]
+    },
+    {
+      "id": "followme",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "unit_tested",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.2",
+      "evidence": [
+        "file:docs/research/pr-13-2-doubles-targeting.md",
+        "unit:crates/rotom-dex/tests/combat.rs#follow_me_redirects_single_target_moves_and_repeat_protect_uses_the_battle_rng",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#follow_me_redirects_single_target_moves_and_repeat_protect_uses_the_battle_rng"
+      ]
+    },
+    {
+      "id": "ragepowder",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "unit_tested",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.2",
+      "evidence": [
+        "file:docs/research/pr-13-2-doubles-targeting.md",
+        "unit:crates/rotom-dex/tests/combat.rs#rage_powder_respects_grass_overcoat_and_safety_goggles_and_feint_breaks_protect",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#rage_powder_respects_grass_overcoat_and_safety_goggles_and_feint_breaks_protect"
+      ]
+    },
+    {
+      "id": "feint",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "unit_tested",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.2",
+      "evidence": [
+        "file:docs/research/pr-13-2-doubles-targeting.md",
+        "unit:crates/rotom-dex/tests/combat.rs#rage_powder_respects_grass_overcoat_and_safety_goggles_and_feint_breaks_protect",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#rage_powder_respects_grass_overcoat_and_safety_goggles_and_feint_breaks_protect"
+      ]
     }
   ]
 }

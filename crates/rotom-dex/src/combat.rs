@@ -1,9 +1,9 @@
 use crate::{Accuracy, DexData, MoveBehaviorKind, MoveData, SpeciesData, Stats};
 use rotom_core::{
     BattleError, BattleStats, CombatData, CombatMove, ConditionId, FieldEffectIds, MoveAccuracy,
-    MoveCapabilities, MoveCapability, MoveCategory, MoveId, MoveOperation, MoveSlot, MoveTarget,
-    PokemonPosition, PokemonSet, PokemonState, PokemonType, PokemonTypes, StatAllocation,
-    StatStages, StatusState,
+    MoveCapabilities, MoveCapability, MoveCategory, MoveId, MoveIntrinsic, MoveOperation, MoveSlot,
+    MoveTarget, PokemonPosition, PokemonSet, PokemonState, PokemonType, PokemonTypes,
+    StatAllocation, StatStages, StatusState,
 };
 
 impl CombatData for DexData {
@@ -53,6 +53,29 @@ impl CombatData for DexData {
         }
     }
 
+    fn move_intrinsic(&self, move_id: MoveId) -> MoveIntrinsic {
+        match self.move_data(move_id).map(|data| data.id.as_str()) {
+            Some("protect") => MoveIntrinsic::Protect,
+            Some("followme") => MoveIntrinsic::FollowMe,
+            Some("ragepowder") => MoveIntrinsic::RagePowder,
+            _ => MoveIntrinsic::Ordinary,
+        }
+    }
+
+    fn move_is_protectable(&self, move_id: MoveId) -> bool {
+        self.move_data(move_id)
+            .is_some_and(|data| data.flags.iter().any(|flag| flag == "protect"))
+    }
+
+    fn move_breaks_protect(&self, move_id: MoveId) -> bool {
+        self.move_data(move_id).is_some_and(|data| {
+            data.behavior
+                .special_properties
+                .iter()
+                .any(|property| property == "breaksProtect")
+        })
+    }
+
     fn field_effect_ids(&self) -> FieldEffectIds {
         let condition = |id: &str| {
             self.resolve_move(id)
@@ -88,11 +111,45 @@ impl CombatData for DexData {
             thunder: self.resolve_move("thunder").map(|(id, _)| id),
             hurricane: self.resolve_move("hurricane").map(|(id, _)| id),
             blizzard: self.resolve_move("blizzard").map(|(id, _)| id),
+            protect: self
+                .resolve_move("protect")
+                .map(|(id, _)| ConditionId::new(id.get())),
+            follow_me: self
+                .resolve_move("followme")
+                .map(|(id, _)| ConditionId::new(id.get())),
+            rage_powder: self
+                .resolve_move("ragepowder")
+                .map(|(id, _)| ConditionId::new(id.get())),
+            // `stall` is not a move-backed generated identity; reserve a stable
+            // condition ID immediately above the compact move-ID domain.
+            stall: Some(ConditionId::new(
+                u32::try_from(self.moves.len()).unwrap_or(u32::MAX),
+            )),
+            overcoat: self.resolve_ability("overcoat").map(|(id, _)| id),
+            safety_goggles: self.resolve_item("safetygoggles").map(|(id, _)| id),
         }
     }
 }
 
 fn move_execution_requirements(data: &MoveData) -> (MoveOperation, MoveCapabilities) {
+    if data.id == "protect" {
+        return (
+            MoveOperation::NonDamage,
+            MoveCapabilities::NONE
+                .with(MoveCapability::NonDamagePrimary)
+                .with(MoveCapability::Protection)
+                .with(MoveCapability::Volatile),
+        );
+    }
+    if matches!(data.id.as_str(), "followme" | "ragepowder") {
+        return (
+            MoveOperation::NonDamage,
+            MoveCapabilities::NONE
+                .with(MoveCapability::NonDamagePrimary)
+                .with(MoveCapability::Redirection)
+                .with(MoveCapability::Volatile),
+        );
+    }
     let (operation, mut required) = match data.damage {
         Some(crate::Damage::Fixed { .. }) => (
             MoveOperation::FixedDamage,
@@ -114,6 +171,25 @@ fn move_execution_requirements(data: &MoveData) -> (MoveOperation, MoveCapabilit
 
     required = required.with(MoveCapability::Accuracy);
     required = required.with(target_capability(data.target));
+    if data.category != "Status" && data.base_power > 0 {
+        required = required
+            .with(MoveCapability::PerTargetHit)
+            .with(MoveCapability::Protection)
+            .with(MoveCapability::Retargeting);
+        if matches!(
+            data.target,
+            MoveTarget::AllAdjacent | MoveTarget::AllAdjacentFoes
+        ) {
+            required = required
+                .with(MoveCapability::TargetSet)
+                .with(MoveCapability::SpreadDamage);
+        } else if matches!(
+            data.target,
+            MoveTarget::Normal | MoveTarget::AdjacentFoe | MoveTarget::Any
+        ) {
+            required = required.with(MoveCapability::Redirection);
+        }
+    }
     if data.multi_hit.is_some() {
         required = required.with(MoveCapability::MultiHit);
     }
@@ -205,7 +281,12 @@ fn behavior_capabilities(data: &MoveData, mut required: MoveCapabilities) -> Mov
     if !data.behavior.callbacks.is_empty() {
         required = required.with(MoveCapability::CustomCallback);
     }
-    if !data.behavior.intrinsic_flags.is_empty() || !data.behavior.special_properties.is_empty() {
+    let unsupported_special = data
+        .behavior
+        .special_properties
+        .iter()
+        .any(|property| property != "breaksProtect");
+    if !data.behavior.intrinsic_flags.is_empty() || unsupported_special {
         required = required.with(MoveCapability::SpecialBehavior);
     }
     required

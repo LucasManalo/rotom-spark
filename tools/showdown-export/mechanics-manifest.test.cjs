@@ -65,9 +65,9 @@ test('coverage claims do not confuse implementation with verification', () => {
 		'unit:crates/rotom-dex/tests/combat.rs#queued_turn_consumes_pp_and_updates_hp'
 	));
 	assert.equal(entry('move', 'aquatail').interaction_verification, 'not_tested');
-	assert.equal(entry('move', 'protect').implementation, 'unsupported');
-	assert.equal(entry('move', 'protect').verification, 'not_tested');
-	assert.equal(entry('move', 'protect').interaction_verification, 'not_tested');
+	assert.equal(entry('move', 'protect').implementation, 'implemented');
+	assert.equal(entry('move', 'protect').verification, 'unit_tested');
+	assert.equal(entry('move', 'protect').interaction_verification, 'unit_tested');
 });
 
 test('move support is derived from complete executor capabilities', () => {
@@ -75,28 +75,36 @@ test('move support is derived from complete executor capabilities', () => {
 	assert.equal(dragonClaw.operation, 'standard_damage');
 	assert.deepEqual(
 		dragonClaw.required_capabilities,
-		['standard_damage', 'selected_single_target', 'accuracy']
+		[
+			'standard_damage', 'selected_single_target', 'accuracy', 'protection',
+			'redirection', 'retargeting', 'per_target_hit',
+		]
 	);
 	assert.equal(dragonClaw.implementation, 'implemented');
 	assert.equal(dragonClaw.owner_pr, 'PR 13.1');
-	assert.equal(manifest.summary.by_kind.move.implementation.implemented, 37);
+	assert.equal(manifest.summary.by_kind.move.implementation.implemented, 58);
 	assert.deepEqual(
 		manifest.summary.by_kind.move.verification,
-		{not_tested: 504, unit_tested: 1, differential_verified: 5}
+		{not_tested: 499, unit_tested: 6, differential_verified: 5}
 	);
 	const implementedMoves = manifest.entries.filter(candidate =>
 		candidate.kind === 'move' && candidate.implementation === 'implemented'
 	);
-	assert.equal(implementedMoves.filter(candidate => candidate.verification === 'not_tested').length, 31);
+	assert.equal(implementedMoves.filter(candidate => candidate.verification === 'not_tested').length, 47);
 	assert.deepEqual(
 		manifest.summary.by_kind.move.interaction_verification,
-		{not_tested: 510, unit_tested: 0, differential_verified: 0}
+		{not_tested: 505, unit_tested: 5, differential_verified: 0}
 	);
+	assert.deepEqual(entry('move', 'surf').required_capabilities, [
+		'standard_damage', 'accuracy', 'advanced_targeting', 'target_set',
+		'spread_damage', 'protection', 'retargeting', 'per_target_hit',
+	]);
+	assert.equal(entry('move', 'surf').implementation, 'implemented');
+	assert.equal(entry('move', 'surf').owner_pr, 'PR 13.2');
 
 	for (const [id, capability] of [
 		['flamethrower', 'secondary_effect'],
 		['facade', 'custom_callback'],
-		['surf', 'advanced_targeting'],
 		['bulletseed', 'multi_hit'],
 		['gigadrain', 'drain'],
 		['electroshot', 'custom_callback'],

@@ -153,3 +153,10 @@ ephemeral `MoveExecutionContext` are immutable or temporary calculation data,
 not battle state. `AfterDamage` now receives the kernel-reported applied HP
 delta rather than the requested pre-clamp amount.
 
+PR 13.2 adds no direct authoritative write path. Per-target contexts and
+outcomes are ephemeral diagnostics. Spread damage still uses
+`StateKernel::damage_hp`; Protect, Follow Me, Rage Powder, their expiry, and
+the Protect stall counter use typed volatile add/remove/tick operations.
+Target selection, redirection eligibility, protection, immunity, damage and
+RNG decisions remain mechanics-owned.
+

@@ -156,7 +156,7 @@ fn generated_move_coverage_matches_runtime_capability_preflight() {
             .expect("reachable move has combat data");
         let runtime_supported = definition
             .required_capabilities
-            .first_missing_from(MoveCapabilities::PR_13_1)
+            .first_missing_from(MoveCapabilities::PR_13_2)
             .is_none();
         assert_eq!(
             entry.implementation == "implemented",

@@ -16,6 +16,7 @@ pub enum RngReason {
     Confusion,
     MultiHit,
     SpeedTie,
+    Protect,
     RandomTarget,
     RandomMove,
     /// A temporary typed label for mechanics that do not have a dedicated

@@ -10,6 +10,13 @@ use serde::Deserialize;
 
 const SHOWDOWN_COMMIT: &str = "b79ce06d06b8f0dc8de8bb348bc9cab5d931553f";
 
+fn doubles_targeting_fixture() -> serde_json::Value {
+    serde_json::from_str(include_str!(
+        "../../../data/fixtures/differential/doubles-targeting.json"
+    ))
+    .expect("doubles targeting fixture")
+}
+
 #[derive(Debug, Deserialize)]
 struct DamageFixture {
     showdown_commit: String,
@@ -371,6 +378,29 @@ fn assert_step_state(
     assert_stable_serializable_state(&result.state, &case.name);
 }
 
+fn assert_immune_step_case(
+    result: &rotom_core::StepResult,
+    battle: &BattleState,
+    source: &rotom_core::PokemonState,
+    target: &rotom_core::PokemonState,
+    step_case: &CanonicalStepCase,
+) {
+    let turn = result.diagnostics.turn.as_ref().expect("turn diagnostics");
+    assert!(turn.target_outcomes.iter().any(|outcome| {
+        outcome.target.side == SideId::P2
+            && outcome.result == rotom_core::TargetResult::Immune
+            && outcome.applied_hp_loss == 0
+    }));
+    assert_step_state(
+        result,
+        battle,
+        source,
+        target,
+        rotom_core::ActiveSlot::Left,
+        step_case,
+    );
+}
+
 fn assert_ko_state(
     result: &rotom_core::StepResult,
     target_state: &rotom_core::PokemonState,
@@ -485,6 +515,341 @@ fn opposing_targets_choice() -> TurnChoice {
             }
         }),
     }
+}
+
+fn set_with_moves(
+    dex: &rotom_dex::DexData,
+    species: &str,
+    ability: &str,
+    moves: &[&str],
+) -> PokemonSet {
+    let mut result = set(
+        dex,
+        species,
+        ability,
+        "serious",
+        moves[0],
+        StatAllocation::ZERO,
+    );
+    result.moves = moves
+        .iter()
+        .map(|name| dex.resolve_move(name).expect("move identity").0)
+        .collect();
+    result
+}
+
+fn selected_battle_for_sets(
+    dex: &rotom_dex::DexData,
+    p1: &PokemonSet,
+    p2: &PokemonSet,
+    seed: u64,
+    trace: bool,
+) -> BattleState {
+    let make_side = |set: &PokemonSet| {
+        let pokemon = dex.pokemon_state(set).expect("battle Pokémon");
+        repeated_side(&pokemon)
+    };
+    let mut builder =
+        BattleStateBuilder::new_with_seed(make_side(p1), make_side(p2), 4, seed).expect("battle");
+    let selection = four_selection();
+    builder
+        .select_teams(selection.clone(), selection)
+        .expect("selected teams");
+    if trace {
+        builder.enable_rng_trace();
+    }
+    builder.build().expect("stable battle")
+}
+
+fn use_move(move_slot: u8, target: ActionTarget) -> PokemonAction {
+    PokemonAction::Move {
+        move_slot: MoveSlotIndex::new(move_slot),
+        target,
+        mega: false,
+    }
+}
+
+#[test]
+fn spread_damage_keeps_protected_targets_in_the_spread_modifier_and_ignores_redirection() {
+    let dex = champions_reg_mc().expect("generated Dex");
+    let fixture = doubles_targeting_fixture();
+    assert_eq!(fixture["showdown_commit"], SHOWDOWN_COMMIT);
+    assert_eq!(
+        fixture["spread"]["doubles_modifier"],
+        serde_json::json!([3, 4])
+    );
+    assert_eq!(
+        fixture["per_target_hit_order"],
+        serde_json::json!([
+            "try_hit",
+            "type_immunity",
+            "move_immunity",
+            "accuracy",
+            "damage"
+        ])
+    );
+    let p1 = set_with_moves(&dex, "goodra", "gooey", &["surf", "protect"]);
+    let p2 = set_with_moves(&dex, "clefairy", "friendguard", &["protect", "followme"]);
+    let battle = selected_battle_for_sets(&dex, &p1, &p2, 0x132, true);
+    let result = step(
+        &battle,
+        &JointAction::Turn {
+            p1: TurnChoice {
+                actions: [
+                    use_move(0, ActionTarget::Automatic),
+                    use_move(1, ActionTarget::Automatic),
+                ],
+            },
+            p2: TurnChoice {
+                actions: [
+                    use_move(0, ActionTarget::Automatic),
+                    use_move(1, ActionTarget::Automatic),
+                ],
+            },
+        },
+        &Mechanics::new(&dex, &EffectRegistry::new()),
+    )
+    .expect("spread/protection turn");
+    let turn = result.diagnostics.turn.as_ref().expect("turn diagnostics");
+    let surf = dex.resolve_move("surf").expect("Surf").0;
+    let surf_outcomes = turn
+        .events
+        .iter()
+        .find(|event| event.context.move_id == Some(surf));
+    assert!(
+        surf_outcomes.is_some(),
+        "Surf entered the shared event pipeline"
+    );
+    assert_eq!(turn.target_outcomes.len(), 6);
+    let p1_surf = &turn.target_outcomes[turn.target_outcomes.len() - 3..];
+    assert_eq!(
+        p1_surf
+            .iter()
+            .filter(|outcome| outcome.result == rotom_core::TargetResult::Protected)
+            .count(),
+        2
+    );
+    assert_eq!(
+        p1_surf
+            .iter()
+            .filter(|outcome| outcome.result == rotom_core::TargetResult::Hit)
+            .count(),
+        1
+    );
+    assert!(p1_surf.iter().all(|outcome| !outcome.redirected));
+    assert_eq!(p1_surf[0].target.side, SideId::P1);
+    assert_eq!(p1_surf[1].target.side, SideId::P2);
+    assert_eq!(p1_surf[2].target.side, SideId::P2);
+    let damage = turn
+        .actions
+        .iter()
+        .find_map(|action| match action {
+            rotom_core::ResolvedAction::Damaged {
+                side: SideId::P1,
+                damage,
+                ..
+            } => Some(*damage),
+            _ => None,
+        })
+        .expect("unprotected spread target was damaged");
+    let source = battle
+        .side(SideId::P1)
+        .pokemon(PokemonIndex::new(0))
+        .unwrap();
+    let target = battle
+        .side(SideId::P2)
+        .pokemon(PokemonIndex::new(1))
+        .unwrap();
+    let single = calculate_move_damage(
+        &dex,
+        source,
+        target,
+        surf,
+        damage.critical_modifier != rotom_core::Modifier::NEUTRAL,
+        u8::try_from(damage.random_modifier.numerator).unwrap(),
+    )
+    .unwrap();
+    assert!(damage.final_damage < single.final_damage);
+    assert_stable_serializable_state(&result.state, "spread/protection");
+}
+
+#[test]
+fn follow_me_redirects_single_target_moves_and_repeat_protect_uses_the_battle_rng() {
+    let dex = champions_reg_mc().expect("generated Dex");
+    let fixture = doubles_targeting_fixture();
+    assert_eq!(
+        fixture["protect"]["repeat_chances"],
+        serde_json::json!([[1, 3], [1, 9], [1, 27]])
+    );
+    assert_eq!(fixture["redirection"]["spread_moves_redirected"], false);
+    let p1 = set_with_moves(&dex, "goodra", "gooey", &["aquatail", "protect"]);
+    let p2 = set_with_moves(&dex, "clefairy", "friendguard", &["followme", "protect"]);
+    let battle = selected_battle_for_sets(&dex, &p1, &p2, 0x130, true);
+    let turn = JointAction::Turn {
+        p1: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Foe(rotom_core::ActiveSlot::Right)),
+                use_move(1, ActionTarget::Automatic),
+            ],
+        },
+        p2: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Automatic),
+                use_move(1, ActionTarget::Automatic),
+            ],
+        },
+    };
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let first = step(&battle, &turn, &mechanics).expect("redirection turn");
+    let first_turn = first.diagnostics.turn.as_ref().unwrap();
+    let redirected = first_turn
+        .target_outcomes
+        .iter()
+        .find(|outcome| outcome.redirected)
+        .expect("Follow Me redirected Dragon Pulse");
+    assert_eq!(redirected.target.side, SideId::P2);
+    assert_eq!(redirected.target.pokemon, PokemonIndex::new(0));
+    assert_eq!(redirected.result, rotom_core::TargetResult::Hit);
+
+    let repeat = JointAction::Turn {
+        p1: TurnChoice {
+            actions: [
+                use_move(1, ActionTarget::Automatic),
+                use_move(1, ActionTarget::Automatic),
+            ],
+        },
+        p2: TurnChoice {
+            actions: [
+                use_move(1, ActionTarget::Automatic),
+                use_move(1, ActionTarget::Automatic),
+            ],
+        },
+    };
+    let replay_input = first.state.clone();
+    let repeated = step(&first.state, &repeat, &mechanics).expect("repeat Protect turn");
+    let replayed = step(&replay_input, &repeat, &mechanics).expect("repeat replay");
+    assert_eq!(repeated, replayed);
+    let protect_draws = repeated
+        .state
+        .rng()
+        .trace()
+        .unwrap()
+        .iter()
+        .filter(|entry| entry.reason == RngReason::Protect)
+        .count();
+    assert_eq!(
+        protect_draws, 2,
+        "only the two previous Protect users repeat"
+    );
+    let chained = repeated
+        .diagnostics
+        .turn
+        .as_ref()
+        .unwrap()
+        .target_outcomes
+        .iter()
+        .filter(|outcome| outcome.source.pokemon == PokemonIndex::new(1))
+        .map(|outcome| outcome.result)
+        .collect::<Vec<_>>();
+    assert!(chained.contains(&rotom_core::TargetResult::Hit));
+    assert!(chained.contains(&rotom_core::TargetResult::Cancelled));
+    assert_stable_serializable_state(&repeated.state, "redirection/repeat Protect");
+}
+
+#[test]
+fn rage_powder_respects_grass_overcoat_and_safety_goggles_and_feint_breaks_protect() {
+    let dex = champions_reg_mc().expect("generated Dex");
+    let redirector = set_with_moves(&dex, "clefairy", "friendguard", &["ragepowder", "protect"]);
+    let make_turn = || JointAction::Turn {
+        p1: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Foe(rotom_core::ActiveSlot::Right)),
+                use_move(1, ActionTarget::Automatic),
+            ],
+        },
+        p2: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Automatic),
+                use_move(1, ActionTarget::Automatic),
+            ],
+        },
+    };
+    let ordinary = set_with_moves(&dex, "goodra", "gooey", &["aquatail", "protect"]);
+    let mut grass = set_with_moves(&dex, "amoonguss", "effectspore", &["aquatail", "protect"]);
+    let overcoat = set_with_moves(&dex, "goodra", "overcoat", &["aquatail", "protect"]);
+    let mut goggles = ordinary.clone();
+    goggles.item = Some(dex.resolve_item("safetygoggles").expect("Safety Goggles").0);
+    // Keep the synthetic Grass source otherwise identical enough for the
+    // target-resolution assertion; team legality is not under test here.
+    grass.moves = ordinary.moves.clone();
+
+    for (name, attacker, should_redirect) in [
+        ("ordinary", ordinary, true),
+        ("grass", grass, false),
+        ("overcoat", overcoat, false),
+        ("safety-goggles", goggles, false),
+    ] {
+        let attack_move = attacker.moves[0];
+        let battle = selected_battle_for_sets(&dex, &attacker, &redirector, 0x134, false);
+        let result = step(
+            &battle,
+            &make_turn(),
+            &Mechanics::new(&dex, &EffectRegistry::new()),
+        )
+        .unwrap_or_else(|error| panic!("{name}: {error}"));
+        let outcome = result
+            .diagnostics
+            .turn
+            .as_ref()
+            .unwrap()
+            .target_outcomes
+            .iter()
+            .find(|outcome| outcome.move_id == attack_move)
+            .unwrap_or_else(|| panic!("{name}: attacking outcome"));
+        assert_eq!(outcome.redirected, should_redirect, "{name}");
+        assert_eq!(
+            outcome.target.pokemon,
+            PokemonIndex::new(u8::from(!should_redirect)),
+            "{name}"
+        );
+    }
+
+    let attacker = set_with_moves(&dex, "goodra", "gooey", &["feint", "protect"]);
+    let defender = set_with_moves(&dex, "clefairy", "friendguard", &["protect"]);
+    let battle = selected_battle_for_sets(&dex, &attacker, &defender, 0x135, false);
+    let result = step(
+        &battle,
+        &JointAction::Turn {
+            p1: TurnChoice {
+                actions: [
+                    use_move(0, ActionTarget::Foe(rotom_core::ActiveSlot::Left)),
+                    use_move(1, ActionTarget::Automatic),
+                ],
+            },
+            p2: TurnChoice {
+                actions: [
+                    use_move(0, ActionTarget::Automatic),
+                    use_move(0, ActionTarget::Automatic),
+                ],
+            },
+        },
+        &Mechanics::new(&dex, &EffectRegistry::new()),
+    )
+    .expect("Feint turn");
+    let feint_id = dex.resolve_move("feint").expect("Feint").0;
+    let feint = result
+        .diagnostics
+        .turn
+        .as_ref()
+        .unwrap()
+        .target_outcomes
+        .iter()
+        .find(|outcome| {
+            outcome.move_id == feint_id && outcome.result == rotom_core::TargetResult::Hit
+        })
+        .expect("Feint bypassed Protect");
+    assert_ne!(feint.result, rotom_core::TargetResult::Protected);
+    assert!(feint.applied_hp_loss > 0);
 }
 
 #[test]
@@ -741,6 +1106,10 @@ fn canonical_step_matches_preselected_physical_special_effective_immune_and_crit
             &Mechanics::new(&dex, &EffectRegistry::new()),
         )
         .unwrap_or_else(|error| panic!("{}: {error}", step_case.name));
+        if step_case.expected.damage == 0 {
+            assert_immune_step_case(&result, &battle, &source, &target, &step_case);
+            continue;
+        }
         let (damaged_slot, damage) = p1_damage(
             &result
                 .diagnostics
@@ -788,7 +1157,17 @@ fn resolved_dex_requirements_drive_support_without_a_move_id_allowlist() {
     assert_eq!(
         dragon_claw
             .required_capabilities
-            .first_missing_from(MoveCapabilities::PR_13_1),
+            .first_missing_from(MoveCapabilities::PR_13_2),
+        None
+    );
+
+    let surf = definition("surf");
+    assert!(surf
+        .required_capabilities
+        .contains(MoveCapability::SpreadDamage));
+    assert_eq!(
+        surf.required_capabilities
+            .first_missing_from(MoveCapabilities::PR_13_2),
         None
     );
 
@@ -796,7 +1175,6 @@ fn resolved_dex_requirements_drive_support_without_a_move_id_allowlist() {
         ("flamethrower", MoveCapability::SecondaryEffect),
         ("shadowball", MoveCapability::SecondaryEffect),
         ("facade", MoveCapability::CustomCallback),
-        ("surf", MoveCapability::AdvancedTargeting),
         ("bulletseed", MoveCapability::MultiHit),
         ("gigadrain", MoveCapability::Drain),
         ("electroshot", MoveCapability::CustomCallback),
@@ -809,7 +1187,7 @@ fn resolved_dex_requirements_drive_support_without_a_move_id_allowlist() {
         assert!(
             move_data
                 .required_capabilities
-                .first_missing_from(MoveCapabilities::PR_13_1)
+                .first_missing_from(MoveCapabilities::PR_13_2)
                 .is_some(),
             "{id} must not degrade to plain damage"
         );
@@ -862,7 +1240,6 @@ fn unsupported_move_capabilities_are_explicit_and_atomic() {
         ("flamethrower", "secondary_effect"),
         ("shadowball", "secondary_effect"),
         ("facade", "custom_callback"),
-        ("surf", "advanced_targeting"),
         ("bulletseed", "multi_hit"),
         ("gigadrain", "drain"),
         ("electroshot", "custom_callback"),
@@ -896,14 +1273,10 @@ fn unsupported_move_capabilities_are_explicit_and_atomic() {
             .select_teams(selection.clone(), selection)
             .expect("preview");
         let battle = builder.build().unwrap();
-        let targets = if move_name == "surf" {
-            [ActionTarget::Automatic, ActionTarget::Automatic]
-        } else {
-            [
-                ActionTarget::Foe(rotom_core::ActiveSlot::Left),
-                ActionTarget::Foe(rotom_core::ActiveSlot::Right),
-            ]
-        };
+        let targets = [
+            ActionTarget::Foe(rotom_core::ActiveSlot::Left),
+            ActionTarget::Foe(rotom_core::ActiveSlot::Right),
+        ];
         let choice = TurnChoice {
             actions: targets.map(|target| PokemonAction::Move {
                 move_slot: MoveSlotIndex::new(0),
