@@ -1,9 +1,9 @@
 use rotom_core::{
     calculate_move_damage, step, ActionTarget, BattlePhase, BattleState, BattleStateBuilder,
-    CombatData, EffectRegistry, FormId, Gender, JointAction, Mechanics, MoveCapabilities,
-    MoveCapability, MoveOperation, MoveSlotIndex, PokemonAction, PokemonIndex, PokemonPosition,
-    PokemonSet, RngOperation, RngReason, SideId, SideState, StatAllocation, StatStages, TeamState,
-    TurnChoice,
+    CombatData, ConditionState, EffectRegistry, FormId, Gender, JointAction, Mechanics,
+    MoveCapabilities, MoveCapability, MoveOperation, MoveSlotIndex, PokemonAction, PokemonIndex,
+    PokemonPosition, PokemonRef, PokemonSet, RngOperation, RngReason, SideId, SideState,
+    StatAllocation, StatStages, TeamState, TurnChoice,
 };
 use rotom_dex::champions_reg_mc;
 use serde::Deserialize;
@@ -15,6 +15,102 @@ fn doubles_targeting_fixture() -> serde_json::Value {
         "../../../data/fixtures/differential/doubles-targeting.json"
     ))
     .expect("doubles targeting fixture")
+}
+
+#[test]
+fn doubles_targeting_fixture_contains_executed_pinned_showdown_cases() {
+    let fixture = doubles_targeting_fixture();
+    assert_eq!(fixture["showdown_commit"], SHOWDOWN_COMMIT);
+    let cases = &fixture["executed_cases"];
+    assert!(cases["spread"]["two_valid_targets"]["result"]
+        .as_bool()
+        .unwrap());
+    assert!(cases["spread"]["one_remaining_target"]["log"][0]
+        .as_str()
+        .unwrap()
+        .contains("p2a: Arcanine"));
+    assert!(cases["spread"]["mixed_type_immune"]["log"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .any(|line| line.as_str().unwrap().contains("|-immune|p2a: Charizard")));
+
+    assert!(cases["target_resolution"]["selected_foe_fainted"]["log"][0]
+        .as_str()
+        .unwrap()
+        .contains("p2b: Blastoise"));
+    assert_eq!(
+        cases["target_resolution"]["selected_slot_switched"]["resolved_target"],
+        "p2: Clefairy"
+    );
+    assert_eq!(cases["target_resolution"]["missing_ally"]["result"], false);
+
+    assert_eq!(cases["protection"]["first"]["result"], true);
+    assert_eq!(cases["protection"]["repeat_success"]["result"], true);
+    assert_eq!(cases["protection"]["repeat_failure"]["result"], false);
+    assert_eq!(cases["protection"]["reset"]["result"], true);
+    assert_eq!(
+        cases["protection"]["denominators"],
+        serde_json::json!([[1, 3], [1, 9]])
+    );
+    assert!(cases["protection"]["feint"]["log"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .any(|line| line.as_str().unwrap().contains("move: Feint")));
+
+    assert!(cases["redirection"]["follow_me"]["log"][0]
+        .as_str()
+        .unwrap()
+        .contains("p2a: Clefairy"));
+    assert!(cases["redirection"]["grass_ignores_rage_powder"]["log"][0]
+        .as_str()
+        .unwrap()
+        .contains("p2b: Blastoise"));
+    assert!(
+        cases["redirection"]["conflict_active_entry_order_wins_equal_speed"]["log"][0]
+            .as_str()
+            .unwrap()
+            .contains("p2a: Clefairy")
+    );
+    assert!(
+        cases["redirection"]["redirector_unavailable"]["first"]["log"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|line| line.as_str().unwrap().starts_with("|faint|"))
+    );
+    assert!(
+        cases["redirection"]["redirector_unavailable"]["second"]["log"][0]
+            .as_str()
+            .unwrap()
+            .contains("p2b: Blastoise")
+    );
+
+    let accuracy = cases["per_target_execution"]["independent_accuracy"]["rng_operations"]
+        .as_array()
+        .unwrap();
+    let accuracy_results = accuracy
+        .iter()
+        .filter(|entry| entry["denominator"] == 100)
+        .map(|entry| entry["result"].as_bool().unwrap())
+        .collect::<Vec<_>>();
+    assert_eq!(accuracy_results, [true, false]);
+    let psychic = &cases["per_target_execution"]["psychic_terrain_mixed_targets"];
+    assert_eq!(
+        psychic["rng_operations"].as_array().unwrap().as_slice(),
+        &[] as &[serde_json::Value]
+    );
+    assert!(psychic["log"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .any(|line| line.as_str().unwrap().contains("Psychic Terrain")));
+    assert!(psychic["log"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .any(|line| line.as_str().unwrap().contains("move: Protect")));
 }
 
 #[derive(Debug, Deserialize)]
@@ -569,10 +665,7 @@ fn use_move(move_slot: u8, target: ActionTarget) -> PokemonAction {
     }
 }
 
-#[test]
-fn spread_damage_keeps_protected_targets_in_the_spread_modifier_and_ignores_redirection() {
-    let dex = champions_reg_mc().expect("generated Dex");
-    let fixture = doubles_targeting_fixture();
+fn assert_doubles_targeting_fixture_methodology(fixture: &serde_json::Value) {
     assert_eq!(fixture["showdown_commit"], SHOWDOWN_COMMIT);
     assert_eq!(
         fixture["spread"]["doubles_modifier"],
@@ -585,9 +678,40 @@ fn spread_damage_keeps_protected_targets_in_the_spread_modifier_and_ignores_redi
             "type_immunity",
             "move_immunity",
             "accuracy",
+            "break_protect",
             "damage"
         ])
     );
+    assert!(fixture["methodology"]["execution"]
+        .as_str()
+        .unwrap()
+        .contains("BattleActions.useMove"));
+    assert_eq!(
+        fixture["methodology"]["classification"]["full_transition"],
+        serde_json::json!([])
+    );
+    assert!(fixture["methodology"]["rng_comparison"]
+        .as_str()
+        .unwrap()
+        .contains("no raw PRNG"));
+}
+
+fn reference_mixed_protected_damage_count(fixture: &serde_json::Value) -> usize {
+    let reference = &fixture["executed_cases"]["spread"]["mixed_protected"];
+    reference["before"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .zip(reference["after"].as_array().unwrap())
+        .filter(|(before, after)| before["hp"] != after["hp"])
+        .count()
+}
+
+#[test]
+fn spread_damage_keeps_protected_targets_in_the_spread_modifier_and_ignores_redirection() {
+    let dex = champions_reg_mc().expect("generated Dex");
+    let fixture = doubles_targeting_fixture();
+    assert_doubles_targeting_fixture_methodology(&fixture);
     let p1 = set_with_moves(&dex, "goodra", "gooey", &["surf", "protect"]);
     let p2 = set_with_moves(&dex, "clefairy", "friendguard", &["protect", "followme"]);
     let battle = selected_battle_for_sets(&dex, &p1, &p2, 0x132, true);
@@ -635,6 +759,15 @@ fn spread_damage_keeps_protected_targets_in_the_spread_modifier_and_ignores_redi
             .filter(|outcome| outcome.result == rotom_core::TargetResult::Hit)
             .count(),
         1
+    );
+    let reference_damaged = reference_mixed_protected_damage_count(&fixture);
+    assert_eq!(reference_damaged, 1);
+    assert_eq!(
+        reference_damaged,
+        p1_surf
+            .iter()
+            .filter(|outcome| outcome.result == rotom_core::TargetResult::Hit)
+            .count()
     );
     assert!(p1_surf.iter().all(|outcome| !outcome.redirected));
     assert_eq!(p1_surf[0].target.side, SideId::P1);
@@ -754,6 +887,222 @@ fn follow_me_redirects_single_target_moves_and_repeat_protect_uses_the_battle_rn
     assert!(chained.contains(&rotom_core::TargetResult::Hit));
     assert!(chained.contains(&rotom_core::TargetResult::Cancelled));
     assert_stable_serializable_state(&repeated.state, "redirection/repeat Protect");
+}
+
+#[test]
+fn competing_redirectors_use_speed_then_active_entry_order_and_replay_deterministically() {
+    let dex = champions_reg_mc().expect("generated Dex");
+    let attacker = set_with_moves(&dex, "goodra", "gooey", &["aquatail", "protect"]);
+    let redirector = set_with_moves(&dex, "clefairy", "friendguard", &["followme", "aquatail"]);
+    let ids = dex.field_effect_ids();
+    let follow_me = ids.follow_me.expect("Follow Me condition");
+    let base = selected_battle_for_sets(&dex, &attacker, &redirector, 0x136, true);
+    let attack = JointAction::Turn {
+        p1: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Foe(rotom_core::ActiveSlot::Left)),
+                use_move(1, ActionTarget::Automatic),
+            ],
+        },
+        p2: TurnChoice {
+            actions: [
+                use_move(1, ActionTarget::Foe(rotom_core::ActiveSlot::Left)),
+                use_move(1, ActionTarget::Foe(rotom_core::ActiveSlot::Right)),
+            ],
+        },
+    };
+    let run_fixture = |left_speed, right_speed| {
+        let mut builder = BattleStateBuilder::from_state(base.clone()).unwrap();
+        for (pokemon, speed) in [
+            (PokemonIndex::new(0), left_speed),
+            (PokemonIndex::new(1), right_speed),
+        ] {
+            builder
+                .edit_pokemon(PokemonRef::new(SideId::P2, pokemon), |state| {
+                    state.stats.spe = speed;
+                    state
+                        .volatiles
+                        .push(ConditionState::new(follow_me, Some(1)));
+                })
+                .unwrap();
+        }
+        let state = builder.build().unwrap();
+        let first = step(
+            &state,
+            &attack,
+            &Mechanics::new(&dex, &EffectRegistry::new()),
+        )
+        .unwrap();
+        let replay = step(
+            &state,
+            &attack,
+            &Mechanics::new(&dex, &EffectRegistry::new()),
+        )
+        .unwrap();
+        assert_eq!(first, replay);
+        first
+            .diagnostics
+            .turn
+            .unwrap()
+            .target_outcomes
+            .into_iter()
+            .find(|outcome| outcome.source == PokemonRef::new(SideId::P1, PokemonIndex::new(0)))
+            .expect("redirected attack outcome")
+    };
+
+    let faster = run_fixture(60, 120);
+    assert_eq!(faster.target.pokemon, PokemonIndex::new(1));
+    assert!(faster.redirected);
+
+    let earlier = run_fixture(100, 100);
+    assert_eq!(earlier.target.pokemon, PokemonIndex::new(0));
+    assert!(earlier.redirected);
+
+    let mut builder = BattleStateBuilder::from_state(base).unwrap();
+    builder
+        .switch_active(
+            SideId::P2,
+            rotom_core::ActiveSlot::Left,
+            PokemonIndex::new(2),
+        )
+        .unwrap();
+    for pokemon in [PokemonIndex::new(2), PokemonIndex::new(1)] {
+        builder
+            .edit_pokemon(PokemonRef::new(SideId::P2, pokemon), |state| {
+                state.stats.spe = 100;
+                state
+                    .volatiles
+                    .push(ConditionState::new(follow_me, Some(1)));
+            })
+            .unwrap();
+    }
+    let switched_state = builder.build().unwrap();
+    let serialized = serde_json::to_string(&switched_state).unwrap();
+    let resumed: BattleState = serde_json::from_str(&serialized).unwrap();
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let switched = step(&switched_state, &attack, &mechanics).unwrap();
+    assert_eq!(switched, step(&resumed, &attack, &mechanics).unwrap());
+    let switched_target = switched
+        .diagnostics
+        .turn
+        .unwrap()
+        .target_outcomes
+        .into_iter()
+        .find(|outcome| outcome.source == PokemonRef::new(SideId::P1, PokemonIndex::new(0)))
+        .unwrap();
+    assert_eq!(switched_target.target.pokemon, PokemonIndex::new(1));
+    assert!(switched_target.redirected);
+}
+
+#[test]
+fn equal_speed_follow_me_users_use_active_entry_order_not_activation_order() {
+    let dex = champions_reg_mc().expect("generated Dex");
+    let attacker = set_with_moves(&dex, "goodra", "gooey", &["aquatail", "protect"]);
+    let redirector = set_with_moves(&dex, "clefairy", "friendguard", &["followme"]);
+    let battle = selected_battle_for_sets(&dex, &attacker, &redirector, 0x138, true);
+    let turn = JointAction::Turn {
+        p1: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Foe(rotom_core::ActiveSlot::Left)),
+                use_move(1, ActionTarget::Automatic),
+            ],
+        },
+        p2: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Automatic),
+                use_move(0, ActionTarget::Automatic),
+            ],
+        },
+    };
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let result = step(&battle, &turn, &mechanics).unwrap();
+    assert_eq!(result, step(&battle, &turn, &mechanics).unwrap());
+    let follow_me = dex.resolve_move("followme").unwrap().0;
+    let outcomes = &result.diagnostics.turn.as_ref().unwrap().target_outcomes;
+    let first_activation = outcomes
+        .iter()
+        .find(|outcome| outcome.move_id == follow_me)
+        .expect("first Follow Me activation")
+        .source;
+    let attack = outcomes
+        .iter()
+        .find(|outcome| outcome.source == PokemonRef::new(SideId::P1, PokemonIndex::new(0)))
+        .expect("attacking outcome");
+    assert!(attack.redirected);
+    assert_eq!(
+        attack.target,
+        PokemonRef::new(SideId::P2, PokemonIndex::new(0))
+    );
+    assert_ne!(first_activation, attack.target);
+}
+
+#[test]
+fn redirection_ignores_a_redirector_that_fainted_before_the_later_attack() {
+    let dex = champions_reg_mc().expect("generated Dex");
+    let attacker = set_with_moves(&dex, "goodra", "gooey", &["aquatail"]);
+    let defender = set_with_moves(&dex, "clefairy", "friendguard", &["aquatail"]);
+    let follow_me = dex
+        .field_effect_ids()
+        .follow_me
+        .expect("Follow Me condition");
+    let base = selected_battle_for_sets(&dex, &attacker, &defender, 0x137, false);
+    let mut builder = BattleStateBuilder::from_state(base).unwrap();
+    builder
+        .edit_pokemon(
+            PokemonRef::new(SideId::P1, PokemonIndex::new(0)),
+            |pokemon| pokemon.stats.spe = 200,
+        )
+        .unwrap();
+    builder
+        .edit_pokemon(
+            PokemonRef::new(SideId::P1, PokemonIndex::new(1)),
+            |pokemon| pokemon.stats.spe = 100,
+        )
+        .unwrap();
+    builder
+        .edit_pokemon(
+            PokemonRef::new(SideId::P2, PokemonIndex::new(0)),
+            |pokemon| {
+                pokemon.current_hp = 1;
+                pokemon
+                    .volatiles
+                    .push(ConditionState::new(follow_me, Some(1)));
+            },
+        )
+        .unwrap();
+    let result = step(
+        &builder.build().unwrap(),
+        &JointAction::Turn {
+            p1: TurnChoice {
+                actions: [
+                    use_move(0, ActionTarget::Foe(rotom_core::ActiveSlot::Right)),
+                    use_move(0, ActionTarget::Foe(rotom_core::ActiveSlot::Right)),
+                ],
+            },
+            p2: TurnChoice {
+                actions: [
+                    use_move(0, ActionTarget::Foe(rotom_core::ActiveSlot::Left)),
+                    use_move(0, ActionTarget::Foe(rotom_core::ActiveSlot::Right)),
+                ],
+            },
+        },
+        &Mechanics::new(&dex, &EffectRegistry::new()),
+    )
+    .unwrap();
+    let attacks = result
+        .diagnostics
+        .turn
+        .unwrap()
+        .target_outcomes
+        .into_iter()
+        .filter(|outcome| outcome.source.side == SideId::P1)
+        .collect::<Vec<_>>();
+    assert_eq!(attacks.len(), 2);
+    assert!(attacks[0].redirected);
+    assert!(attacks[0].fainted);
+    assert_eq!(attacks[0].target.pokemon, PokemonIndex::new(0));
+    assert!(!attacks[1].redirected);
+    assert_eq!(attacks[1].target.pokemon, PokemonIndex::new(1));
 }
 
 #[test]

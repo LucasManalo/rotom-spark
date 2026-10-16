@@ -129,6 +129,21 @@ Rage Powder are narrow supported non-damage intrinsics that install reusable
 one-turn volatiles through `StateKernel`; the repeat Protect counter remains
 authoritative volatile state and all odds use the battle RNG.
 
+Psychic Terrain priority immunity is resolved for each attempted target inside
+that lifecycle. `PriorityBlocked` is distinct from Protect, type immunity,
+accuracy failure, and generic callback cancellation, and blocked targets do
+not consume later hit RNG or cancel unaffected spread targets. The explicit
+ordering is TryHit callbacks/terrain guard, Protect, type immunity, accuracy,
+damage and faint settlement; Psychic Terrain's pinned priority-4 rule is
+evaluated before Protect's priority-3 rule.
+
+Competing Follow Me/Rage Powder handlers use effective action Speed followed
+by the active holder's creation order, matching Showdown's
+`compareRedirectOrder`. `BattleState` therefore stores a compact order for
+each occupied active slot plus the next order counter. Initial placement,
+switching, faint removal and replacement update that metadata atomically in
+`StateKernel`; redirecting move activation order is not used as a tie-breaker.
+
 Capability preflight distinguishes target sets, spread damage, per-target hit
 resolution, protection, redirection, and retargeting. Side/field, random, and
 scripted target categories remain explicit unsupported operations rather than

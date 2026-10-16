@@ -28,6 +28,7 @@ const WONDER_ROOM: ConditionId = ConditionId::new(43);
 const LEVITATE: AbilityId = AbilityId::new(50);
 const IRON_BALL: ItemId = ItemId::new(51);
 const AIR_BALLOON: ItemId = ItemId::new(52);
+const PROTECT: ConditionId = ConditionId::new(53);
 static EFFECTS: EffectRegistry = EffectRegistry::new();
 
 #[test]
@@ -60,6 +61,7 @@ struct TestData {
     category: MoveCategory,
     priority: i8,
     accuracy: MoveAccuracy,
+    target: MoveTarget,
 }
 
 impl TestData {
@@ -69,6 +71,7 @@ impl TestData {
             category,
             priority: 0,
             accuracy: MoveAccuracy::Always,
+            target: MoveTarget::Normal,
         }
     }
 }
@@ -81,9 +84,13 @@ impl CombatData for TestData {
             base_power: 60,
             accuracy: self.accuracy,
             crit_ratio: 0,
-            target: MoveTarget::Normal,
+            target: self.target,
             operation: MoveOperation::StandardDamage,
-            required_capabilities: MoveCapabilities::PR_13_1,
+            required_capabilities: if matches!(self.target, MoveTarget::Normal) {
+                MoveCapabilities::PR_13_1
+            } else {
+                MoveCapabilities::PR_13_2
+            },
         })
     }
 
@@ -108,6 +115,10 @@ impl CombatData for TestData {
     fn field_effect_ids(&self) -> FieldEffectIds {
         ids()
     }
+
+    fn move_is_protectable(&self, move_id: MoveId) -> bool {
+        move_id == MOVE
+    }
 }
 
 fn ids() -> FieldEffectIds {
@@ -131,6 +142,7 @@ fn ids() -> FieldEffectIds {
         levitate: Some(LEVITATE),
         iron_ball: Some(IRON_BALL),
         air_balloon: Some(AIR_BALLOON),
+        protect: Some(PROTECT),
         thunder: Some(MOVE),
         blizzard: Some(MOVE),
         ..FieldEffectIds::default()
@@ -207,6 +219,22 @@ fn turn() -> JointAction {
         },
         p2: TurnChoice {
             actions: [move_at(ActiveSlot::Left), move_at(ActiveSlot::Right)],
+        },
+    }
+}
+
+fn spread_turn() -> JointAction {
+    let action = PokemonAction::Move {
+        move_slot: MoveSlotIndex::new(0),
+        target: ActionTarget::Automatic,
+        mega: false,
+    };
+    JointAction::Turn {
+        p1: TurnChoice {
+            actions: [action, action],
+        },
+        p2: TurnChoice {
+            actions: [action, action],
         },
     }
 }
@@ -540,12 +568,14 @@ fn psychic_terrain_blocks_positive_priority_against_grounded_foes() {
         category: MoveCategory::Physical,
         priority: 1,
         accuracy: MoveAccuracy::Always,
+        target: MoveTarget::Normal,
     };
     let mut builder = BattleStateBuilder::from_state(with_terrain(&battle(), PSYCHIC)).unwrap();
     for side in [SideId::P1, SideId::P2] {
         builder.edit_side(side, |state| {
             for pokemon in &mut state.team.members {
                 pokemon.moves[0].priority = data.priority;
+                pokemon.moves[0].target = data.target;
             }
         });
     }
@@ -553,10 +583,18 @@ fn psychic_terrain_blocks_positive_priority_against_grounded_foes() {
     assert!(result
         .diagnostics
         .turn
+        .as_ref()
         .unwrap()
         .actions
         .iter()
         .all(|action| matches!(action, ResolvedAction::Skipped { .. })));
+    assert!(result
+        .diagnostics
+        .turn
+        .unwrap()
+        .target_outcomes
+        .iter()
+        .all(|outcome| outcome.result == rotom_core::TargetResult::PriorityBlocked));
     assert_eq!(
         result
             .state
@@ -570,12 +608,143 @@ fn psychic_terrain_blocks_positive_priority_against_grounded_foes() {
 }
 
 #[test]
+fn psychic_terrain_is_resolved_per_target_before_protect_and_move_rng() {
+    let data = TestData {
+        move_type: PokemonType::Normal,
+        category: MoveCategory::Physical,
+        priority: 1,
+        accuracy: MoveAccuracy::Always,
+        target: MoveTarget::AllAdjacentFoes,
+    };
+    let mut builder = BattleStateBuilder::from_state(with_terrain(&battle(), PSYCHIC)).unwrap();
+    for side in [SideId::P1, SideId::P2] {
+        builder.edit_side(side, |state| {
+            for pokemon in &mut state.team.members {
+                pokemon.moves[0].priority = data.priority;
+                pokemon.moves[0].target = data.target;
+            }
+        });
+    }
+    builder
+        .edit_pokemon(PokemonRef::new(SideId::P2, index(1)), |pokemon| {
+            pokemon.species = SpeciesId::new(3);
+            pokemon
+                .volatiles
+                .push(ConditionState::new(PROTECT, Some(1)));
+        })
+        .unwrap();
+    builder.enable_rng_trace();
+    let state = builder.build().unwrap();
+    let replay = state.clone();
+    let result = step(&state, &spread_turn(), &mechanics(&data)).unwrap();
+    let replayed = step(&replay, &spread_turn(), &mechanics(&data)).unwrap();
+    assert_eq!(result, replayed);
+
+    let outcomes = result
+        .diagnostics
+        .turn
+        .as_ref()
+        .unwrap()
+        .target_outcomes
+        .iter()
+        .filter(|outcome| {
+            outcome.source == PokemonRef::new(SideId::P1, index(0))
+                && outcome.target.side == SideId::P2
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(outcomes.len(), 2);
+    assert_eq!(
+        outcomes[0].result,
+        rotom_core::TargetResult::PriorityBlocked
+    );
+    assert_eq!(outcomes[1].result, rotom_core::TargetResult::Protected);
+    assert!(outcomes.iter().all(|outcome| outcome.applied_hp_loss == 0));
+    assert_eq!(result.state.rng().draws(), state.rng().draws());
+}
+
+#[test]
+fn psychic_terrain_leaves_ungrounded_and_clear_field_targets_unaffected() {
+    let mut data = TestData {
+        move_type: PokemonType::Normal,
+        category: MoveCategory::Physical,
+        priority: 1,
+        accuracy: MoveAccuracy::Always,
+        target: MoveTarget::Normal,
+    };
+    let configure = |terrain: bool, target: MoveTarget| {
+        let base = if terrain {
+            with_terrain(&battle(), PSYCHIC)
+        } else {
+            battle()
+        };
+        let mut builder = BattleStateBuilder::from_state(base).unwrap();
+        for side in [SideId::P1, SideId::P2] {
+            builder.edit_side(side, |state| {
+                for pokemon in &mut state.team.members {
+                    pokemon.moves[0].priority = 1;
+                    pokemon.moves[0].target = target;
+                }
+            });
+        }
+        builder
+            .edit_pokemon(PokemonRef::new(SideId::P2, index(0)), |pokemon| {
+                pokemon.species = SpeciesId::new(3);
+            })
+            .unwrap();
+        builder.build().unwrap()
+    };
+
+    let airborne = step(
+        &configure(true, MoveTarget::Normal),
+        &turn(),
+        &mechanics(&data),
+    )
+    .unwrap();
+    assert!(airborne
+        .diagnostics
+        .turn
+        .as_ref()
+        .unwrap()
+        .target_outcomes
+        .iter()
+        .any(|outcome| {
+            outcome.target == PokemonRef::new(SideId::P2, index(0))
+                && outcome.result == rotom_core::TargetResult::Hit
+                && outcome.applied_hp_loss > 0
+        }));
+
+    data.target = MoveTarget::AllAdjacentFoes;
+    let clear = step(
+        &configure(false, MoveTarget::AllAdjacentFoes),
+        &spread_turn(),
+        &mechanics(&data),
+    )
+    .unwrap();
+    assert!(clear
+        .diagnostics
+        .turn
+        .as_ref()
+        .unwrap()
+        .target_outcomes
+        .iter()
+        .all(|outcome| outcome.result != rotom_core::TargetResult::PriorityBlocked));
+    assert!(clear
+        .diagnostics
+        .turn
+        .unwrap()
+        .target_outcomes
+        .iter()
+        .all(|outcome| outcome.applied_hp_loss > 0));
+}
+
+#[test]
 fn weather_accuracy_overrides_use_the_authoritative_rng_only_when_needed() {
     let data = TestData {
         move_type: PokemonType::Electric,
         category: MoveCategory::Special,
         priority: 0,
         accuracy: MoveAccuracy::Percent { value: 70 },
+        target: MoveTarget::Normal,
     };
     let mut builder = BattleStateBuilder::from_state(with_weather(&battle(), RAIN)).unwrap();
     builder.enable_rng_trace();
@@ -608,6 +777,7 @@ fn gravity_modifies_accuracy_before_the_single_rng_check() {
         category: MoveCategory::Physical,
         priority: 0,
         accuracy: MoveAccuracy::Percent { value: 60 },
+        target: MoveTarget::Normal,
     };
     let mut builder = BattleStateBuilder::from_state(battle()).unwrap();
     builder.edit_field(|field| {

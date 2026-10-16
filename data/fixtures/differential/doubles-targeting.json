@@ -1,11 +1,37 @@
 {
   "showdown_commit": "b79ce06d06b8f0dc8de8bb348bc9cab5d931553f",
   "format": "gen9championsvgc2026regmc",
+  "methodology": {
+    "execution": "Pinned Showdown BattleActions.useMove executes each recorded move against live Battle/Pokemon state.",
+    "classification": {
+      "formula_differential": [
+        "spread.two_valid_targets",
+        "spread.one_remaining_target",
+        "spread.mixed_protected",
+        "spread.mixed_type_immune"
+      ],
+      "individual_mechanic": [
+        "target_resolution",
+        "protection",
+        "redirection",
+        "per_target_execution"
+      ],
+      "full_transition": [],
+      "interaction": [
+        "spread.mixed_protected",
+        "redirection.conflict_active_entry_order_wins_equal_speed",
+        "redirection.redirector_unavailable"
+      ]
+    },
+    "rng_comparison": "Controlled equivalent outcomes are used for accuracy, critical-hit, damage-roll, and Protect branches; no raw PRNG or seed parity is claimed."
+  },
   "source": {
     "target_sets": "sim/pokemon.ts:Pokemon.getMoveTargets",
     "retargeting": "sim/battle.ts:Battle.getTarget/getRandomTarget",
     "hit_order": "sim/battle-actions.ts:BattleActions.trySpreadMoveHit",
     "spread_modifier": "data/mods/champions/scripts.ts:BattleActions.modifyDamage",
+    "priority_immunity": "data/moves.ts:psychicterrain.condition.onTryHit",
+    "redirect_order": "sim/battle.ts:Battle.compareRedirectOrder/resolvePriority",
     "guards_and_redirection": "data/moves.ts:protect/followme/ragepowder and data/conditions.ts:stall"
   },
   "target_order": {
@@ -22,6 +48,7 @@
     "type_immunity",
     "move_immunity",
     "accuracy",
+    "break_protect",
     "damage"
   ],
   "spread": {
@@ -33,6 +60,7 @@
   },
   "protect": {
     "priority": 4,
+    "try_hit_priority": 3,
     "duration": 1,
     "stall_duration": 2,
     "repeat_chances": [
@@ -51,11 +79,1874 @@
     ],
     "counter_multiplier": 3
   },
+  "psychic_terrain": {
+    "try_hit_priority": 4,
+    "per_target": true
+  },
   "redirection": {
     "follow_me_priority": 1,
     "rage_powder_priority": 1,
     "duration": 1,
     "rage_powder_is_powder": true,
-    "spread_moves_redirected": false
+    "spread_moves_redirected": false,
+    "conflict_order": [
+      "event_priority_desc",
+      "effective_speed_desc",
+      "holder_ability_state_creation_order_asc"
+    ]
+  },
+  "cases": [
+    {
+      "name": "surf-spread-protection",
+      "move": "surf",
+      "execution_path": "executed_cases.spread.surf_mixed_protected"
+    },
+    {
+      "name": "protect-repeat",
+      "move": "protect",
+      "execution_path": "executed_cases.protection"
+    },
+    {
+      "name": "follow-me-redirection",
+      "move": "followme",
+      "execution_path": "executed_cases.redirection.follow_me"
+    },
+    {
+      "name": "rage-powder-redirection",
+      "move": "ragepowder",
+      "execution_path": "executed_cases.redirection.rage_powder"
+    },
+    {
+      "name": "feint-break-protect",
+      "move": "feint",
+      "execution_path": "executed_cases.protection.feint"
+    }
+  ],
+  "executed_cases": {
+    "spread": {
+      "surf_mixed_protected": {
+        "result": true,
+        "before": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Arcanine",
+            "species": "arcanine",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 154,
+            "max_hp": 154,
+            "fainted": false
+          }
+        ],
+        "after": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 47,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Arcanine",
+            "species": "arcanine",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 138,
+            "max_hp": 154,
+            "fainted": false
+          }
+        ],
+        "log": [
+          "|move|p1a: Goodra|Surf|p2a: Arcanine|[spread] p1b,p2b",
+          "|-activate|p2a: Arcanine|move: Protect",
+          "|-damage|p1b: Magikarp|47/95",
+          "|-damage|p1b: Magikarp|49/100",
+          "|-damage|p2b: Blastoise|138/154",
+          "|-damage|p2b: Blastoise|89/100"
+        ],
+        "rng_operations": [
+          {
+            "operation": "chance",
+            "numerator": 100,
+            "denominator": 100,
+            "result": true
+          },
+          {
+            "operation": "chance",
+            "numerator": 100,
+            "denominator": 100,
+            "result": true
+          },
+          {
+            "operation": "chance",
+            "numerator": 1,
+            "denominator": 24,
+            "result": false
+          },
+          {
+            "operation": "damage_randomizer",
+            "percent": 100
+          },
+          {
+            "operation": "chance",
+            "numerator": 1,
+            "denominator": 24,
+            "result": false
+          },
+          {
+            "operation": "damage_randomizer",
+            "percent": 100
+          }
+        ]
+      },
+      "two_valid_targets": {
+        "result": true,
+        "before": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Arcanine",
+            "species": "arcanine",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 154,
+            "max_hp": 154,
+            "fainted": false
+          }
+        ],
+        "after": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Arcanine",
+            "species": "arcanine",
+            "hp": 148,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 126,
+            "max_hp": 154,
+            "fainted": false
+          }
+        ],
+        "log": [
+          "|move|p1a: Goodra|Dazzling Gleam|p2a: Arcanine|[spread] p2a,p2b",
+          "|-damage|p2a: Arcanine|148/165",
+          "|-damage|p2a: Arcanine|89/100",
+          "|-damage|p2b: Blastoise|126/154",
+          "|-damage|p2b: Blastoise|81/100"
+        ],
+        "rng_operations": [
+          {
+            "operation": "chance",
+            "numerator": 100,
+            "denominator": 100,
+            "result": true
+          },
+          {
+            "operation": "chance",
+            "numerator": 100,
+            "denominator": 100,
+            "result": true
+          },
+          {
+            "operation": "chance",
+            "numerator": 1,
+            "denominator": 24,
+            "result": false
+          },
+          {
+            "operation": "damage_randomizer",
+            "percent": 100
+          },
+          {
+            "operation": "chance",
+            "numerator": 1,
+            "denominator": 24,
+            "result": false
+          },
+          {
+            "operation": "damage_randomizer",
+            "percent": 100
+          }
+        ]
+      },
+      "one_remaining_target": {
+        "result": true,
+        "before": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Arcanine",
+            "species": "arcanine",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 0,
+            "max_hp": 154,
+            "fainted": true
+          }
+        ],
+        "after": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Arcanine",
+            "species": "arcanine",
+            "hp": 142,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 0,
+            "max_hp": 154,
+            "fainted": true
+          }
+        ],
+        "log": [
+          "|move|p1a: Goodra|Dazzling Gleam|p2a: Arcanine",
+          "|-damage|p2a: Arcanine|142/165",
+          "|-damage|p2a: Arcanine|86/100"
+        ],
+        "rng_operations": [
+          {
+            "operation": "chance",
+            "numerator": 100,
+            "denominator": 100,
+            "result": true
+          },
+          {
+            "operation": "chance",
+            "numerator": 1,
+            "denominator": 24,
+            "result": false
+          },
+          {
+            "operation": "damage_randomizer",
+            "percent": 100
+          }
+        ]
+      },
+      "mixed_protected": {
+        "result": true,
+        "before": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Arcanine",
+            "species": "arcanine",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 154,
+            "max_hp": 154,
+            "fainted": false
+          }
+        ],
+        "after": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Arcanine",
+            "species": "arcanine",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 126,
+            "max_hp": 154,
+            "fainted": false
+          }
+        ],
+        "log": [
+          "|move|p1a: Goodra|Dazzling Gleam|p2a: Arcanine|[spread] p2b",
+          "|-activate|p2a: Arcanine|move: Protect",
+          "|-damage|p2b: Blastoise|126/154",
+          "|-damage|p2b: Blastoise|81/100"
+        ],
+        "rng_operations": [
+          {
+            "operation": "chance",
+            "numerator": 100,
+            "denominator": 100,
+            "result": true
+          },
+          {
+            "operation": "chance",
+            "numerator": 1,
+            "denominator": 24,
+            "result": false
+          },
+          {
+            "operation": "damage_randomizer",
+            "percent": 100
+          }
+        ]
+      },
+      "mixed_type_immune": {
+        "result": true,
+        "before": [
+          {
+            "ident": "p1: Garchomp",
+            "species": "garchomp",
+            "hp": 183,
+            "max_hp": 183,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Charizard",
+            "species": "charizard",
+            "hp": 153,
+            "max_hp": 153,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Arcanine",
+            "species": "arcanine",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          }
+        ],
+        "after": [
+          {
+            "ident": "p1: Garchomp",
+            "species": "garchomp",
+            "hp": 183,
+            "max_hp": 183,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 28,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Charizard",
+            "species": "charizard",
+            "hp": 153,
+            "max_hp": 153,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Arcanine",
+            "species": "arcanine",
+            "hp": 63,
+            "max_hp": 165,
+            "fainted": false
+          }
+        ],
+        "log": [
+          "|move|p1a: Garchomp|Earthquake|p2a: Charizard|[spread] p1b,p2b",
+          "|-immune|p2a: Charizard",
+          "|-damage|p1b: Magikarp|28/95",
+          "|-damage|p1b: Magikarp|29/100",
+          "|-damage|p2b: Arcanine|63/165",
+          "|-damage|p2b: Arcanine|38/100"
+        ],
+        "rng_operations": [
+          {
+            "operation": "chance",
+            "numerator": 100,
+            "denominator": 100,
+            "result": true
+          },
+          {
+            "operation": "chance",
+            "numerator": 100,
+            "denominator": 100,
+            "result": true
+          },
+          {
+            "operation": "chance",
+            "numerator": 1,
+            "denominator": 24,
+            "result": false
+          },
+          {
+            "operation": "damage_randomizer",
+            "percent": 100
+          },
+          {
+            "operation": "chance",
+            "numerator": 1,
+            "denominator": 24,
+            "result": false
+          },
+          {
+            "operation": "damage_randomizer",
+            "percent": 100
+          }
+        ]
+      }
+    },
+    "target_resolution": {
+      "selected_foe_fainted": {
+        "original_target": "p2: Arcanine",
+        "result": true,
+        "before": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Arcanine",
+            "species": "arcanine",
+            "hp": 0,
+            "max_hp": 165,
+            "fainted": true
+          },
+          {
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 154,
+            "max_hp": 154,
+            "fainted": false
+          }
+        ],
+        "after": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Arcanine",
+            "species": "arcanine",
+            "hp": 0,
+            "max_hp": 165,
+            "fainted": true
+          },
+          {
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 140,
+            "max_hp": 154,
+            "fainted": false
+          }
+        ],
+        "log": [
+          "|move|p1a: Goodra|Aqua Tail|p2b: Blastoise",
+          "|-damage|p2b: Blastoise|140/154",
+          "|-damage|p2b: Blastoise|90/100"
+        ]
+      },
+      "selected_slot_switched": {
+        "original_target": "p2: Arcanine",
+        "resolved_target": "p2: Clefairy",
+        "result": true,
+        "before": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Clefairy",
+            "species": "clefairy",
+            "hp": 145,
+            "max_hp": 145,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 154,
+            "max_hp": 154,
+            "fainted": false
+          }
+        ],
+        "after": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Clefairy",
+            "species": "clefairy",
+            "hp": 97,
+            "max_hp": 145,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 154,
+            "max_hp": 154,
+            "fainted": false
+          }
+        ],
+        "log": [
+          "|move|p1a: Goodra|Aqua Tail|p2a: Clefairy",
+          "|-damage|p2a: Clefairy|97/145",
+          "|-damage|p2a: Clefairy|66/100"
+        ]
+      },
+      "missing_ally": {
+        "result": false,
+        "before": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Arcanine",
+            "species": "arcanine",
+            "hp": 0,
+            "max_hp": 165,
+            "fainted": true
+          },
+          {
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 154,
+            "max_hp": 154,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          }
+        ],
+        "after": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Arcanine",
+            "species": "arcanine",
+            "hp": 0,
+            "max_hp": 165,
+            "fainted": true
+          },
+          {
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 154,
+            "max_hp": 154,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          }
+        ],
+        "log": [
+          "|move|p1a: Goodra|Helping Hand|p1b: Arcanine|[notarget]"
+        ]
+      }
+    },
+    "protection": {
+      "first": {
+        "result": true,
+        "before": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Arcanine",
+            "species": "arcanine",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          }
+        ],
+        "after": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Arcanine",
+            "species": "arcanine",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          }
+        ],
+        "log": [
+          "|move|p1a: Goodra|Protect|p1a: Goodra"
+        ]
+      },
+      "repeat_success": {
+        "result": true,
+        "before": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Arcanine",
+            "species": "arcanine",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          }
+        ],
+        "after": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Arcanine",
+            "species": "arcanine",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          }
+        ],
+        "log": [
+          "|move|p1a: Goodra|Protect|p1a: Goodra"
+        ]
+      },
+      "repeat_failure": {
+        "result": false,
+        "before": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Arcanine",
+            "species": "arcanine",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          }
+        ],
+        "after": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Arcanine",
+            "species": "arcanine",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          }
+        ],
+        "log": [
+          "|move|p1a: Goodra|Protect||[still]"
+        ]
+      },
+      "reset": {
+        "result": true,
+        "before": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Arcanine",
+            "species": "arcanine",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          }
+        ],
+        "after": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Arcanine",
+            "species": "arcanine",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          }
+        ],
+        "log": [
+          "|move|p1a: Goodra|Protect|p1a: Goodra"
+        ]
+      },
+      "denominators": [
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          9
+        ]
+      ],
+      "feint": {
+        "result": true,
+        "before": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Arcanine",
+            "species": "arcanine",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          }
+        ],
+        "after": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Arcanine",
+            "species": "arcanine",
+            "hp": 153,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          }
+        ],
+        "log": [
+          "|move|p1a: Goodra|Feint|p2a: Arcanine",
+          "|-activate|p2a: Arcanine|move: Feint",
+          "|-damage|p2a: Arcanine|153/165",
+          "|-damage|p2a: Arcanine|92/100"
+        ]
+      }
+    },
+    "redirection": {
+      "follow_me": {
+        "result": true,
+        "before": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Clefairy",
+            "species": "clefairy",
+            "hp": 145,
+            "max_hp": 145,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 154,
+            "max_hp": 154,
+            "fainted": false
+          }
+        ],
+        "after": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Clefairy",
+            "species": "clefairy",
+            "hp": 74,
+            "max_hp": 145,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 154,
+            "max_hp": 154,
+            "fainted": false
+          }
+        ],
+        "log": [
+          "|move|p1a: Goodra|Aqua Tail|p2a: Clefairy",
+          "|-damage|p2a: Clefairy|74/145",
+          "|-damage|p2a: Clefairy|51/100"
+        ]
+      },
+      "rage_powder": {
+        "result": true,
+        "before": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Clefairy",
+            "species": "clefairy",
+            "hp": 145,
+            "max_hp": 145,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 154,
+            "max_hp": 154,
+            "fainted": false
+          }
+        ],
+        "after": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Clefairy",
+            "species": "clefairy",
+            "hp": 74,
+            "max_hp": 145,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 154,
+            "max_hp": 154,
+            "fainted": false
+          }
+        ],
+        "log": [
+          "|move|p1a: Goodra|Aqua Tail|p2a: Clefairy",
+          "|-damage|p2a: Clefairy|74/145",
+          "|-damage|p2a: Clefairy|51/100"
+        ]
+      },
+      "grass_ignores_rage_powder": {
+        "result": true,
+        "before": [
+          {
+            "ident": "p1: Amoonguss",
+            "species": "amoonguss",
+            "hp": 189,
+            "max_hp": 189,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Clefairy",
+            "species": "clefairy",
+            "hp": 145,
+            "max_hp": 145,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 154,
+            "max_hp": 154,
+            "fainted": false
+          }
+        ],
+        "after": [
+          {
+            "ident": "p1: Amoonguss",
+            "species": "amoonguss",
+            "hp": 189,
+            "max_hp": 189,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Clefairy",
+            "species": "clefairy",
+            "hp": 145,
+            "max_hp": 145,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 141,
+            "max_hp": 154,
+            "fainted": false
+          }
+        ],
+        "log": [
+          "|move|p1a: Amoonguss|Aqua Tail|p2b: Blastoise",
+          "|-damage|p2b: Blastoise|141/154",
+          "|-damage|p2b: Blastoise|91/100"
+        ]
+      },
+      "overcoat_ignores_rage_powder": {
+        "result": true,
+        "before": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Clefairy",
+            "species": "clefairy",
+            "hp": 145,
+            "max_hp": 145,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 154,
+            "max_hp": 154,
+            "fainted": false
+          }
+        ],
+        "after": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Clefairy",
+            "species": "clefairy",
+            "hp": 145,
+            "max_hp": 145,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 139,
+            "max_hp": 154,
+            "fainted": false
+          }
+        ],
+        "log": [
+          "|move|p1a: Goodra|Aqua Tail|p2b: Blastoise",
+          "|-damage|p2b: Blastoise|139/154",
+          "|-damage|p2b: Blastoise|90/100"
+        ]
+      },
+      "safety_goggles_ignores_rage_powder": {
+        "result": true,
+        "before": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Clefairy",
+            "species": "clefairy",
+            "hp": 145,
+            "max_hp": 145,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 154,
+            "max_hp": 154,
+            "fainted": false
+          }
+        ],
+        "after": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Clefairy",
+            "species": "clefairy",
+            "hp": 145,
+            "max_hp": 145,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 139,
+            "max_hp": 154,
+            "fainted": false
+          }
+        ],
+        "log": [
+          "|move|p1a: Goodra|Aqua Tail|p2b: Blastoise",
+          "|-damage|p2b: Blastoise|139/154",
+          "|-damage|p2b: Blastoise|90/100"
+        ]
+      },
+      "conflict_active_entry_order_wins_equal_speed": {
+        "result": true,
+        "before": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Clefairy",
+            "species": "clefairy",
+            "hp": 145,
+            "max_hp": 145,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Clefairy",
+            "species": "clefairy",
+            "hp": 145,
+            "max_hp": 145,
+            "fainted": false
+          }
+        ],
+        "after": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Clefairy",
+            "species": "clefairy",
+            "hp": 92,
+            "max_hp": 145,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Clefairy",
+            "species": "clefairy",
+            "hp": 145,
+            "max_hp": 145,
+            "fainted": false
+          }
+        ],
+        "log": [
+          "|move|p1a: Goodra|Aqua Tail|p2a: Clefairy",
+          "|-damage|p2a: Clefairy|92/145",
+          "|-damage|p2a: Clefairy|63/100"
+        ]
+      },
+      "spread_ignores_redirection": {
+        "result": true,
+        "before": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Clefairy",
+            "species": "clefairy",
+            "hp": 145,
+            "max_hp": 145,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 154,
+            "max_hp": 154,
+            "fainted": false
+          }
+        ],
+        "after": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Clefairy",
+            "species": "clefairy",
+            "hp": 104,
+            "max_hp": 145,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 133,
+            "max_hp": 154,
+            "fainted": false
+          }
+        ],
+        "log": [
+          "|move|p1a: Goodra|Dazzling Gleam|p2b: Blastoise|[spread] p2a,p2b",
+          "|-damage|p2a: Clefairy|104/145",
+          "|-damage|p2a: Clefairy|71/100",
+          "|-damage|p2b: Blastoise|133/154",
+          "|-damage|p2b: Blastoise|86/100"
+        ]
+      },
+      "redirector_unavailable": {
+        "first": {
+          "result": true,
+          "before": [
+            {
+              "ident": "p1: Goodra",
+              "species": "goodra",
+              "hp": 165,
+              "max_hp": 165,
+              "fainted": false
+            },
+            {
+              "ident": "p1: Goodra",
+              "species": "goodra",
+              "hp": 165,
+              "max_hp": 165,
+              "fainted": false
+            },
+            {
+              "ident": "p2: Clefairy",
+              "species": "clefairy",
+              "hp": 1,
+              "max_hp": 145,
+              "fainted": false
+            },
+            {
+              "ident": "p2: Blastoise",
+              "species": "blastoise",
+              "hp": 154,
+              "max_hp": 154,
+              "fainted": false
+            }
+          ],
+          "after": [
+            {
+              "ident": "p1: Goodra",
+              "species": "goodra",
+              "hp": 165,
+              "max_hp": 165,
+              "fainted": false
+            },
+            {
+              "ident": "p1: Goodra",
+              "species": "goodra",
+              "hp": 165,
+              "max_hp": 165,
+              "fainted": false
+            },
+            {
+              "ident": "p2: Clefairy",
+              "species": "clefairy",
+              "hp": 0,
+              "max_hp": 145,
+              "fainted": true
+            },
+            {
+              "ident": "p2: Blastoise",
+              "species": "blastoise",
+              "hp": 154,
+              "max_hp": 154,
+              "fainted": false
+            }
+          ],
+          "log": [
+            "|move|p1a: Goodra|Aqua Tail|p2a: Clefairy",
+            "|-damage|p2a: Clefairy|0 fnt",
+            "|-damage|p2a: Clefairy|0 fnt",
+            "|faint|p2a: Clefairy"
+          ]
+        },
+        "second": {
+          "result": true,
+          "before": [
+            {
+              "ident": "p1: Goodra",
+              "species": "goodra",
+              "hp": 165,
+              "max_hp": 165,
+              "fainted": false
+            },
+            {
+              "ident": "p1: Goodra",
+              "species": "goodra",
+              "hp": 165,
+              "max_hp": 165,
+              "fainted": false
+            },
+            {
+              "ident": "p2: Clefairy",
+              "species": "clefairy",
+              "hp": 0,
+              "max_hp": 145,
+              "fainted": true
+            },
+            {
+              "ident": "p2: Blastoise",
+              "species": "blastoise",
+              "hp": 154,
+              "max_hp": 154,
+              "fainted": false
+            }
+          ],
+          "after": [
+            {
+              "ident": "p1: Goodra",
+              "species": "goodra",
+              "hp": 165,
+              "max_hp": 165,
+              "fainted": false
+            },
+            {
+              "ident": "p1: Goodra",
+              "species": "goodra",
+              "hp": 165,
+              "max_hp": 165,
+              "fainted": false
+            },
+            {
+              "ident": "p2: Clefairy",
+              "species": "clefairy",
+              "hp": 0,
+              "max_hp": 145,
+              "fainted": true
+            },
+            {
+              "ident": "p2: Blastoise",
+              "species": "blastoise",
+              "hp": 134,
+              "max_hp": 154,
+              "fainted": false
+            }
+          ],
+          "log": [
+            "|move|p1b: Goodra|Aqua Tail|p2b: Blastoise",
+            "|-damage|p2b: Blastoise|134/154",
+            "|-damage|p2b: Blastoise|87/100"
+          ]
+        }
+      }
+    },
+    "per_target_execution": {
+      "independent_accuracy": {
+        "result": true,
+        "before": [
+          {
+            "ident": "p1: Garchomp",
+            "species": "garchomp",
+            "hp": 183,
+            "max_hp": 183,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Arcanine",
+            "species": "arcanine",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 154,
+            "max_hp": 154,
+            "fainted": false
+          }
+        ],
+        "after": [
+          {
+            "ident": "p1: Garchomp",
+            "species": "garchomp",
+            "hp": 183,
+            "max_hp": 183,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Arcanine",
+            "species": "arcanine",
+            "hp": 113,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 154,
+            "max_hp": 154,
+            "fainted": false
+          }
+        ],
+        "log": [
+          "|move|p1a: Garchomp|Rock Slide|p2a: Arcanine|[spread] p2a",
+          "|-miss|p1a: Garchomp|p2b: Blastoise",
+          "|-damage|p2a: Arcanine|113/165",
+          "|-damage|p2a: Arcanine|68/100"
+        ],
+        "rng_operations": [
+          {
+            "operation": "chance",
+            "numerator": 90,
+            "denominator": 100,
+            "result": true
+          },
+          {
+            "operation": "chance",
+            "numerator": 90,
+            "denominator": 100,
+            "result": false
+          },
+          {
+            "operation": "chance",
+            "numerator": 1,
+            "denominator": 24,
+            "result": false
+          },
+          {
+            "operation": "damage_randomizer",
+            "percent": 100
+          }
+        ]
+      },
+      "psychic_terrain_mixed_targets": {
+        "result": false,
+        "before": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Arcanine",
+            "species": "arcanine",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Charizard",
+            "species": "charizard",
+            "hp": 153,
+            "max_hp": 153,
+            "fainted": false
+          }
+        ],
+        "after": [
+          {
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Arcanine",
+            "species": "arcanine",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false
+          },
+          {
+            "ident": "p2: Charizard",
+            "species": "charizard",
+            "hp": 153,
+            "max_hp": 153,
+            "fainted": false
+          }
+        ],
+        "log": [
+          "|move|p1a: Goodra|Dazzling Gleam|p2a: Arcanine|[spread] ",
+          "|-activate|p2a: Arcanine|move: Psychic Terrain",
+          "|-activate|p2b: Charizard|move: Protect"
+        ],
+        "rng_operations": [],
+        "synthetic_priority": true
+      }
+    }
   }
 }

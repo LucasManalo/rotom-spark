@@ -14,7 +14,8 @@ format `gen9championsvgc2026regmc`, mod `champions`.
 - `sim/battle-actions.ts:BattleActions.trySpreadMoveHit` sets `spreadHit` when
   the resolved set has more than one target, before protection, immunity, or
   accuracy removes individual targets. Its Gen 9 per-target order is TryHit,
-  type immunity, move-specific immunity, accuracy, then damage.
+  type immunity, move-specific immunity, accuracy, protection breaking, then
+  damage.
 - `data/mods/champions/scripts.ts:BattleActions.modifyDamage` applies the
   doubles spread modifier as 0.75 immediately after base damage plus two and
   before weather, critical, random, STAB, and type modifiers.
@@ -31,6 +32,39 @@ format `gen9championsvgc2026regmc`, mod `champions`.
   volatiles. Both require the redirector to remain a valid target. Rage Powder
   additionally calls powder status immunity; the PR 13.2 state model covers
   Grass typing, Overcoat, Safety Goggles, and Magic Room item suppression.
+- `sim/battle.ts:Battle.priorityEvent`, `resolvePriority`, and
+  `compareRedirectOrder` order competing redirect handlers by event priority,
+  effective action Speed, then the holder's ability-state creation order. For
+  Follow Me and Rage Powder this last value describes when the Pokémon most
+  recently became active, not when the redirecting move was used. Reversing
+  two tied users' activation order therefore does not reverse the winner;
+  switching one user does. Rotom persists this minimal active-entry order and
+  updates it only through position kernel operations.
+
+## Psychic Terrain and per-target failures
+
+- `data/moves.ts:psychicterrain.condition.onTryHit` is a priority-4 TryHit
+  handler. It rejects only opposing positive-priority hits whose current
+  target is grounded. Its handler precedes Protect's priority-3 TryHit handler,
+  type immunity, accuracy, critical-hit and damage draws.
+- A mixed grounded/airborne spread priority move can therefore be blocked for
+  one target and continue for the other. A grounded protected target is
+  reported as terrain-blocked without consuming accuracy/damage RNG; an
+  airborne protected target is reported as protected.
+- Rotom records terrain rejection as `TargetResult::PriorityBlocked`; it does
+  not cancel unaffected targets or emit a whole-move failure.
+
+## Differential verification scope
+
+`tools/showdown-reference/doubles-targeting.cjs` now executes pinned
+`BattleActions.useMove` cases against live Showdown battle state for spread
+damage, protection chains, retargeting, redirection conflicts and immunities,
+independent accuracy, applied HP loss, fainting, and Psychic Terrain. Where
+Rotom's SplitMix64 cannot share raw seed parity with Showdown, the fixture
+forces equivalent accuracy/critical/damage or Protect branches and records the
+operations. These are formula, individual-mechanic, and interaction
+comparisons; they are deliberately not labeled complete Showdown turn
+transitions.
 
 ## Deliberate boundaries
 

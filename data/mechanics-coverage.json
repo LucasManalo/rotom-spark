@@ -93,66 +93,76 @@
       "id": "surf",
       "kind": "move",
       "implementation": "implemented",
-      "verification": "unit_tested",
-      "interaction_verification": "unit_tested",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
       "owner_pr": "PR 13.2",
       "evidence": [
         "file:docs/research/pr-13-2-doubles-targeting.md",
         "file:data/fixtures/differential/doubles-targeting.json",
+        "differential:data/fixtures/differential/doubles-targeting.json#surf-spread-protection",
         "unit:crates/rotom-dex/tests/combat.rs#spread_damage_keeps_protected_targets_in_the_spread_modifier_and_ignores_redirection",
-        "interaction_unit:crates/rotom-dex/tests/combat.rs#spread_damage_keeps_protected_targets_in_the_spread_modifier_and_ignores_redirection"
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#spread_damage_keeps_protected_targets_in_the_spread_modifier_and_ignores_redirection",
+        "interaction_differential:data/fixtures/differential/doubles-targeting.json#surf-spread-protection"
       ]
     },
     {
       "id": "protect",
       "kind": "move",
       "implementation": "implemented",
-      "verification": "unit_tested",
-      "interaction_verification": "unit_tested",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
       "owner_pr": "PR 13.2",
       "evidence": [
         "file:docs/research/pr-13-2-doubles-targeting.md",
+        "differential:data/fixtures/differential/doubles-targeting.json#protect-repeat",
         "unit:crates/rotom-dex/tests/combat.rs#follow_me_redirects_single_target_moves_and_repeat_protect_uses_the_battle_rng",
-        "interaction_unit:crates/rotom-dex/tests/combat.rs#spread_damage_keeps_protected_targets_in_the_spread_modifier_and_ignores_redirection"
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#spread_damage_keeps_protected_targets_in_the_spread_modifier_and_ignores_redirection",
+        "interaction_differential:data/fixtures/differential/doubles-targeting.json#protect-repeat"
       ]
     },
     {
       "id": "followme",
       "kind": "move",
       "implementation": "implemented",
-      "verification": "unit_tested",
-      "interaction_verification": "unit_tested",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
       "owner_pr": "PR 13.2",
       "evidence": [
         "file:docs/research/pr-13-2-doubles-targeting.md",
+        "differential:data/fixtures/differential/doubles-targeting.json#follow-me-redirection",
         "unit:crates/rotom-dex/tests/combat.rs#follow_me_redirects_single_target_moves_and_repeat_protect_uses_the_battle_rng",
-        "interaction_unit:crates/rotom-dex/tests/combat.rs#follow_me_redirects_single_target_moves_and_repeat_protect_uses_the_battle_rng"
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#follow_me_redirects_single_target_moves_and_repeat_protect_uses_the_battle_rng",
+        "interaction_differential:data/fixtures/differential/doubles-targeting.json#follow-me-redirection"
       ]
     },
     {
       "id": "ragepowder",
       "kind": "move",
       "implementation": "implemented",
-      "verification": "unit_tested",
-      "interaction_verification": "unit_tested",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
       "owner_pr": "PR 13.2",
       "evidence": [
         "file:docs/research/pr-13-2-doubles-targeting.md",
+        "differential:data/fixtures/differential/doubles-targeting.json#rage-powder-redirection",
         "unit:crates/rotom-dex/tests/combat.rs#rage_powder_respects_grass_overcoat_and_safety_goggles_and_feint_breaks_protect",
-        "interaction_unit:crates/rotom-dex/tests/combat.rs#rage_powder_respects_grass_overcoat_and_safety_goggles_and_feint_breaks_protect"
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#rage_powder_respects_grass_overcoat_and_safety_goggles_and_feint_breaks_protect",
+        "interaction_differential:data/fixtures/differential/doubles-targeting.json#rage-powder-redirection"
       ]
     },
     {
       "id": "feint",
       "kind": "move",
       "implementation": "implemented",
-      "verification": "unit_tested",
-      "interaction_verification": "unit_tested",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
       "owner_pr": "PR 13.2",
       "evidence": [
         "file:docs/research/pr-13-2-doubles-targeting.md",
+        "differential:data/fixtures/differential/doubles-targeting.json#feint-break-protect",
         "unit:crates/rotom-dex/tests/combat.rs#rage_powder_respects_grass_overcoat_and_safety_goggles_and_feint_breaks_protect",
-        "interaction_unit:crates/rotom-dex/tests/combat.rs#rage_powder_respects_grass_overcoat_and_safety_goggles_and_feint_breaks_protect"
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#rage_powder_respects_grass_overcoat_and_safety_goggles_and_feint_breaks_protect",
+        "interaction_differential:data/fixtures/differential/doubles-targeting.json#feint-break-protect"
       ]
     }
   ]

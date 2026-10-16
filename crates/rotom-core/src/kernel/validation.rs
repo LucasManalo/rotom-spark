@@ -27,6 +27,7 @@ pub(super) fn validate_stable_state(battle: &BattleState) -> Result<(), BattleEr
     validate_conditions(&battle.field.conditions, "field conditions")?;
     validate_single_condition(battle.field.weather, "weather")?;
     validate_single_condition(battle.field.terrain, "terrain")?;
+    validate_active_effect_orders(battle)?;
 
     for side in [SideId::P1, SideId::P2] {
         validate_side(battle, side)?;
@@ -62,6 +63,30 @@ pub(super) fn validate_stable_state(battle: &BattleState) -> Result<(), BattleEr
         BattlePhase::BattleEnd => validate_battle_end(battle),
         BattlePhase::ResolvingTurn => invalid("ResolvingTurn is not a stable public boundary"),
     }
+}
+
+fn validate_active_effect_orders(battle: &BattleState) -> Result<(), BattleError> {
+    let mut orders = HashSet::new();
+    for (side_index, side) in [SideId::P1, SideId::P2].into_iter().enumerate() {
+        for slot in crate::ActiveSlot::ALL {
+            let active = battle.side(side).active[slot.index()];
+            let order = battle.active_effect_orders[side_index][slot.index()];
+            if active.is_some() != order.is_some() {
+                return invalid(format!(
+                    "{side:?} {slot:?} active slot and effect order disagree"
+                ));
+            }
+            if let Some(order) = order {
+                if order >= battle.next_effect_order {
+                    return invalid("active effect order is not below the next order counter");
+                }
+                if !orders.insert(order) {
+                    return invalid("active effect orders must be unique");
+                }
+            }
+        }
+    }
+    Ok(())
 }
 
 fn validate_side(battle: &BattleState, side: SideId) -> Result<(), BattleError> {
@@ -446,6 +471,15 @@ mod tests {
         let mut position = started();
         position.side_mut(SideId::P1).active[0] = Some(PokemonIndex::new(2));
         assert!(position.validate_stable_state().is_err());
+
+        let mut missing_effect_order = started();
+        missing_effect_order.active_effect_orders[0][0] = None;
+        assert!(missing_effect_order.validate_stable_state().is_err());
+
+        let mut duplicate_effect_order = started();
+        duplicate_effect_order.active_effect_orders[0][1] =
+            duplicate_effect_order.active_effect_orders[0][0];
+        assert!(duplicate_effect_order.validate_stable_state().is_err());
 
         let mut duplicate = started();
         let condition = ConditionState::new(crate::ConditionId::new(9), Some(2));

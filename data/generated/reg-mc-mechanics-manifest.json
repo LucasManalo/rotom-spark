@@ -19788,9 +19788,11 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/doubles-targeting.json#feint-break-protect",
         "file:crates/rotom-core/src/combat.rs",
         "file:crates/rotom-dex/src/combat.rs",
         "file:docs/research/pr-13-2-doubles-targeting.md",
+        "interaction_differential:data/fixtures/differential/doubles-targeting.json#feint-break-protect",
         "interaction_unit:crates/rotom-dex/tests/combat.rs#rage_powder_respects_grass_overcoat_and_safety_goggles_and_feint_breaks_protect",
         "species/absol",
         "species/blaziken",
@@ -19843,8 +19845,8 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "unit_tested",
-      "interaction_verification": "unit_tested",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
       "owner_pr": "PR 13.2"
     },
     {
@@ -21331,9 +21333,11 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/doubles-targeting.json#follow-me-redirection",
         "file:crates/rotom-core/src/combat.rs",
         "file:crates/rotom-dex/src/combat.rs",
         "file:docs/research/pr-13-2-doubles-targeting.md",
+        "interaction_differential:data/fixtures/differential/doubles-targeting.json#follow-me-redirection",
         "interaction_unit:crates/rotom-dex/tests/combat.rs#follow_me_redirects_single_target_moves_and_repeat_protect_uses_the_battle_rng",
         "species/clefable",
         "species/indeedeef",
@@ -21353,8 +21357,8 @@
         "redirection"
       ],
       "implementation": "implemented",
-      "verification": "unit_tested",
-      "interaction_verification": "unit_tested",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
       "owner_pr": "PR 13.2"
     },
     {
@@ -29558,9 +29562,11 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/doubles-targeting.json#protect-repeat",
         "file:crates/rotom-core/src/combat.rs",
         "file:crates/rotom-dex/src/combat.rs",
         "file:docs/research/pr-13-2-doubles-targeting.md",
+        "interaction_differential:data/fixtures/differential/doubles-targeting.json#protect-repeat",
         "interaction_unit:crates/rotom-dex/tests/combat.rs#spread_damage_keeps_protected_targets_in_the_spread_modifier_and_ignores_redirection",
         "species/abomasnow",
         "species/absol",
@@ -29868,8 +29874,8 @@
         "protection"
       ],
       "implementation": "implemented",
-      "verification": "unit_tested",
-      "interaction_verification": "unit_tested",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
       "owner_pr": "PR 13.2"
     },
     {
@@ -30659,9 +30665,11 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/doubles-targeting.json#rage-powder-redirection",
         "file:crates/rotom-core/src/combat.rs",
         "file:crates/rotom-dex/src/combat.rs",
         "file:docs/research/pr-13-2-doubles-targeting.md",
+        "interaction_differential:data/fixtures/differential/doubles-targeting.json#rage-powder-redirection",
         "interaction_unit:crates/rotom-dex/tests/combat.rs#rage_powder_respects_grass_overcoat_and_safety_goggles_and_feint_breaks_protect",
         "species/ariados",
         "species/scovillain",
@@ -30702,8 +30710,8 @@
         "redirection"
       ],
       "implementation": "implemented",
-      "verification": "unit_tested",
-      "interaction_verification": "unit_tested",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
       "owner_pr": "PR 13.2"
     },
     {
@@ -37537,10 +37545,12 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/doubles-targeting.json#surf-spread-protection",
         "file:crates/rotom-core/src/combat.rs",
         "file:crates/rotom-dex/src/combat.rs",
         "file:data/fixtures/differential/doubles-targeting.json",
         "file:docs/research/pr-13-2-doubles-targeting.md",
+        "interaction_differential:data/fixtures/differential/doubles-targeting.json#surf-spread-protection",
         "interaction_unit:crates/rotom-dex/tests/combat.rs#spread_damage_keeps_protected_targets_in_the_spread_modifier_and_ignores_redirection",
         "species/aggron",
         "species/araquanid",
@@ -37627,8 +37637,8 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "unit_tested",
-      "interaction_verification": "unit_tested",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
       "owner_pr": "PR 13.2"
     },
     {
@@ -46887,13 +46897,13 @@
         },
         "verification": {
           "not_tested": 499,
-          "unit_tested": 6,
-          "differential_verified": 5
+          "unit_tested": 1,
+          "differential_verified": 10
         },
         "interaction_verification": {
           "not_tested": 505,
-          "unit_tested": 5,
-          "differential_verified": 0
+          "unit_tested": 0,
+          "differential_verified": 5
         },
         "reachability": {
           "direct_legal_set": 510,

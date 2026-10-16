@@ -17,7 +17,7 @@ Rotom Spark is a deterministic state-transition engine:
 
 - `B` is the complete authoritative gameplay state: turn, phase, both sides,
   every loaded and selected Pokémon, active positions, field state, pending
-  queue, and winner.
+  queue, active-entry event order, and winner.
 - `R` is the one authoritative deterministic random stream.
 - `JointAction` is one complete, phase-appropriate decision for both sides.
 - `Mechanics` is immutable static Dex data plus the configured effect registry
@@ -30,6 +30,12 @@ The physical representation will continue to embed `BattleRng` in
 must not introduce a second synchronized RNG. Its seed, internal stream state,
 and draw count are replay-relevant. Its optional trace entries are diagnostic
 metadata, not gameplay authority.
+
+The per-active-slot event order and its next-order counter are also serialized
+gameplay authority. Kernel position operations allocate an order when a
+Pokémon becomes active and clear it when that position is vacated. This makes
+equal-priority, equal-Speed redirect event ordering deterministic across
+cloning and serialization without treating move activation order as a proxy.
 
 ## Approved canonical API direction
 

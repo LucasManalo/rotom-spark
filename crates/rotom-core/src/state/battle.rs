@@ -41,6 +41,10 @@ pub struct BattleState {
     pub(crate) queue: ActionQueue,
     pub(crate) phase: BattlePhase,
     pub(crate) winner: Option<SideId>,
+    /// Showdown-style creation order of each active Pokémon's current ability
+    /// state. Redirect events use this only after priority and Speed tie.
+    pub(crate) active_effect_orders: [[Option<u32>; 2]; 2],
+    pub(crate) next_effect_order: u32,
 }
 
 impl BattleState {
@@ -109,6 +113,8 @@ impl BattleState {
             queue: ActionQueue::default(),
             phase: BattlePhase::TeamPreview,
             winner: None,
+            active_effect_orders: [[None; 2]; 2],
+            next_effect_order: 0,
         };
         battle.validate_stable_state()?;
         Ok(battle)
@@ -185,6 +191,18 @@ impl BattleState {
             SideId::P1 => &mut self.sides[0],
             SideId::P2 => &mut self.sides[1],
         }
+    }
+
+    pub(crate) const fn active_effect_order(
+        &self,
+        side: SideId,
+        slot: super::ActiveSlot,
+    ) -> Option<u32> {
+        let side_index = match side {
+            SideId::P1 => 0,
+            SideId::P2 => 1,
+        };
+        self.active_effect_orders[side_index][slot.index()]
     }
 
     /// Whether the battle ended without a winning side.

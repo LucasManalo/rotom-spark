@@ -25,11 +25,12 @@ future simulation.
 | Location | Authoritative writes | Current class | Planned owner |
 | --- | --- | --- | --- |
 | `rotom-dex/src/combat.rs:78-132` | Constructs runtime `PokemonState` and `MoveSlot` values from immutable resolved Dex data | Construction | Dex-to-state constructor; no running-battle mutation |
-| `state/battle.rs:39-105` | Constructs turn, picked size, sides, field, embedded RNG, queue, phase, winner | Construction | State constructor; stable validation at return |
+| `state/battle.rs:39-115` | Constructs turn, picked size, sides, field, embedded RNG, queue, phase, winner, and active-entry order metadata | Construction | State constructor; stable validation at return |
 | `state/side.rs:16-27`, `state/pokemon.rs:375-379` | Constructs pre-preview side and runtime team containers | Construction | State constructors |
 | `state/transition.rs` | Stores one side's selected-team order | Transition write | Justified crate-internal transition-owned preview input |
 | `state/transition.rs`, `kernel/mod.rs` | Voluntary switches, forced replacements, and initial leads | Kernel-routed | Transition/mechanics validate and order; kernel atomically performs cleanup and coupled position/slot writes |
 | `state/transition.rs`, `kernel/mod.rs` | Faint cleanup: HP/status/counters/volatiles/position/active slot | Kernel-routed | Mechanics owns faint ordering and settlement; kernel owns atomic structural representation |
+| `state/transition.rs`, `kernel/mod.rs` | Active-slot redirect event order counter and per-slot metadata | Kernel-routed | Position operations keep occupancy and active-entry order coherent; redirection mechanics only reads it after event priority and Speed |
 | `state/transition.rs` | Writes turn, winner, and post-preview/faint/replacement phase | Transition write | Justified phase settlement; not an effect or primitive mechanics write |
 | `state/queue.rs` | Clones state to construct a queue for inspection | Inspection adapter | Returns only the queue and never commits state or RNG advancement |
 | `state/queue.rs:110-111` | Installs action queue and enters `ResolvingTurn` | Transition write | Justified queue/phase settlement |
@@ -153,8 +154,11 @@ ephemeral `MoveExecutionContext` are immutable or temporary calculation data,
 not battle state. `AfterDamage` now receives the kernel-reported applied HP
 delta rather than the requested pre-clamp amount.
 
-PR 13.2 adds no direct authoritative write path. Per-target contexts and
-outcomes are ephemeral diagnostics. Spread damage still uses
+PR 13.2 adds no mechanics-owned direct authoritative write path. Per-target
+contexts and outcomes are ephemeral diagnostics. The active-entry order used
+to break equal-Speed redirect events is authoritative serialized state, but it
+is allocated and cleared only by the existing kernel switch, fill, and faint
+operations. Spread damage still uses
 `StateKernel::damage_hp`; Protect, Follow Me, Rage Powder, their expiry, and
 the Protect stall counter use typed volatile add/remove/tick operations.
 Target selection, redirection eligibility, protection, immunity, damage and

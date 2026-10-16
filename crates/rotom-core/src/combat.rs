@@ -364,6 +364,7 @@ pub enum TargetResult {
     Hit,
     Missed,
     Protected,
+    PriorityBlocked,
     Immune,
     Cancelled,
 }
@@ -618,20 +619,6 @@ impl BattleState {
             })?;
         StateKernel::new(self).set_pp(move_context.source, queued.move_slot, remaining_pp)?;
 
-        if self.priority_move_blocked(data, field_effects, &move_context)? {
-            resolution.actions.push(ResolvedAction::Skipped {
-                side: queued.side,
-                slot: queued.slot,
-            });
-            resolution.events.push(effects.dispatch(
-                self,
-                BattleEvent::AfterMove,
-                context,
-                EventValue::None,
-            )?);
-            return Ok(());
-        }
-
         self.execute_primary_operation(data, &move_context, effects, field_effects, resolution)
     }
 
@@ -741,14 +728,24 @@ impl BattleState {
             )?;
             let cancelled = try_hit.cancelled || try_hit.value == EventValue::Boolean(false);
             resolution.events.push(try_hit);
-            let protected = self.target_is_protected(data, field_effects, move_context, target)?;
-            if cancelled || protected {
+            // Pinned Showdown resolves Psychic Terrain's priority-4 TryHit
+            // guard before Protect's priority-3 TryHit handler, per target.
+            let priority_blocked =
+                self.priority_move_blocked_target(data, field_effects, move_context, target)?;
+            let protected = if cancelled || priority_blocked {
+                false
+            } else {
+                self.target_is_protected(data, field_effects, move_context, target)?
+            };
+            if cancelled || priority_blocked || protected {
                 resolution.target_outcomes.push(TargetOutcome {
                     source: move_context.source,
                     move_id: move_context.move_id,
                     target,
                     redirected: target_context.redirected,
-                    result: if protected {
+                    result: if priority_blocked {
+                        TargetResult::PriorityBlocked
+                    } else if protected {
                         TargetResult::Protected
                     } else {
                         TargetResult::Cancelled
@@ -1175,11 +1172,18 @@ impl BattleState {
             .filter_map(|slot| {
                 let pokemon = self.side(source.side.opponent()).active[slot.index()]?;
                 let target = self.side(source.side.opponent()).pokemon(pokemon)?;
-                let follow = ids.follow_me.is_some_and(|id| target.has_volatile(id));
-                let rage = ids.rage_powder.is_some_and(|id| target.has_volatile(id));
-                if follow || (rage && !powder_immune) {
+                let follow = ids
+                    .follow_me
+                    .and_then(|id| target.volatiles.iter().find(|condition| condition.id == id));
+                let rage = ids
+                    .rage_powder
+                    .and_then(|id| target.volatiles.iter().find(|condition| condition.id == id));
+                let redirect = follow.or_else(|| (!powder_immune).then_some(rage).flatten());
+                if redirect.is_some() {
                     Some((
                         ids.action_speed(self, source.side.opponent(), target.effective_speed()),
+                        self.active_effect_order(source.side.opponent(), slot)
+                            .unwrap_or(u32::MAX),
                         slot,
                         pokemon,
                     ))
@@ -1188,10 +1192,12 @@ impl BattleState {
                 }
             })
             .collect::<Vec<_>>();
-        candidates.sort_by_key(|(speed, slot, _)| (std::cmp::Reverse(*speed), slot.index()));
+        candidates.sort_by_key(|(speed, effect_order, slot, _)| {
+            (std::cmp::Reverse(*speed), *effect_order, slot.index())
+        });
         Ok(candidates
             .first()
-            .map(|(_, slot, pokemon)| TargetExecutionContext {
+            .map(|(_, _, slot, pokemon)| TargetExecutionContext {
                 target: PokemonRef::new(source.side.opponent(), *pokemon),
                 slot: *slot,
                 redirected: true,
@@ -1392,15 +1398,13 @@ impl BattleState {
             .chance(RngReason::Accuracy, u64::from(adjusted.min(100)), 100)
     }
 
-    fn priority_move_blocked<D: CombatData>(
+    fn priority_move_blocked_target<D: CombatData>(
         &self,
         data: &D,
         field_effects: &FieldEffectIds,
         context: &MoveExecutionContext,
+        target: PokemonRef,
     ) -> Result<bool, BattleError> {
-        let Some(target) = context.targets.first().map(|target| target.target) else {
-            return Ok(false);
-        };
         if !field_effects.field_has(self, field_effects.psychic_terrain)
             || context.source.side == target.side
         {

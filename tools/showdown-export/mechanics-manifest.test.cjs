@@ -66,8 +66,8 @@ test('coverage claims do not confuse implementation with verification', () => {
 	));
 	assert.equal(entry('move', 'aquatail').interaction_verification, 'not_tested');
 	assert.equal(entry('move', 'protect').implementation, 'implemented');
-	assert.equal(entry('move', 'protect').verification, 'unit_tested');
-	assert.equal(entry('move', 'protect').interaction_verification, 'unit_tested');
+	assert.equal(entry('move', 'protect').verification, 'differential_verified');
+	assert.equal(entry('move', 'protect').interaction_verification, 'differential_verified');
 });
 
 test('move support is derived from complete executor capabilities', () => {
@@ -85,7 +85,7 @@ test('move support is derived from complete executor capabilities', () => {
 	assert.equal(manifest.summary.by_kind.move.implementation.implemented, 58);
 	assert.deepEqual(
 		manifest.summary.by_kind.move.verification,
-		{not_tested: 499, unit_tested: 6, differential_verified: 5}
+		{not_tested: 499, unit_tested: 1, differential_verified: 10}
 	);
 	const implementedMoves = manifest.entries.filter(candidate =>
 		candidate.kind === 'move' && candidate.implementation === 'implemented'
@@ -93,7 +93,7 @@ test('move support is derived from complete executor capabilities', () => {
 	assert.equal(implementedMoves.filter(candidate => candidate.verification === 'not_tested').length, 47);
 	assert.deepEqual(
 		manifest.summary.by_kind.move.interaction_verification,
-		{not_tested: 505, unit_tested: 5, differential_verified: 0}
+		{not_tested: 505, unit_tested: 0, differential_verified: 5}
 	);
 	assert.deepEqual(entry('move', 'surf').required_capabilities, [
 		'standard_damage', 'accuracy', 'advanced_targeting', 'target_set',

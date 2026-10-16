@@ -267,6 +267,10 @@ impl<'a> StateKernel<'a> {
             ));
         }
         self.require_healthy_team_position(side, incoming)?;
+        let effect_order = self.battle.next_effect_order;
+        self.battle.next_effect_order = effect_order.checked_add(1).ok_or_else(|| {
+            BattleError::InvalidState("active effect-order counter overflowed".to_owned())
+        })?;
 
         let side_state = self.battle.side_mut(side);
         let outgoing_state = side_state.pokemon_mut(outgoing).ok_or_else(|| {
@@ -280,6 +284,7 @@ impl<'a> StateKernel<'a> {
         incoming_state.prepare_switch_in();
         incoming_state.position = PokemonPosition::Active { slot };
         side_state.active[slot_index] = Some(incoming);
+        self.battle.active_effect_orders[side_index(side)][slot_index] = Some(effect_order);
         Ok(outgoing)
     }
 
@@ -297,6 +302,10 @@ impl<'a> StateKernel<'a> {
         }
         self.require_selected(side, incoming)?;
         self.require_healthy_team_position(side, incoming)?;
+        let effect_order = self.battle.next_effect_order;
+        self.battle.next_effect_order = effect_order.checked_add(1).ok_or_else(|| {
+            BattleError::InvalidState("active effect-order counter overflowed".to_owned())
+        })?;
         let side_state = self.battle.side_mut(side);
         let incoming_state = side_state.pokemon_mut(incoming).ok_or_else(|| {
             BattleError::InvalidState("incoming Pokémon is out of bounds".to_owned())
@@ -304,6 +313,7 @@ impl<'a> StateKernel<'a> {
         incoming_state.prepare_switch_in();
         incoming_state.position = PokemonPosition::Active { slot };
         side_state.active[slot.index()] = Some(incoming);
+        self.battle.active_effect_orders[side_index(side)][slot.index()] = Some(effect_order);
         Ok(())
     }
 
@@ -331,6 +341,7 @@ impl<'a> StateKernel<'a> {
         pokemon.clear_on_exit();
         pokemon.position = PokemonPosition::Fainted;
         side_state.active[slot_index] = None;
+        self.battle.active_effect_orders[side_index(side)][slot_index] = None;
         Ok(pokemon_index)
     }
 
@@ -468,6 +479,13 @@ impl<'a> StateKernel<'a> {
             ));
         }
         Ok(())
+    }
+}
+
+const fn side_index(side: SideId) -> usize {
+    match side {
+        SideId::P1 => 0,
+        SideId::P2 => 1,
     }
 }
 
@@ -723,6 +741,8 @@ mod tests {
     #[test]
     fn position_operations_update_both_sides_of_the_mapping_atomically() {
         let mut battle = battle();
+        let original_left_order = battle.active_effect_orders[0][0].unwrap();
+        let original_right_order = battle.active_effect_orders[0][1].unwrap();
         let before = battle.clone();
         let mut kernel = StateKernel::new(&mut battle);
         assert!(kernel
@@ -759,6 +779,8 @@ mod tests {
             index(0)
         );
         assert_eq!(battle.side(SideId::P1).active[0], Some(index(2)));
+        assert!(battle.active_effect_orders[0][0].unwrap() > original_right_order);
+        assert_ne!(battle.active_effect_orders[0][0], Some(original_left_order));
         assert_eq!(
             battle.side(SideId::P1).pokemon(index(0)).unwrap().position,
             PokemonPosition::Team
@@ -794,6 +816,7 @@ mod tests {
         let mut kernel = StateKernel::new(&mut battle);
         kernel.mark_fainted(SideId::P1, ActiveSlot::Right).unwrap();
         assert_eq!(battle.side(SideId::P1).active[1], None);
+        assert_eq!(battle.active_effect_orders[0][1], None);
         let fainted = battle.side(SideId::P1).pokemon(index(1)).unwrap();
         assert_eq!(fainted.current_hp, 0);
         assert_eq!(fainted.position, PokemonPosition::Fainted);
@@ -803,6 +826,7 @@ mod tests {
             .fill_active_position(SideId::P1, ActiveSlot::Right, index(3))
             .unwrap();
         assert_eq!(battle.side(SideId::P1).active[1], Some(index(3)));
+        assert!(battle.active_effect_orders[0][1].unwrap() > original_right_order);
         assert_eq!(battle.phase, BattlePhase::TurnSelection);
     }
 
