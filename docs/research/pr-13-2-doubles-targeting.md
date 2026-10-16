@@ -13,9 +13,11 @@ format `gen9championsvgc2026regmc`, mod `champions`.
   retarget; `adjacentAllyOrSelf` falls back to the user.
 - `sim/battle-actions.ts:BattleActions.trySpreadMoveHit` sets `spreadHit` when
   the resolved set has more than one target, before protection, immunity, or
-  accuracy removes individual targets. Its Gen 9 per-target order is TryHit,
-  type immunity, move-specific immunity, accuracy, protection breaking, then
-  damage.
+  accuracy removes individual targets. Each Gen 9 stage runs across the whole
+  surviving target set before the next stage begins: TryHit for all targets,
+  then type immunity, move-specific immunity, accuracy, protection breaking,
+  and finally damage. In particular, all applicable accuracy draws precede
+  every critical-hit and damage-roll draw.
 - `data/mods/champions/scripts.ts:BattleActions.modifyDamage` applies the
   doubles spread modifier as 0.75 immediately after base damage plus two and
   before weather, critical, random, STAB, and type modifiers.
@@ -66,10 +68,42 @@ operations. These are formula, individual-mechanic, and interaction
 comparisons; they are deliberately not labeled complete Showdown turn
 transitions.
 
+The adapter constructs its own Showdown teams and battle state and temporarily
+observes Showdown's `trySpreadMoveHit` and `hitStep*` methods. It records the
+selected target, resolved target order, target membership and result at each
+meaningful hit stage, applied HP loss, final HP/faint state, relevant
+volatiles, and controlled RNG operations. The fixture therefore captures
+values produced by Showdown execution rather than constants copied from Rotom.
+The Rust differential tests normalize Rotom `step()` diagnostics to the same
+target/result vocabulary and compare only equivalent fields. Showdown's
+protocol log and Rotom's diagnostic shape intentionally remain engine-specific.
+
+The directly compared cases cover two-target and one-target spread damage,
+mixed Protect and type immunity, Surf's ally-plus-foes target order, exact
+damage and applied loss, switching into a selected slot, a supported damaging
+move aimed at a missing ally, Follow Me and Rage Powder plus their bypass and
+ordering cases, Protect success/repeat/reset, Feint, independent accuracy,
+target-level fainting, and mixed Psychic Terrain/Protect results. Selected-foe
+faint retargeting and redirector invalidation after faint/switch also have
+executed Showdown fixtures and focused Rotom transition regressions.
+
+Equivalent outcomes are selected rather than equating raw seeds. Showdown's
+adapter controls accuracy, critical-hit, damage-randomizer, and Protect draws
+and records their semantic reasons. Rotom tests search deterministic seeds for
+the same outcomes and compare meaningful draw reason/order. Separate transition
+tests prove exact Rotom replay from serialized state.
+
+This is not a complete-turn differential harness: the reference side invokes
+`BattleActions.useMove`, while Rotom advances a complete joint action through
+`step()`. Turn-level fields that `useMove` bypasses, including end-of-turn
+volatile expiry, are excluded from the cross-engine normalization.
+
 ## Deliberate boundaries
 
 Side/field targets, random/scripted targets, semi-invulnerability, Sky Drop,
 ability suppression, and protection variants with contact punishments remain
 explicitly unsupported unless their complete intrinsic capabilities are
 implemented. The executor does not promote those moves merely because target
-sets and Protect exist.
+sets and Protect exist. Helping Hand remains an explicitly unsupported
+non-damage intrinsic; missing-ally parity is instead exercised with supported
+Dragon Pulse targeting so the target-resolution branch is compared directly.

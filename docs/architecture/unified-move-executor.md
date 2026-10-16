@@ -122,9 +122,14 @@ without a category-specific or move-specific run loop.
 ## PR 13.2 target and guard extension
 
 The same executor now expands doubles target sets in stable ally-then-foe
-order, records typed per-target outcomes, applies the spread modifier from the
-pre-filter target count, and resolves TryHit, protection, type immunity,
-accuracy, damage, reactions, and fainting per target. Protect, Follow Me, and
+order, records typed per-target outcomes, and applies the spread modifier from
+the pre-filter target count. It advances the whole surviving target set through
+each Showdown-backed stage before beginning the next stage: TryHit/terrain and
+Protect for all targets, then type immunity for all, accuracy for all,
+protection breaking for all, and finally damage, reactions, and fainting in
+target order. This preserves per-target results while ensuring, for example,
+that every applicable accuracy draw precedes critical-hit and damage draws.
+Protect, Follow Me, and
 Rage Powder are narrow supported non-damage intrinsics that install reusable
 one-turn volatiles through `StateKernel`; the repeat Protect counter remains
 authoritative volatile state and all odds use the battle RNG.
@@ -133,9 +138,9 @@ Psychic Terrain priority immunity is resolved for each attempted target inside
 that lifecycle. `PriorityBlocked` is distinct from Protect, type immunity,
 accuracy failure, and generic callback cancellation, and blocked targets do
 not consume later hit RNG or cancel unaffected spread targets. The explicit
-ordering is TryHit callbacks/terrain guard, Protect, type immunity, accuracy,
-damage and faint settlement; Psychic Terrain's pinned priority-4 rule is
-evaluated before Protect's priority-3 rule.
+stage ordering is TryHit callbacks/terrain guard, Protect, type immunity,
+accuracy, damage and faint settlement; Psychic Terrain's pinned priority-4
+rule is evaluated before Protect's priority-3 rule for each target.
 
 Competing Follow Me/Rage Powder handlers use effective action Speed followed
 by the active holder's creation order, matching Showdown's

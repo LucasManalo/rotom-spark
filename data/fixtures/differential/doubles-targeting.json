@@ -5,6 +5,7 @@
     "execution": "Pinned Showdown BattleActions.useMove executes each recorded move against live Battle/Pokemon state.",
     "classification": {
       "formula_differential": [
+        "spread.surf_all_adjacent",
         "spread.two_valid_targets",
         "spread.one_remaining_target",
         "spread.mixed_protected",
@@ -20,7 +21,10 @@
       "interaction": [
         "spread.mixed_protected",
         "redirection.conflict_active_entry_order_wins_equal_speed",
-        "redirection.redirector_unavailable"
+        "redirection.conflict_faster_redirector_wins",
+        "redirection.conflict_newer_left_loses_equal_speed",
+        "redirection.redirector_unavailable",
+        "redirection.redirector_switched_out"
       ]
     },
     "rng_comparison": "Controlled equivalent outcomes are used for accuracy, critical-hit, damage-roll, and Protect branches; no raw PRNG or seed parity is claimed."
@@ -124,68 +128,700 @@
   ],
   "executed_cases": {
     "spread": {
-      "surf_mixed_protected": {
+      "surf_all_adjacent": {
         "result": true,
         "before": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Arcanine",
             "species": "arcanine",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Blastoise",
             "species": "blastoise",
             "hp": 154,
             "max_hp": 154,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
         "after": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 47,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Arcanine",
             "species": "arcanine",
-            "hp": 165,
+            "hp": 85,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Blastoise",
             "species": "blastoise",
             "hp": 138,
             "max_hp": 154,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
+        "execution": {
+          "move": "surf",
+          "source": {
+            "side": "p1",
+            "slot": 0,
+            "species": "goodra"
+          },
+          "selected_target": {
+            "side": "p2",
+            "slot": 0,
+            "species": "arcanine"
+          },
+          "resolved_targets": [
+            {
+              "side": "p1",
+              "slot": 1,
+              "species": "magikarp"
+            },
+            {
+              "side": "p2",
+              "slot": 0,
+              "species": "arcanine"
+            },
+            {
+              "side": "p2",
+              "slot": 1,
+              "species": "blastoise"
+            }
+          ],
+          "stages": [
+            {
+              "stage": "invulnerability",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 1,
+                  "species": "magikarp"
+                },
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true,
+                true,
+                true
+              ]
+            },
+            {
+              "stage": "try_hit",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 1,
+                  "species": "magikarp"
+                },
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true,
+                true,
+                true
+              ]
+            },
+            {
+              "stage": "type_immunity",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 1,
+                  "species": "magikarp"
+                },
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true,
+                true,
+                true
+              ]
+            },
+            {
+              "stage": "move_immunity",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 1,
+                  "species": "magikarp"
+                },
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true,
+                true,
+                true
+              ]
+            },
+            {
+              "stage": "accuracy",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 1,
+                  "species": "magikarp"
+                },
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true,
+                true,
+                true
+              ]
+            },
+            {
+              "stage": "break_protect",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 1,
+                  "species": "magikarp"
+                },
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": null
+            },
+            {
+              "stage": "damage",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 1,
+                  "species": "magikarp"
+                },
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                48,
+                80,
+                16
+              ]
+            }
+          ],
+          "outcomes": [
+            {
+              "target": {
+                "side": "p1",
+                "slot": 1,
+                "species": "magikarp"
+              },
+              "result": "hit",
+              "applied_hp_loss": 48,
+              "final_hp": 47,
+              "fainted": false
+            },
+            {
+              "target": {
+                "side": "p2",
+                "slot": 0,
+                "species": "arcanine"
+              },
+              "result": "hit",
+              "applied_hp_loss": 80,
+              "final_hp": 85,
+              "fainted": false
+            },
+            {
+              "target": {
+                "side": "p2",
+                "slot": 1,
+                "species": "blastoise"
+              },
+              "result": "hit",
+              "applied_hp_loss": 16,
+              "final_hp": 138,
+              "fainted": false
+            }
+          ]
+        },
+        "log": [
+          "|move|p1a: Goodra|Surf|p2a: Arcanine|[spread] p1b,p2a,p2b",
+          "|-damage|p1b: Magikarp|47/95",
+          "|-damage|p1b: Magikarp|49/100",
+          "|-damage|p2a: Arcanine|85/165",
+          "|-damage|p2a: Arcanine|51/100",
+          "|-damage|p2b: Blastoise|138/154",
+          "|-damage|p2b: Blastoise|89/100"
+        ],
+        "rng_operations": [
+          {
+            "reason": "accuracy",
+            "operation": "chance",
+            "numerator": 100,
+            "denominator": 100,
+            "result": true
+          },
+          {
+            "reason": "accuracy",
+            "operation": "chance",
+            "numerator": 100,
+            "denominator": 100,
+            "result": true
+          },
+          {
+            "reason": "accuracy",
+            "operation": "chance",
+            "numerator": 100,
+            "denominator": 100,
+            "result": true
+          },
+          {
+            "reason": "critical_hit",
+            "operation": "chance",
+            "numerator": 1,
+            "denominator": 24,
+            "result": false
+          },
+          {
+            "reason": "damage_roll",
+            "operation": "damage_randomizer",
+            "percent": 100
+          },
+          {
+            "reason": "critical_hit",
+            "operation": "chance",
+            "numerator": 1,
+            "denominator": 24,
+            "result": false
+          },
+          {
+            "reason": "damage_roll",
+            "operation": "damage_randomizer",
+            "percent": 100
+          },
+          {
+            "reason": "critical_hit",
+            "operation": "chance",
+            "numerator": 1,
+            "denominator": 24,
+            "result": false
+          },
+          {
+            "reason": "damage_roll",
+            "operation": "damage_randomizer",
+            "percent": 100
+          }
+        ]
+      },
+      "surf_mixed_protected": {
+        "result": true,
+        "before": [
+          {
+            "side": "p1",
+            "slot": 0,
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false,
+            "volatiles": []
+          },
+          {
+            "side": "p1",
+            "slot": 1,
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false,
+            "volatiles": []
+          },
+          {
+            "side": "p2",
+            "slot": 0,
+            "ident": "p2: Arcanine",
+            "species": "arcanine",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false,
+            "volatiles": [
+              "protect",
+              "stall"
+            ]
+          },
+          {
+            "side": "p2",
+            "slot": 1,
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 154,
+            "max_hp": 154,
+            "fainted": false,
+            "volatiles": []
+          }
+        ],
+        "after": [
+          {
+            "side": "p1",
+            "slot": 0,
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false,
+            "volatiles": []
+          },
+          {
+            "side": "p1",
+            "slot": 1,
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 47,
+            "max_hp": 95,
+            "fainted": false,
+            "volatiles": []
+          },
+          {
+            "side": "p2",
+            "slot": 0,
+            "ident": "p2: Arcanine",
+            "species": "arcanine",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false,
+            "volatiles": [
+              "protect",
+              "stall"
+            ]
+          },
+          {
+            "side": "p2",
+            "slot": 1,
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 138,
+            "max_hp": 154,
+            "fainted": false,
+            "volatiles": []
+          }
+        ],
+        "execution": {
+          "move": "surf",
+          "source": {
+            "side": "p1",
+            "slot": 0,
+            "species": "goodra"
+          },
+          "selected_target": {
+            "side": "p2",
+            "slot": 0,
+            "species": "arcanine"
+          },
+          "resolved_targets": [
+            {
+              "side": "p1",
+              "slot": 1,
+              "species": "magikarp"
+            },
+            {
+              "side": "p2",
+              "slot": 0,
+              "species": "arcanine"
+            },
+            {
+              "side": "p2",
+              "slot": 1,
+              "species": "blastoise"
+            }
+          ],
+          "stages": [
+            {
+              "stage": "invulnerability",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 1,
+                  "species": "magikarp"
+                },
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true,
+                true,
+                true
+              ]
+            },
+            {
+              "stage": "try_hit",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 1,
+                  "species": "magikarp"
+                },
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true,
+                "",
+                true
+              ]
+            },
+            {
+              "stage": "type_immunity",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 1,
+                  "species": "magikarp"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true,
+                true
+              ]
+            },
+            {
+              "stage": "move_immunity",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 1,
+                  "species": "magikarp"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true,
+                true
+              ]
+            },
+            {
+              "stage": "accuracy",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 1,
+                  "species": "magikarp"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true,
+                true
+              ]
+            },
+            {
+              "stage": "break_protect",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 1,
+                  "species": "magikarp"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": null
+            },
+            {
+              "stage": "damage",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 1,
+                  "species": "magikarp"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                48,
+                16
+              ]
+            }
+          ],
+          "outcomes": [
+            {
+              "target": {
+                "side": "p1",
+                "slot": 1,
+                "species": "magikarp"
+              },
+              "result": "hit",
+              "applied_hp_loss": 48,
+              "final_hp": 47,
+              "fainted": false
+            },
+            {
+              "target": {
+                "side": "p2",
+                "slot": 0,
+                "species": "arcanine"
+              },
+              "result": "try_hit",
+              "applied_hp_loss": 0,
+              "final_hp": 165,
+              "fainted": false
+            },
+            {
+              "target": {
+                "side": "p2",
+                "slot": 1,
+                "species": "blastoise"
+              },
+              "result": "hit",
+              "applied_hp_loss": 16,
+              "final_hp": 138,
+              "fainted": false
+            }
+          ]
+        },
         "log": [
           "|move|p1a: Goodra|Surf|p2a: Arcanine|[spread] p1b,p2b",
           "|-activate|p2a: Arcanine|move: Protect",
@@ -196,34 +832,40 @@
         ],
         "rng_operations": [
           {
+            "reason": "accuracy",
             "operation": "chance",
             "numerator": 100,
             "denominator": 100,
             "result": true
           },
           {
+            "reason": "accuracy",
             "operation": "chance",
             "numerator": 100,
             "denominator": 100,
             "result": true
           },
           {
+            "reason": "critical_hit",
             "operation": "chance",
             "numerator": 1,
             "denominator": 24,
             "result": false
           },
           {
+            "reason": "damage_roll",
             "operation": "damage_randomizer",
             "percent": 100
           },
           {
+            "reason": "critical_hit",
             "operation": "chance",
             "numerator": 1,
             "denominator": 24,
             "result": false
           },
           {
+            "reason": "damage_roll",
             "operation": "damage_randomizer",
             "percent": 100
           }
@@ -233,64 +875,269 @@
         "result": true,
         "before": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Arcanine",
             "species": "arcanine",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Blastoise",
             "species": "blastoise",
             "hp": 154,
             "max_hp": 154,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
         "after": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Arcanine",
             "species": "arcanine",
             "hp": 148,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Blastoise",
             "species": "blastoise",
             "hp": 126,
             "max_hp": 154,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
+        "execution": {
+          "move": "dazzlinggleam",
+          "source": {
+            "side": "p1",
+            "slot": 0,
+            "species": "goodra"
+          },
+          "selected_target": {
+            "side": "p2",
+            "slot": 0,
+            "species": "arcanine"
+          },
+          "resolved_targets": [
+            {
+              "side": "p2",
+              "slot": 0,
+              "species": "arcanine"
+            },
+            {
+              "side": "p2",
+              "slot": 1,
+              "species": "blastoise"
+            }
+          ],
+          "stages": [
+            {
+              "stage": "invulnerability",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true,
+                true
+              ]
+            },
+            {
+              "stage": "try_hit",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true,
+                true
+              ]
+            },
+            {
+              "stage": "type_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true,
+                true
+              ]
+            },
+            {
+              "stage": "move_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true,
+                true
+              ]
+            },
+            {
+              "stage": "accuracy",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true,
+                true
+              ]
+            },
+            {
+              "stage": "break_protect",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": null
+            },
+            {
+              "stage": "damage",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                17,
+                28
+              ]
+            }
+          ],
+          "outcomes": [
+            {
+              "target": {
+                "side": "p2",
+                "slot": 0,
+                "species": "arcanine"
+              },
+              "result": "hit",
+              "applied_hp_loss": 17,
+              "final_hp": 148,
+              "fainted": false
+            },
+            {
+              "target": {
+                "side": "p2",
+                "slot": 1,
+                "species": "blastoise"
+              },
+              "result": "hit",
+              "applied_hp_loss": 28,
+              "final_hp": 126,
+              "fainted": false
+            }
+          ]
+        },
         "log": [
           "|move|p1a: Goodra|Dazzling Gleam|p2a: Arcanine|[spread] p2a,p2b",
           "|-damage|p2a: Arcanine|148/165",
@@ -300,34 +1147,40 @@
         ],
         "rng_operations": [
           {
+            "reason": "accuracy",
             "operation": "chance",
             "numerator": 100,
             "denominator": 100,
             "result": true
           },
           {
+            "reason": "accuracy",
             "operation": "chance",
             "numerator": 100,
             "denominator": 100,
             "result": true
           },
           {
+            "reason": "critical_hit",
             "operation": "chance",
             "numerator": 1,
             "denominator": 24,
             "result": false
           },
           {
+            "reason": "damage_roll",
             "operation": "damage_randomizer",
             "percent": 100
           },
           {
+            "reason": "critical_hit",
             "operation": "chance",
             "numerator": 1,
             "denominator": 24,
             "result": false
           },
           {
+            "reason": "damage_roll",
             "operation": "damage_randomizer",
             "percent": 100
           }
@@ -337,64 +1190,212 @@
         "result": true,
         "before": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Arcanine",
             "species": "arcanine",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Blastoise",
             "species": "blastoise",
             "hp": 0,
             "max_hp": 154,
-            "fainted": true
+            "fainted": true,
+            "volatiles": []
           }
         ],
         "after": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Arcanine",
             "species": "arcanine",
             "hp": 142,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Blastoise",
             "species": "blastoise",
             "hp": 0,
             "max_hp": 154,
-            "fainted": true
+            "fainted": true,
+            "volatiles": []
           }
         ],
+        "execution": {
+          "move": "dazzlinggleam",
+          "source": {
+            "side": "p1",
+            "slot": 0,
+            "species": "goodra"
+          },
+          "selected_target": {
+            "side": "p2",
+            "slot": 0,
+            "species": "arcanine"
+          },
+          "resolved_targets": [
+            {
+              "side": "p2",
+              "slot": 0,
+              "species": "arcanine"
+            }
+          ],
+          "stages": [
+            {
+              "stage": "invulnerability",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "try_hit",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "type_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "move_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "accuracy",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "break_protect",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                }
+              ],
+              "results": null
+            },
+            {
+              "stage": "damage",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                }
+              ],
+              "results": [
+                23
+              ]
+            }
+          ],
+          "outcomes": [
+            {
+              "target": {
+                "side": "p2",
+                "slot": 0,
+                "species": "arcanine"
+              },
+              "result": "hit",
+              "applied_hp_loss": 23,
+              "final_hp": 142,
+              "fainted": false
+            }
+          ]
+        },
         "log": [
           "|move|p1a: Goodra|Dazzling Gleam|p2a: Arcanine",
           "|-damage|p2a: Arcanine|142/165",
@@ -402,18 +1403,21 @@
         ],
         "rng_operations": [
           {
+            "reason": "accuracy",
             "operation": "chance",
             "numerator": 100,
             "denominator": 100,
             "result": true
           },
           {
+            "reason": "critical_hit",
             "operation": "chance",
             "numerator": 1,
             "denominator": 24,
             "result": false
           },
           {
+            "reason": "damage_roll",
             "operation": "damage_randomizer",
             "percent": 100
           }
@@ -423,64 +1427,246 @@
         "result": true,
         "before": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Arcanine",
             "species": "arcanine",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": [
+              "protect",
+              "stall"
+            ]
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Blastoise",
             "species": "blastoise",
             "hp": 154,
             "max_hp": 154,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
         "after": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Arcanine",
             "species": "arcanine",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": [
+              "protect",
+              "stall"
+            ]
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Blastoise",
             "species": "blastoise",
             "hp": 126,
             "max_hp": 154,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
+        "execution": {
+          "move": "dazzlinggleam",
+          "source": {
+            "side": "p1",
+            "slot": 0,
+            "species": "goodra"
+          },
+          "selected_target": {
+            "side": "p2",
+            "slot": 0,
+            "species": "arcanine"
+          },
+          "resolved_targets": [
+            {
+              "side": "p2",
+              "slot": 0,
+              "species": "arcanine"
+            },
+            {
+              "side": "p2",
+              "slot": 1,
+              "species": "blastoise"
+            }
+          ],
+          "stages": [
+            {
+              "stage": "invulnerability",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true,
+                true
+              ]
+            },
+            {
+              "stage": "try_hit",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                "",
+                true
+              ]
+            },
+            {
+              "stage": "type_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "move_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "accuracy",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "break_protect",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": null
+            },
+            {
+              "stage": "damage",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                28
+              ]
+            }
+          ],
+          "outcomes": [
+            {
+              "target": {
+                "side": "p2",
+                "slot": 0,
+                "species": "arcanine"
+              },
+              "result": "try_hit",
+              "applied_hp_loss": 0,
+              "final_hp": 165,
+              "fainted": false
+            },
+            {
+              "target": {
+                "side": "p2",
+                "slot": 1,
+                "species": "blastoise"
+              },
+              "result": "hit",
+              "applied_hp_loss": 28,
+              "final_hp": 126,
+              "fainted": false
+            }
+          ]
+        },
         "log": [
           "|move|p1a: Goodra|Dazzling Gleam|p2a: Arcanine|[spread] p2b",
           "|-activate|p2a: Arcanine|move: Protect",
@@ -489,18 +1675,21 @@
         ],
         "rng_operations": [
           {
+            "reason": "accuracy",
             "operation": "chance",
             "numerator": 100,
             "denominator": 100,
             "result": true
           },
           {
+            "reason": "critical_hit",
             "operation": "chance",
             "numerator": 1,
             "denominator": 24,
             "result": false
           },
           {
+            "reason": "damage_roll",
             "operation": "damage_randomizer",
             "percent": 100
           }
@@ -510,102 +1699,348 @@
         "result": true,
         "before": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Garchomp",
             "species": "garchomp",
             "hp": 183,
             "max_hp": 183,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Charizard",
             "species": "charizard",
             "hp": 153,
             "max_hp": 153,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Arcanine",
             "species": "arcanine",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
         "after": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Garchomp",
             "species": "garchomp",
             "hp": 183,
             "max_hp": 183,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
-            "hp": 28,
+            "hp": 0,
             "max_hp": 95,
-            "fainted": false
+            "fainted": true,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Charizard",
             "species": "charizard",
             "hp": 153,
             "max_hp": 153,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Arcanine",
             "species": "arcanine",
-            "hp": 63,
+            "hp": 13,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
+        "execution": {
+          "move": "earthquake",
+          "source": {
+            "side": "p1",
+            "slot": 0,
+            "species": "garchomp"
+          },
+          "selected_target": {
+            "side": "p2",
+            "slot": 0,
+            "species": "charizard"
+          },
+          "resolved_targets": [
+            {
+              "side": "p1",
+              "slot": 1,
+              "species": "magikarp"
+            },
+            {
+              "side": "p2",
+              "slot": 0,
+              "species": "charizard"
+            },
+            {
+              "side": "p2",
+              "slot": 1,
+              "species": "arcanine"
+            }
+          ],
+          "stages": [
+            {
+              "stage": "invulnerability",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 1,
+                  "species": "magikarp"
+                },
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "charizard"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "arcanine"
+                }
+              ],
+              "results": [
+                true,
+                true,
+                true
+              ]
+            },
+            {
+              "stage": "try_hit",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 1,
+                  "species": "magikarp"
+                },
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "charizard"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "arcanine"
+                }
+              ],
+              "results": [
+                true,
+                true,
+                true
+              ]
+            },
+            {
+              "stage": "type_immunity",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 1,
+                  "species": "magikarp"
+                },
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "charizard"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "arcanine"
+                }
+              ],
+              "results": [
+                true,
+                false,
+                true
+              ]
+            },
+            {
+              "stage": "move_immunity",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 1,
+                  "species": "magikarp"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "arcanine"
+                }
+              ],
+              "results": [
+                true,
+                true
+              ]
+            },
+            {
+              "stage": "accuracy",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 1,
+                  "species": "magikarp"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "arcanine"
+                }
+              ],
+              "results": [
+                true,
+                true
+              ]
+            },
+            {
+              "stage": "break_protect",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 1,
+                  "species": "magikarp"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "arcanine"
+                }
+              ],
+              "results": null
+            },
+            {
+              "stage": "damage",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 1,
+                  "species": "magikarp"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "arcanine"
+                }
+              ],
+              "results": [
+                95,
+                152
+              ]
+            }
+          ],
+          "outcomes": [
+            {
+              "target": {
+                "side": "p1",
+                "slot": 1,
+                "species": "magikarp"
+              },
+              "result": "hit",
+              "applied_hp_loss": 95,
+              "final_hp": 0,
+              "fainted": true
+            },
+            {
+              "target": {
+                "side": "p2",
+                "slot": 0,
+                "species": "charizard"
+              },
+              "result": "type_immunity",
+              "applied_hp_loss": 0,
+              "final_hp": 153,
+              "fainted": false
+            },
+            {
+              "target": {
+                "side": "p2",
+                "slot": 1,
+                "species": "arcanine"
+              },
+              "result": "hit",
+              "applied_hp_loss": 152,
+              "final_hp": 13,
+              "fainted": false
+            }
+          ]
+        },
         "log": [
           "|move|p1a: Garchomp|Earthquake|p2a: Charizard|[spread] p1b,p2b",
           "|-immune|p2a: Charizard",
-          "|-damage|p1b: Magikarp|28/95",
-          "|-damage|p1b: Magikarp|29/100",
-          "|-damage|p2b: Arcanine|63/165",
-          "|-damage|p2b: Arcanine|38/100"
+          "|-damage|p1b: Magikarp|0 fnt",
+          "|-damage|p1b: Magikarp|0 fnt",
+          "|-damage|p2b: Arcanine|13/165",
+          "|-damage|p2b: Arcanine|7/100",
+          "|faint|p1b: Magikarp"
         ],
         "rng_operations": [
           {
+            "reason": "accuracy",
             "operation": "chance",
             "numerator": 100,
             "denominator": 100,
             "result": true
           },
           {
+            "reason": "accuracy",
             "operation": "chance",
             "numerator": 100,
             "denominator": 100,
             "result": true
           },
           {
+            "reason": "critical_hit",
             "operation": "chance",
             "numerator": 1,
             "denominator": 24,
             "result": false
           },
           {
+            "reason": "damage_roll",
             "operation": "damage_randomizer",
             "percent": 100
           },
           {
+            "reason": "critical_hit",
             "operation": "chance",
             "numerator": 1,
             "denominator": 24,
             "result": false
           },
           {
+            "reason": "damage_roll",
             "operation": "damage_randomizer",
             "percent": 100
           }
@@ -618,68 +2053,216 @@
         "result": true,
         "before": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Arcanine",
             "species": "arcanine",
             "hp": 0,
             "max_hp": 165,
-            "fainted": true
+            "fainted": true,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Blastoise",
             "species": "blastoise",
             "hp": 154,
             "max_hp": 154,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
         "after": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Arcanine",
             "species": "arcanine",
             "hp": 0,
             "max_hp": 165,
-            "fainted": true
+            "fainted": true,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Blastoise",
             "species": "blastoise",
-            "hp": 140,
+            "hp": 134,
             "max_hp": 154,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
+        "execution": {
+          "move": "aquatail",
+          "source": {
+            "side": "p1",
+            "slot": 0,
+            "species": "goodra"
+          },
+          "selected_target": {
+            "side": "p2",
+            "slot": 0,
+            "species": "arcanine"
+          },
+          "resolved_targets": [
+            {
+              "side": "p2",
+              "slot": 1,
+              "species": "blastoise"
+            }
+          ],
+          "stages": [
+            {
+              "stage": "invulnerability",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "try_hit",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "type_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "move_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "accuracy",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "break_protect",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": null
+            },
+            {
+              "stage": "damage",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                20
+              ]
+            }
+          ],
+          "outcomes": [
+            {
+              "target": {
+                "side": "p2",
+                "slot": 1,
+                "species": "blastoise"
+              },
+              "result": "hit",
+              "applied_hp_loss": 20,
+              "final_hp": 134,
+              "fainted": false
+            }
+          ]
+        },
         "log": [
           "|move|p1a: Goodra|Aqua Tail|p2b: Blastoise",
-          "|-damage|p2b: Blastoise|140/154",
-          "|-damage|p2b: Blastoise|90/100"
+          "|-damage|p2b: Blastoise|134/154",
+          "|-damage|p2b: Blastoise|87/100"
         ]
       },
       "selected_slot_switched": {
@@ -688,135 +2271,430 @@
         "result": true,
         "before": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Clefairy",
             "species": "clefairy",
             "hp": 145,
             "max_hp": 145,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Blastoise",
             "species": "blastoise",
             "hp": 154,
             "max_hp": 154,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
         "after": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Clefairy",
             "species": "clefairy",
-            "hp": 97,
+            "hp": 74,
             "max_hp": 145,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Blastoise",
             "species": "blastoise",
             "hp": 154,
             "max_hp": 154,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
+        "execution": {
+          "move": "aquatail",
+          "source": {
+            "side": "p1",
+            "slot": 0,
+            "species": "goodra"
+          },
+          "selected_target": {
+            "side": "p2",
+            "slot": 0,
+            "species": "clefairy"
+          },
+          "resolved_targets": [
+            {
+              "side": "p2",
+              "slot": 0,
+              "species": "clefairy"
+            }
+          ],
+          "stages": [
+            {
+              "stage": "invulnerability",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "try_hit",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "type_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "move_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "accuracy",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "break_protect",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                }
+              ],
+              "results": null
+            },
+            {
+              "stage": "damage",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                71
+              ]
+            }
+          ],
+          "outcomes": [
+            {
+              "target": {
+                "side": "p2",
+                "slot": 0,
+                "species": "clefairy"
+              },
+              "result": "hit",
+              "applied_hp_loss": 71,
+              "final_hp": 74,
+              "fainted": false
+            }
+          ]
+        },
         "log": [
           "|move|p1a: Goodra|Aqua Tail|p2a: Clefairy",
-          "|-damage|p2a: Clefairy|97/145",
-          "|-damage|p2a: Clefairy|66/100"
+          "|-damage|p2a: Clefairy|74/145",
+          "|-damage|p2a: Clefairy|51/100"
         ]
       },
       "missing_ally": {
         "result": false,
         "before": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Arcanine",
             "species": "arcanine",
             "hp": 0,
             "max_hp": 165,
-            "fainted": true
+            "fainted": true,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Blastoise",
             "species": "blastoise",
             "hp": 154,
             "max_hp": 154,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
         "after": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Arcanine",
             "species": "arcanine",
             "hp": 0,
             "max_hp": 165,
-            "fainted": true
+            "fainted": true,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Blastoise",
             "species": "blastoise",
             "hp": 154,
             "max_hp": 154,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
+        "execution": {
+          "move": "helpinghand",
+          "source": {
+            "side": "p1",
+            "slot": 0,
+            "species": "goodra"
+          },
+          "selected_target": {
+            "side": "p1",
+            "slot": 1,
+            "species": "arcanine"
+          },
+          "resolved_targets": [],
+          "stages": [],
+          "outcomes": []
+        },
         "log": [
           "|move|p1a: Goodra|Helping Hand|p1b: Arcanine|[notarget]"
         ]
+      },
+      "missing_ally_damage": {
+        "result": false,
+        "before": [
+          {
+            "side": "p1",
+            "slot": 0,
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false,
+            "volatiles": []
+          },
+          {
+            "side": "p1",
+            "slot": 1,
+            "ident": "p1: Arcanine",
+            "species": "arcanine",
+            "hp": 0,
+            "max_hp": 165,
+            "fainted": true,
+            "volatiles": []
+          },
+          {
+            "side": "p2",
+            "slot": 0,
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 154,
+            "max_hp": 154,
+            "fainted": false,
+            "volatiles": []
+          },
+          {
+            "side": "p2",
+            "slot": 1,
+            "ident": "p2: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false,
+            "volatiles": []
+          }
+        ],
+        "after": [
+          {
+            "side": "p1",
+            "slot": 0,
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false,
+            "volatiles": []
+          },
+          {
+            "side": "p1",
+            "slot": 1,
+            "ident": "p1: Arcanine",
+            "species": "arcanine",
+            "hp": 0,
+            "max_hp": 165,
+            "fainted": true,
+            "volatiles": []
+          },
+          {
+            "side": "p2",
+            "slot": 0,
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 154,
+            "max_hp": 154,
+            "fainted": false,
+            "volatiles": []
+          },
+          {
+            "side": "p2",
+            "slot": 1,
+            "ident": "p2: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false,
+            "volatiles": []
+          }
+        ],
+        "execution": {
+          "move": "dragonpulse",
+          "source": {
+            "side": "p1",
+            "slot": 0,
+            "species": "goodra"
+          },
+          "selected_target": {
+            "side": "p1",
+            "slot": 1,
+            "species": "arcanine"
+          },
+          "resolved_targets": [],
+          "stages": [],
+          "outcomes": []
+        },
+        "log": [
+          "|move|p1a: Goodra|Dragon Pulse|p1b: Arcanine|[notarget]"
+        ],
+        "rng_operations": []
       }
     },
     "protection": {
@@ -824,64 +2702,215 @@
         "result": true,
         "before": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Arcanine",
             "species": "arcanine",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
         "after": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": [
+              "protect",
+              "stall"
+            ]
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Arcanine",
             "species": "arcanine",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
+        "execution": {
+          "move": "protect",
+          "source": {
+            "side": "p1",
+            "slot": 0,
+            "species": "goodra"
+          },
+          "selected_target": {
+            "side": "p1",
+            "slot": 0,
+            "species": "goodra"
+          },
+          "resolved_targets": [
+            {
+              "side": "p1",
+              "slot": 0,
+              "species": "goodra"
+            }
+          ],
+          "stages": [
+            {
+              "stage": "invulnerability",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 0,
+                  "species": "goodra"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "try_hit",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 0,
+                  "species": "goodra"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "type_immunity",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 0,
+                  "species": "goodra"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "move_immunity",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 0,
+                  "species": "goodra"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "accuracy",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 0,
+                  "species": "goodra"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "break_protect",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 0,
+                  "species": "goodra"
+                }
+              ],
+              "results": null
+            },
+            {
+              "stage": "damage",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 0,
+                  "species": "goodra"
+                }
+              ],
+              "results": [
+                0
+              ]
+            }
+          ],
+          "outcomes": [
+            {
+              "target": {
+                "side": "p1",
+                "slot": 0,
+                "species": "goodra"
+              },
+              "result": "damage",
+              "applied_hp_loss": 0,
+              "final_hp": 165,
+              "fainted": false
+            }
+          ]
+        },
         "log": [
           "|move|p1a: Goodra|Protect|p1a: Goodra"
         ]
@@ -890,64 +2919,217 @@
         "result": true,
         "before": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": [
+              "stall"
+            ]
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Arcanine",
             "species": "arcanine",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
         "after": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": [
+              "protect",
+              "stall"
+            ]
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Arcanine",
             "species": "arcanine",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
+        "execution": {
+          "move": "protect",
+          "source": {
+            "side": "p1",
+            "slot": 0,
+            "species": "goodra"
+          },
+          "selected_target": {
+            "side": "p1",
+            "slot": 0,
+            "species": "goodra"
+          },
+          "resolved_targets": [
+            {
+              "side": "p1",
+              "slot": 0,
+              "species": "goodra"
+            }
+          ],
+          "stages": [
+            {
+              "stage": "invulnerability",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 0,
+                  "species": "goodra"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "try_hit",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 0,
+                  "species": "goodra"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "type_immunity",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 0,
+                  "species": "goodra"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "move_immunity",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 0,
+                  "species": "goodra"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "accuracy",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 0,
+                  "species": "goodra"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "break_protect",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 0,
+                  "species": "goodra"
+                }
+              ],
+              "results": null
+            },
+            {
+              "stage": "damage",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 0,
+                  "species": "goodra"
+                }
+              ],
+              "results": [
+                0
+              ]
+            }
+          ],
+          "outcomes": [
+            {
+              "target": {
+                "side": "p1",
+                "slot": 0,
+                "species": "goodra"
+              },
+              "result": "damage",
+              "applied_hp_loss": 0,
+              "final_hp": 165,
+              "fainted": false
+            }
+          ]
+        },
         "log": [
           "|move|p1a: Goodra|Protect|p1a: Goodra"
         ]
@@ -956,64 +3138,124 @@
         "result": false,
         "before": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": [
+              "stall"
+            ]
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Arcanine",
             "species": "arcanine",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
         "after": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Arcanine",
             "species": "arcanine",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
+        "execution": {
+          "move": "protect",
+          "source": {
+            "side": "p1",
+            "slot": 0,
+            "species": "goodra"
+          },
+          "selected_target": {
+            "side": "p1",
+            "slot": 0,
+            "species": "goodra"
+          },
+          "resolved_targets": [
+            {
+              "side": "p1",
+              "slot": 0,
+              "species": "goodra"
+            }
+          ],
+          "stages": [],
+          "outcomes": [
+            {
+              "target": {
+                "side": "p1",
+                "slot": 0,
+                "species": "goodra"
+              },
+              "result": "hit",
+              "applied_hp_loss": 0,
+              "final_hp": 165,
+              "fainted": false
+            }
+          ]
+        },
         "log": [
           "|move|p1a: Goodra|Protect||[still]"
         ]
@@ -1022,64 +3264,215 @@
         "result": true,
         "before": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Arcanine",
             "species": "arcanine",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
         "after": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": [
+              "protect",
+              "stall"
+            ]
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Arcanine",
             "species": "arcanine",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
+        "execution": {
+          "move": "protect",
+          "source": {
+            "side": "p1",
+            "slot": 0,
+            "species": "goodra"
+          },
+          "selected_target": {
+            "side": "p1",
+            "slot": 0,
+            "species": "goodra"
+          },
+          "resolved_targets": [
+            {
+              "side": "p1",
+              "slot": 0,
+              "species": "goodra"
+            }
+          ],
+          "stages": [
+            {
+              "stage": "invulnerability",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 0,
+                  "species": "goodra"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "try_hit",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 0,
+                  "species": "goodra"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "type_immunity",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 0,
+                  "species": "goodra"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "move_immunity",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 0,
+                  "species": "goodra"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "accuracy",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 0,
+                  "species": "goodra"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "break_protect",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 0,
+                  "species": "goodra"
+                }
+              ],
+              "results": null
+            },
+            {
+              "stage": "damage",
+              "targets": [
+                {
+                  "side": "p1",
+                  "slot": 0,
+                  "species": "goodra"
+                }
+              ],
+              "results": [
+                0
+              ]
+            }
+          ],
+          "outcomes": [
+            {
+              "target": {
+                "side": "p1",
+                "slot": 0,
+                "species": "goodra"
+              },
+              "result": "damage",
+              "applied_hp_loss": 0,
+              "final_hp": 165,
+              "fainted": false
+            }
+          ]
+        },
         "log": [
           "|move|p1a: Goodra|Protect|p1a: Goodra"
         ]
@@ -1094,73 +3487,240 @@
           9
         ]
       ],
+      "rng_operations": [
+        {
+          "reason": "protect",
+          "operation": "chance",
+          "numerator": 1,
+          "denominator": 3,
+          "result": true
+        },
+        {
+          "reason": "protect",
+          "operation": "chance",
+          "numerator": 1,
+          "denominator": 9,
+          "result": false
+        }
+      ],
       "feint": {
         "result": true,
         "before": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Arcanine",
             "species": "arcanine",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": [
+              "protect",
+              "stall"
+            ]
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
         "after": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Arcanine",
             "species": "arcanine",
-            "hp": 153,
+            "hp": 148,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
+        "execution": {
+          "move": "feint",
+          "source": {
+            "side": "p1",
+            "slot": 0,
+            "species": "goodra"
+          },
+          "selected_target": {
+            "side": "p2",
+            "slot": 0,
+            "species": "arcanine"
+          },
+          "resolved_targets": [
+            {
+              "side": "p2",
+              "slot": 0,
+              "species": "arcanine"
+            }
+          ],
+          "stages": [
+            {
+              "stage": "invulnerability",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "try_hit",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "type_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "move_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "accuracy",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "break_protect",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                }
+              ],
+              "results": null
+            },
+            {
+              "stage": "damage",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                }
+              ],
+              "results": [
+                17
+              ]
+            }
+          ],
+          "outcomes": [
+            {
+              "target": {
+                "side": "p2",
+                "slot": 0,
+                "species": "arcanine"
+              },
+              "result": "hit",
+              "applied_hp_loss": 17,
+              "final_hp": 148,
+              "fainted": false
+            }
+          ]
+        },
         "log": [
           "|move|p1a: Goodra|Feint|p2a: Arcanine",
           "|-activate|p2a: Arcanine|move: Feint",
-          "|-damage|p2a: Arcanine|153/165",
-          "|-damage|p2a: Arcanine|92/100"
+          "|-damage|p2a: Arcanine|148/165",
+          "|-damage|p2a: Arcanine|89/100"
         ]
       }
     },
@@ -1169,64 +3729,216 @@
         "result": true,
         "before": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Clefairy",
             "species": "clefairy",
             "hp": 145,
             "max_hp": 145,
-            "fainted": false
+            "fainted": false,
+            "volatiles": [
+              "followme"
+            ]
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Blastoise",
             "species": "blastoise",
             "hp": 154,
             "max_hp": 154,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
         "after": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Clefairy",
             "species": "clefairy",
             "hp": 74,
             "max_hp": 145,
-            "fainted": false
+            "fainted": false,
+            "volatiles": [
+              "followme"
+            ]
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Blastoise",
             "species": "blastoise",
             "hp": 154,
             "max_hp": 154,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
+        "execution": {
+          "move": "aquatail",
+          "source": {
+            "side": "p1",
+            "slot": 0,
+            "species": "goodra"
+          },
+          "selected_target": {
+            "side": "p2",
+            "slot": 1,
+            "species": "blastoise"
+          },
+          "resolved_targets": [
+            {
+              "side": "p2",
+              "slot": 0,
+              "species": "clefairy"
+            }
+          ],
+          "stages": [
+            {
+              "stage": "invulnerability",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "try_hit",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "type_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "move_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "accuracy",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "break_protect",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                }
+              ],
+              "results": null
+            },
+            {
+              "stage": "damage",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                71
+              ]
+            }
+          ],
+          "outcomes": [
+            {
+              "target": {
+                "side": "p2",
+                "slot": 0,
+                "species": "clefairy"
+              },
+              "result": "hit",
+              "applied_hp_loss": 71,
+              "final_hp": 74,
+              "fainted": false
+            }
+          ]
+        },
         "log": [
           "|move|p1a: Goodra|Aqua Tail|p2a: Clefairy",
           "|-damage|p2a: Clefairy|74/145",
@@ -1237,64 +3949,216 @@
         "result": true,
         "before": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Clefairy",
             "species": "clefairy",
             "hp": 145,
             "max_hp": 145,
-            "fainted": false
+            "fainted": false,
+            "volatiles": [
+              "ragepowder"
+            ]
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Blastoise",
             "species": "blastoise",
             "hp": 154,
             "max_hp": 154,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
         "after": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Clefairy",
             "species": "clefairy",
             "hp": 74,
             "max_hp": 145,
-            "fainted": false
+            "fainted": false,
+            "volatiles": [
+              "ragepowder"
+            ]
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Blastoise",
             "species": "blastoise",
             "hp": 154,
             "max_hp": 154,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
+        "execution": {
+          "move": "aquatail",
+          "source": {
+            "side": "p1",
+            "slot": 0,
+            "species": "goodra"
+          },
+          "selected_target": {
+            "side": "p2",
+            "slot": 1,
+            "species": "blastoise"
+          },
+          "resolved_targets": [
+            {
+              "side": "p2",
+              "slot": 0,
+              "species": "clefairy"
+            }
+          ],
+          "stages": [
+            {
+              "stage": "invulnerability",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "try_hit",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "type_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "move_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "accuracy",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "break_protect",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                }
+              ],
+              "results": null
+            },
+            {
+              "stage": "damage",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                71
+              ]
+            }
+          ],
+          "outcomes": [
+            {
+              "target": {
+                "side": "p2",
+                "slot": 0,
+                "species": "clefairy"
+              },
+              "result": "hit",
+              "applied_hp_loss": 71,
+              "final_hp": 74,
+              "fainted": false
+            }
+          ]
+        },
         "log": [
           "|move|p1a: Goodra|Aqua Tail|p2a: Clefairy",
           "|-damage|p2a: Clefairy|74/145",
@@ -1305,342 +4169,1611 @@
         "result": true,
         "before": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Amoonguss",
             "species": "amoonguss",
             "hp": 189,
             "max_hp": 189,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Clefairy",
             "species": "clefairy",
             "hp": 145,
             "max_hp": 145,
-            "fainted": false
+            "fainted": false,
+            "volatiles": [
+              "ragepowder"
+            ]
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Blastoise",
             "species": "blastoise",
             "hp": 154,
             "max_hp": 154,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
         "after": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Amoonguss",
             "species": "amoonguss",
             "hp": 189,
             "max_hp": 189,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Clefairy",
             "species": "clefairy",
             "hp": 145,
             "max_hp": 145,
-            "fainted": false
+            "fainted": false,
+            "volatiles": [
+              "ragepowder"
+            ]
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Blastoise",
             "species": "blastoise",
-            "hp": 141,
+            "hp": 136,
             "max_hp": 154,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
+        "execution": {
+          "move": "aquatail",
+          "source": {
+            "side": "p1",
+            "slot": 0,
+            "species": "amoonguss"
+          },
+          "selected_target": {
+            "side": "p2",
+            "slot": 1,
+            "species": "blastoise"
+          },
+          "resolved_targets": [
+            {
+              "side": "p2",
+              "slot": 1,
+              "species": "blastoise"
+            }
+          ],
+          "stages": [
+            {
+              "stage": "invulnerability",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "try_hit",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "type_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "move_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "accuracy",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "break_protect",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": null
+            },
+            {
+              "stage": "damage",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                18
+              ]
+            }
+          ],
+          "outcomes": [
+            {
+              "target": {
+                "side": "p2",
+                "slot": 1,
+                "species": "blastoise"
+              },
+              "result": "hit",
+              "applied_hp_loss": 18,
+              "final_hp": 136,
+              "fainted": false
+            }
+          ]
+        },
         "log": [
           "|move|p1a: Amoonguss|Aqua Tail|p2b: Blastoise",
-          "|-damage|p2b: Blastoise|141/154",
-          "|-damage|p2b: Blastoise|91/100"
+          "|-damage|p2b: Blastoise|136/154",
+          "|-damage|p2b: Blastoise|88/100"
         ]
       },
       "overcoat_ignores_rage_powder": {
         "result": true,
         "before": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Clefairy",
             "species": "clefairy",
             "hp": 145,
             "max_hp": 145,
-            "fainted": false
+            "fainted": false,
+            "volatiles": [
+              "ragepowder"
+            ]
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Blastoise",
             "species": "blastoise",
             "hp": 154,
             "max_hp": 154,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
         "after": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Clefairy",
             "species": "clefairy",
             "hp": 145,
             "max_hp": 145,
-            "fainted": false
+            "fainted": false,
+            "volatiles": [
+              "ragepowder"
+            ]
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Blastoise",
             "species": "blastoise",
-            "hp": 139,
+            "hp": 134,
             "max_hp": 154,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
+        "execution": {
+          "move": "aquatail",
+          "source": {
+            "side": "p1",
+            "slot": 0,
+            "species": "goodra"
+          },
+          "selected_target": {
+            "side": "p2",
+            "slot": 1,
+            "species": "blastoise"
+          },
+          "resolved_targets": [
+            {
+              "side": "p2",
+              "slot": 1,
+              "species": "blastoise"
+            }
+          ],
+          "stages": [
+            {
+              "stage": "invulnerability",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "try_hit",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "type_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "move_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "accuracy",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "break_protect",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": null
+            },
+            {
+              "stage": "damage",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                20
+              ]
+            }
+          ],
+          "outcomes": [
+            {
+              "target": {
+                "side": "p2",
+                "slot": 1,
+                "species": "blastoise"
+              },
+              "result": "hit",
+              "applied_hp_loss": 20,
+              "final_hp": 134,
+              "fainted": false
+            }
+          ]
+        },
         "log": [
           "|move|p1a: Goodra|Aqua Tail|p2b: Blastoise",
-          "|-damage|p2b: Blastoise|139/154",
-          "|-damage|p2b: Blastoise|90/100"
+          "|-damage|p2b: Blastoise|134/154",
+          "|-damage|p2b: Blastoise|87/100"
         ]
       },
       "safety_goggles_ignores_rage_powder": {
         "result": true,
         "before": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Clefairy",
             "species": "clefairy",
             "hp": 145,
             "max_hp": 145,
-            "fainted": false
+            "fainted": false,
+            "volatiles": [
+              "ragepowder"
+            ]
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Blastoise",
             "species": "blastoise",
             "hp": 154,
             "max_hp": 154,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
         "after": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Clefairy",
             "species": "clefairy",
             "hp": 145,
             "max_hp": 145,
-            "fainted": false
+            "fainted": false,
+            "volatiles": [
+              "ragepowder"
+            ]
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Blastoise",
             "species": "blastoise",
-            "hp": 139,
+            "hp": 134,
             "max_hp": 154,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
+        "execution": {
+          "move": "aquatail",
+          "source": {
+            "side": "p1",
+            "slot": 0,
+            "species": "goodra"
+          },
+          "selected_target": {
+            "side": "p2",
+            "slot": 1,
+            "species": "blastoise"
+          },
+          "resolved_targets": [
+            {
+              "side": "p2",
+              "slot": 1,
+              "species": "blastoise"
+            }
+          ],
+          "stages": [
+            {
+              "stage": "invulnerability",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "try_hit",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "type_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "move_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "accuracy",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "break_protect",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": null
+            },
+            {
+              "stage": "damage",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                20
+              ]
+            }
+          ],
+          "outcomes": [
+            {
+              "target": {
+                "side": "p2",
+                "slot": 1,
+                "species": "blastoise"
+              },
+              "result": "hit",
+              "applied_hp_loss": 20,
+              "final_hp": 134,
+              "fainted": false
+            }
+          ]
+        },
         "log": [
           "|move|p1a: Goodra|Aqua Tail|p2b: Blastoise",
-          "|-damage|p2b: Blastoise|139/154",
-          "|-damage|p2b: Blastoise|90/100"
+          "|-damage|p2b: Blastoise|134/154",
+          "|-damage|p2b: Blastoise|87/100"
         ]
       },
       "conflict_active_entry_order_wins_equal_speed": {
         "result": true,
         "before": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Clefairy",
             "species": "clefairy",
             "hp": 145,
             "max_hp": 145,
-            "fainted": false
+            "fainted": false,
+            "volatiles": [
+              "followme"
+            ]
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Clefairy",
             "species": "clefairy",
             "hp": 145,
             "max_hp": 145,
-            "fainted": false
+            "fainted": false,
+            "volatiles": [
+              "followme"
+            ]
           }
         ],
         "after": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Clefairy",
             "species": "clefairy",
-            "hp": 92,
+            "hp": 74,
             "max_hp": 145,
-            "fainted": false
+            "fainted": false,
+            "volatiles": [
+              "followme"
+            ]
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Clefairy",
             "species": "clefairy",
             "hp": 145,
             "max_hp": 145,
-            "fainted": false
+            "fainted": false,
+            "volatiles": [
+              "followme"
+            ]
           }
         ],
+        "execution": {
+          "move": "aquatail",
+          "source": {
+            "side": "p1",
+            "slot": 0,
+            "species": "goodra"
+          },
+          "selected_target": {
+            "side": "p2",
+            "slot": 0,
+            "species": "clefairy"
+          },
+          "resolved_targets": [
+            {
+              "side": "p2",
+              "slot": 0,
+              "species": "clefairy"
+            }
+          ],
+          "stages": [
+            {
+              "stage": "invulnerability",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "try_hit",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "type_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "move_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "accuracy",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "break_protect",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                }
+              ],
+              "results": null
+            },
+            {
+              "stage": "damage",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                71
+              ]
+            }
+          ],
+          "outcomes": [
+            {
+              "target": {
+                "side": "p2",
+                "slot": 0,
+                "species": "clefairy"
+              },
+              "result": "hit",
+              "applied_hp_loss": 71,
+              "final_hp": 74,
+              "fainted": false
+            }
+          ]
+        },
         "log": [
           "|move|p1a: Goodra|Aqua Tail|p2a: Clefairy",
-          "|-damage|p2a: Clefairy|92/145",
-          "|-damage|p2a: Clefairy|63/100"
+          "|-damage|p2a: Clefairy|74/145",
+          "|-damage|p2a: Clefairy|51/100"
+        ]
+      },
+      "conflict_faster_redirector_wins": {
+        "result": true,
+        "before": [
+          {
+            "side": "p1",
+            "slot": 0,
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false,
+            "volatiles": []
+          },
+          {
+            "side": "p1",
+            "slot": 1,
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false,
+            "volatiles": []
+          },
+          {
+            "side": "p2",
+            "slot": 0,
+            "ident": "p2: Clefairy",
+            "species": "clefairy",
+            "hp": 145,
+            "max_hp": 145,
+            "fainted": false,
+            "volatiles": [
+              "followme"
+            ]
+          },
+          {
+            "side": "p2",
+            "slot": 1,
+            "ident": "p2: Clefairy",
+            "species": "clefairy",
+            "hp": 145,
+            "max_hp": 145,
+            "fainted": false,
+            "volatiles": [
+              "followme"
+            ]
+          }
+        ],
+        "after": [
+          {
+            "side": "p1",
+            "slot": 0,
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false,
+            "volatiles": []
+          },
+          {
+            "side": "p1",
+            "slot": 1,
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false,
+            "volatiles": []
+          },
+          {
+            "side": "p2",
+            "slot": 0,
+            "ident": "p2: Clefairy",
+            "species": "clefairy",
+            "hp": 145,
+            "max_hp": 145,
+            "fainted": false,
+            "volatiles": [
+              "followme"
+            ]
+          },
+          {
+            "side": "p2",
+            "slot": 1,
+            "ident": "p2: Clefairy",
+            "species": "clefairy",
+            "hp": 74,
+            "max_hp": 145,
+            "fainted": false,
+            "volatiles": [
+              "followme"
+            ]
+          }
+        ],
+        "execution": {
+          "move": "aquatail",
+          "source": {
+            "side": "p1",
+            "slot": 0,
+            "species": "goodra"
+          },
+          "selected_target": {
+            "side": "p2",
+            "slot": 0,
+            "species": "clefairy"
+          },
+          "resolved_targets": [
+            {
+              "side": "p2",
+              "slot": 1,
+              "species": "clefairy"
+            }
+          ],
+          "stages": [
+            {
+              "stage": "invulnerability",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "try_hit",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "type_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "move_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "accuracy",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "break_protect",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "clefairy"
+                }
+              ],
+              "results": null
+            },
+            {
+              "stage": "damage",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                71
+              ]
+            }
+          ],
+          "outcomes": [
+            {
+              "target": {
+                "side": "p2",
+                "slot": 1,
+                "species": "clefairy"
+              },
+              "result": "hit",
+              "applied_hp_loss": 71,
+              "final_hp": 74,
+              "fainted": false
+            }
+          ]
+        },
+        "log": [
+          "|move|p1a: Goodra|Aqua Tail|p2b: Clefairy",
+          "|-damage|p2b: Clefairy|74/145",
+          "|-damage|p2b: Clefairy|51/100"
+        ]
+      },
+      "conflict_newer_left_loses_equal_speed": {
+        "result": true,
+        "before": [
+          {
+            "side": "p1",
+            "slot": 0,
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false,
+            "volatiles": []
+          },
+          {
+            "side": "p1",
+            "slot": 1,
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false,
+            "volatiles": []
+          },
+          {
+            "side": "p2",
+            "slot": 0,
+            "ident": "p2: Clefairy",
+            "species": "clefairy",
+            "hp": 145,
+            "max_hp": 145,
+            "fainted": false,
+            "volatiles": [
+              "followme"
+            ]
+          },
+          {
+            "side": "p2",
+            "slot": 1,
+            "ident": "p2: Clefairy",
+            "species": "clefairy",
+            "hp": 145,
+            "max_hp": 145,
+            "fainted": false,
+            "volatiles": [
+              "followme"
+            ]
+          }
+        ],
+        "after": [
+          {
+            "side": "p1",
+            "slot": 0,
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false,
+            "volatiles": []
+          },
+          {
+            "side": "p1",
+            "slot": 1,
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false,
+            "volatiles": []
+          },
+          {
+            "side": "p2",
+            "slot": 0,
+            "ident": "p2: Clefairy",
+            "species": "clefairy",
+            "hp": 145,
+            "max_hp": 145,
+            "fainted": false,
+            "volatiles": [
+              "followme"
+            ]
+          },
+          {
+            "side": "p2",
+            "slot": 1,
+            "ident": "p2: Clefairy",
+            "species": "clefairy",
+            "hp": 74,
+            "max_hp": 145,
+            "fainted": false,
+            "volatiles": [
+              "followme"
+            ]
+          }
+        ],
+        "execution": {
+          "move": "aquatail",
+          "source": {
+            "side": "p1",
+            "slot": 0,
+            "species": "goodra"
+          },
+          "selected_target": {
+            "side": "p2",
+            "slot": 0,
+            "species": "clefairy"
+          },
+          "resolved_targets": [
+            {
+              "side": "p2",
+              "slot": 1,
+              "species": "clefairy"
+            }
+          ],
+          "stages": [
+            {
+              "stage": "invulnerability",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "try_hit",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "type_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "move_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "accuracy",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "break_protect",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "clefairy"
+                }
+              ],
+              "results": null
+            },
+            {
+              "stage": "damage",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                71
+              ]
+            }
+          ],
+          "outcomes": [
+            {
+              "target": {
+                "side": "p2",
+                "slot": 1,
+                "species": "clefairy"
+              },
+              "result": "hit",
+              "applied_hp_loss": 71,
+              "final_hp": 74,
+              "fainted": false
+            }
+          ]
+        },
+        "log": [
+          "|move|p1a: Goodra|Aqua Tail|p2b: Clefairy",
+          "|-damage|p2b: Clefairy|74/145",
+          "|-damage|p2b: Clefairy|51/100"
         ]
       },
       "spread_ignores_redirection": {
         "result": true,
         "before": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Clefairy",
             "species": "clefairy",
             "hp": 145,
             "max_hp": 145,
-            "fainted": false
+            "fainted": false,
+            "volatiles": [
+              "followme"
+            ]
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Blastoise",
             "species": "blastoise",
             "hp": 154,
             "max_hp": 154,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
         "after": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Clefairy",
             "species": "clefairy",
             "hp": 104,
             "max_hp": 145,
-            "fainted": false
+            "fainted": false,
+            "volatiles": [
+              "followme"
+            ]
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Blastoise",
             "species": "blastoise",
-            "hp": 133,
+            "hp": 126,
             "max_hp": 154,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
+        "execution": {
+          "move": "dazzlinggleam",
+          "source": {
+            "side": "p1",
+            "slot": 0,
+            "species": "goodra"
+          },
+          "selected_target": {
+            "side": "p2",
+            "slot": 1,
+            "species": "blastoise"
+          },
+          "resolved_targets": [
+            {
+              "side": "p2",
+              "slot": 0,
+              "species": "clefairy"
+            },
+            {
+              "side": "p2",
+              "slot": 1,
+              "species": "blastoise"
+            }
+          ],
+          "stages": [
+            {
+              "stage": "invulnerability",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true,
+                true
+              ]
+            },
+            {
+              "stage": "try_hit",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true,
+                true
+              ]
+            },
+            {
+              "stage": "type_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true,
+                true
+              ]
+            },
+            {
+              "stage": "move_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true,
+                true
+              ]
+            },
+            {
+              "stage": "accuracy",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true,
+                true
+              ]
+            },
+            {
+              "stage": "break_protect",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": null
+            },
+            {
+              "stage": "damage",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                41,
+                28
+              ]
+            }
+          ],
+          "outcomes": [
+            {
+              "target": {
+                "side": "p2",
+                "slot": 0,
+                "species": "clefairy"
+              },
+              "result": "hit",
+              "applied_hp_loss": 41,
+              "final_hp": 104,
+              "fainted": false
+            },
+            {
+              "target": {
+                "side": "p2",
+                "slot": 1,
+                "species": "blastoise"
+              },
+              "result": "hit",
+              "applied_hp_loss": 28,
+              "final_hp": 126,
+              "fainted": false
+            }
+          ]
+        },
         "log": [
           "|move|p1a: Goodra|Dazzling Gleam|p2b: Blastoise|[spread] p2a,p2b",
           "|-damage|p2a: Clefairy|104/145",
           "|-damage|p2a: Clefairy|71/100",
-          "|-damage|p2b: Blastoise|133/154",
-          "|-damage|p2b: Blastoise|86/100"
+          "|-damage|p2b: Blastoise|126/154",
+          "|-damage|p2b: Blastoise|81/100"
         ]
       },
       "redirector_unavailable": {
@@ -1648,64 +5781,214 @@
           "result": true,
           "before": [
             {
+              "side": "p1",
+              "slot": 0,
               "ident": "p1: Goodra",
               "species": "goodra",
               "hp": 165,
               "max_hp": 165,
-              "fainted": false
+              "fainted": false,
+              "volatiles": []
             },
             {
+              "side": "p1",
+              "slot": 1,
               "ident": "p1: Goodra",
               "species": "goodra",
               "hp": 165,
               "max_hp": 165,
-              "fainted": false
+              "fainted": false,
+              "volatiles": []
             },
             {
+              "side": "p2",
+              "slot": 0,
               "ident": "p2: Clefairy",
               "species": "clefairy",
               "hp": 1,
               "max_hp": 145,
-              "fainted": false
+              "fainted": false,
+              "volatiles": [
+                "followme"
+              ]
             },
             {
+              "side": "p2",
+              "slot": 1,
               "ident": "p2: Blastoise",
               "species": "blastoise",
               "hp": 154,
               "max_hp": 154,
-              "fainted": false
+              "fainted": false,
+              "volatiles": []
             }
           ],
           "after": [
             {
+              "side": "p1",
+              "slot": 0,
               "ident": "p1: Goodra",
               "species": "goodra",
               "hp": 165,
               "max_hp": 165,
-              "fainted": false
+              "fainted": false,
+              "volatiles": []
             },
             {
+              "side": "p1",
+              "slot": 1,
               "ident": "p1: Goodra",
               "species": "goodra",
               "hp": 165,
               "max_hp": 165,
-              "fainted": false
+              "fainted": false,
+              "volatiles": []
             },
             {
+              "side": "p2",
+              "slot": 0,
               "ident": "p2: Clefairy",
               "species": "clefairy",
               "hp": 0,
               "max_hp": 145,
-              "fainted": true
+              "fainted": true,
+              "volatiles": []
             },
             {
+              "side": "p2",
+              "slot": 1,
               "ident": "p2: Blastoise",
               "species": "blastoise",
               "hp": 154,
               "max_hp": 154,
-              "fainted": false
+              "fainted": false,
+              "volatiles": []
             }
           ],
+          "execution": {
+            "move": "aquatail",
+            "source": {
+              "side": "p1",
+              "slot": 0,
+              "species": "goodra"
+            },
+            "selected_target": {
+              "side": "p2",
+              "slot": 1,
+              "species": "blastoise"
+            },
+            "resolved_targets": [
+              {
+                "side": "p2",
+                "slot": 0,
+                "species": "clefairy"
+              }
+            ],
+            "stages": [
+              {
+                "stage": "invulnerability",
+                "targets": [
+                  {
+                    "side": "p2",
+                    "slot": 0,
+                    "species": "clefairy"
+                  }
+                ],
+                "results": [
+                  true
+                ]
+              },
+              {
+                "stage": "try_hit",
+                "targets": [
+                  {
+                    "side": "p2",
+                    "slot": 0,
+                    "species": "clefairy"
+                  }
+                ],
+                "results": [
+                  true
+                ]
+              },
+              {
+                "stage": "type_immunity",
+                "targets": [
+                  {
+                    "side": "p2",
+                    "slot": 0,
+                    "species": "clefairy"
+                  }
+                ],
+                "results": [
+                  true
+                ]
+              },
+              {
+                "stage": "move_immunity",
+                "targets": [
+                  {
+                    "side": "p2",
+                    "slot": 0,
+                    "species": "clefairy"
+                  }
+                ],
+                "results": [
+                  true
+                ]
+              },
+              {
+                "stage": "accuracy",
+                "targets": [
+                  {
+                    "side": "p2",
+                    "slot": 0,
+                    "species": "clefairy"
+                  }
+                ],
+                "results": [
+                  true
+                ]
+              },
+              {
+                "stage": "break_protect",
+                "targets": [
+                  {
+                    "side": "p2",
+                    "slot": 0,
+                    "species": "clefairy"
+                  }
+                ],
+                "results": null
+              },
+              {
+                "stage": "damage",
+                "targets": [
+                  {
+                    "side": "p2",
+                    "slot": 0,
+                    "species": "clefairy"
+                  }
+                ],
+                "results": [
+                  1
+                ]
+              }
+            ],
+            "outcomes": [
+              {
+                "target": {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                },
+                "result": "hit",
+                "applied_hp_loss": 1,
+                "final_hp": 0,
+                "fainted": true
+              }
+            ]
+          },
           "log": [
             "|move|p1a: Goodra|Aqua Tail|p2a: Clefairy",
             "|-damage|p2a: Clefairy|0 fnt",
@@ -1717,70 +6000,434 @@
           "result": true,
           "before": [
             {
+              "side": "p1",
+              "slot": 0,
               "ident": "p1: Goodra",
               "species": "goodra",
               "hp": 165,
               "max_hp": 165,
-              "fainted": false
+              "fainted": false,
+              "volatiles": []
             },
             {
+              "side": "p1",
+              "slot": 1,
               "ident": "p1: Goodra",
               "species": "goodra",
               "hp": 165,
               "max_hp": 165,
-              "fainted": false
+              "fainted": false,
+              "volatiles": []
             },
             {
+              "side": "p2",
+              "slot": 0,
               "ident": "p2: Clefairy",
               "species": "clefairy",
               "hp": 0,
               "max_hp": 145,
-              "fainted": true
+              "fainted": true,
+              "volatiles": []
             },
             {
+              "side": "p2",
+              "slot": 1,
               "ident": "p2: Blastoise",
               "species": "blastoise",
               "hp": 154,
               "max_hp": 154,
-              "fainted": false
+              "fainted": false,
+              "volatiles": []
             }
           ],
           "after": [
             {
+              "side": "p1",
+              "slot": 0,
               "ident": "p1: Goodra",
               "species": "goodra",
               "hp": 165,
               "max_hp": 165,
-              "fainted": false
+              "fainted": false,
+              "volatiles": []
             },
             {
+              "side": "p1",
+              "slot": 1,
               "ident": "p1: Goodra",
               "species": "goodra",
               "hp": 165,
               "max_hp": 165,
-              "fainted": false
+              "fainted": false,
+              "volatiles": []
             },
             {
+              "side": "p2",
+              "slot": 0,
               "ident": "p2: Clefairy",
               "species": "clefairy",
               "hp": 0,
               "max_hp": 145,
-              "fainted": true
+              "fainted": true,
+              "volatiles": []
             },
             {
+              "side": "p2",
+              "slot": 1,
               "ident": "p2: Blastoise",
               "species": "blastoise",
               "hp": 134,
               "max_hp": 154,
-              "fainted": false
+              "fainted": false,
+              "volatiles": []
             }
           ],
+          "execution": {
+            "move": "aquatail",
+            "source": {
+              "side": "p1",
+              "slot": 1,
+              "species": "goodra"
+            },
+            "selected_target": {
+              "side": "p2",
+              "slot": 1,
+              "species": "blastoise"
+            },
+            "resolved_targets": [
+              {
+                "side": "p2",
+                "slot": 1,
+                "species": "blastoise"
+              }
+            ],
+            "stages": [
+              {
+                "stage": "invulnerability",
+                "targets": [
+                  {
+                    "side": "p2",
+                    "slot": 1,
+                    "species": "blastoise"
+                  }
+                ],
+                "results": [
+                  true
+                ]
+              },
+              {
+                "stage": "try_hit",
+                "targets": [
+                  {
+                    "side": "p2",
+                    "slot": 1,
+                    "species": "blastoise"
+                  }
+                ],
+                "results": [
+                  true
+                ]
+              },
+              {
+                "stage": "type_immunity",
+                "targets": [
+                  {
+                    "side": "p2",
+                    "slot": 1,
+                    "species": "blastoise"
+                  }
+                ],
+                "results": [
+                  true
+                ]
+              },
+              {
+                "stage": "move_immunity",
+                "targets": [
+                  {
+                    "side": "p2",
+                    "slot": 1,
+                    "species": "blastoise"
+                  }
+                ],
+                "results": [
+                  true
+                ]
+              },
+              {
+                "stage": "accuracy",
+                "targets": [
+                  {
+                    "side": "p2",
+                    "slot": 1,
+                    "species": "blastoise"
+                  }
+                ],
+                "results": [
+                  true
+                ]
+              },
+              {
+                "stage": "break_protect",
+                "targets": [
+                  {
+                    "side": "p2",
+                    "slot": 1,
+                    "species": "blastoise"
+                  }
+                ],
+                "results": null
+              },
+              {
+                "stage": "damage",
+                "targets": [
+                  {
+                    "side": "p2",
+                    "slot": 1,
+                    "species": "blastoise"
+                  }
+                ],
+                "results": [
+                  20
+                ]
+              }
+            ],
+            "outcomes": [
+              {
+                "target": {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                },
+                "result": "hit",
+                "applied_hp_loss": 20,
+                "final_hp": 134,
+                "fainted": false
+              }
+            ]
+          },
           "log": [
             "|move|p1b: Goodra|Aqua Tail|p2b: Blastoise",
             "|-damage|p2b: Blastoise|134/154",
             "|-damage|p2b: Blastoise|87/100"
           ]
         }
+      },
+      "redirector_switched_out": {
+        "result": true,
+        "before": [
+          {
+            "side": "p1",
+            "slot": 0,
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false,
+            "volatiles": []
+          },
+          {
+            "side": "p1",
+            "slot": 1,
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false,
+            "volatiles": []
+          },
+          {
+            "side": "p2",
+            "slot": 0,
+            "ident": "p2: Arcanine",
+            "species": "arcanine",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false,
+            "volatiles": []
+          },
+          {
+            "side": "p2",
+            "slot": 1,
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 154,
+            "max_hp": 154,
+            "fainted": false,
+            "volatiles": []
+          }
+        ],
+        "after": [
+          {
+            "side": "p1",
+            "slot": 0,
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false,
+            "volatiles": []
+          },
+          {
+            "side": "p1",
+            "slot": 1,
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false,
+            "volatiles": []
+          },
+          {
+            "side": "p2",
+            "slot": 0,
+            "ident": "p2: Arcanine",
+            "species": "arcanine",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false,
+            "volatiles": []
+          },
+          {
+            "side": "p2",
+            "slot": 1,
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 134,
+            "max_hp": 154,
+            "fainted": false,
+            "volatiles": []
+          }
+        ],
+        "execution": {
+          "move": "aquatail",
+          "source": {
+            "side": "p1",
+            "slot": 0,
+            "species": "goodra"
+          },
+          "selected_target": {
+            "side": "p2",
+            "slot": 1,
+            "species": "blastoise"
+          },
+          "resolved_targets": [
+            {
+              "side": "p2",
+              "slot": 1,
+              "species": "blastoise"
+            }
+          ],
+          "stages": [
+            {
+              "stage": "invulnerability",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "try_hit",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "type_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "move_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "accuracy",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "break_protect",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": null
+            },
+            {
+              "stage": "damage",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                20
+              ]
+            }
+          ],
+          "outcomes": [
+            {
+              "target": {
+                "side": "p2",
+                "slot": 1,
+                "species": "blastoise"
+              },
+              "result": "hit",
+              "applied_hp_loss": 20,
+              "final_hp": 134,
+              "fainted": false
+            }
+          ]
+        },
+        "log": [
+          "|move|p1a: Goodra|Aqua Tail|p2b: Blastoise",
+          "|-damage|p2b: Blastoise|134/154",
+          "|-damage|p2b: Blastoise|87/100"
+        ]
       }
     },
     "per_target_execution": {
@@ -1788,90 +6435,604 @@
         "result": true,
         "before": [
           {
-            "ident": "p1: Garchomp",
-            "species": "garchomp",
-            "hp": 183,
-            "max_hp": 183,
-            "fainted": false
+            "side": "p1",
+            "slot": 0,
+            "ident": "p1: Charizard",
+            "species": "charizard",
+            "hp": 153,
+            "max_hp": 153,
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Arcanine",
             "species": "arcanine",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Blastoise",
             "species": "blastoise",
             "hp": 154,
             "max_hp": 154,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
         "after": [
           {
-            "ident": "p1: Garchomp",
-            "species": "garchomp",
-            "hp": 183,
-            "max_hp": 183,
-            "fainted": false
+            "side": "p1",
+            "slot": 0,
+            "ident": "p1: Charizard",
+            "species": "charizard",
+            "hp": 153,
+            "max_hp": 153,
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Arcanine",
             "species": "arcanine",
-            "hp": 113,
+            "hp": 125,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Blastoise",
             "species": "blastoise",
             "hp": 154,
             "max_hp": 154,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           }
         ],
+        "execution": {
+          "move": "aircutter",
+          "source": {
+            "side": "p1",
+            "slot": 0,
+            "species": "charizard"
+          },
+          "selected_target": {
+            "side": "p2",
+            "slot": 0,
+            "species": "arcanine"
+          },
+          "resolved_targets": [
+            {
+              "side": "p2",
+              "slot": 0,
+              "species": "arcanine"
+            },
+            {
+              "side": "p2",
+              "slot": 1,
+              "species": "blastoise"
+            }
+          ],
+          "stages": [
+            {
+              "stage": "invulnerability",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true,
+                true
+              ]
+            },
+            {
+              "stage": "try_hit",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true,
+                true
+              ]
+            },
+            {
+              "stage": "type_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true,
+                true
+              ]
+            },
+            {
+              "stage": "move_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true,
+                true
+              ]
+            },
+            {
+              "stage": "accuracy",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true,
+                false
+              ]
+            },
+            {
+              "stage": "break_protect",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                }
+              ],
+              "results": null
+            },
+            {
+              "stage": "damage",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                }
+              ],
+              "results": [
+                40
+              ]
+            }
+          ],
+          "outcomes": [
+            {
+              "target": {
+                "side": "p2",
+                "slot": 0,
+                "species": "arcanine"
+              },
+              "result": "hit",
+              "applied_hp_loss": 40,
+              "final_hp": 125,
+              "fainted": false
+            },
+            {
+              "target": {
+                "side": "p2",
+                "slot": 1,
+                "species": "blastoise"
+              },
+              "result": "accuracy",
+              "applied_hp_loss": 0,
+              "final_hp": 154,
+              "fainted": false
+            }
+          ]
+        },
         "log": [
-          "|move|p1a: Garchomp|Rock Slide|p2a: Arcanine|[spread] p2a",
-          "|-miss|p1a: Garchomp|p2b: Blastoise",
-          "|-damage|p2a: Arcanine|113/165",
-          "|-damage|p2a: Arcanine|68/100"
+          "|move|p1a: Charizard|Air Cutter|p2a: Arcanine|[spread] p2a",
+          "|-miss|p1a: Charizard|p2b: Blastoise",
+          "|-damage|p2a: Arcanine|125/165",
+          "|-damage|p2a: Arcanine|75/100"
         ],
         "rng_operations": [
           {
+            "reason": "accuracy",
             "operation": "chance",
-            "numerator": 90,
+            "numerator": 95,
             "denominator": 100,
             "result": true
           },
           {
+            "reason": "accuracy",
             "operation": "chance",
-            "numerator": 90,
+            "numerator": 95,
             "denominator": 100,
             "result": false
           },
           {
+            "reason": "critical_hit",
             "operation": "chance",
             "numerator": 1,
-            "denominator": 24,
+            "denominator": 8,
             "result": false
           },
           {
+            "reason": "damage_roll",
+            "operation": "damage_randomizer",
+            "percent": 100
+          }
+        ]
+      },
+      "target_level_faint": {
+        "result": true,
+        "before": [
+          {
+            "side": "p1",
+            "slot": 0,
+            "ident": "p1: Charizard",
+            "species": "charizard",
+            "hp": 153,
+            "max_hp": 153,
+            "fainted": false,
+            "volatiles": []
+          },
+          {
+            "side": "p1",
+            "slot": 1,
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false,
+            "volatiles": []
+          },
+          {
+            "side": "p2",
+            "slot": 0,
+            "ident": "p2: Arcanine",
+            "species": "arcanine",
+            "hp": 1,
+            "max_hp": 165,
+            "fainted": false,
+            "volatiles": []
+          },
+          {
+            "side": "p2",
+            "slot": 1,
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 154,
+            "max_hp": 154,
+            "fainted": false,
+            "volatiles": []
+          }
+        ],
+        "after": [
+          {
+            "side": "p1",
+            "slot": 0,
+            "ident": "p1: Charizard",
+            "species": "charizard",
+            "hp": 153,
+            "max_hp": 153,
+            "fainted": false,
+            "volatiles": []
+          },
+          {
+            "side": "p1",
+            "slot": 1,
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false,
+            "volatiles": []
+          },
+          {
+            "side": "p2",
+            "slot": 0,
+            "ident": "p2: Arcanine",
+            "species": "arcanine",
+            "hp": 0,
+            "max_hp": 165,
+            "fainted": true,
+            "volatiles": []
+          },
+          {
+            "side": "p2",
+            "slot": 1,
+            "ident": "p2: Blastoise",
+            "species": "blastoise",
+            "hp": 121,
+            "max_hp": 154,
+            "fainted": false,
+            "volatiles": []
+          }
+        ],
+        "execution": {
+          "move": "aircutter",
+          "source": {
+            "side": "p1",
+            "slot": 0,
+            "species": "charizard"
+          },
+          "selected_target": {
+            "side": "p2",
+            "slot": 0,
+            "species": "arcanine"
+          },
+          "resolved_targets": [
+            {
+              "side": "p2",
+              "slot": 0,
+              "species": "arcanine"
+            },
+            {
+              "side": "p2",
+              "slot": 1,
+              "species": "blastoise"
+            }
+          ],
+          "stages": [
+            {
+              "stage": "invulnerability",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true,
+                true
+              ]
+            },
+            {
+              "stage": "try_hit",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true,
+                true
+              ]
+            },
+            {
+              "stage": "type_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true,
+                true
+              ]
+            },
+            {
+              "stage": "move_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true,
+                true
+              ]
+            },
+            {
+              "stage": "accuracy",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                true,
+                true
+              ]
+            },
+            {
+              "stage": "break_protect",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": null
+            },
+            {
+              "stage": "damage",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "blastoise"
+                }
+              ],
+              "results": [
+                1,
+                33
+              ]
+            }
+          ],
+          "outcomes": [
+            {
+              "target": {
+                "side": "p2",
+                "slot": 0,
+                "species": "arcanine"
+              },
+              "result": "hit",
+              "applied_hp_loss": 1,
+              "final_hp": 0,
+              "fainted": true
+            },
+            {
+              "target": {
+                "side": "p2",
+                "slot": 1,
+                "species": "blastoise"
+              },
+              "result": "hit",
+              "applied_hp_loss": 33,
+              "final_hp": 121,
+              "fainted": false
+            }
+          ]
+        },
+        "log": [
+          "|move|p1a: Charizard|Air Cutter|p2a: Arcanine|[spread] p2a,p2b",
+          "|-damage|p2a: Arcanine|0 fnt",
+          "|-damage|p2a: Arcanine|0 fnt",
+          "|-damage|p2b: Blastoise|121/154",
+          "|-damage|p2b: Blastoise|78/100",
+          "|faint|p2a: Arcanine"
+        ],
+        "rng_operations": [
+          {
+            "reason": "accuracy",
+            "operation": "chance",
+            "numerator": 95,
+            "denominator": 100,
+            "result": true
+          },
+          {
+            "reason": "accuracy",
+            "operation": "chance",
+            "numerator": 95,
+            "denominator": 100,
+            "result": true
+          },
+          {
+            "reason": "critical_hit",
+            "operation": "chance",
+            "numerator": 1,
+            "denominator": 8,
+            "result": false
+          },
+          {
+            "reason": "damage_roll",
+            "operation": "damage_randomizer",
+            "percent": 100
+          },
+          {
+            "reason": "critical_hit",
+            "operation": "chance",
+            "numerator": 1,
+            "denominator": 8,
+            "result": false
+          },
+          {
+            "reason": "damage_roll",
             "operation": "damage_randomizer",
             "percent": 100
           }
@@ -1881,64 +7042,183 @@
         "result": false,
         "before": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Arcanine",
             "species": "arcanine",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Charizard",
             "species": "charizard",
             "hp": 153,
             "max_hp": 153,
-            "fainted": false
+            "fainted": false,
+            "volatiles": [
+              "protect",
+              "stall"
+            ]
           }
         ],
         "after": [
           {
+            "side": "p1",
+            "slot": 0,
             "ident": "p1: Goodra",
             "species": "goodra",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p1",
+            "slot": 1,
             "ident": "p1: Magikarp",
             "species": "magikarp",
             "hp": 95,
             "max_hp": 95,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 0,
             "ident": "p2: Arcanine",
             "species": "arcanine",
             "hp": 165,
             "max_hp": 165,
-            "fainted": false
+            "fainted": false,
+            "volatiles": []
           },
           {
+            "side": "p2",
+            "slot": 1,
             "ident": "p2: Charizard",
             "species": "charizard",
             "hp": 153,
             "max_hp": 153,
-            "fainted": false
+            "fainted": false,
+            "volatiles": [
+              "protect",
+              "stall"
+            ]
           }
         ],
+        "execution": {
+          "move": "dazzlinggleam",
+          "source": {
+            "side": "p1",
+            "slot": 0,
+            "species": "goodra"
+          },
+          "selected_target": {
+            "side": "p2",
+            "slot": 0,
+            "species": "arcanine"
+          },
+          "resolved_targets": [
+            {
+              "side": "p2",
+              "slot": 0,
+              "species": "arcanine"
+            },
+            {
+              "side": "p2",
+              "slot": 1,
+              "species": "charizard"
+            }
+          ],
+          "stages": [
+            {
+              "stage": "invulnerability",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "charizard"
+                }
+              ],
+              "results": [
+                true,
+                true
+              ]
+            },
+            {
+              "stage": "try_hit",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "arcanine"
+                },
+                {
+                  "side": "p2",
+                  "slot": 1,
+                  "species": "charizard"
+                }
+              ],
+              "results": [
+                false,
+                ""
+              ]
+            }
+          ],
+          "outcomes": [
+            {
+              "target": {
+                "side": "p2",
+                "slot": 0,
+                "species": "arcanine"
+              },
+              "result": "try_hit",
+              "applied_hp_loss": 0,
+              "final_hp": 165,
+              "fainted": false
+            },
+            {
+              "target": {
+                "side": "p2",
+                "slot": 1,
+                "species": "charizard"
+              },
+              "result": "try_hit",
+              "applied_hp_loss": 0,
+              "final_hp": 153,
+              "fainted": false
+            }
+          ]
+        },
         "log": [
           "|move|p1a: Goodra|Dazzling Gleam|p2a: Arcanine|[spread] ",
           "|-activate|p2a: Arcanine|move: Psychic Terrain",

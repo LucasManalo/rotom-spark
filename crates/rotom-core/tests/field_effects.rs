@@ -1,11 +1,12 @@
 use rotom_core::{
-    step, AbilityId, ActionTarget, ActiveSlot, BattleState, BattleStateBuilder, BattleStats,
-    CombatData, CombatMove, ConditionId, ConditionState, EffectRegistry, ExpiredCondition,
-    FieldEffectIds, FormId, ItemId, JointAction, MajorStatus, Mechanics, MoveAccuracy,
-    MoveCapabilities, MoveCategory, MoveId, MoveOperation, MoveSlot, MoveSlotIndex, MoveTarget,
-    PokemonAction, PokemonIndex, PokemonPosition, PokemonRef, PokemonState, PokemonType,
-    PokemonTypes, ResolvedAction, RngOperation, RngReason, SideId, SideState, SpeciesId,
-    StatStages, StatusState, TeamState, TurnChoice,
+    step, AbilityId, ActionTarget, ActiveSlot, BattleError, BattleEvent, BattleState,
+    BattleStateBuilder, BattleStats, CombatData, CombatMove, ConditionId, ConditionState,
+    EffectInvocation, EffectOrder, EffectRegistry, EffectSource, EffectState, EventContext,
+    EventDispatch, ExpiredCondition, FieldEffectIds, FormId, ItemId, JointAction, MajorStatus,
+    Mechanics, MoveAccuracy, MoveCapabilities, MoveCategory, MoveId, MoveOperation, MoveSlot,
+    MoveSlotIndex, MoveTarget, PokemonAction, PokemonIndex, PokemonPosition, PokemonRef,
+    PokemonState, PokemonType, PokemonTypes, ResolvedAction, RngOperation, RngReason, SideId,
+    SideState, SpeciesId, StatStages, StatusState, TeamState, TurnChoice,
 };
 
 const MOVE: MoveId = MoveId::new(1);
@@ -261,6 +262,22 @@ fn p1_left_damage(result: &rotom_core::StepResult) -> u16 {
             _ => None,
         })
         .unwrap()
+}
+
+fn fail_on_second_spread_target(
+    _: &mut EffectState<'_>,
+    _: &EffectInvocation,
+    context: &EventContext,
+    _: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if context.source == Some(PokemonRef::new(SideId::P1, index(0)))
+        && context.target == Some(PokemonRef::new(SideId::P2, index(1)))
+    {
+        return Err(BattleError::UnsupportedMechanic(
+            "second spread target failed".to_owned(),
+        ));
+    }
+    Ok(())
 }
 
 fn with_weather(state: &BattleState, condition: ConditionId) -> BattleState {
@@ -735,6 +752,39 @@ fn psychic_terrain_leaves_ungrounded_and_clear_field_targets_unaffected() {
         .target_outcomes
         .iter()
         .all(|outcome| outcome.applied_hp_loss > 0));
+}
+
+#[test]
+fn error_after_first_spread_target_is_publicly_atomic() {
+    let data = TestData {
+        move_type: PokemonType::Normal,
+        category: MoveCategory::Physical,
+        priority: 0,
+        accuracy: MoveAccuracy::Percent { value: 100 },
+        target: MoveTarget::AllAdjacentFoes,
+    };
+    let mut builder = BattleStateBuilder::from_state(battle()).unwrap();
+    for side in [SideId::P1, SideId::P2] {
+        builder.edit_side(side, |state| {
+            for pokemon in &mut state.team.members {
+                pokemon.moves[0].target = MoveTarget::AllAdjacentFoes;
+            }
+        });
+    }
+    builder.enable_rng_trace();
+    let state = builder.build().unwrap();
+    let before = state.clone();
+    let mut effects = EffectRegistry::new();
+    effects.register(
+        BattleEvent::ModifyDamage,
+        EffectSource::Move(MOVE),
+        EffectOrder::default(),
+        fail_on_second_spread_target,
+    );
+
+    let error = step(&state, &spread_turn(), &Mechanics::new(&data, &effects)).unwrap_err();
+    assert!(matches!(error, BattleError::UnsupportedMechanic(_)));
+    assert_eq!(state, before);
 }
 
 #[test]

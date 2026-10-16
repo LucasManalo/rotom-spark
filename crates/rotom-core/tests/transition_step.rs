@@ -150,6 +150,33 @@ fn started(seed: u64) -> BattleState {
     .state
 }
 
+fn assert_roundtrip_continuation(
+    state: &BattleState,
+    action: &JointAction,
+    mechanics: &Mechanics<'_, TestData>,
+    label: &str,
+) {
+    state
+        .validate_stable_state()
+        .unwrap_or_else(|error| panic!("{label} input is unstable: {error}"));
+    let serialized = serde_json::to_string(state).unwrap();
+    let restored: BattleState = serde_json::from_str(&serialized).unwrap();
+    restored
+        .validate_stable_state()
+        .unwrap_or_else(|error| panic!("{label} restored state is unstable: {error}"));
+    assert_eq!(&restored, state, "{label} authoritative state round trip");
+    match (
+        step(state, action, mechanics),
+        step(&restored, action, mechanics),
+    ) {
+        (Ok(original), Ok(resumed)) => assert_eq!(original, resumed, "{label} continuation"),
+        (Err(original), Err(resumed)) => {
+            assert_eq!(original.to_string(), resumed.to_string(), "{label} error");
+        }
+        (original, resumed) => panic!("{label} continuation mismatch: {original:?} vs {resumed:?}"),
+    }
+}
+
 #[test]
 fn step_advances_preview_turn_and_forced_switch_phases() {
     let effects = EffectRegistry::new();
@@ -230,6 +257,169 @@ fn replay_and_serde_resume_are_deterministic_and_leave_input_unchanged() {
     assert_eq!(current, before);
     assert_eq!(first, replay);
     assert_eq!(first, resumed);
+}
+
+#[test]
+fn authoritative_state_round_trips_and_resumes_across_every_stable_phase() {
+    let effects = EffectRegistry::new();
+    let low_damage = TestData::basic(20);
+    let low_mechanics = Mechanics::new(&low_damage, &effects);
+    let initial = preview(0x1322, 4);
+    assert_roundtrip_continuation(&initial, &preview_action(4), &low_mechanics, "team preview");
+
+    let selected = step(&initial, &preview_action(4), &low_mechanics)
+        .unwrap()
+        .state;
+    assert_roundtrip_continuation(
+        &selected,
+        &attacking_turn(),
+        &low_mechanics,
+        "initial actives",
+    );
+
+    let ordinary = step(&selected, &attacking_turn(), &low_mechanics)
+        .unwrap()
+        .state;
+    assert_roundtrip_continuation(
+        &ordinary,
+        &attacking_turn(),
+        &low_mechanics,
+        "ordinary turn selection",
+    );
+
+    let mut switch_builder = rotom_core::BattleStateBuilder::from_state(selected.clone()).unwrap();
+    switch_builder
+        .switch_active(SideId::P1, ActiveSlot::Left, index(2))
+        .unwrap();
+    let switched = switch_builder.build().unwrap();
+    assert_roundtrip_continuation(&switched, &attacking_turn(), &low_mechanics, "after switch");
+
+    let high_damage = TestData::basic(1_000);
+    let high_mechanics = Mechanics::new(&high_damage, &effects);
+    let fainted = step(&selected, &attacking_turn(), &high_mechanics)
+        .unwrap()
+        .state;
+    let replacements = JointAction::ForcedSwitch {
+        p1: TurnChoice {
+            actions: [PokemonAction::Pass, PokemonAction::Pass],
+        },
+        p2: TurnChoice {
+            actions: [
+                PokemonAction::Switch { pokemon: index(2) },
+                PokemonAction::Switch { pokemon: index(3) },
+            ],
+        },
+    };
+    assert_roundtrip_continuation(&fainted, &replacements, &high_mechanics, "after faint");
+
+    let filled = step(&fainted, &replacements, &high_mechanics)
+        .unwrap()
+        .state;
+    assert_roundtrip_continuation(
+        &filled,
+        &attacking_turn(),
+        &high_mechanics,
+        "after filling empty slots",
+    );
+
+    let terminal = step(&filled, &attacking_turn(), &high_mechanics)
+        .unwrap()
+        .state;
+    assert_eq!(terminal.phase(), BattlePhase::BattleEnd);
+    assert_roundtrip_continuation(
+        &terminal,
+        &attacking_turn(),
+        &high_mechanics,
+        "completed battle",
+    );
+}
+
+#[test]
+fn serialized_effect_orders_reject_corruption_and_overflow_atomically() {
+    let effects = EffectRegistry::new();
+    let data = TestData::basic(20);
+    let mechanics = Mechanics::new(&data, &effects);
+    let selected = started(0xe0ff);
+
+    for field in ["active_effect_orders", "next_effect_order"] {
+        let mut historical = serde_json::to_value(&selected).unwrap();
+        historical.as_object_mut().unwrap().remove(field);
+        assert!(
+            serde_json::from_value::<BattleState>(historical).is_err(),
+            "snapshots missing authoritative {field} must be rejected"
+        );
+    }
+
+    let mut corruptions = Vec::new();
+    let mut missing = serde_json::to_value(&selected).unwrap();
+    missing["active_effect_orders"][0][0] = serde_json::Value::Null;
+    corruptions.push(("missing active order", missing));
+
+    let mut duplicate = serde_json::to_value(&selected).unwrap();
+    duplicate["active_effect_orders"][0][1] = duplicate["active_effect_orders"][0][0].clone();
+    corruptions.push(("duplicate active order", duplicate));
+
+    let mut future = serde_json::to_value(&selected).unwrap();
+    future["active_effect_orders"][0][0] = future["next_effect_order"].clone();
+    corruptions.push(("order at next counter", future));
+
+    let high_damage = TestData::basic(1_000);
+    let fainted = step(
+        &selected,
+        &attacking_turn(),
+        &Mechanics::new(&high_damage, &effects),
+    )
+    .unwrap()
+    .state;
+    let mut stale_empty = serde_json::to_value(&fainted).unwrap();
+    stale_empty["active_effect_orders"][1][0] = serde_json::json!(0);
+    corruptions.push(("empty slot retained order", stale_empty));
+
+    for (label, value) in corruptions {
+        let corrupted: BattleState = serde_json::from_value(value).unwrap();
+        let before = corrupted.clone();
+        assert!(matches!(
+            corrupted.validate_stable_state(),
+            Err(BattleError::InvalidState(_))
+        ));
+        assert!(matches!(
+            step(&corrupted, &attacking_turn(), &mechanics),
+            Err(BattleError::InvalidState(_))
+        ));
+        assert_eq!(corrupted, before, "{label} rejection mutated its input");
+    }
+
+    let mut overflow_value = serde_json::to_value(&selected).unwrap();
+    overflow_value["next_effect_order"] = serde_json::json!(u32::MAX);
+    let overflow: BattleState = serde_json::from_value(overflow_value).unwrap();
+    overflow.validate_stable_state().unwrap();
+    let before = overflow.clone();
+    let mut builder = rotom_core::BattleStateBuilder::from_state(overflow.clone()).unwrap();
+    let error = builder
+        .switch_active(SideId::P1, ActiveSlot::Left, index(2))
+        .err()
+        .expect("overflow switch should fail");
+    assert!(error
+        .to_string()
+        .contains("effect-order counter overflowed"));
+    assert_eq!(builder.state(), &before, "kernel overflow must be atomic");
+
+    let switch = JointAction::Turn {
+        p1: TurnChoice {
+            actions: [
+                PokemonAction::Switch { pokemon: index(2) },
+                move_at(ActiveSlot::Right),
+            ],
+        },
+        p2: TurnChoice {
+            actions: [move_at(ActiveSlot::Left), move_at(ActiveSlot::Right)],
+        },
+    };
+    let error = step(&overflow, &switch, &mechanics).unwrap_err();
+    assert!(error
+        .to_string()
+        .contains("effect-order counter overflowed"));
+    assert_eq!(overflow, before, "public overflow error mutated its input");
 }
 
 #[test]

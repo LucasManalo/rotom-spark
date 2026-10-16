@@ -696,8 +696,9 @@ impl BattleState {
         }
     }
 
-    // Keeping the per-target lifecycle together makes the pinned event and RNG
-    // order directly auditable.
+    // Showdown advances the complete target set through each hit stage before
+    // entering the next one. Keep original indexes so diagnostics remain in
+    // resolved-target order even when targets fail at different stages.
     #[allow(clippy::too_many_lines)]
     fn execute_standard_damage<D: CombatData>(
         &mut self,
@@ -712,8 +713,16 @@ impl BattleState {
                 move_context.move_data.target,
                 MoveTarget::AllAdjacent | MoveTarget::AllAdjacentFoes
             );
-        let mut any_hit = false;
-        for target_context in move_context.targets.clone() {
+        let mut outcomes = vec![None; move_context.targets.len()];
+        let mut eligible = move_context
+            .targets
+            .iter()
+            .copied()
+            .enumerate()
+            .collect::<Vec<_>>();
+
+        let mut after_try_hit = Vec::with_capacity(eligible.len());
+        for (index, target_context) in eligible {
             let target = target_context.target;
             let context = EventContext {
                 source: Some(move_context.source),
@@ -738,7 +747,7 @@ impl BattleState {
                 self.target_is_protected(data, field_effects, move_context, target)?
             };
             if cancelled || priority_blocked || protected {
-                resolution.target_outcomes.push(TargetOutcome {
+                outcomes[index] = Some(TargetOutcome {
                     source: move_context.source,
                     move_id: move_context.move_id,
                     target,
@@ -756,8 +765,14 @@ impl BattleState {
                 });
                 continue;
             }
+            after_try_hit.push((index, target_context));
+        }
+
+        let mut after_immunity = Vec::with_capacity(after_try_hit.len());
+        for (index, target_context) in after_try_hit {
+            let target = target_context.target;
             if self.target_is_type_immune(data, move_context.move_data, target)? {
-                resolution.target_outcomes.push(TargetOutcome {
+                outcomes[index] = Some(TargetOutcome {
                     source: move_context.source,
                     move_id: move_context.move_id,
                     target,
@@ -769,6 +784,12 @@ impl BattleState {
                 });
                 continue;
             }
+            after_immunity.push((index, target_context));
+        }
+
+        eligible = Vec::with_capacity(after_immunity.len());
+        for (index, target_context) in after_immunity {
+            let target = target_context.target;
             if !self.check_accuracy(
                 move_context.move_data.accuracy,
                 move_context.move_id,
@@ -781,7 +802,7 @@ impl BattleState {
                     slot: move_context.queued.slot,
                     move_slot: move_context.queued.move_slot,
                 });
-                resolution.target_outcomes.push(TargetOutcome {
+                outcomes[index] = Some(TargetOutcome {
                     source: move_context.source,
                     move_id: move_context.move_id,
                     target,
@@ -793,6 +814,17 @@ impl BattleState {
                 });
                 continue;
             }
+            eligible.push((index, target_context));
+        }
+
+        let mut any_hit = false;
+        for (index, target_context) in eligible {
+            let target = target_context.target;
+            let context = EventContext {
+                source: Some(move_context.source),
+                target: Some(target),
+                move_id: Some(move_context.move_id),
+            };
             let mut damage = self.calculate_standard_damage(
                 data,
                 field_effects,
@@ -845,7 +877,7 @@ impl BattleState {
                 },
                 resolution,
             )?;
-            resolution.target_outcomes.push(TargetOutcome {
+            outcomes[index] = Some(TargetOutcome {
                 source: move_context.source,
                 move_id: move_context.move_id,
                 target,
@@ -857,6 +889,9 @@ impl BattleState {
             });
             any_hit = true;
         }
+        resolution
+            .target_outcomes
+            .extend(outcomes.into_iter().flatten());
         if !any_hit {
             resolution.actions.push(ResolvedAction::Skipped {
                 side: move_context.queued.side,

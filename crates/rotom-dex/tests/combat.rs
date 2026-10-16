@@ -1,9 +1,9 @@
 use rotom_core::{
-    calculate_move_damage, step, ActionTarget, BattlePhase, BattleState, BattleStateBuilder,
-    CombatData, ConditionState, EffectRegistry, FormId, Gender, JointAction, Mechanics,
-    MoveCapabilities, MoveCapability, MoveOperation, MoveSlotIndex, PokemonAction, PokemonIndex,
-    PokemonPosition, PokemonRef, PokemonSet, RngOperation, RngReason, SideId, SideState,
-    StatAllocation, StatStages, TeamState, TurnChoice,
+    calculate_move_damage, step, ActionTarget, ActiveSlot, BattlePhase, BattleState,
+    BattleStateBuilder, CombatData, ConditionState, EffectRegistry, FaintTarget, FormId, Gender,
+    JointAction, Mechanics, MoveCapabilities, MoveCapability, MoveId, MoveOperation, MoveSlotIndex,
+    PokemonAction, PokemonIndex, PokemonPosition, PokemonRef, PokemonSet, RngOperation, RngReason,
+    SideId, SideState, StatAllocation, StatStages, TargetResult, TeamState, TurnChoice,
 };
 use rotom_dex::champions_reg_mc;
 use serde::Deserialize;
@@ -15,6 +15,35 @@ fn doubles_targeting_fixture() -> serde_json::Value {
         "../../../data/fixtures/differential/doubles-targeting.json"
     ))
     .expect("doubles targeting fixture")
+}
+
+#[derive(Debug, Deserialize)]
+struct ReferenceTarget {
+    side: String,
+    slot: usize,
+    species: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct ReferenceTargetOutcome {
+    target: ReferenceTarget,
+    result: String,
+    applied_hp_loss: u16,
+    final_hp: u16,
+    fainted: bool,
+}
+
+#[derive(Debug, Deserialize)]
+struct ReferenceStage {
+    stage: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct ReferenceExecution {
+    selected_target: ReferenceTarget,
+    resolved_targets: Vec<ReferenceTarget>,
+    stages: Vec<ReferenceStage>,
+    outcomes: Vec<ReferenceTargetOutcome>,
 }
 
 #[test]
@@ -601,6 +630,10 @@ fn assert_stable_serializable_state(state: &BattleState, case_name: &str) {
     assert_eq!(restored, *state, "{case_name} state round trip");
 }
 
+fn round_trip_state(state: &BattleState) -> BattleState {
+    serde_json::from_str(&serde_json::to_string(state).unwrap()).unwrap()
+}
+
 fn opposing_targets_choice() -> TurnChoice {
     TurnChoice {
         actions: [rotom_core::ActiveSlot::Left, rotom_core::ActiveSlot::Right].map(|target| {
@@ -657,6 +690,223 @@ fn selected_battle_for_sets(
     builder.build().expect("stable battle")
 }
 
+fn side_from_sets(dex: &rotom_dex::DexData, sets: &[PokemonSet]) -> SideState {
+    SideState::new(TeamState::new(
+        sets.iter()
+            .map(|set| dex.pokemon_state(set).expect("battle Pokémon"))
+            .collect(),
+    ))
+}
+
+fn selected_battle_for_teams(
+    dex: &rotom_dex::DexData,
+    p1: &[PokemonSet],
+    p2: &[PokemonSet],
+    seed: u64,
+) -> BattleState {
+    let mut builder = BattleStateBuilder::new_with_seed(
+        side_from_sets(dex, p1),
+        side_from_sets(dex, p2),
+        4,
+        seed,
+    )
+    .expect("battle");
+    let selection = four_selection();
+    builder
+        .select_teams(selection.clone(), selection)
+        .expect("selected teams");
+    builder.enable_rng_trace();
+    builder.build().expect("stable battle")
+}
+
+fn reference_execution(value: &serde_json::Value) -> ReferenceExecution {
+    serde_json::from_value(value["execution"].clone()).expect("normalized Showdown execution")
+}
+
+fn normalized_failure_stage(result: TargetResult) -> &'static str {
+    match result {
+        TargetResult::Hit => "hit",
+        TargetResult::Missed => "accuracy",
+        TargetResult::Immune => "type_immunity",
+        TargetResult::Protected | TargetResult::PriorityBlocked | TargetResult::Cancelled => {
+            "try_hit"
+        }
+    }
+}
+
+fn controlled_reason(value: &serde_json::Value) -> RngReason {
+    match value["reason"].as_str().expect("reference RNG reason") {
+        "accuracy" => RngReason::Accuracy,
+        "critical_hit" => RngReason::CriticalHit,
+        "damage_roll" => RngReason::DamageRoll,
+        "protect" => RngReason::Protect,
+        reason => panic!("unknown reference RNG reason {reason}"),
+    }
+}
+
+fn outcome_has_controlled_rng(result: &rotom_core::StepResult, expected: &[RngReason]) -> bool {
+    let Some(trace) = result.state.rng().trace() else {
+        return false;
+    };
+    if trace
+        .iter()
+        .map(|entry| entry.reason.clone())
+        .collect::<Vec<_>>()
+        != expected
+    {
+        return false;
+    }
+    trace.iter().all(|entry| match entry.reason {
+        RngReason::CriticalHit => entry.result >= 1,
+        RngReason::DamageRoll => entry.result == 100,
+        RngReason::Accuracy | RngReason::Protect => match entry.operation {
+            RngOperation::Chance { numerator, .. } => entry.result < numerator,
+            _ => false,
+        },
+        _ => true,
+    })
+}
+
+fn rng_trace_matches_reference(result: &rotom_core::StepResult, case: &serde_json::Value) -> bool {
+    let expected = case["rng_operations"]
+        .as_array()
+        .expect("reference RNG operations");
+    let Some(trace) = result.state.rng().trace() else {
+        return false;
+    };
+    trace.len() == expected.len()
+        && trace.iter().zip(expected).all(|(actual, expected)| {
+            if actual.reason != controlled_reason(expected) {
+                return false;
+            }
+            match actual.operation {
+                RngOperation::Chance { numerator, .. } => {
+                    (actual.result < numerator) == expected["result"].as_bool().unwrap()
+                }
+                RngOperation::Range { .. } => {
+                    actual.result == expected["percent"].as_u64().unwrap()
+                }
+                RngOperation::Sample { .. } => false,
+            }
+        })
+}
+
+fn controlled_step(
+    dex: &rotom_dex::DexData,
+    p1: &[PokemonSet],
+    p2: &[PokemonSet],
+    action: &JointAction,
+    expected_rng: &[RngReason],
+) -> (BattleState, rotom_core::StepResult) {
+    let effects = EffectRegistry::new();
+    let mechanics = Mechanics::new(dex, &effects);
+    for seed in 0..100_000 {
+        let state = selected_battle_for_teams(dex, p1, p2, seed);
+        let Ok(result) = step(&state, action, &mechanics) else {
+            continue;
+        };
+        if outcome_has_controlled_rng(&result, expected_rng) {
+            return (state, result);
+        }
+    }
+    panic!("no deterministic seed produced the controlled reference outcomes");
+}
+
+fn controlled_step_for_reference(
+    dex: &rotom_dex::DexData,
+    p1: &[PokemonSet],
+    p2: &[PokemonSet],
+    action: &JointAction,
+    reference_case: &serde_json::Value,
+    edit: impl Fn(&mut BattleStateBuilder),
+) -> rotom_core::StepResult {
+    let effects = EffectRegistry::new();
+    let mechanics = Mechanics::new(dex, &effects);
+    let mut first_trace = None;
+    for seed in 0..100_000 {
+        let state = selected_battle_for_teams(dex, p1, p2, seed);
+        let mut builder = BattleStateBuilder::from_state(state).unwrap();
+        edit(&mut builder);
+        let state = builder.build().unwrap();
+        let Ok(result) = step(&state, action, &mechanics) else {
+            continue;
+        };
+        first_trace.get_or_insert_with(|| result.state.rng().trace().unwrap().to_vec());
+        if rng_trace_matches_reference(&result, reference_case) {
+            return result;
+        }
+    }
+    panic!(
+        "no deterministic seed matched the controlled Showdown RNG outcomes; first trace: {first_trace:?}; reference: {:?}",
+        reference_case["rng_operations"]
+    );
+}
+
+fn assert_normalized_execution(
+    dex: &rotom_dex::DexData,
+    reference_case: &serde_json::Value,
+    result: &rotom_core::StepResult,
+    source: PokemonRef,
+    move_id: MoveId,
+    selected_slot: ActiveSlot,
+) {
+    let reference = reference_execution(reference_case);
+    assert_eq!(reference.selected_target.side, "p2");
+    assert_eq!(reference.selected_target.slot, selected_slot.index());
+    let outcomes = result
+        .diagnostics
+        .turn
+        .as_ref()
+        .expect("turn diagnostics")
+        .target_outcomes
+        .iter()
+        .filter(|outcome| outcome.source == source && outcome.move_id == move_id)
+        .collect::<Vec<_>>();
+    assert_eq!(outcomes.len(), reference.resolved_targets.len());
+    assert_eq!(outcomes.len(), reference.outcomes.len());
+
+    for ((actual, resolved), expected) in outcomes
+        .iter()
+        .zip(&reference.resolved_targets)
+        .zip(&reference.outcomes)
+    {
+        assert_eq!(resolved.side, expected.target.side);
+        assert_eq!(resolved.slot, expected.target.slot);
+        let expected_side = match resolved.side.as_str() {
+            "p1" => SideId::P1,
+            "p2" => SideId::P2,
+            side => panic!("unknown reference side {side}"),
+        };
+        assert_eq!(actual.target.side, expected_side);
+        let target = result
+            .state
+            .side(actual.target.side)
+            .pokemon(actual.target.pokemon)
+            .expect("resolved target");
+        assert_eq!(
+            target.species,
+            dex.resolve_species(&resolved.species).unwrap().0
+        );
+        if let PokemonPosition::Active { slot } = target.position {
+            assert_eq!(slot.index(), resolved.slot);
+        }
+        assert_eq!(normalized_failure_stage(actual.result), expected.result);
+        assert_eq!(actual.applied_hp_loss, expected.applied_hp_loss);
+        assert_eq!(target.current_hp, expected.final_hp);
+        assert_eq!(actual.fainted, expected.fainted);
+    }
+
+    let reference_stages = reference
+        .stages
+        .iter()
+        .map(|stage| stage.stage.as_str())
+        .collect::<Vec<_>>();
+    assert!(reference_stages.starts_with(&["invulnerability", "try_hit"]));
+    assert!(reference_stages
+        .windows(2)
+        .all(|window| window[0] != window[1]));
+}
+
 fn use_move(move_slot: u8, target: ActionTarget) -> PokemonAction {
     PokemonAction::Move {
         move_slot: MoveSlotIndex::new(move_slot),
@@ -705,6 +955,759 @@ fn reference_mixed_protected_damage_count(fixture: &serde_json::Value) -> usize 
         .zip(reference["after"].as_array().unwrap())
         .filter(|(before, after)| before["hp"] != after["hp"])
         .count()
+}
+
+fn four_member_team(first: PokemonSet, second: PokemonSet) -> Vec<PokemonSet> {
+    vec![first, second.clone(), second.clone(), second]
+}
+
+fn spread_comparison_action(protect_left_foe: bool) -> JointAction {
+    JointAction::Turn {
+        p1: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Automatic),
+                use_move(0, ActionTarget::Automatic),
+            ],
+        },
+        p2: TurnChoice {
+            actions: [
+                use_move(u8::from(protect_left_foe), ActionTarget::Automatic),
+                use_move(0, ActionTarget::Automatic),
+            ],
+        },
+    }
+}
+
+fn reference_rng_reasons(case: &serde_json::Value) -> Vec<RngReason> {
+    case["rng_operations"]
+        .as_array()
+        .expect("reference RNG operations")
+        .iter()
+        .map(controlled_reason)
+        .collect()
+}
+
+fn redirection_comparison_action(redirect_move_slot: u8, selected: ActiveSlot) -> JointAction {
+    JointAction::Turn {
+        p1: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Foe(selected)),
+                use_move(0, ActionTarget::Ally(ActiveSlot::Left)),
+            ],
+        },
+        p2: TurnChoice {
+            actions: [
+                use_move(redirect_move_slot, ActionTarget::Automatic),
+                use_move(0, ActionTarget::Foe(ActiveSlot::Left)),
+            ],
+        },
+    }
+}
+
+fn step_matching_reference_outcome(
+    dex: &rotom_dex::DexData,
+    p1: &[PokemonSet],
+    p2: &[PokemonSet],
+    action: &JointAction,
+    reference_case: &serde_json::Value,
+) -> rotom_core::StepResult {
+    let expected = &reference_case["execution"]["outcomes"][0];
+    let expected_species = expected["target"]["species"].as_str().unwrap();
+    let expected_loss = u16::try_from(expected["applied_hp_loss"].as_u64().unwrap()).unwrap();
+    let expected_result = expected["result"].as_str().unwrap();
+    let move_id = p1[0].moves[0];
+    let effects = EffectRegistry::new();
+    let mechanics = Mechanics::new(dex, &effects);
+    for seed in 0..10_000 {
+        let state = selected_battle_for_teams(dex, p1, p2, seed);
+        let Ok(result) = step(&state, action, &mechanics) else {
+            continue;
+        };
+        let Some(outcome) = result
+            .diagnostics
+            .turn
+            .as_ref()
+            .unwrap()
+            .target_outcomes
+            .iter()
+            .find(|outcome| {
+                outcome.source == PokemonRef::new(SideId::P1, PokemonIndex::new(0))
+                    && outcome.move_id == move_id
+            })
+        else {
+            continue;
+        };
+        let species = result
+            .state
+            .side(outcome.target.side)
+            .pokemon(outcome.target.pokemon)
+            .unwrap()
+            .species;
+        if species == dex.resolve_species(expected_species).unwrap().0
+            && outcome.applied_hp_loss == expected_loss
+            && normalized_failure_stage(outcome.result) == expected_result
+        {
+            return result;
+        }
+    }
+    panic!("no deterministic seed matched the normalized Showdown target outcome");
+}
+
+#[test]
+fn normalized_spread_step_outcomes_match_executed_showdown() {
+    let dex = champions_reg_mc().expect("generated Dex");
+    let fixture = doubles_targeting_fixture();
+    let spread = &fixture["executed_cases"]["spread"];
+    let follow = set_with_moves(&dex, "magikarp", "pressure", &["followme"]);
+    let left = set_with_moves(&dex, "arcanine", "pressure", &["followme", "protect"]);
+    let right = set_with_moves(&dex, "blastoise", "pressure", &["followme"]);
+    let p2 = four_member_team(left, right);
+
+    for (name, move_name, protected) in [
+        ("two_valid_targets", "dazzlinggleam", false),
+        ("mixed_protected", "dazzlinggleam", true),
+        ("surf_all_adjacent", "surf", false),
+    ] {
+        let attacker = set_with_moves(&dex, "goodra", "pressure", &[move_name]);
+        let p1 = four_member_team(attacker, follow.clone());
+        let action = spread_comparison_action(protected);
+        let expected_rng = reference_rng_reasons(&spread[name]);
+        let (_, result) = controlled_step(&dex, &p1, &p2, &action, &expected_rng);
+        assert_normalized_execution(
+            &dex,
+            &spread[name],
+            &result,
+            PokemonRef::new(SideId::P1, PokemonIndex::new(0)),
+            dex.resolve_move(move_name).unwrap().0,
+            ActiveSlot::Left,
+        );
+        assert_eq!(
+            result
+                .state
+                .rng()
+                .trace()
+                .unwrap()
+                .iter()
+                .map(|entry| entry.reason.clone())
+                .collect::<Vec<_>>(),
+            expected_rng,
+            "{name} RNG reason order"
+        );
+    }
+
+    let attacker = set_with_moves(&dex, "garchomp", "pressure", &["earthquake"]);
+    let p1 = four_member_team(attacker, follow);
+    let immune_left = set_with_moves(&dex, "charizard", "pressure", &["followme", "protect"]);
+    let immune_right = set_with_moves(&dex, "arcanine", "pressure", &["followme"]);
+    let immune_p2 = four_member_team(immune_left, immune_right);
+    let action = spread_comparison_action(false);
+    let expected_rng = reference_rng_reasons(&spread["mixed_type_immune"]);
+    let (_, result) = controlled_step(&dex, &p1, &immune_p2, &action, &expected_rng);
+    assert_normalized_execution(
+        &dex,
+        &spread["mixed_type_immune"],
+        &result,
+        PokemonRef::new(SideId::P1, PokemonIndex::new(0)),
+        dex.resolve_move("earthquake").unwrap().0,
+        ActiveSlot::Left,
+    );
+}
+
+#[test]
+fn normalized_one_target_and_switched_slot_match_executed_showdown() {
+    let dex = champions_reg_mc().expect("generated Dex");
+    let fixture = doubles_targeting_fixture();
+    let spread = &fixture["executed_cases"]["spread"]["one_remaining_target"];
+    let follow = set_with_moves(&dex, "magikarp", "pressure", &["followme"]);
+    let attacker = set_with_moves(&dex, "goodra", "pressure", &["dazzlinggleam"]);
+    let p1 = four_member_team(attacker, follow.clone());
+    let left = set_with_moves(&dex, "arcanine", "pressure", &["followme"]);
+    let right = set_with_moves(&dex, "blastoise", "pressure", &["followme"]);
+    let p2 = four_member_team(left, right);
+    let one_target_action = JointAction::Turn {
+        p1: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Automatic),
+                use_move(0, ActionTarget::Automatic),
+            ],
+        },
+        p2: TurnChoice {
+            actions: [use_move(0, ActionTarget::Automatic), PokemonAction::Pass],
+        },
+    };
+    let effects = EffectRegistry::new();
+    let mechanics = Mechanics::new(&dex, &effects);
+    let mut matched = None;
+    for seed in 0..100_000 {
+        let mut builder = BattleStateBuilder::new_with_seed(
+            side_from_sets(&dex, &p1),
+            side_from_sets(&dex, &p2),
+            2,
+            seed,
+        )
+        .unwrap();
+        let selection = vec![PokemonIndex::new(0), PokemonIndex::new(1)];
+        builder
+            .select_teams(selection.clone(), selection)
+            .unwrap()
+            .process_faints(&[FaintTarget::new(SideId::P2, ActiveSlot::Right)])
+            .unwrap()
+            .enable_rng_trace();
+        let state = builder.build().unwrap();
+        let result = step(&state, &one_target_action, &mechanics).unwrap();
+        if rng_trace_matches_reference(&result, spread) {
+            matched = Some(result);
+            break;
+        }
+    }
+    let one_target = matched.expect("controlled one-target spread result");
+    assert_normalized_execution(
+        &dex,
+        spread,
+        &one_target,
+        PokemonRef::new(SideId::P1, PokemonIndex::new(0)),
+        dex.resolve_move("dazzlinggleam").unwrap().0,
+        ActiveSlot::Left,
+    );
+}
+
+#[test]
+fn normalized_switched_slot_matches_executed_showdown() {
+    let dex = champions_reg_mc().expect("generated Dex");
+    let fixture = doubles_targeting_fixture();
+    let target_resolution = &fixture["executed_cases"]["target_resolution"];
+    let attack = set_with_moves(&dex, "goodra", "pressure", &["aquatail"]);
+    let ally_attack = set_with_moves(&dex, "magikarp", "pressure", &["aquatail"]);
+    let p1 = four_member_team(attack, ally_attack);
+    let arcanine = set_with_moves(&dex, "arcanine", "pressure", &["aquatail"]);
+    let blastoise = set_with_moves(&dex, "blastoise", "pressure", &["aquatail"]);
+    let clefairy = set_with_moves(&dex, "clefairy", "pressure", &["aquatail"]);
+    let p2 = vec![arcanine, blastoise, clefairy.clone(), clefairy];
+    let switch_action = JointAction::Turn {
+        p1: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Foe(ActiveSlot::Left)),
+                use_move(0, ActionTarget::Ally(ActiveSlot::Left)),
+            ],
+        },
+        p2: TurnChoice {
+            actions: [
+                PokemonAction::Switch {
+                    pokemon: PokemonIndex::new(2),
+                },
+                use_move(0, ActionTarget::Foe(ActiveSlot::Left)),
+            ],
+        },
+    };
+    let switched = step_matching_reference_outcome(
+        &dex,
+        &p1,
+        &p2,
+        &switch_action,
+        &target_resolution["selected_slot_switched"],
+    );
+    assert_normalized_execution(
+        &dex,
+        &target_resolution["selected_slot_switched"],
+        &switched,
+        PokemonRef::new(SideId::P1, PokemonIndex::new(0)),
+        dex.resolve_move("aquatail").unwrap().0,
+        ActiveSlot::Left,
+    );
+}
+
+#[test]
+fn normalized_missing_ally_matches_executed_showdown() {
+    let dex = champions_reg_mc().expect("generated Dex");
+    let fixture = doubles_targeting_fixture();
+    let target_resolution = &fixture["executed_cases"]["target_resolution"];
+    let effects = EffectRegistry::new();
+    let mechanics = Mechanics::new(&dex, &effects);
+    let attacker = set_with_moves(&dex, "goodra", "pressure", &["dragonpulse"]);
+    let ally = set_with_moves(&dex, "arcanine", "pressure", &["aquatail"]);
+    let p1 = four_member_team(attacker, ally);
+    let foe = set_with_moves(&dex, "blastoise", "pressure", &["aquatail"]);
+    let p2 = four_member_team(foe.clone(), foe);
+    let missing_ally_action = JointAction::Turn {
+        p1: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Ally(ActiveSlot::Right)),
+                PokemonAction::Pass,
+            ],
+        },
+        p2: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Foe(ActiveSlot::Left)),
+                use_move(0, ActionTarget::Foe(ActiveSlot::Left)),
+            ],
+        },
+    };
+    let mut builder = BattleStateBuilder::new_with_seed(
+        side_from_sets(&dex, &p1),
+        side_from_sets(&dex, &p2),
+        2,
+        0x13_02_02,
+    )
+    .unwrap();
+    let selection = vec![PokemonIndex::new(0), PokemonIndex::new(1)];
+    builder
+        .select_teams(selection.clone(), selection)
+        .unwrap()
+        .process_faints(&[FaintTarget::new(SideId::P1, ActiveSlot::Right)])
+        .unwrap()
+        .enable_rng_trace();
+    let missing_ally = step(&builder.build().unwrap(), &missing_ally_action, &mechanics).unwrap();
+    let reference = reference_execution(&target_resolution["missing_ally_damage"]);
+    assert_eq!(reference.selected_target.side, "p1");
+    assert_eq!(reference.selected_target.slot, ActiveSlot::Right.index());
+    assert!(reference.resolved_targets.is_empty());
+    assert!(reference.outcomes.is_empty());
+    assert_eq!(
+        target_resolution["missing_ally_damage"]["rng_operations"]
+            .as_array()
+            .unwrap()
+            .as_slice(),
+        &[] as &[serde_json::Value]
+    );
+    assert!(!missing_ally
+        .diagnostics
+        .turn
+        .as_ref()
+        .unwrap()
+        .target_outcomes
+        .iter()
+        .any(|outcome| {
+            outcome.source == PokemonRef::new(SideId::P1, PokemonIndex::new(0))
+                && outcome.move_id == dex.resolve_move("dragonpulse").unwrap().0
+        }));
+}
+
+#[test]
+fn normalized_redirection_step_outcomes_match_executed_showdown() {
+    let dex = champions_reg_mc().expect("generated Dex");
+    let fixture = doubles_targeting_fixture();
+    let reference = &fixture["executed_cases"]["redirection"];
+    let ally = set_with_moves(&dex, "clefairy", "pressure", &["aquatail"]);
+    let target = set_with_moves(&dex, "blastoise", "pressure", &["aquatail"]);
+
+    for (name, source_species, source_ability, source_item, redirect_move, redirected) in [
+        ("follow_me", "goodra", "pressure", None, "followme", true),
+        (
+            "rage_powder",
+            "goodra",
+            "pressure",
+            None,
+            "ragepowder",
+            true,
+        ),
+        (
+            "grass_ignores_rage_powder",
+            "amoonguss",
+            "effectspore",
+            None,
+            "ragepowder",
+            false,
+        ),
+        (
+            "overcoat_ignores_rage_powder",
+            "goodra",
+            "overcoat",
+            None,
+            "ragepowder",
+            false,
+        ),
+        (
+            "safety_goggles_ignores_rage_powder",
+            "goodra",
+            "pressure",
+            Some("safetygoggles"),
+            "ragepowder",
+            false,
+        ),
+    ] {
+        let mut source = set_with_moves(&dex, source_species, source_ability, &["aquatail"]);
+        source.item = source_item.map(|item| dex.resolve_item(item).unwrap().0);
+        let p1 = four_member_team(source, ally.clone());
+        let redirector = set_with_moves(&dex, "clefairy", "pressure", &[redirect_move]);
+        let p2 = four_member_team(redirector, target.clone());
+        let action = redirection_comparison_action(0, ActiveSlot::Right);
+        let result = step_matching_reference_outcome(&dex, &p1, &p2, &action, &reference[name]);
+        assert_normalized_execution(
+            &dex,
+            &reference[name],
+            &result,
+            PokemonRef::new(SideId::P1, PokemonIndex::new(0)),
+            dex.resolve_move("aquatail").unwrap().0,
+            ActiveSlot::Right,
+        );
+        let outcome = result
+            .diagnostics
+            .turn
+            .as_ref()
+            .unwrap()
+            .target_outcomes
+            .iter()
+            .find(|outcome| outcome.source == PokemonRef::new(SideId::P1, PokemonIndex::new(0)))
+            .unwrap();
+        assert_eq!(outcome.redirected, redirected, "{name}");
+    }
+}
+
+#[test]
+fn normalized_redirector_conflicts_match_executed_showdown() {
+    let dex = champions_reg_mc().expect("generated Dex");
+    let fixture = doubles_targeting_fixture();
+    let reference = &fixture["executed_cases"]["redirection"];
+    let ally = set_with_moves(&dex, "clefairy", "pressure", &["aquatail"]);
+    let source = set_with_moves(&dex, "goodra", "pressure", &["aquatail"]);
+    let p1 = four_member_team(source, ally);
+    let redirector = set_with_moves(&dex, "clefairy", "pressure", &["followme"]);
+    let conflict_action = JointAction::Turn {
+        p1: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Foe(ActiveSlot::Left)),
+                use_move(0, ActionTarget::Ally(ActiveSlot::Left)),
+            ],
+        },
+        p2: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Automatic),
+                use_move(0, ActionTarget::Automatic),
+            ],
+        },
+    };
+    for (name, faster_right) in [
+        ("conflict_active_entry_order_wins_equal_speed", false),
+        ("conflict_faster_redirector_wins", true),
+    ] {
+        let left = redirector.clone();
+        let mut right = redirector.clone();
+        if faster_right {
+            right.stat_points.spe = 252;
+        }
+        let p2 = four_member_team(left, right);
+        let result =
+            step_matching_reference_outcome(&dex, &p1, &p2, &conflict_action, &reference[name]);
+        assert_normalized_execution(
+            &dex,
+            &reference[name],
+            &result,
+            PokemonRef::new(SideId::P1, PokemonIndex::new(0)),
+            dex.resolve_move("aquatail").unwrap().0,
+            ActiveSlot::Left,
+        );
+    }
+
+    let p2 = vec![
+        redirector.clone(),
+        redirector.clone(),
+        redirector.clone(),
+        redirector,
+    ];
+    let entry_reference = &reference["conflict_newer_left_loses_equal_speed"];
+    let expected_loss = u16::try_from(
+        entry_reference["execution"]["outcomes"][0]["applied_hp_loss"]
+            .as_u64()
+            .unwrap(),
+    )
+    .unwrap();
+    let effects = EffectRegistry::new();
+    let mechanics = Mechanics::new(&dex, &effects);
+    let mut entry_result = None;
+    for seed in 0..10_000 {
+        let state = selected_battle_for_teams(&dex, &p1, &p2, seed);
+        let mut builder = BattleStateBuilder::from_state(state).unwrap();
+        builder
+            .switch_active(SideId::P2, ActiveSlot::Left, PokemonIndex::new(2))
+            .unwrap();
+        let result = step(&builder.build().unwrap(), &conflict_action, &mechanics).unwrap();
+        let outcome = result
+            .diagnostics
+            .turn
+            .as_ref()
+            .unwrap()
+            .target_outcomes
+            .iter()
+            .find(|outcome| outcome.source == PokemonRef::new(SideId::P1, PokemonIndex::new(0)))
+            .unwrap();
+        if outcome.applied_hp_loss == expected_loss {
+            entry_result = Some(result);
+            break;
+        }
+    }
+    assert_normalized_execution(
+        &dex,
+        entry_reference,
+        &entry_result.expect("controlled active-entry conflict"),
+        PokemonRef::new(SideId::P1, PokemonIndex::new(0)),
+        dex.resolve_move("aquatail").unwrap().0,
+        ActiveSlot::Left,
+    );
+}
+
+fn protect_chain_action(user_move_slot: u8) -> JointAction {
+    JointAction::Turn {
+        p1: TurnChoice {
+            actions: [
+                use_move(user_move_slot, ActionTarget::Automatic),
+                use_move(1, ActionTarget::Automatic),
+            ],
+        },
+        p2: TurnChoice {
+            actions: [
+                use_move(1, ActionTarget::Automatic),
+                use_move(1, ActionTarget::Automatic),
+            ],
+        },
+    }
+}
+
+fn protect_result(result: &rotom_core::StepResult, protect: MoveId) -> TargetResult {
+    result
+        .diagnostics
+        .turn
+        .as_ref()
+        .unwrap()
+        .target_outcomes
+        .iter()
+        .find(|outcome| {
+            outcome.source == PokemonRef::new(SideId::P1, PokemonIndex::new(0))
+                && outcome.move_id == protect
+        })
+        .expect("Protect outcome")
+        .result
+}
+
+#[test]
+fn normalized_protect_chain_and_feint_match_executed_showdown() {
+    let dex = champions_reg_mc().expect("generated Dex");
+    let fixture = doubles_targeting_fixture();
+    let reference = &fixture["executed_cases"]["protection"];
+    let protect = dex.resolve_move("protect").unwrap().0;
+    let protect_user = set_with_moves(&dex, "goodra", "pressure", &["protect", "followme"]);
+    let support = set_with_moves(&dex, "clefairy", "pressure", &["protect", "followme"]);
+    let team = four_member_team(protect_user, support);
+    let effects = EffectRegistry::new();
+    let mechanics = Mechanics::new(&dex, &effects);
+
+    let mut matched = None;
+    for seed in 0..10_000 {
+        let initial = selected_battle_for_teams(&dex, &team, &team, seed);
+        let first = step(&initial, &protect_chain_action(0), &mechanics).unwrap();
+        let repeat_success = step(&first.state, &protect_chain_action(0), &mechanics).unwrap();
+        let repeat_failure =
+            step(&repeat_success.state, &protect_chain_action(0), &mechanics).unwrap();
+        if protect_result(&first, protect) == TargetResult::Hit
+            && protect_result(&repeat_success, protect) == TargetResult::Hit
+            && protect_result(&repeat_failure, protect) == TargetResult::Cancelled
+        {
+            matched = Some((first, repeat_success, repeat_failure));
+            break;
+        }
+    }
+    let (first, repeat_success, repeat_failure) = matched.expect("controlled Protect chain");
+    assert_eq!(reference["first"]["result"], true);
+    assert_eq!(reference["repeat_success"]["result"], true);
+    assert_eq!(reference["repeat_failure"]["result"], false);
+    assert_eq!(protect_result(&first, protect), TargetResult::Hit);
+    assert_eq!(protect_result(&repeat_success, protect), TargetResult::Hit);
+    assert_eq!(
+        protect_result(&repeat_failure, protect),
+        TargetResult::Cancelled
+    );
+    let protect_draws = repeat_failure
+        .state
+        .rng()
+        .trace()
+        .unwrap()
+        .iter()
+        .filter(|entry| entry.reason == RngReason::Protect)
+        .collect::<Vec<_>>();
+    assert_eq!(protect_draws.len(), 2);
+    assert_eq!(
+        protect_draws
+            .iter()
+            .map(|entry| match entry.operation {
+                RngOperation::Chance {
+                    numerator,
+                    denominator,
+                } => [numerator, denominator],
+                _ => panic!("Protect must use a chance draw"),
+            })
+            .collect::<Vec<_>>(),
+        serde_json::from_value::<Vec<[u64; 2]>>(reference["denominators"].clone()).unwrap()
+    );
+
+    let intervening = step(&repeat_failure.state, &protect_chain_action(1), &mechanics).unwrap();
+    let reset = step(&intervening.state, &protect_chain_action(0), &mechanics).unwrap();
+    assert_eq!(protect_result(&reset, protect), TargetResult::Hit);
+    assert_eq!(reference["reset"]["result"], true);
+    assert_eq!(
+        reset
+            .state
+            .rng()
+            .trace()
+            .unwrap()
+            .iter()
+            .filter(|entry| entry.reason == RngReason::Protect)
+            .count(),
+        2,
+        "the reset Protect succeeds without another stall draw"
+    );
+
+    let feint_user = set_with_moves(&dex, "goodra", "pressure", &["feint"]);
+    let guard = set_with_moves(&dex, "arcanine", "pressure", &["protect"]);
+    let p1 = four_member_team(feint_user, guard.clone());
+    let p2 = four_member_team(guard.clone(), guard);
+    let feint_action = JointAction::Turn {
+        p1: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Foe(ActiveSlot::Left)),
+                use_move(0, ActionTarget::Automatic),
+            ],
+        },
+        p2: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Automatic),
+                use_move(0, ActionTarget::Automatic),
+            ],
+        },
+    };
+    let feint = step_matching_reference_outcome(&dex, &p1, &p2, &feint_action, &reference["feint"]);
+    assert_normalized_execution(
+        &dex,
+        &reference["feint"],
+        &feint,
+        PokemonRef::new(SideId::P1, PokemonIndex::new(0)),
+        dex.resolve_move("feint").unwrap().0,
+        ActiveSlot::Left,
+    );
+}
+
+#[test]
+fn normalized_accuracy_faint_and_psychic_terrain_match_executed_showdown() {
+    let dex = champions_reg_mc().expect("generated Dex");
+    let fixture = doubles_targeting_fixture();
+    let reference = &fixture["executed_cases"]["per_target_execution"];
+    let attacker = set_with_moves(&dex, "charizard", "pressure", &["aircutter"]);
+    let ally = set_with_moves(&dex, "magikarp", "pressure", &["followme"]);
+    let p1 = four_member_team(attacker, ally.clone());
+    let left = set_with_moves(&dex, "arcanine", "pressure", &["followme"]);
+    let right = set_with_moves(&dex, "blastoise", "pressure", &["followme"]);
+    let p2 = four_member_team(left, right);
+    let spread_action = spread_comparison_action(false);
+
+    let accuracy = controlled_step_for_reference(
+        &dex,
+        &p1,
+        &p2,
+        &spread_action,
+        &reference["independent_accuracy"],
+        |_| {},
+    );
+    assert_normalized_execution(
+        &dex,
+        &reference["independent_accuracy"],
+        &accuracy,
+        PokemonRef::new(SideId::P1, PokemonIndex::new(0)),
+        dex.resolve_move("aircutter").unwrap().0,
+        ActiveSlot::Left,
+    );
+
+    let faint = controlled_step_for_reference(
+        &dex,
+        &p1,
+        &p2,
+        &spread_action,
+        &reference["target_level_faint"],
+        |builder| {
+            builder
+                .edit_pokemon(
+                    PokemonRef::new(SideId::P2, PokemonIndex::new(0)),
+                    |pokemon| {
+                        pokemon.current_hp = 1;
+                    },
+                )
+                .unwrap();
+        },
+    );
+    assert_normalized_execution(
+        &dex,
+        &reference["target_level_faint"],
+        &faint,
+        PokemonRef::new(SideId::P1, PokemonIndex::new(0)),
+        dex.resolve_move("aircutter").unwrap().0,
+        ActiveSlot::Left,
+    );
+    assert_eq!(
+        faint
+            .state
+            .side(SideId::P2)
+            .pokemon(PokemonIndex::new(0))
+            .unwrap()
+            .position,
+        PokemonPosition::Fainted
+    );
+}
+
+#[test]
+fn normalized_psychic_terrain_targets_match_executed_showdown() {
+    let dex = champions_reg_mc().expect("generated Dex");
+    let fixture = doubles_targeting_fixture();
+    let reference = &fixture["executed_cases"]["per_target_execution"];
+    let ally = set_with_moves(&dex, "magikarp", "pressure", &["followme"]);
+    let psychic_source = set_with_moves(&dex, "goodra", "pressure", &["dazzlinggleam"]);
+    let psychic_p1 = four_member_team(psychic_source, ally);
+    let psychic_left = set_with_moves(&dex, "arcanine", "pressure", &["followme"]);
+    let psychic_right = set_with_moves(&dex, "charizard", "pressure", &["protect"]);
+    let psychic_p2 = four_member_team(psychic_left, psychic_right);
+    let psychic_terrain = dex
+        .field_effect_ids()
+        .psychic_terrain
+        .expect("Psychic Terrain condition");
+    let effects = EffectRegistry::new();
+    let mechanics = Mechanics::new(&dex, &effects);
+    let state = selected_battle_for_teams(&dex, &psychic_p1, &psychic_p2, 0x1322);
+    let mut builder = BattleStateBuilder::from_state(state).unwrap();
+    builder
+        .edit_pokemon(
+            PokemonRef::new(SideId::P1, PokemonIndex::new(0)),
+            |pokemon| {
+                pokemon.moves[0].priority = 1;
+            },
+        )
+        .unwrap();
+    builder.edit_field(|field| {
+        field.terrain = Some(ConditionState::new(psychic_terrain, Some(5)));
+    });
+    let psychic = step(
+        &builder.build().unwrap(),
+        &spread_comparison_action(false),
+        &mechanics,
+    )
+    .unwrap();
+    assert_eq!(psychic.state.rng().trace().unwrap(), []);
+    assert_normalized_execution(
+        &dex,
+        &reference["psychic_terrain_mixed_targets"],
+        &psychic,
+        PokemonRef::new(SideId::P1, PokemonIndex::new(0)),
+        dex.resolve_move("dazzlinggleam").unwrap().0,
+        ActiveSlot::Left,
+    );
+    let outcomes = psychic
+        .diagnostics
+        .turn
+        .unwrap()
+        .target_outcomes
+        .into_iter()
+        .filter(|outcome| outcome.source == PokemonRef::new(SideId::P1, PokemonIndex::new(0)))
+        .map(|outcome| outcome.result)
+        .collect::<Vec<_>>();
+    assert_eq!(
+        outcomes,
+        [TargetResult::PriorityBlocked, TargetResult::Protected]
+    );
 }
 
 #[test]
@@ -927,6 +1930,8 @@ fn competing_redirectors_use_speed_then_active_entry_order_and_replay_determinis
                 .unwrap();
         }
         let state = builder.build().unwrap();
+        let restored = round_trip_state(&state);
+        assert_eq!(restored, state);
         let first = step(
             &state,
             &attack,
@@ -934,7 +1939,7 @@ fn competing_redirectors_use_speed_then_active_entry_order_and_replay_determinis
         )
         .unwrap();
         let replay = step(
-            &state,
+            &restored,
             &attack,
             &Mechanics::new(&dex, &EffectRegistry::new()),
         )
@@ -977,8 +1982,7 @@ fn competing_redirectors_use_speed_then_active_entry_order_and_replay_determinis
             .unwrap();
     }
     let switched_state = builder.build().unwrap();
-    let serialized = serde_json::to_string(&switched_state).unwrap();
-    let resumed: BattleState = serde_json::from_str(&serialized).unwrap();
+    let resumed = round_trip_state(&switched_state);
     let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
     let switched = step(&switched_state, &attack, &mechanics).unwrap();
     assert_eq!(switched, step(&resumed, &attack, &mechanics).unwrap());

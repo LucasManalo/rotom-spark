@@ -36,6 +36,19 @@ gameplay authority. Kernel position operations allocate an order when a
 Pokémon becomes active and clear it when that position is vacated. This makes
 equal-priority, equal-Speed redirect event ordering deterministic across
 cloning and serialization without treating move activation order as a proxy.
+Stable-state validation requires exactly one unique order below the next-order
+counter for every occupied slot and no order for an empty slot. Fainting clears
+the prior order; switches and replacements allocate a fresh one. Counter
+overflow rejects the kernel operation and the enclosing public transition
+atomically.
+
+Snapshots predating these authoritative fields are deliberately rejected by
+Serde rather than migrated. The historical active-entry ordering cannot be
+recovered reliably, so fabricating values would change mechanics. Supported
+snapshots round-trip exactly at preview, initial selection, ordinary selection,
+post-switch, post-faint, post-replacement, competing-redirector, and terminal
+boundaries, and original/restored states produce identical continuation state,
+diagnostics, and RNG.
 
 ## Approved canonical API direction
 
@@ -310,7 +323,7 @@ on failure and do not replace the source-backed fixture suites.
 | --- | --- |
 | Determinism and pure API | `successful_public_turns_are_pure_deterministic_and_stable` and `replay_and_serde_resume_are_deterministic_and_leave_input_unchanged` in `transition_step.rs` |
 | Error atomicity | Invalid phase/action and unsupported-mechanic checks in `transition_step.rs`; callback rollback in `event_effects.rs` |
-| Replay after serialization | `replay_and_serde_resume_are_deterministic_and_leave_input_unchanged` |
+| Replay after serialization | `replay_and_serde_resume_are_deterministic_and_leave_input_unchanged` and `authoritative_state_round_trips_and_resumes_across_every_stable_phase` |
 | State branch isolation | Clone-isolation coverage in `battle_state.rs` plus the transition property test |
 | RNG branch independence and reproducibility | `differently_seeded_branches_are_independent_and_reproducible` |
 | Diagnostic isolation | `rng_tracing_does_not_change_transition_outcomes_or_draws` |
@@ -319,6 +332,7 @@ on failure and do not replace the source-backed fixture suites.
 | Sequential-path parity | `canonical_turn_matches_internal_queue_then_resolve_sequence` compares `step` with the crate-internal legacy sequence |
 | Supported mechanics parity | `state_transition_baseline.rs`, `common_conditions.rs`, `event_effects.rs`, and `rotom-dex/tests/combat.rs` preserve damage, condition, event, switch, faint, and RNG behavior |
 | Pinned Showdown parity | CI checks basic-damage, event-order, and common-condition fixtures after building the pinned Showdown commit |
+| Active-entry order persistence | `serialized_effect_orders_reject_corruption_and_overflow_atomically` plus the competing-redirector round trip in `rotom-dex/tests/combat.rs` |
 | Complete supported battle | `supported_battle_runs_from_preview_through_replacements_to_terminal` runs preview, ordinary turn, forced replacements, a second turn, and terminal settlement only through `step` |
 
 The PR F property cases intentionally target representation and transaction
