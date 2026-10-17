@@ -251,9 +251,33 @@ function protectionCases() {
 	use(feintBattle, 'protect', feintBattle.p2.active[0], feintBattle.p2.active[0]);
 	controlledDamage(feintBattle);
 	const feint = use(feintBattle, 'feint', feintBattle.p1.active[0], feintBattle.p2.active[0]);
+
+	const immuneBattle = battleWith([set('Goodra', ['feint'], 'pressure'), filler()], [
+		set('Gengar', ['protect'], 'pressure'), filler(),
+	]);
+	use(immuneBattle, 'protect', immuneBattle.p2.active[0], immuneBattle.p2.active[0]);
+	const immuneDraws = controlledDamage(immuneBattle);
+	const feintImmune = use(
+		immuneBattle, 'feint', immuneBattle.p1.active[0], immuneBattle.p2.active[0]
+	);
+
+	const missBattle = battleWith([set('Goodra', ['feint'], 'pressure'), filler()], [
+		set('Clefairy', ['protect'], 'pressure'), filler(),
+	]);
+	use(missBattle, 'protect', missBattle.p2.active[0], missBattle.p2.active[0]);
+	missBattle.p1.active[0].boosts.accuracy = -6;
+	missBattle.p2.active[0].boosts.evasion = 6;
+	const missDraws = [];
+	missBattle.randomChance = (numerator, denominator) => {
+		missDraws.push({reason: 'accuracy', operation: 'chance', numerator, denominator, result: false});
+		return false;
+	};
+	const feintMiss = use(missBattle, 'feint', missBattle.p1.active[0], missBattle.p2.active[0]);
 	return {
 		first, repeat_success: repeatSuccess, repeat_failure: repeatFailure, reset,
 		denominators, rng_operations: rngOperations, feint,
+		feint_immune: {...feintImmune, rng_operations: immuneDraws},
+		feint_miss: {...feintMiss, rng_operations: missDraws},
 	};
 }
 

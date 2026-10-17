@@ -86,6 +86,9 @@ ordering cases, Protect success/repeat/reset, Feint, independent accuracy,
 target-level fainting, and mixed Psychic Terrain/Protect results. Selected-foe
 faint retargeting and redirector invalidation after faint/switch also have
 executed Showdown fixtures and focused Rotom transition regressions.
+Feint's protection-breaking mutation is a distinct post-accuracy stage:
+executed Showdown and Rotom regressions verify that type immunity or an
+accuracy miss preserves Protect, while a surviving hit removes it.
 
 Equivalent outcomes are selected rather than equating raw seeds. Showdown's
 adapter controls accuracy, critical-hit, damage-randomizer, and Protect draws

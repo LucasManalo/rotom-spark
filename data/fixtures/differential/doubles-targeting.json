@@ -3722,6 +3722,384 @@
           "|-damage|p2a: Arcanine|148/165",
           "|-damage|p2a: Arcanine|89/100"
         ]
+      },
+      "feint_immune": {
+        "result": false,
+        "before": [
+          {
+            "side": "p1",
+            "slot": 0,
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false,
+            "volatiles": []
+          },
+          {
+            "side": "p1",
+            "slot": 1,
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false,
+            "volatiles": []
+          },
+          {
+            "side": "p2",
+            "slot": 0,
+            "ident": "p2: Gengar",
+            "species": "gengar",
+            "hp": 135,
+            "max_hp": 135,
+            "fainted": false,
+            "volatiles": [
+              "protect",
+              "stall"
+            ]
+          },
+          {
+            "side": "p2",
+            "slot": 1,
+            "ident": "p2: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false,
+            "volatiles": []
+          }
+        ],
+        "after": [
+          {
+            "side": "p1",
+            "slot": 0,
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false,
+            "volatiles": []
+          },
+          {
+            "side": "p1",
+            "slot": 1,
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false,
+            "volatiles": []
+          },
+          {
+            "side": "p2",
+            "slot": 0,
+            "ident": "p2: Gengar",
+            "species": "gengar",
+            "hp": 135,
+            "max_hp": 135,
+            "fainted": false,
+            "volatiles": [
+              "protect",
+              "stall"
+            ]
+          },
+          {
+            "side": "p2",
+            "slot": 1,
+            "ident": "p2: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false,
+            "volatiles": []
+          }
+        ],
+        "execution": {
+          "move": "feint",
+          "source": {
+            "side": "p1",
+            "slot": 0,
+            "species": "goodra"
+          },
+          "selected_target": {
+            "side": "p2",
+            "slot": 0,
+            "species": "gengar"
+          },
+          "resolved_targets": [
+            {
+              "side": "p2",
+              "slot": 0,
+              "species": "gengar"
+            }
+          ],
+          "stages": [
+            {
+              "stage": "invulnerability",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "gengar"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "try_hit",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "gengar"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "type_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "gengar"
+                }
+              ],
+              "results": [
+                false
+              ]
+            }
+          ],
+          "outcomes": [
+            {
+              "target": {
+                "side": "p2",
+                "slot": 0,
+                "species": "gengar"
+              },
+              "result": "type_immunity",
+              "applied_hp_loss": 0,
+              "final_hp": 135,
+              "fainted": false
+            }
+          ]
+        },
+        "log": [
+          "|move|p1a: Goodra|Feint|p2a: Gengar",
+          "|-immune|p2a: Gengar"
+        ],
+        "rng_operations": []
+      },
+      "feint_miss": {
+        "result": false,
+        "before": [
+          {
+            "side": "p1",
+            "slot": 0,
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false,
+            "volatiles": []
+          },
+          {
+            "side": "p1",
+            "slot": 1,
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false,
+            "volatiles": []
+          },
+          {
+            "side": "p2",
+            "slot": 0,
+            "ident": "p2: Clefairy",
+            "species": "clefairy",
+            "hp": 145,
+            "max_hp": 145,
+            "fainted": false,
+            "volatiles": [
+              "protect",
+              "stall"
+            ]
+          },
+          {
+            "side": "p2",
+            "slot": 1,
+            "ident": "p2: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false,
+            "volatiles": []
+          }
+        ],
+        "after": [
+          {
+            "side": "p1",
+            "slot": 0,
+            "ident": "p1: Goodra",
+            "species": "goodra",
+            "hp": 165,
+            "max_hp": 165,
+            "fainted": false,
+            "volatiles": []
+          },
+          {
+            "side": "p1",
+            "slot": 1,
+            "ident": "p1: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false,
+            "volatiles": []
+          },
+          {
+            "side": "p2",
+            "slot": 0,
+            "ident": "p2: Clefairy",
+            "species": "clefairy",
+            "hp": 145,
+            "max_hp": 145,
+            "fainted": false,
+            "volatiles": [
+              "protect",
+              "stall"
+            ]
+          },
+          {
+            "side": "p2",
+            "slot": 1,
+            "ident": "p2: Magikarp",
+            "species": "magikarp",
+            "hp": 95,
+            "max_hp": 95,
+            "fainted": false,
+            "volatiles": []
+          }
+        ],
+        "execution": {
+          "move": "feint",
+          "source": {
+            "side": "p1",
+            "slot": 0,
+            "species": "goodra"
+          },
+          "selected_target": {
+            "side": "p2",
+            "slot": 0,
+            "species": "clefairy"
+          },
+          "resolved_targets": [
+            {
+              "side": "p2",
+              "slot": 0,
+              "species": "clefairy"
+            }
+          ],
+          "stages": [
+            {
+              "stage": "invulnerability",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "try_hit",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "type_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "move_immunity",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                true
+              ]
+            },
+            {
+              "stage": "accuracy",
+              "targets": [
+                {
+                  "side": "p2",
+                  "slot": 0,
+                  "species": "clefairy"
+                }
+              ],
+              "results": [
+                false
+              ]
+            }
+          ],
+          "outcomes": [
+            {
+              "target": {
+                "side": "p2",
+                "slot": 0,
+                "species": "clefairy"
+              },
+              "result": "accuracy",
+              "applied_hp_loss": 0,
+              "final_hp": 145,
+              "fainted": false
+            }
+          ]
+        },
+        "log": [
+          "|move|p1a: Goodra|Feint|p2a: Clefairy|[miss]",
+          "|-miss|p1a: Goodra|p2a: Clefairy"
+        ],
+        "rng_operations": [
+          {
+            "reason": "accuracy",
+            "operation": "chance",
+            "numerator": 33,
+            "denominator": 100,
+            "result": false
+          }
+        ]
       }
     },
     "redirection": {

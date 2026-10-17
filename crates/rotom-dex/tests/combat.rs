@@ -961,6 +961,78 @@ fn four_member_team(first: PokemonSet, second: PokemonSet) -> Vec<PokemonSet> {
     vec![first, second.clone(), second.clone(), second]
 }
 
+fn protected_feint_state(
+    dex: &rotom_dex::DexData,
+    target_species: &str,
+    seed: u64,
+    accuracy_stage: i8,
+    evasion_stage: i8,
+) -> BattleState {
+    let attacker = set_with_moves(dex, "goodra", "pressure", &["feint", "aquatail"]);
+    let ally = set_with_moves(dex, "magikarp", "pressure", &["aquatail"]);
+    let target = set_with_moves(dex, target_species, "pressure", &["aquatail"]);
+    let other = set_with_moves(dex, "blastoise", "pressure", &["aquatail"]);
+    let state = selected_battle_for_teams(
+        dex,
+        &four_member_team(attacker, ally),
+        &four_member_team(target, other),
+        seed,
+    );
+    let protect = dex.field_effect_ids().protect.expect("Protect condition");
+    let mut builder = BattleStateBuilder::from_state(state).unwrap();
+    builder
+        .edit_pokemon(
+            PokemonRef::new(SideId::P1, PokemonIndex::new(0)),
+            |pokemon| pokemon.stat_stages.accuracy = accuracy_stage,
+        )
+        .unwrap();
+    builder
+        .edit_pokemon(
+            PokemonRef::new(SideId::P2, PokemonIndex::new(0)),
+            |pokemon| {
+                pokemon.stat_stages.evasion = evasion_stage;
+                pokemon
+                    .volatiles
+                    .push(ConditionState::new(protect, Some(2)));
+            },
+        )
+        .unwrap();
+    builder.build().unwrap()
+}
+
+fn feint_turn() -> JointAction {
+    JointAction::Turn {
+        p1: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Foe(ActiveSlot::Left)),
+                use_move(0, ActionTarget::Foe(ActiveSlot::Right)),
+            ],
+        },
+        p2: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Foe(ActiveSlot::Left)),
+                use_move(0, ActionTarget::Foe(ActiveSlot::Right)),
+            ],
+        },
+    }
+}
+
+fn feint_outcome(result: &rotom_core::StepResult, feint: MoveId) -> TargetResult {
+    result
+        .diagnostics
+        .turn
+        .as_ref()
+        .unwrap()
+        .target_outcomes
+        .iter()
+        .find(|outcome| {
+            outcome.source == PokemonRef::new(SideId::P1, PokemonIndex::new(0))
+                && outcome.move_id == feint
+        })
+        .expect("Feint target outcome")
+        .result
+}
+
 fn spread_comparison_action(protect_left_foe: bool) -> JointAction {
     JointAction::Turn {
         p1: TurnChoice {
@@ -2107,6 +2179,73 @@ fn redirection_ignores_a_redirector_that_fainted_before_the_later_attack() {
     assert_eq!(attacks[0].target.pokemon, PokemonIndex::new(0));
     assert!(!attacks[1].redirected);
     assert_eq!(attacks[1].target.pokemon, PokemonIndex::new(1));
+}
+
+#[test]
+fn feint_breaks_protect_only_after_immunity_and_accuracy() {
+    let dex = champions_reg_mc().expect("generated Dex");
+    let fixture = doubles_targeting_fixture();
+    let reference = &fixture["executed_cases"]["protection"];
+    let effects = EffectRegistry::new();
+    let mechanics = Mechanics::new(&dex, &effects);
+    let feint = dex.resolve_move("feint").expect("Feint").0;
+    let protect = dex.field_effect_ids().protect.expect("Protect condition");
+    let target_kept_protect = |result: &rotom_core::StepResult| {
+        result
+            .state
+            .side(SideId::P2)
+            .pokemon(PokemonIndex::new(0))
+            .unwrap()
+            .has_volatile(protect)
+    };
+    for (case, expected) in [
+        ("feint_immune", "type_immunity"),
+        ("feint_miss", "accuracy"),
+    ] {
+        let execution = reference_execution(&reference[case]);
+        assert_eq!(execution.outcomes[0].result, expected);
+        assert!(reference[case]["after"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|pokemon| pokemon["side"] == "p2" && pokemon["slot"] == 0)
+            .unwrap()["volatiles"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|volatile| volatile == "protect"));
+    }
+
+    let immune = step(
+        &protected_feint_state(&dex, "gengar", 0x13_22_01, 0, 0),
+        &feint_turn(),
+        &mechanics,
+    )
+    .unwrap();
+    assert_eq!(feint_outcome(&immune, feint), TargetResult::Immune);
+    assert!(target_kept_protect(&immune));
+
+    let missed = (0..1_000)
+        .find_map(|seed| {
+            let result = step(
+                &protected_feint_state(&dex, "clefairy", seed, -6, 6),
+                &feint_turn(),
+                &mechanics,
+            )
+            .unwrap();
+            (feint_outcome(&result, feint) == TargetResult::Missed).then_some(result)
+        })
+        .expect("a deterministic Feint accuracy miss");
+    assert!(target_kept_protect(&missed));
+
+    let hit = step(
+        &protected_feint_state(&dex, "clefairy", 0x13_22_02, 0, 0),
+        &feint_turn(),
+        &mechanics,
+    )
+    .unwrap();
+    assert_eq!(feint_outcome(&hit, feint), TargetResult::Hit);
+    assert!(!target_kept_protect(&hit));
 }
 
 #[test]

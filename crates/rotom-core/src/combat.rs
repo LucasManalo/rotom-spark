@@ -744,7 +744,7 @@ impl BattleState {
             let protected = if cancelled || priority_blocked {
                 false
             } else {
-                self.target_is_protected(data, field_effects, move_context, target)?
+                self.target_is_protected(data, field_effects, move_context, target)
             };
             if cancelled || priority_blocked || protected {
                 outcomes[index] = Some(TargetOutcome {
@@ -815,6 +815,15 @@ impl BattleState {
                 continue;
             }
             eligible.push((index, target_context));
+        }
+
+        for (_, target_context) in &eligible {
+            self.break_target_protection_if_needed(
+                data,
+                field_effects,
+                move_context,
+                target_context.target,
+            )?;
         }
 
         let mut any_hit = false;
@@ -1240,27 +1249,42 @@ impl BattleState {
     }
 
     fn target_is_protected<D: CombatData>(
-        &mut self,
+        &self,
         data: &D,
         ids: &FieldEffectIds,
         context: &MoveExecutionContext,
         target: PokemonRef,
-    ) -> Result<bool, BattleError> {
+    ) -> bool {
         let Some(protect) = ids.protect else {
-            return Ok(false);
+            return false;
         };
         let guarded = self
             .side(target.side)
             .pokemon(target.pokemon)
             .is_some_and(|pokemon| pokemon.has_volatile(protect));
         if !guarded {
-            return Ok(false);
+            return false;
         }
         if data.move_breaks_protect(context.move_id) {
-            StateKernel::new(self).remove_volatile(target, protect)?;
-            return Ok(false);
+            return false;
         }
-        Ok(data.move_is_protectable(context.move_id))
+        data.move_is_protectable(context.move_id)
+    }
+
+    fn break_target_protection_if_needed<D: CombatData>(
+        &mut self,
+        data: &D,
+        ids: &FieldEffectIds,
+        context: &MoveExecutionContext,
+        target: PokemonRef,
+    ) -> Result<(), BattleError> {
+        if !data.move_breaks_protect(context.move_id) {
+            return Ok(());
+        }
+        if let Some(protect) = ids.protect {
+            StateKernel::new(self).remove_volatile(target, protect)?;
+        }
+        Ok(())
     }
 
     fn target_is_type_immune<D: CombatData>(
