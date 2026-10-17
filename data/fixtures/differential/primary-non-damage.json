@@ -1,0 +1,2265 @@
+{
+  "showdown_commit": "b79ce06d06b8f0dc8de8bb348bc9cab5d931553f",
+  "format": "gen9championsvgc2026regmc",
+  "methodology": {
+    "source": "pinned Battle.actions.useMove with resolved Champions data",
+    "move_execution": true,
+    "full_transition_comparison": false,
+    "rng_comparison": "fixed Showdown seeds with explicit hit/miss controls where named"
+  },
+  "cases": [
+    {
+      "name": "will-o-wisp-matrix",
+      "move": "willowisp",
+      "expected": {
+        "success_status": "brn",
+        "fire_immune": true,
+        "already_statused": "par",
+        "terrain_prevented": true,
+        "missed": true
+      }
+    },
+    {
+      "name": "thunder-wave-immunities",
+      "move": "thunderwave",
+      "expected": {
+        "electric_immune": true,
+        "ground_immune": true
+      }
+    },
+    {
+      "name": "hypnosis-sleep-rng",
+      "move": "hypnosis",
+      "expected": {
+        "status": "slp",
+        "sleep_turns": null,
+        "electric_terrain_prevented": true
+      }
+    },
+    {
+      "name": "swords-dance-limits",
+      "move": "swordsdance",
+      "expected": {
+        "from_0": 2,
+        "from_5": 6,
+        "from_6": 6
+      }
+    },
+    {
+      "name": "growl-limits",
+      "move": "growl",
+      "expected": {
+        "from_0": -1,
+        "from_-5": -6,
+        "from_-6": -6
+      }
+    },
+    {
+      "name": "noble-roar-combined",
+      "move": "nobleroar",
+      "expected": {
+        "atk": -1,
+        "spa": -1
+      }
+    },
+    {
+      "name": "recover-rounding",
+      "move": "recover",
+      "expected": {
+        "normal_healed": 83,
+        "odd_max_hp_healed": 78,
+        "full_hp_failed": true
+      }
+    },
+    {
+      "name": "sunny-day-reapplication",
+      "move": "sunnyday",
+      "expected": {
+        "initial_duration": 5,
+        "repeated_failed": true,
+        "replacement": "raindance"
+      }
+    },
+    {
+      "name": "electric-terrain-reapplication",
+      "move": "electricterrain",
+      "expected": {
+        "initial_duration": 5,
+        "repeated_failed": true
+      }
+    },
+    {
+      "name": "reflect-reapplication",
+      "move": "reflect",
+      "expected": {
+        "initial_duration": 5,
+        "repeated_failed": true
+      }
+    },
+    {
+      "name": "light-screen-reapplication",
+      "move": "lightscreen",
+      "expected": {
+        "initial_duration": 5,
+        "repeated_failed": true
+      }
+    },
+    {
+      "name": "tailwind-reapplication",
+      "move": "tailwind",
+      "expected": {
+        "initial_duration": 4,
+        "repeated_failed": true
+      }
+    },
+    {
+      "name": "trick-room-toggle",
+      "move": "trickroom",
+      "expected": {
+        "initial_active": true,
+        "repeated_active": false
+      }
+    },
+    {
+      "name": "magnet-rise-reapplication",
+      "move": "magnetrise",
+      "expected": {
+        "initial_duration": 5,
+        "repeated_failed": true,
+        "gravity_blocked": true
+      }
+    }
+  ],
+  "observations": {
+    "will_o_wisp": {
+      "success": {
+        "result": true,
+        "state": {
+          "target": {
+            "hp": 154,
+            "max_hp": 154,
+            "status": "brn",
+            "sleep_turns": null,
+            "boosts": {
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {}
+          },
+          "source": {
+            "hp": 165,
+            "max_hp": 165,
+            "status": null,
+            "boosts": {
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {}
+          },
+          "field": {
+            "weather": null,
+            "weather_duration": null,
+            "terrain": null,
+            "terrain_duration": null,
+            "pseudo_weather": {}
+          },
+          "sides": [
+            {
+              "id": "p1",
+              "conditions": {}
+            },
+            {
+              "id": "p2",
+              "conditions": {}
+            }
+          ]
+        },
+        "log": [
+          "|move|p1a: Goodra|Will-O-Wisp|p2a: Blastoise",
+          "|-status|p2a: Blastoise|brn"
+        ]
+      },
+      "fire_immune": {
+        "result": false,
+        "state": {
+          "target": {
+            "hp": 153,
+            "max_hp": 153,
+            "status": null,
+            "sleep_turns": null,
+            "boosts": {
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {}
+          },
+          "source": {
+            "hp": 165,
+            "max_hp": 165,
+            "status": null,
+            "boosts": {
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {}
+          },
+          "field": {
+            "weather": null,
+            "weather_duration": null,
+            "terrain": null,
+            "terrain_duration": null,
+            "pseudo_weather": {}
+          },
+          "sides": [
+            {
+              "id": "p1",
+              "conditions": {}
+            },
+            {
+              "id": "p2",
+              "conditions": {}
+            }
+          ]
+        },
+        "log": [
+          "|move|p1a: Goodra|Will-O-Wisp|p2a: Charizard",
+          "|-immune|p2a: Charizard"
+        ]
+      },
+      "already_statused": {
+        "result": false,
+        "state": {
+          "target": {
+            "hp": 154,
+            "max_hp": 154,
+            "status": "par",
+            "sleep_turns": null,
+            "boosts": {
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {}
+          },
+          "source": {
+            "hp": 165,
+            "max_hp": 165,
+            "status": null,
+            "boosts": {
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {}
+          },
+          "field": {
+            "weather": null,
+            "weather_duration": null,
+            "terrain": null,
+            "terrain_duration": null,
+            "pseudo_weather": {}
+          },
+          "sides": [
+            {
+              "id": "p1",
+              "conditions": {}
+            },
+            {
+              "id": "p2",
+              "conditions": {}
+            }
+          ]
+        },
+        "log": [
+          "|move|p1a: Goodra|Will-O-Wisp||[still]",
+          "|-fail|p1a: Goodra"
+        ]
+      },
+      "terrain_prevented": {
+        "result": false,
+        "state": {
+          "target": {
+            "hp": 154,
+            "max_hp": 154,
+            "status": null,
+            "sleep_turns": null,
+            "boosts": {
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {}
+          },
+          "source": {
+            "hp": 165,
+            "max_hp": 165,
+            "status": null,
+            "boosts": {
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {}
+          },
+          "field": {
+            "weather": null,
+            "weather_duration": null,
+            "terrain": "mistyterrain",
+            "terrain_duration": 5,
+            "pseudo_weather": {}
+          },
+          "sides": [
+            {
+              "id": "p1",
+              "conditions": {}
+            },
+            {
+              "id": "p2",
+              "conditions": {}
+            }
+          ]
+        },
+        "log": [
+          "|move|p1a: Goodra|Will-O-Wisp|p2a: Blastoise"
+        ]
+      },
+      "missed": {
+        "result": false,
+        "state": {
+          "target": {
+            "hp": 154,
+            "max_hp": 154,
+            "status": null,
+            "sleep_turns": null,
+            "boosts": {
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {}
+          },
+          "source": {
+            "hp": 165,
+            "max_hp": 165,
+            "status": null,
+            "boosts": {
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {}
+          },
+          "field": {
+            "weather": null,
+            "weather_duration": null,
+            "terrain": null,
+            "terrain_duration": null,
+            "pseudo_weather": {}
+          },
+          "sides": [
+            {
+              "id": "p1",
+              "conditions": {}
+            },
+            {
+              "id": "p2",
+              "conditions": {}
+            }
+          ]
+        },
+        "log": [
+          "|move|p1a: Goodra|Will-O-Wisp|p2a: Blastoise|[miss]",
+          "|-miss|p1a: Goodra|p2a: Blastoise"
+        ]
+      }
+    },
+    "thunder_wave": {
+      "electric_immune": {
+        "result": false,
+        "state": {
+          "target": {
+            "hp": 110,
+            "max_hp": 110,
+            "status": null,
+            "sleep_turns": null,
+            "boosts": {
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {}
+          },
+          "source": {
+            "hp": 165,
+            "max_hp": 165,
+            "status": null,
+            "boosts": {
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {}
+          },
+          "field": {
+            "weather": null,
+            "weather_duration": null,
+            "terrain": null,
+            "terrain_duration": null,
+            "pseudo_weather": {}
+          },
+          "sides": [
+            {
+              "id": "p1",
+              "conditions": {}
+            },
+            {
+              "id": "p2",
+              "conditions": {}
+            }
+          ]
+        },
+        "log": [
+          "|move|p1a: Goodra|Thunder Wave|p2a: Pikachu",
+          "|-immune|p2a: Pikachu"
+        ]
+      },
+      "ground_immune": {
+        "result": false,
+        "state": {
+          "target": {
+            "hp": 183,
+            "max_hp": 183,
+            "status": null,
+            "sleep_turns": null,
+            "boosts": {
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {}
+          },
+          "source": {
+            "hp": 165,
+            "max_hp": 165,
+            "status": null,
+            "boosts": {
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {}
+          },
+          "field": {
+            "weather": null,
+            "weather_duration": null,
+            "terrain": null,
+            "terrain_duration": null,
+            "pseudo_weather": {}
+          },
+          "sides": [
+            {
+              "id": "p1",
+              "conditions": {}
+            },
+            {
+              "id": "p2",
+              "conditions": {}
+            }
+          ]
+        },
+        "log": [
+          "|move|p1a: Goodra|Thunder Wave|p2a: Garchomp",
+          "|-immune|p2a: Garchomp"
+        ]
+      }
+    },
+    "sleep": {
+      "hypnosis": {
+        "result": true,
+        "state": {
+          "target": {
+            "hp": 154,
+            "max_hp": 154,
+            "status": "slp",
+            "sleep_turns": null,
+            "boosts": {
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {}
+          },
+          "source": {
+            "hp": 165,
+            "max_hp": 165,
+            "status": null,
+            "boosts": {
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {}
+          },
+          "field": {
+            "weather": null,
+            "weather_duration": null,
+            "terrain": null,
+            "terrain_duration": null,
+            "pseudo_weather": {}
+          },
+          "sides": [
+            {
+              "id": "p1",
+              "conditions": {}
+            },
+            {
+              "id": "p2",
+              "conditions": {}
+            }
+          ]
+        },
+        "log": [
+          "|move|p1a: Goodra|Hypnosis|p2a: Blastoise",
+          "|-status|p2a: Blastoise|slp|[from] move: Hypnosis"
+        ]
+      },
+      "electric_terrain_prevented": {
+        "result": false,
+        "state": {
+          "target": {
+            "hp": 154,
+            "max_hp": 154,
+            "status": null,
+            "sleep_turns": null,
+            "boosts": {
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {}
+          },
+          "source": {
+            "hp": 165,
+            "max_hp": 165,
+            "status": null,
+            "boosts": {
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {}
+          },
+          "field": {
+            "weather": null,
+            "weather_duration": null,
+            "terrain": "electricterrain",
+            "terrain_duration": 5,
+            "pseudo_weather": {}
+          },
+          "sides": [
+            {
+              "id": "p1",
+              "conditions": {}
+            },
+            {
+              "id": "p2",
+              "conditions": {}
+            }
+          ]
+        },
+        "log": [
+          "|move|p1a: Goodra|Hypnosis|p2a: Blastoise"
+        ]
+      }
+    },
+    "stat_stages": {
+      "swords_dance": {
+        "from_0": {
+          "result": true,
+          "state": {
+            "target": {
+              "hp": 154,
+              "max_hp": 154,
+              "status": null,
+              "sleep_turns": null,
+              "boosts": {
+                "atk": 0,
+                "def": 0,
+                "spa": 0,
+                "spd": 0,
+                "spe": 0,
+                "accuracy": 0,
+                "evasion": 0
+              },
+              "volatiles": {}
+            },
+            "source": {
+              "hp": 165,
+              "max_hp": 165,
+              "status": null,
+              "boosts": {
+                "atk": 2,
+                "def": 0,
+                "spa": 0,
+                "spd": 0,
+                "spe": 0,
+                "accuracy": 0,
+                "evasion": 0
+              },
+              "volatiles": {}
+            },
+            "field": {
+              "weather": null,
+              "weather_duration": null,
+              "terrain": null,
+              "terrain_duration": null,
+              "pseudo_weather": {}
+            },
+            "sides": [
+              {
+                "id": "p1",
+                "conditions": {}
+              },
+              {
+                "id": "p2",
+                "conditions": {}
+              }
+            ]
+          },
+          "log": [
+            "|move|p1a: Goodra|Swords Dance|p1a: Goodra"
+          ]
+        },
+        "from_5": {
+          "result": true,
+          "state": {
+            "target": {
+              "hp": 154,
+              "max_hp": 154,
+              "status": null,
+              "sleep_turns": null,
+              "boosts": {
+                "atk": 0,
+                "def": 0,
+                "spa": 0,
+                "spd": 0,
+                "spe": 0,
+                "accuracy": 0,
+                "evasion": 0
+              },
+              "volatiles": {}
+            },
+            "source": {
+              "hp": 165,
+              "max_hp": 165,
+              "status": null,
+              "boosts": {
+                "atk": 6,
+                "def": 0,
+                "spa": 0,
+                "spd": 0,
+                "spe": 0,
+                "accuracy": 0,
+                "evasion": 0
+              },
+              "volatiles": {}
+            },
+            "field": {
+              "weather": null,
+              "weather_duration": null,
+              "terrain": null,
+              "terrain_duration": null,
+              "pseudo_weather": {}
+            },
+            "sides": [
+              {
+                "id": "p1",
+                "conditions": {}
+              },
+              {
+                "id": "p2",
+                "conditions": {}
+              }
+            ]
+          },
+          "log": [
+            "|move|p1a: Goodra|Swords Dance|p1a: Goodra"
+          ]
+        },
+        "from_6": {
+          "result": false,
+          "state": {
+            "target": {
+              "hp": 154,
+              "max_hp": 154,
+              "status": null,
+              "sleep_turns": null,
+              "boosts": {
+                "atk": 0,
+                "def": 0,
+                "spa": 0,
+                "spd": 0,
+                "spe": 0,
+                "accuracy": 0,
+                "evasion": 0
+              },
+              "volatiles": {}
+            },
+            "source": {
+              "hp": 165,
+              "max_hp": 165,
+              "status": null,
+              "boosts": {
+                "atk": 6,
+                "def": 0,
+                "spa": 0,
+                "spd": 0,
+                "spe": 0,
+                "accuracy": 0,
+                "evasion": 0
+              },
+              "volatiles": {}
+            },
+            "field": {
+              "weather": null,
+              "weather_duration": null,
+              "terrain": null,
+              "terrain_duration": null,
+              "pseudo_weather": {}
+            },
+            "sides": [
+              {
+                "id": "p1",
+                "conditions": {}
+              },
+              {
+                "id": "p2",
+                "conditions": {}
+              }
+            ]
+          },
+          "log": [
+            "|move|p1a: Goodra|Swords Dance|p1a: Goodra"
+          ]
+        }
+      },
+      "growl": {
+        "from_0": {
+          "result": true,
+          "state": {
+            "target": {
+              "hp": 154,
+              "max_hp": 154,
+              "status": null,
+              "sleep_turns": null,
+              "boosts": {
+                "atk": -1,
+                "def": 0,
+                "spa": 0,
+                "spd": 0,
+                "spe": 0,
+                "accuracy": 0,
+                "evasion": 0
+              },
+              "volatiles": {}
+            },
+            "source": {
+              "hp": 165,
+              "max_hp": 165,
+              "status": null,
+              "boosts": {
+                "atk": 0,
+                "def": 0,
+                "spa": 0,
+                "spd": 0,
+                "spe": 0,
+                "accuracy": 0,
+                "evasion": 0
+              },
+              "volatiles": {}
+            },
+            "field": {
+              "weather": null,
+              "weather_duration": null,
+              "terrain": null,
+              "terrain_duration": null,
+              "pseudo_weather": {}
+            },
+            "sides": [
+              {
+                "id": "p1",
+                "conditions": {}
+              },
+              {
+                "id": "p2",
+                "conditions": {}
+              }
+            ]
+          },
+          "log": [
+            "|move|p1a: Goodra|Growl|p2a: Blastoise|[spread] p2a,p2b"
+          ]
+        },
+        "from_-5": {
+          "result": true,
+          "state": {
+            "target": {
+              "hp": 154,
+              "max_hp": 154,
+              "status": null,
+              "sleep_turns": null,
+              "boosts": {
+                "atk": -6,
+                "def": 0,
+                "spa": 0,
+                "spd": 0,
+                "spe": 0,
+                "accuracy": 0,
+                "evasion": 0
+              },
+              "volatiles": {}
+            },
+            "source": {
+              "hp": 165,
+              "max_hp": 165,
+              "status": null,
+              "boosts": {
+                "atk": 0,
+                "def": 0,
+                "spa": 0,
+                "spd": 0,
+                "spe": 0,
+                "accuracy": 0,
+                "evasion": 0
+              },
+              "volatiles": {}
+            },
+            "field": {
+              "weather": null,
+              "weather_duration": null,
+              "terrain": null,
+              "terrain_duration": null,
+              "pseudo_weather": {}
+            },
+            "sides": [
+              {
+                "id": "p1",
+                "conditions": {}
+              },
+              {
+                "id": "p2",
+                "conditions": {}
+              }
+            ]
+          },
+          "log": [
+            "|move|p1a: Goodra|Growl|p2a: Blastoise|[spread] p2a,p2b"
+          ]
+        },
+        "from_-6": {
+          "result": true,
+          "state": {
+            "target": {
+              "hp": 154,
+              "max_hp": 154,
+              "status": null,
+              "sleep_turns": null,
+              "boosts": {
+                "atk": -6,
+                "def": 0,
+                "spa": 0,
+                "spd": 0,
+                "spe": 0,
+                "accuracy": 0,
+                "evasion": 0
+              },
+              "volatiles": {}
+            },
+            "source": {
+              "hp": 165,
+              "max_hp": 165,
+              "status": null,
+              "boosts": {
+                "atk": 0,
+                "def": 0,
+                "spa": 0,
+                "spd": 0,
+                "spe": 0,
+                "accuracy": 0,
+                "evasion": 0
+              },
+              "volatiles": {}
+            },
+            "field": {
+              "weather": null,
+              "weather_duration": null,
+              "terrain": null,
+              "terrain_duration": null,
+              "pseudo_weather": {}
+            },
+            "sides": [
+              {
+                "id": "p1",
+                "conditions": {}
+              },
+              {
+                "id": "p2",
+                "conditions": {}
+              }
+            ]
+          },
+          "log": [
+            "|move|p1a: Goodra|Growl|p2a: Blastoise|[spread] p2a,p2b"
+          ]
+        }
+      },
+      "combined": {
+        "result": true,
+        "state": {
+          "target": {
+            "hp": 154,
+            "max_hp": 154,
+            "status": null,
+            "sleep_turns": null,
+            "boosts": {
+              "atk": -1,
+              "def": 0,
+              "spa": -1,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {}
+          },
+          "source": {
+            "hp": 165,
+            "max_hp": 165,
+            "status": null,
+            "boosts": {
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {}
+          },
+          "field": {
+            "weather": null,
+            "weather_duration": null,
+            "terrain": null,
+            "terrain_duration": null,
+            "pseudo_weather": {}
+          },
+          "sides": [
+            {
+              "id": "p1",
+              "conditions": {}
+            },
+            {
+              "id": "p2",
+              "conditions": {}
+            }
+          ]
+        },
+        "log": [
+          "|move|p1a: Goodra|Noble Roar|p2a: Blastoise"
+        ]
+      }
+    },
+    "recover": {
+      "normal": {
+        "result": true,
+        "state": {
+          "target": {
+            "hp": 154,
+            "max_hp": 154,
+            "status": null,
+            "sleep_turns": null,
+            "boosts": {
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {}
+          },
+          "source": {
+            "hp": 124,
+            "max_hp": 165,
+            "status": null,
+            "boosts": {
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {}
+          },
+          "field": {
+            "weather": null,
+            "weather_duration": null,
+            "terrain": null,
+            "terrain_duration": null,
+            "pseudo_weather": {}
+          },
+          "sides": [
+            {
+              "id": "p1",
+              "conditions": {}
+            },
+            {
+              "id": "p2",
+              "conditions": {}
+            }
+          ]
+        },
+        "log": [
+          "|move|p1a: Goodra|Recover|p1a: Goodra"
+        ],
+        "healed": 83
+      },
+      "odd_max_hp": {
+        "result": true,
+        "state": {
+          "target": {
+            "hp": 154,
+            "max_hp": 154,
+            "status": null,
+            "sleep_turns": null,
+            "boosts": {
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {}
+          },
+          "source": {
+            "hp": 128,
+            "max_hp": 155,
+            "status": null,
+            "boosts": {
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {}
+          },
+          "field": {
+            "weather": null,
+            "weather_duration": null,
+            "terrain": null,
+            "terrain_duration": null,
+            "pseudo_weather": {}
+          },
+          "sides": [
+            {
+              "id": "p1",
+              "conditions": {}
+            },
+            {
+              "id": "p2",
+              "conditions": {}
+            }
+          ]
+        },
+        "log": [
+          "|move|p1a: Goodra|Recover|p1a: Goodra"
+        ],
+        "healed": 78
+      },
+      "full_hp": {
+        "result": false,
+        "state": {
+          "target": {
+            "hp": 154,
+            "max_hp": 154,
+            "status": null,
+            "sleep_turns": null,
+            "boosts": {
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {}
+          },
+          "source": {
+            "hp": 165,
+            "max_hp": 165,
+            "status": null,
+            "boosts": {
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {}
+          },
+          "field": {
+            "weather": null,
+            "weather_duration": null,
+            "terrain": null,
+            "terrain_duration": null,
+            "pseudo_weather": {}
+          },
+          "sides": [
+            {
+              "id": "p1",
+              "conditions": {}
+            },
+            {
+              "id": "p2",
+              "conditions": {}
+            }
+          ]
+        },
+        "log": [
+          "|move|p1a: Goodra|Recover||[still]",
+          "|-fail|p1a: Goodra|heal"
+        ]
+      }
+    },
+    "field_conditions": {
+      "sunny_day": {
+        "initial": {
+          "result": true,
+          "state": {
+            "target": {
+              "hp": 154,
+              "max_hp": 154,
+              "status": null,
+              "sleep_turns": null,
+              "boosts": {
+                "atk": 0,
+                "def": 0,
+                "spa": 0,
+                "spd": 0,
+                "spe": 0,
+                "accuracy": 0,
+                "evasion": 0
+              },
+              "volatiles": {}
+            },
+            "source": {
+              "hp": 165,
+              "max_hp": 165,
+              "status": null,
+              "boosts": {
+                "atk": 0,
+                "def": 0,
+                "spa": 0,
+                "spd": 0,
+                "spe": 0,
+                "accuracy": 0,
+                "evasion": 0
+              },
+              "volatiles": {}
+            },
+            "field": {
+              "weather": "sunnyday",
+              "weather_duration": 5,
+              "terrain": null,
+              "terrain_duration": null,
+              "pseudo_weather": {}
+            },
+            "sides": [
+              {
+                "id": "p1",
+                "conditions": {}
+              },
+              {
+                "id": "p2",
+                "conditions": {}
+              }
+            ]
+          },
+          "log": [
+            "|move|p1a: Goodra|Sunny Day|p1a: Goodra"
+          ]
+        },
+        "repeated": {
+          "result": false,
+          "state": {
+            "target": {
+              "hp": 154,
+              "max_hp": 154,
+              "status": null,
+              "sleep_turns": null,
+              "boosts": {
+                "atk": 0,
+                "def": 0,
+                "spa": 0,
+                "spd": 0,
+                "spe": 0,
+                "accuracy": 0,
+                "evasion": 0
+              },
+              "volatiles": {}
+            },
+            "source": {
+              "hp": 165,
+              "max_hp": 165,
+              "status": null,
+              "boosts": {
+                "atk": 0,
+                "def": 0,
+                "spa": 0,
+                "spd": 0,
+                "spe": 0,
+                "accuracy": 0,
+                "evasion": 0
+              },
+              "volatiles": {}
+            },
+            "field": {
+              "weather": "sunnyday",
+              "weather_duration": 5,
+              "terrain": null,
+              "terrain_duration": null,
+              "pseudo_weather": {}
+            },
+            "sides": [
+              {
+                "id": "p1",
+                "conditions": {}
+              },
+              {
+                "id": "p2",
+                "conditions": {}
+              }
+            ]
+          },
+          "log": [
+            "|move|p1a: Goodra|Sunny Day||[still]",
+            "|-fail|p1a: Goodra"
+          ]
+        },
+        "replacement": {
+          "result": true,
+          "state": {
+            "target": {
+              "hp": 154,
+              "max_hp": 154,
+              "status": null,
+              "sleep_turns": null,
+              "boosts": {
+                "atk": 0,
+                "def": 0,
+                "spa": 0,
+                "spd": 0,
+                "spe": 0,
+                "accuracy": 0,
+                "evasion": 0
+              },
+              "volatiles": {}
+            },
+            "source": {
+              "hp": 165,
+              "max_hp": 165,
+              "status": null,
+              "boosts": {
+                "atk": 0,
+                "def": 0,
+                "spa": 0,
+                "spd": 0,
+                "spe": 0,
+                "accuracy": 0,
+                "evasion": 0
+              },
+              "volatiles": {}
+            },
+            "field": {
+              "weather": "raindance",
+              "weather_duration": 5,
+              "terrain": null,
+              "terrain_duration": null,
+              "pseudo_weather": {}
+            },
+            "sides": [
+              {
+                "id": "p1",
+                "conditions": {}
+              },
+              {
+                "id": "p2",
+                "conditions": {}
+              }
+            ]
+          },
+          "log": [
+            "|move|p1a: Goodra|Rain Dance|p1a: Goodra"
+          ]
+        }
+      },
+      "electric_terrain": {
+        "initial": {
+          "result": true,
+          "state": {
+            "target": {
+              "hp": 154,
+              "max_hp": 154,
+              "status": null,
+              "sleep_turns": null,
+              "boosts": {
+                "atk": 0,
+                "def": 0,
+                "spa": 0,
+                "spd": 0,
+                "spe": 0,
+                "accuracy": 0,
+                "evasion": 0
+              },
+              "volatiles": {}
+            },
+            "source": {
+              "hp": 165,
+              "max_hp": 165,
+              "status": null,
+              "boosts": {
+                "atk": 0,
+                "def": 0,
+                "spa": 0,
+                "spd": 0,
+                "spe": 0,
+                "accuracy": 0,
+                "evasion": 0
+              },
+              "volatiles": {}
+            },
+            "field": {
+              "weather": null,
+              "weather_duration": null,
+              "terrain": "electricterrain",
+              "terrain_duration": 5,
+              "pseudo_weather": {}
+            },
+            "sides": [
+              {
+                "id": "p1",
+                "conditions": {}
+              },
+              {
+                "id": "p2",
+                "conditions": {}
+              }
+            ]
+          },
+          "log": [
+            "|move|p1a: Goodra|Electric Terrain|p1a: Goodra",
+            "|-fieldstart|move: Electric Terrain"
+          ]
+        },
+        "repeated": {
+          "result": false,
+          "state": {
+            "target": {
+              "hp": 154,
+              "max_hp": 154,
+              "status": null,
+              "sleep_turns": null,
+              "boosts": {
+                "atk": 0,
+                "def": 0,
+                "spa": 0,
+                "spd": 0,
+                "spe": 0,
+                "accuracy": 0,
+                "evasion": 0
+              },
+              "volatiles": {}
+            },
+            "source": {
+              "hp": 165,
+              "max_hp": 165,
+              "status": null,
+              "boosts": {
+                "atk": 0,
+                "def": 0,
+                "spa": 0,
+                "spd": 0,
+                "spe": 0,
+                "accuracy": 0,
+                "evasion": 0
+              },
+              "volatiles": {}
+            },
+            "field": {
+              "weather": null,
+              "weather_duration": null,
+              "terrain": "electricterrain",
+              "terrain_duration": 5,
+              "pseudo_weather": {}
+            },
+            "sides": [
+              {
+                "id": "p1",
+                "conditions": {}
+              },
+              {
+                "id": "p2",
+                "conditions": {}
+              }
+            ]
+          },
+          "log": [
+            "|move|p1a: Goodra|Electric Terrain||[still]",
+            "|-fail|p1a: Goodra"
+          ]
+        }
+      }
+    },
+    "side_conditions": {
+      "reflect": {
+        "initial": {
+          "result": true,
+          "state": {
+            "target": {
+              "hp": 154,
+              "max_hp": 154,
+              "status": null,
+              "sleep_turns": null,
+              "boosts": {
+                "atk": 0,
+                "def": 0,
+                "spa": 0,
+                "spd": 0,
+                "spe": 0,
+                "accuracy": 0,
+                "evasion": 0
+              },
+              "volatiles": {}
+            },
+            "source": {
+              "hp": 165,
+              "max_hp": 165,
+              "status": null,
+              "boosts": {
+                "atk": 0,
+                "def": 0,
+                "spa": 0,
+                "spd": 0,
+                "spe": 0,
+                "accuracy": 0,
+                "evasion": 0
+              },
+              "volatiles": {}
+            },
+            "field": {
+              "weather": null,
+              "weather_duration": null,
+              "terrain": null,
+              "terrain_duration": null,
+              "pseudo_weather": {}
+            },
+            "sides": [
+              {
+                "id": "p1",
+                "conditions": {
+                  "reflect": {
+                    "id": "reflect",
+                    "duration": 5
+                  }
+                }
+              },
+              {
+                "id": "p2",
+                "conditions": {}
+              }
+            ]
+          },
+          "log": [
+            "|move|p1a: Goodra|Reflect|p1a: Goodra",
+            "|-sidestart|p1: Player 1|Reflect"
+          ]
+        },
+        "repeated": {
+          "result": false,
+          "state": {
+            "target": {
+              "hp": 154,
+              "max_hp": 154,
+              "status": null,
+              "sleep_turns": null,
+              "boosts": {
+                "atk": 0,
+                "def": 0,
+                "spa": 0,
+                "spd": 0,
+                "spe": 0,
+                "accuracy": 0,
+                "evasion": 0
+              },
+              "volatiles": {}
+            },
+            "source": {
+              "hp": 165,
+              "max_hp": 165,
+              "status": null,
+              "boosts": {
+                "atk": 0,
+                "def": 0,
+                "spa": 0,
+                "spd": 0,
+                "spe": 0,
+                "accuracy": 0,
+                "evasion": 0
+              },
+              "volatiles": {}
+            },
+            "field": {
+              "weather": null,
+              "weather_duration": null,
+              "terrain": null,
+              "terrain_duration": null,
+              "pseudo_weather": {}
+            },
+            "sides": [
+              {
+                "id": "p1",
+                "conditions": {
+                  "reflect": {
+                    "id": "reflect",
+                    "duration": 5
+                  }
+                }
+              },
+              {
+                "id": "p2",
+                "conditions": {}
+              }
+            ]
+          },
+          "log": [
+            "|move|p1a: Goodra|Reflect||[still]",
+            "|-fail|p1a: Goodra"
+          ]
+        }
+      },
+      "lightscreen": {
+        "initial": {
+          "result": true,
+          "state": {
+            "target": {
+              "hp": 154,
+              "max_hp": 154,
+              "status": null,
+              "sleep_turns": null,
+              "boosts": {
+                "atk": 0,
+                "def": 0,
+                "spa": 0,
+                "spd": 0,
+                "spe": 0,
+                "accuracy": 0,
+                "evasion": 0
+              },
+              "volatiles": {}
+            },
+            "source": {
+              "hp": 165,
+              "max_hp": 165,
+              "status": null,
+              "boosts": {
+                "atk": 0,
+                "def": 0,
+                "spa": 0,
+                "spd": 0,
+                "spe": 0,
+                "accuracy": 0,
+                "evasion": 0
+              },
+              "volatiles": {}
+            },
+            "field": {
+              "weather": null,
+              "weather_duration": null,
+              "terrain": null,
+              "terrain_duration": null,
+              "pseudo_weather": {}
+            },
+            "sides": [
+              {
+                "id": "p1",
+                "conditions": {
+                  "lightscreen": {
+                    "id": "lightscreen",
+                    "duration": 5
+                  }
+                }
+              },
+              {
+                "id": "p2",
+                "conditions": {}
+              }
+            ]
+          },
+          "log": [
+            "|move|p1a: Goodra|Light Screen|p1a: Goodra",
+            "|-sidestart|p1: Player 1|move: Light Screen"
+          ]
+        },
+        "repeated": {
+          "result": false,
+          "state": {
+            "target": {
+              "hp": 154,
+              "max_hp": 154,
+              "status": null,
+              "sleep_turns": null,
+              "boosts": {
+                "atk": 0,
+                "def": 0,
+                "spa": 0,
+                "spd": 0,
+                "spe": 0,
+                "accuracy": 0,
+                "evasion": 0
+              },
+              "volatiles": {}
+            },
+            "source": {
+              "hp": 165,
+              "max_hp": 165,
+              "status": null,
+              "boosts": {
+                "atk": 0,
+                "def": 0,
+                "spa": 0,
+                "spd": 0,
+                "spe": 0,
+                "accuracy": 0,
+                "evasion": 0
+              },
+              "volatiles": {}
+            },
+            "field": {
+              "weather": null,
+              "weather_duration": null,
+              "terrain": null,
+              "terrain_duration": null,
+              "pseudo_weather": {}
+            },
+            "sides": [
+              {
+                "id": "p1",
+                "conditions": {
+                  "lightscreen": {
+                    "id": "lightscreen",
+                    "duration": 5
+                  }
+                }
+              },
+              {
+                "id": "p2",
+                "conditions": {}
+              }
+            ]
+          },
+          "log": [
+            "|move|p1a: Goodra|Light Screen||[still]",
+            "|-fail|p1a: Goodra"
+          ]
+        }
+      },
+      "tailwind": {
+        "initial": {
+          "result": true,
+          "state": {
+            "target": {
+              "hp": 154,
+              "max_hp": 154,
+              "status": null,
+              "sleep_turns": null,
+              "boosts": {
+                "atk": 0,
+                "def": 0,
+                "spa": 0,
+                "spd": 0,
+                "spe": 0,
+                "accuracy": 0,
+                "evasion": 0
+              },
+              "volatiles": {}
+            },
+            "source": {
+              "hp": 165,
+              "max_hp": 165,
+              "status": null,
+              "boosts": {
+                "atk": 0,
+                "def": 0,
+                "spa": 0,
+                "spd": 0,
+                "spe": 0,
+                "accuracy": 0,
+                "evasion": 0
+              },
+              "volatiles": {}
+            },
+            "field": {
+              "weather": null,
+              "weather_duration": null,
+              "terrain": null,
+              "terrain_duration": null,
+              "pseudo_weather": {}
+            },
+            "sides": [
+              {
+                "id": "p1",
+                "conditions": {
+                  "tailwind": {
+                    "id": "tailwind",
+                    "duration": 4
+                  }
+                }
+              },
+              {
+                "id": "p2",
+                "conditions": {}
+              }
+            ]
+          },
+          "log": [
+            "|move|p1a: Goodra|Tailwind|p1a: Goodra",
+            "|-sidestart|p1: Player 1|move: Tailwind"
+          ]
+        },
+        "repeated": {
+          "result": false,
+          "state": {
+            "target": {
+              "hp": 154,
+              "max_hp": 154,
+              "status": null,
+              "sleep_turns": null,
+              "boosts": {
+                "atk": 0,
+                "def": 0,
+                "spa": 0,
+                "spd": 0,
+                "spe": 0,
+                "accuracy": 0,
+                "evasion": 0
+              },
+              "volatiles": {}
+            },
+            "source": {
+              "hp": 165,
+              "max_hp": 165,
+              "status": null,
+              "boosts": {
+                "atk": 0,
+                "def": 0,
+                "spa": 0,
+                "spd": 0,
+                "spe": 0,
+                "accuracy": 0,
+                "evasion": 0
+              },
+              "volatiles": {}
+            },
+            "field": {
+              "weather": null,
+              "weather_duration": null,
+              "terrain": null,
+              "terrain_duration": null,
+              "pseudo_weather": {}
+            },
+            "sides": [
+              {
+                "id": "p1",
+                "conditions": {
+                  "tailwind": {
+                    "id": "tailwind",
+                    "duration": 4
+                  }
+                }
+              },
+              {
+                "id": "p2",
+                "conditions": {}
+              }
+            ]
+          },
+          "log": [
+            "|move|p1a: Goodra|Tailwind||[still]",
+            "|-fail|p1a: Goodra"
+          ]
+        }
+      }
+    },
+    "trick_room": {
+      "initial": {
+        "result": true,
+        "state": {
+          "target": {
+            "hp": 154,
+            "max_hp": 154,
+            "status": null,
+            "sleep_turns": null,
+            "boosts": {
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {}
+          },
+          "source": {
+            "hp": 165,
+            "max_hp": 165,
+            "status": null,
+            "boosts": {
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {}
+          },
+          "field": {
+            "weather": null,
+            "weather_duration": null,
+            "terrain": null,
+            "terrain_duration": null,
+            "pseudo_weather": {
+              "trickroom": {
+                "id": "trickroom",
+                "duration": 5
+              }
+            }
+          },
+          "sides": [
+            {
+              "id": "p1",
+              "conditions": {}
+            },
+            {
+              "id": "p2",
+              "conditions": {}
+            }
+          ]
+        },
+        "log": [
+          "|move|p1a: Goodra|Trick Room|p1a: Goodra",
+          "|-fieldstart|move: Trick Room|[of] p1a: Goodra"
+        ],
+        "active": true
+      },
+      "repeated": {
+        "result": true,
+        "state": {
+          "target": {
+            "hp": 154,
+            "max_hp": 154,
+            "status": null,
+            "sleep_turns": null,
+            "boosts": {
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {}
+          },
+          "source": {
+            "hp": 165,
+            "max_hp": 165,
+            "status": null,
+            "boosts": {
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {}
+          },
+          "field": {
+            "weather": null,
+            "weather_duration": null,
+            "terrain": null,
+            "terrain_duration": null,
+            "pseudo_weather": {}
+          },
+          "sides": [
+            {
+              "id": "p1",
+              "conditions": {}
+            },
+            {
+              "id": "p2",
+              "conditions": {}
+            }
+          ]
+        },
+        "log": [
+          "|move|p1a: Goodra|Trick Room|p1a: Goodra",
+          "|-fieldend|move: Trick Room"
+        ],
+        "active": false
+      }
+    },
+    "magnet_rise": {
+      "initial": {
+        "result": true,
+        "state": {
+          "target": {
+            "hp": 154,
+            "max_hp": 154,
+            "status": null,
+            "sleep_turns": null,
+            "boosts": {
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {}
+          },
+          "source": {
+            "hp": 165,
+            "max_hp": 165,
+            "status": null,
+            "boosts": {
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {
+              "magnetrise": {
+                "id": "magnetrise",
+                "duration": 5
+              }
+            }
+          },
+          "field": {
+            "weather": null,
+            "weather_duration": null,
+            "terrain": null,
+            "terrain_duration": null,
+            "pseudo_weather": {}
+          },
+          "sides": [
+            {
+              "id": "p1",
+              "conditions": {}
+            },
+            {
+              "id": "p2",
+              "conditions": {}
+            }
+          ]
+        },
+        "log": [
+          "|move|p1a: Goodra|Magnet Rise|p1a: Goodra",
+          "|-start|p1a: Goodra|Magnet Rise"
+        ]
+      },
+      "repeated": {
+        "result": false,
+        "state": {
+          "target": {
+            "hp": 154,
+            "max_hp": 154,
+            "status": null,
+            "sleep_turns": null,
+            "boosts": {
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {}
+          },
+          "source": {
+            "hp": 165,
+            "max_hp": 165,
+            "status": null,
+            "boosts": {
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {
+              "magnetrise": {
+                "id": "magnetrise",
+                "duration": 5
+              }
+            }
+          },
+          "field": {
+            "weather": null,
+            "weather_duration": null,
+            "terrain": null,
+            "terrain_duration": null,
+            "pseudo_weather": {}
+          },
+          "sides": [
+            {
+              "id": "p1",
+              "conditions": {}
+            },
+            {
+              "id": "p2",
+              "conditions": {}
+            }
+          ]
+        },
+        "log": [
+          "|move|p1a: Goodra|Magnet Rise||[still]",
+          "|-fail|p1a: Goodra"
+        ]
+      },
+      "gravity_blocked": {
+        "result": false,
+        "state": {
+          "target": {
+            "hp": 154,
+            "max_hp": 154,
+            "status": null,
+            "sleep_turns": null,
+            "boosts": {
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {}
+          },
+          "source": {
+            "hp": 165,
+            "max_hp": 165,
+            "status": null,
+            "boosts": {
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0,
+              "accuracy": 0,
+              "evasion": 0
+            },
+            "volatiles": {}
+          },
+          "field": {
+            "weather": null,
+            "weather_duration": null,
+            "terrain": null,
+            "terrain_duration": null,
+            "pseudo_weather": {
+              "gravity": {
+                "id": "gravity",
+                "duration": 5
+              }
+            }
+          },
+          "sides": [
+            {
+              "id": "p1",
+              "conditions": {}
+            },
+            {
+              "id": "p2",
+              "conditions": {}
+            }
+          ]
+        },
+        "log": []
+      }
+    },
+    "protect": {
+      "result": false,
+      "state": {
+        "target": {
+          "hp": 154,
+          "max_hp": 154,
+          "status": null,
+          "sleep_turns": null,
+          "boosts": {
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0,
+            "accuracy": 0,
+            "evasion": 0
+          },
+          "volatiles": {
+            "protect": {
+              "id": "protect",
+              "duration": 1
+            },
+            "stall": {
+              "id": "stall",
+              "duration": 2
+            }
+          }
+        },
+        "source": {
+          "hp": 165,
+          "max_hp": 165,
+          "status": null,
+          "boosts": {
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0,
+            "accuracy": 0,
+            "evasion": 0
+          },
+          "volatiles": {}
+        },
+        "field": {
+          "weather": null,
+          "weather_duration": null,
+          "terrain": null,
+          "terrain_duration": null,
+          "pseudo_weather": {}
+        },
+        "sides": [
+          {
+            "id": "p1",
+            "conditions": {}
+          },
+          {
+            "id": "p2",
+            "conditions": {}
+          }
+        ]
+      },
+      "log": [
+        "|move|p1a: Goodra|Will-O-Wisp|p2a: Blastoise"
+      ]
+    }
+  }
+}

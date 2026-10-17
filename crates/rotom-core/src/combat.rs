@@ -92,6 +92,10 @@ pub enum PrimaryMoveEffect {
         condition: ConditionId,
         duration: u8,
     },
+    ToggleFieldCondition {
+        condition: ConditionId,
+        duration: u8,
+    },
     AddSideCondition {
         condition: ConditionId,
         duration: u8,
@@ -487,6 +491,11 @@ struct TargetExecutionContext {
     redirected: bool,
 }
 
+struct HitLifecycle {
+    eligible: Vec<(usize, TargetExecutionContext)>,
+    outcomes: Vec<Option<TargetOutcome>>,
+}
+
 #[derive(Clone, Copy)]
 struct DamageApplication {
     context: EventContext,
@@ -764,118 +773,17 @@ impl BattleState {
                 move_context.move_data.target,
                 MoveTarget::AllAdjacent | MoveTarget::AllAdjacentFoes
             );
-        let mut outcomes = vec![None; move_context.targets.len()];
-        let mut eligible = move_context
-            .targets
-            .iter()
-            .copied()
-            .enumerate()
-            .collect::<Vec<_>>();
-
-        let mut after_try_hit = Vec::with_capacity(eligible.len());
-        for (index, target_context) in eligible {
-            let target = target_context.target;
-            let context = EventContext {
-                source: Some(move_context.source),
-                target: Some(target),
-                move_id: Some(move_context.move_id),
-            };
-            let try_hit = effects.dispatch(
-                self,
-                BattleEvent::TryHit,
-                context,
-                EventValue::Boolean(true),
-            )?;
-            let cancelled = try_hit.cancelled || try_hit.value == EventValue::Boolean(false);
-            resolution.events.push(try_hit);
-            // Pinned Showdown resolves Psychic Terrain's priority-4 TryHit
-            // guard before Protect's priority-3 TryHit handler, per target.
-            let priority_blocked =
-                self.priority_move_blocked_target(data, field_effects, move_context, target)?;
-            let protected = if cancelled || priority_blocked {
-                false
-            } else {
-                self.target_is_protected(data, field_effects, move_context, target)
-            };
-            if cancelled || priority_blocked || protected {
-                outcomes[index] = Some(TargetOutcome {
-                    source: move_context.source,
-                    move_id: move_context.move_id,
-                    target,
-                    redirected: target_context.redirected,
-                    result: if priority_blocked {
-                        TargetResult::PriorityBlocked
-                    } else if protected {
-                        TargetResult::Protected
-                    } else {
-                        TargetResult::Cancelled
-                    },
-                    calculated_damage: 0,
-                    applied_hp_loss: 0,
-                    fainted: false,
-                });
-                continue;
-            }
-            after_try_hit.push((index, target_context));
-        }
-
-        let mut after_immunity = Vec::with_capacity(after_try_hit.len());
-        for (index, target_context) in after_try_hit {
-            let target = target_context.target;
-            if self.target_is_type_immune(data, move_context.move_data, target)? {
-                outcomes[index] = Some(TargetOutcome {
-                    source: move_context.source,
-                    move_id: move_context.move_id,
-                    target,
-                    redirected: target_context.redirected,
-                    result: TargetResult::Immune,
-                    calculated_damage: 0,
-                    applied_hp_loss: 0,
-                    fainted: false,
-                });
-                continue;
-            }
-            after_immunity.push((index, target_context));
-        }
-
-        eligible = Vec::with_capacity(after_immunity.len());
-        for (index, target_context) in after_immunity {
-            let target = target_context.target;
-            if !self.check_accuracy(
-                move_context.move_data.accuracy,
-                move_context.move_id,
-                field_effects,
-                move_context.source,
-                target,
-            )? {
-                resolution.actions.push(ResolvedAction::Missed {
-                    side: move_context.queued.side,
-                    slot: move_context.queued.slot,
-                    move_slot: move_context.queued.move_slot,
-                });
-                outcomes[index] = Some(TargetOutcome {
-                    source: move_context.source,
-                    move_id: move_context.move_id,
-                    target,
-                    redirected: target_context.redirected,
-                    result: TargetResult::Missed,
-                    calculated_damage: 0,
-                    applied_hp_loss: 0,
-                    fainted: false,
-                });
-                continue;
-            }
-            eligible.push((index, target_context));
-        }
-
-        for (_, target_context) in &eligible {
-            self.break_target_protection_if_needed(
-                data,
-                field_effects,
-                move_context,
-                target_context.target,
-            )?;
-        }
+        let HitLifecycle {
+            eligible,
+            mut outcomes,
+        } = self.resolve_hit_lifecycle(
+            data,
+            move_context,
+            effects,
+            field_effects,
+            true,
+            resolution,
+        )?;
 
         let mut any_hit = false;
         for (index, target_context) in eligible {
@@ -970,6 +878,133 @@ impl BattleState {
             EventValue::None,
         )?);
         Ok(())
+    }
+
+    /// Advances a resolved target set through the shared `TryHit`, priority,
+    /// protection, optional type-immunity, accuracy, and break-protection stages.
+    /// Targets move through each stage as a group to preserve Showdown ordering.
+    #[allow(clippy::too_many_arguments, clippy::too_many_lines)]
+    fn resolve_hit_lifecycle<D: CombatData>(
+        &mut self,
+        data: &D,
+        move_context: &MoveExecutionContext,
+        effects: &EffectRegistry,
+        field_effects: &FieldEffectIds,
+        check_type_immunity: bool,
+        resolution: &mut TurnResolution,
+    ) -> Result<HitLifecycle, BattleError> {
+        let mut outcomes = vec![None; move_context.targets.len()];
+        let mut after_try_hit = Vec::with_capacity(move_context.targets.len());
+        for (index, target_context) in move_context.targets.iter().copied().enumerate() {
+            let target = target_context.target;
+            let context = EventContext {
+                source: Some(move_context.source),
+                target: Some(target),
+                move_id: Some(move_context.move_id),
+            };
+            let try_hit = effects.dispatch(
+                self,
+                BattleEvent::TryHit,
+                context,
+                EventValue::Boolean(true),
+            )?;
+            let cancelled = try_hit.cancelled || try_hit.value == EventValue::Boolean(false);
+            resolution.events.push(try_hit);
+            // Pinned Showdown resolves Psychic Terrain's priority-4 TryHit
+            // guard before Protect's priority-3 TryHit handler, per target.
+            let priority_blocked =
+                self.priority_move_blocked_target(data, field_effects, move_context, target)?;
+            let protected = if cancelled || priority_blocked {
+                false
+            } else {
+                self.target_is_protected(data, field_effects, move_context, target)
+            };
+            if cancelled || priority_blocked || protected {
+                outcomes[index] = Some(Self::empty_target_outcome(
+                    move_context,
+                    target_context,
+                    if priority_blocked {
+                        TargetResult::PriorityBlocked
+                    } else if protected {
+                        TargetResult::Protected
+                    } else {
+                        TargetResult::Cancelled
+                    },
+                ));
+            } else {
+                after_try_hit.push((index, target_context));
+            }
+        }
+
+        let mut after_immunity = Vec::with_capacity(after_try_hit.len());
+        for (index, target_context) in after_try_hit {
+            if check_type_immunity
+                && self.target_is_type_immune(
+                    data,
+                    move_context.move_data,
+                    target_context.target,
+                )?
+            {
+                outcomes[index] = Some(Self::empty_target_outcome(
+                    move_context,
+                    target_context,
+                    TargetResult::Immune,
+                ));
+            } else {
+                after_immunity.push((index, target_context));
+            }
+        }
+
+        let mut eligible = Vec::with_capacity(after_immunity.len());
+        for (index, target_context) in after_immunity {
+            if self.check_accuracy(
+                move_context.move_data.accuracy,
+                move_context.move_id,
+                field_effects,
+                move_context.source,
+                target_context.target,
+            )? {
+                eligible.push((index, target_context));
+            } else {
+                resolution.actions.push(ResolvedAction::Missed {
+                    side: move_context.queued.side,
+                    slot: move_context.queued.slot,
+                    move_slot: move_context.queued.move_slot,
+                });
+                outcomes[index] = Some(Self::empty_target_outcome(
+                    move_context,
+                    target_context,
+                    TargetResult::Missed,
+                ));
+            }
+        }
+
+        for (_, target_context) in &eligible {
+            self.break_target_protection_if_needed(
+                data,
+                field_effects,
+                move_context,
+                target_context.target,
+            )?;
+        }
+        Ok(HitLifecycle { eligible, outcomes })
+    }
+
+    fn empty_target_outcome(
+        context: &MoveExecutionContext,
+        target: TargetExecutionContext,
+        result: TargetResult,
+    ) -> TargetOutcome {
+        TargetOutcome {
+            source: context.source,
+            move_id: context.move_id,
+            target: target.target,
+            redirected: target.redirected,
+            result,
+            calculated_damage: 0,
+            applied_hp_loss: 0,
+            fainted: false,
+        }
     }
 
     // These three narrow condition intrinsics share the normal move lifecycle;
@@ -1132,63 +1167,37 @@ impl BattleState {
                 PrimaryMoveEffect::SetWeather { .. }
                     | PrimaryMoveEffect::SetTerrain { .. }
                     | PrimaryMoveEffect::AddFieldCondition { .. }
+                    | PrimaryMoveEffect::ToggleFieldCondition { .. }
                     | PrimaryMoveEffect::AddSideCondition { .. }
             )
         });
-        let targets = if global {
-            vec![None]
+        let (targets, mut outcomes) = if global {
+            (vec![(0, None)], Vec::new())
         } else {
-            move_context.targets.iter().copied().map(Some).collect()
+            let HitLifecycle { eligible, outcomes } = self.resolve_hit_lifecycle(
+                data,
+                move_context,
+                effects,
+                field_effects,
+                false,
+                resolution,
+            )?;
+            (
+                eligible
+                    .into_iter()
+                    .map(|(index, target)| (index, Some(target)))
+                    .collect(),
+                outcomes,
+            )
         };
         let mut any_applied = false;
-        for target_context in targets {
+        for (index, target_context) in targets {
             let target = target_context.map(|target| target.target);
             let context = EventContext {
                 source: Some(move_context.source),
                 target,
                 move_id: Some(move_context.move_id),
             };
-            if let Some(target) = target {
-                let try_hit = effects.dispatch(
-                    self,
-                    BattleEvent::TryHit,
-                    context,
-                    EventValue::Boolean(true),
-                )?;
-                let cancelled = try_hit.cancelled || try_hit.value == EventValue::Boolean(false);
-                resolution.events.push(try_hit);
-                let blocked = !cancelled
-                    && (self.priority_move_blocked_target(
-                        data,
-                        field_effects,
-                        move_context,
-                        target,
-                    )? || self.target_is_protected(data, field_effects, move_context, target));
-                if cancelled || blocked {
-                    Self::record_non_damage_outcome(
-                        move_context,
-                        target_context,
-                        false,
-                        resolution,
-                    );
-                    continue;
-                }
-                if !self.check_accuracy(
-                    move_context.move_data.accuracy,
-                    move_context.move_id,
-                    field_effects,
-                    move_context.source,
-                    target,
-                )? {
-                    Self::record_non_damage_outcome(
-                        move_context,
-                        target_context,
-                        false,
-                        resolution,
-                    );
-                    continue;
-                }
-            }
             let mut applied = false;
             for effect in &move_context.primary_effects {
                 applied |= self.apply_primary_effect(
@@ -1210,15 +1219,21 @@ impl BattleState {
                 )?);
             }
             if let Some(target_context) = target_context {
-                Self::record_non_damage_outcome(
+                outcomes[index] = Some(Self::empty_target_outcome(
                     move_context,
-                    Some(target_context),
-                    applied,
-                    resolution,
-                );
+                    target_context,
+                    if applied {
+                        TargetResult::Hit
+                    } else {
+                        TargetResult::Cancelled
+                    },
+                ));
             }
             any_applied |= applied;
         }
+        resolution
+            .target_outcomes
+            .extend(outcomes.into_iter().flatten());
         resolution.actions.push(if any_applied {
             ResolvedAction::Used {
                 side: move_context.queued.side,
@@ -1242,30 +1257,6 @@ impl BattleState {
             EventValue::None,
         )?);
         Ok(())
-    }
-
-    fn record_non_damage_outcome(
-        context: &MoveExecutionContext,
-        target: Option<TargetExecutionContext>,
-        applied: bool,
-        resolution: &mut TurnResolution,
-    ) {
-        if let Some(target) = target {
-            resolution.target_outcomes.push(TargetOutcome {
-                source: context.source,
-                move_id: context.move_id,
-                target: target.target,
-                redirected: target.redirected,
-                result: if applied {
-                    TargetResult::Hit
-                } else {
-                    TargetResult::Cancelled
-                },
-                calculated_damage: 0,
-                applied_hp_loss: 0,
-                fainted: false,
-            });
-        }
     }
 
     #[allow(clippy::too_many_arguments, clippy::too_many_lines)]
@@ -1338,6 +1329,8 @@ impl BattleState {
                     })?
                     .stats
                     .hp;
+                // Gen 5+ Showdown move healing uses Math.round before the
+                // bounded heal (for example, 155 / 2 = 78).
                 let amount = (u32::from(max_hp) * u32::from(numerator)
                     + u32::from(denominator) / 2)
                     / u32::from(denominator);
@@ -1351,11 +1344,21 @@ impl BattleState {
                 duration,
             } => {
                 let target = pokemon()?;
-                if self
-                    .side(target.side)
-                    .pokemon(target.pokemon)
-                    .is_some_and(|state| state.has_volatile(condition))
-                {
+                let target_state =
+                    self.side(target.side)
+                        .pokemon(target.pokemon)
+                        .ok_or_else(|| {
+                            BattleError::InvalidState("volatile target is invalid".to_owned())
+                        })?;
+                let magnet_rise_blocked = field_effects.magnet_rise == Some(condition)
+                    && (field_effects.field_has(self, field_effects.gravity)
+                        || field_effects
+                            .ingrain
+                            .is_some_and(|id| target_state.has_volatile(id))
+                        || field_effects
+                            .smack_down
+                            .is_some_and(|id| target_state.has_volatile(id)));
+                if target_state.has_volatile(condition) || magnet_rise_blocked {
                     return Ok(false);
                 }
                 StateKernel::new(self)
@@ -1406,6 +1409,23 @@ impl BattleState {
                 }
                 StateKernel::new(self)
                     .add_field_condition(ConditionState::new(condition, Some(duration)))?;
+                Ok(true)
+            }
+            PrimaryMoveEffect::ToggleFieldCondition {
+                condition,
+                duration,
+            } => {
+                if self
+                    .field
+                    .conditions
+                    .iter()
+                    .any(|state| state.id == condition)
+                {
+                    let _ = StateKernel::new(self).remove_field_condition(condition);
+                } else {
+                    StateKernel::new(self)
+                        .add_field_condition(ConditionState::new(condition, Some(duration)))?;
+                }
                 Ok(true)
             }
             PrimaryMoveEffect::AddSideCondition {
@@ -2624,7 +2644,10 @@ fn resolve_target(
             MoveTarget::All
             | MoveTarget::AllAdjacent
             | MoveTarget::AllAdjacentFoes
-            | MoveTarget::Allies,
+            | MoveTarget::Allies
+            | MoveTarget::AllySide
+            | MoveTarget::AllyTeam
+            | MoveTarget::FoeSide,
             ActionTarget::Automatic,
         ) => Ok(None),
         (

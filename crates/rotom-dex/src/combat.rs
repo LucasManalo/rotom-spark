@@ -91,7 +91,7 @@ impl CombatData for DexData {
             });
         }
         let condition = |name: &str| {
-            self.resolve_move(name)
+            self.resolve_move(&name.to_ascii_lowercase())
                 .map(|(id, _)| ConditionId::new(id.get()))
         };
         if let Some(name) = data.weather.as_deref() {
@@ -113,9 +113,16 @@ impl CombatData for DexData {
         if let Some(name) = data.pseudo_weather.as_deref() {
             if matches!(name, "trickroom" | "gravity" | "magicroom" | "wonderroom") {
                 if let Some(condition) = condition(name) {
-                    effects.push(PrimaryMoveEffect::AddFieldCondition {
-                        condition,
-                        duration: 5,
+                    effects.push(if name == "gravity" {
+                        PrimaryMoveEffect::AddFieldCondition {
+                            condition,
+                            duration: 5,
+                        }
+                    } else {
+                        PrimaryMoveEffect::ToggleFieldCondition {
+                            condition,
+                            duration: 5,
+                        }
                     });
                 }
             }
@@ -350,7 +357,7 @@ fn behavior_capabilities(data: &MoveData, mut required: MoveCapabilities) -> Mov
     {
         required = required.with(MoveCapability::SwitchControl);
     }
-    if !data.behavior.callbacks.is_empty() {
+    if !data.behavior.callbacks.is_empty() && data.id != "magnetrise" {
         required = required.with(MoveCapability::CustomCallback);
     }
     if data.volatile_status.is_some() && data.volatile_status.as_deref() != Some("magnetrise") {
@@ -371,11 +378,9 @@ fn behavior_capabilities(data: &MoveData, mut required: MoveCapabilities) -> Mov
         .special_properties
         .iter()
         .any(|property| !matches!(property.as_str(), "breaksProtect" | "ignoreImmunity"));
-    let unsupported_flag = data
-        .behavior
-        .intrinsic_flags
-        .iter()
-        .any(|flag| flag != "heal" || data.heal.is_none());
+    let unsupported_flag = data.behavior.intrinsic_flags.iter().any(|flag| {
+        (flag != "heal" || data.heal.is_none()) && !(data.id == "magnetrise" && flag == "gravity")
+    });
     if data.id == "toxic" || unsupported_condition || unsupported_flag || unsupported_special {
         required = required.with(MoveCapability::SpecialBehavior);
     }

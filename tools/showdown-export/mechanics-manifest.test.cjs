@@ -82,19 +82,21 @@ test('move support is derived from complete executor capabilities', () => {
 	);
 	assert.equal(dragonClaw.implementation, 'implemented');
 	assert.equal(dragonClaw.owner_pr, 'PR 13.1');
-	assert.equal(manifest.summary.by_kind.move.implementation.implemented, 58);
+	assert.equal(manifest.summary.by_kind.move.implementation.implemented, 112);
 	assert.deepEqual(
 		manifest.summary.by_kind.move.verification,
-		{not_tested: 499, unit_tested: 1, differential_verified: 10}
+		{not_tested: 486, unit_tested: 1, differential_verified: 23}
 	);
 	const implementedMoves = manifest.entries.filter(candidate =>
 		candidate.kind === 'move' && candidate.implementation === 'implemented'
 	);
-	assert.equal(implementedMoves.filter(candidate => candidate.verification === 'not_tested').length, 47);
+	assert.equal(implementedMoves.filter(candidate => candidate.verification === 'not_tested').length, 88);
 	assert.deepEqual(
 		manifest.summary.by_kind.move.interaction_verification,
-		{not_tested: 505, unit_tested: 0, differential_verified: 5}
+		{not_tested: 495, unit_tested: 1, differential_verified: 14}
 	);
+	assert.equal(entry('move', 'magnetrise').implementation, 'implemented');
+	assert.equal(entry('move', 'magnetrise').verification, 'differential_verified');
 	assert.deepEqual(entry('move', 'surf').required_capabilities, [
 		'standard_damage', 'accuracy', 'advanced_targeting', 'target_set',
 		'spread_damage', 'protection', 'retargeting', 'per_target_hit',

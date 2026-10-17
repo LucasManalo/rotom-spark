@@ -23,3 +23,29 @@ Condition behavior without an implemented lifecycle remains
 `special_behavior` and fails capability preflight. Secondary application and
 chance timing remain PR 13.4; general ability and item registrations remain
 PR 13.5/13.6.
+
+## PR 13.3.1 source-backed corrections
+
+`tools/showdown-reference/primary-non-damage.cjs` executes the pinned
+`Battle.actions.useMove` path and records status success/failure, protection,
+accuracy, sleep RNG, stage bounds, combined boosts, healing, field/side
+conditions, Room toggling, and Magnet Rise behavior.
+
+- `sim/battle-actions.ts:moveHit` uses `Math.round` for Gen 5+ move healing;
+  Recover therefore heals 78 HP at an odd 155 base max HP. The later
+  `Battle.heal` truncation does not undo that earlier rounding.
+- `sim/field.ts:setWeather` and `setTerrain` reject identical weather or
+  terrain without refreshing duration. `Side.addSideCondition` and
+  `Pokemon.addVolatile` likewise reject duplicates without a restart hook, so
+  screens, Tailwind, and Magnet Rise do not refresh.
+- `data/moves.ts:trickroom`, `magicroom`, and `wonderroom` implement
+  `onFieldRestart` by removing themselves. Their typed operation is therefore
+  a toggle; Gravity has no restart hook and remains an ordinary add/fail.
+- `data/moves.ts:magnetrise.onTry` rejects use during Gravity or while Ingrain
+  or Smack Down is active. This narrow callback is modeled explicitly; other
+  callback-driven volatiles remain unsupported.
+
+Damage and non-damage target execution now share one staged TryHit, priority,
+Protect, optional type-immunity, accuracy, and break-Protection helper. This
+preserves the pinned all-targets-per-stage ordering while keeping effect
+application in the primary operation.

@@ -30,6 +30,77 @@ fn doubles_targeting_fixture() -> serde_json::Value {
     .expect("doubles targeting fixture")
 }
 
+fn primary_non_damage_fixture() -> serde_json::Value {
+    serde_json::from_str(include_str!(
+        "../../../data/fixtures/differential/primary-non-damage.json"
+    ))
+    .expect("primary non-damage fixture")
+}
+
+fn single_move_action(move_slot: u8, target: ActionTarget) -> JointAction {
+    JointAction::Turn {
+        p1: TurnChoice {
+            actions: [
+                PokemonAction::Move {
+                    move_slot: MoveSlotIndex::new(move_slot),
+                    target,
+                    mega: false,
+                },
+                PokemonAction::Move {
+                    move_slot: MoveSlotIndex::new(0),
+                    target: ActionTarget::Automatic,
+                    mega: false,
+                },
+            ],
+        },
+        p2: TurnChoice {
+            actions: [
+                PokemonAction::Move {
+                    move_slot: MoveSlotIndex::new(0),
+                    target: ActionTarget::Automatic,
+                    mega: false,
+                },
+                PokemonAction::Move {
+                    move_slot: MoveSlotIndex::new(0),
+                    target: ActionTarget::Automatic,
+                    mega: false,
+                },
+            ],
+        },
+    }
+}
+
+fn selected_primary_battle(
+    dex: &rotom_dex::DexData,
+    source: &PokemonSet,
+    target: &PokemonSet,
+    seed: u64,
+) -> BattleState {
+    let filler = set_with_moves(dex, "magikarp", "swiftswim", &["swordsdance"]);
+    let p1 = vec![
+        source.clone(),
+        filler.clone(),
+        filler.clone(),
+        filler.clone(),
+    ];
+    let p2 = vec![target.clone(), filler.clone(), filler.clone(), filler];
+    selected_battle_for_teams(dex, &p1, &p2, seed)
+}
+
+fn execute_single_move(
+    dex: &rotom_dex::DexData,
+    state: &BattleState,
+    move_slot: u8,
+    target: ActionTarget,
+) -> rotom_core::StepResult {
+    step(
+        state,
+        &single_move_action(move_slot, target),
+        &Mechanics::new(dex, &EffectRegistry::new()),
+    )
+    .expect("supported primary non-damage move")
+}
+
 #[test]
 #[allow(clippy::too_many_lines)]
 fn primary_non_damage_operations_share_the_canonical_executor() {
@@ -176,6 +247,524 @@ fn primary_non_damage_operations_share_the_canonical_executor() {
         field_result.state.field().weather.unwrap().turns_remaining,
         Some(4)
     );
+}
+
+#[test]
+fn healing_uses_showdown_rounding_and_full_hp_fails() {
+    let dex = champions_reg_mc().unwrap();
+    let healer = set_with_moves(&dex, "goodra", "sapsipper", &["recover"]);
+    let foe = set_with_moves(&dex, "magikarp", "swiftswim", &["swordsdance"]);
+    let state = selected_primary_battle(&dex, &healer, &foe, 0x1331);
+    let mut builder = BattleStateBuilder::from_state(state).unwrap();
+    builder
+        .edit_pokemon(
+            PokemonRef::new(SideId::P1, PokemonIndex::new(0)),
+            |pokemon| {
+                pokemon.stats.hp = 155;
+                pokemon.current_hp = 50;
+            },
+        )
+        .unwrap();
+    let recovery = execute_single_move(&dex, &builder.build().unwrap(), 0, ActionTarget::Automatic);
+    assert_eq!(
+        recovery
+            .state
+            .side(SideId::P1)
+            .pokemon(PokemonIndex::new(0))
+            .unwrap()
+            .current_hp,
+        128,
+        "Gen 9 Showdown rounds 155 / 2 to 78 HP"
+    );
+
+    let full = selected_primary_battle(&dex, &healer, &foe, 0x1332);
+    let unchanged = execute_single_move(&dex, &full, 0, ActionTarget::Automatic);
+    let outcome = unchanged
+        .diagnostics
+        .turn
+        .as_ref()
+        .unwrap()
+        .target_outcomes
+        .iter()
+        .find(|outcome| {
+            outcome.source == PokemonRef::new(SideId::P1, PokemonIndex::new(0))
+                && outcome.move_id == dex.resolve_move("recover").unwrap().0
+        })
+        .unwrap();
+    assert_eq!(outcome.result, TargetResult::Cancelled);
+}
+
+#[test]
+#[allow(clippy::too_many_lines)]
+fn status_and_stat_moves_cover_success_immunity_prevention_miss_and_bounds() {
+    let dex = champions_reg_mc().unwrap();
+    let source = set_with_moves(
+        &dex,
+        "goodra",
+        "sapsipper",
+        &["willowisp", "thunderwave", "hypnosis", "growl"],
+    );
+    let ordinary = set_with_moves(&dex, "blastoise", "torrent", &["sunnyday"]);
+    let foe_target = ActionTarget::Foe(ActiveSlot::Left);
+
+    let burned = execute_single_move(
+        &dex,
+        &selected_primary_battle(&dex, &source, &ordinary, 0x1333),
+        0,
+        foe_target,
+    );
+    assert_eq!(
+        burned
+            .state
+            .side(SideId::P2)
+            .pokemon(PokemonIndex::new(0))
+            .unwrap()
+            .status,
+        Some(MajorStatus::Burn)
+    );
+
+    for (species, move_slot) in [("charizard", 0), ("pikachu", 1), ("garchomp", 1)] {
+        let target = set_with_moves(&dex, species, "pressure", &["sunnyday"]);
+        let result = execute_single_move(
+            &dex,
+            &selected_primary_battle(&dex, &source, &target, 0x1334),
+            move_slot,
+            foe_target,
+        );
+        assert_eq!(
+            result
+                .state
+                .side(SideId::P2)
+                .pokemon(PokemonIndex::new(0))
+                .unwrap()
+                .status,
+            None,
+            "{species} is immune"
+        );
+    }
+
+    let already = selected_primary_battle(&dex, &source, &ordinary, 0x1335);
+    let mut builder = BattleStateBuilder::from_state(already).unwrap();
+    builder
+        .edit_pokemon(
+            PokemonRef::new(SideId::P2, PokemonIndex::new(0)),
+            |pokemon| pokemon.status = Some(MajorStatus::Paralysis),
+        )
+        .unwrap();
+    let result = execute_single_move(&dex, &builder.build().unwrap(), 0, foe_target);
+    assert_eq!(
+        result
+            .state
+            .side(SideId::P2)
+            .pokemon(PokemonIndex::new(0))
+            .unwrap()
+            .status,
+        Some(MajorStatus::Paralysis)
+    );
+
+    let misty = dex.field_effect_ids().misty_terrain.unwrap();
+    let terrain = selected_primary_battle(&dex, &source, &ordinary, 0x1336);
+    let mut builder = BattleStateBuilder::from_state(terrain).unwrap();
+    builder.edit_field(|field| {
+        field.terrain = Some(ConditionState::new(misty, Some(5)));
+    });
+    let result = execute_single_move(&dex, &builder.build().unwrap(), 0, foe_target);
+    assert_eq!(
+        result
+            .state
+            .side(SideId::P2)
+            .pokemon(PokemonIndex::new(0))
+            .unwrap()
+            .status,
+        None
+    );
+
+    let protected_target = set_with_moves(&dex, "blastoise", "torrent", &["protect"]);
+    let protected_state = selected_primary_battle(&dex, &source, &protected_target, 0x1337);
+    let protected_action = JointAction::Turn {
+        p1: TurnChoice {
+            actions: [
+                PokemonAction::Move {
+                    move_slot: MoveSlotIndex::new(0),
+                    target: foe_target,
+                    mega: false,
+                },
+                PokemonAction::Move {
+                    move_slot: MoveSlotIndex::new(0),
+                    target: ActionTarget::Automatic,
+                    mega: false,
+                },
+            ],
+        },
+        p2: TurnChoice {
+            actions: [
+                PokemonAction::Move {
+                    move_slot: MoveSlotIndex::new(0),
+                    target: ActionTarget::Automatic,
+                    mega: false,
+                },
+                PokemonAction::Move {
+                    move_slot: MoveSlotIndex::new(0),
+                    target: ActionTarget::Automatic,
+                    mega: false,
+                },
+            ],
+        },
+    };
+    let protected = step(
+        &protected_state,
+        &protected_action,
+        &Mechanics::new(&dex, &EffectRegistry::new()),
+    )
+    .unwrap();
+    assert_eq!(
+        protected
+            .state
+            .side(SideId::P2)
+            .pokemon(PokemonIndex::new(0))
+            .unwrap()
+            .status,
+        None
+    );
+    assert!(protected
+        .diagnostics
+        .turn
+        .unwrap()
+        .target_outcomes
+        .iter()
+        .any(|outcome| outcome.result == TargetResult::Protected));
+
+    let mut missed = None;
+    for seed in 0..10_000 {
+        let state = selected_primary_battle(&dex, &source, &ordinary, seed);
+        let result = execute_single_move(&dex, &state, 0, foe_target);
+        if result
+            .diagnostics
+            .turn
+            .as_ref()
+            .unwrap()
+            .target_outcomes
+            .iter()
+            .any(|outcome| outcome.result == TargetResult::Missed)
+        {
+            missed = Some(result);
+            break;
+        }
+    }
+    assert!(missed.is_some(), "Will-O-Wisp miss remains reachable");
+
+    let asleep = (0..10_000)
+        .map(|seed| {
+            execute_single_move(
+                &dex,
+                &selected_primary_battle(&dex, &source, &ordinary, seed),
+                2,
+                foe_target,
+            )
+        })
+        .find(|result| {
+            result
+                .state
+                .side(SideId::P2)
+                .pokemon(PokemonIndex::new(0))
+                .unwrap()
+                .status
+                == Some(MajorStatus::Sleep)
+        })
+        .expect("controlled Hypnosis hit");
+    let sleeping = asleep
+        .state
+        .side(SideId::P2)
+        .pokemon(PokemonIndex::new(0))
+        .unwrap();
+    assert_eq!(sleeping.status, Some(MajorStatus::Sleep));
+    assert!((1..=3).contains(&sleeping.status_state.sleep_turns));
+    assert!(asleep
+        .state
+        .rng()
+        .trace()
+        .unwrap()
+        .iter()
+        .any(|entry| entry.reason == RngReason::SleepDuration));
+
+    let electric = dex.field_effect_ids().electric_terrain.unwrap();
+    let electric_state = selected_primary_battle(&dex, &source, &ordinary, 0x1339);
+    let mut builder = BattleStateBuilder::from_state(electric_state).unwrap();
+    builder.edit_field(|field| {
+        field.terrain = Some(ConditionState::new(electric, Some(5)));
+    });
+    let prevented = execute_single_move(&dex, &builder.build().unwrap(), 2, foe_target);
+    assert_eq!(
+        prevented
+            .state
+            .side(SideId::P2)
+            .pokemon(PokemonIndex::new(0))
+            .unwrap()
+            .status,
+        None
+    );
+
+    let stat_source = set_with_moves(&dex, "goodra", "sapsipper", &["swordsdance", "growl"]);
+    for (initial, expected) in [(0, 2), (5, 6), (6, 6)] {
+        let state = selected_primary_battle(&dex, &stat_source, &ordinary, 0x1340);
+        let mut builder = BattleStateBuilder::from_state(state).unwrap();
+        builder
+            .edit_pokemon(
+                PokemonRef::new(SideId::P1, PokemonIndex::new(0)),
+                |pokemon| pokemon.stat_stages.atk = initial,
+            )
+            .unwrap();
+        let result =
+            execute_single_move(&dex, &builder.build().unwrap(), 0, ActionTarget::Automatic);
+        assert_eq!(
+            result
+                .state
+                .side(SideId::P1)
+                .pokemon(PokemonIndex::new(0))
+                .unwrap()
+                .stat_stages
+                .atk,
+            expected
+        );
+    }
+    for (initial, expected) in [(0, -1), (-5, -6), (-6, -6)] {
+        let state = selected_primary_battle(&dex, &stat_source, &ordinary, 0x1341);
+        let mut builder = BattleStateBuilder::from_state(state).unwrap();
+        builder
+            .edit_pokemon(
+                PokemonRef::new(SideId::P2, PokemonIndex::new(0)),
+                |pokemon| pokemon.stat_stages.atk = initial,
+            )
+            .unwrap();
+        let result =
+            execute_single_move(&dex, &builder.build().unwrap(), 1, ActionTarget::Automatic);
+        assert_eq!(
+            result
+                .state
+                .side(SideId::P2)
+                .pokemon(PokemonIndex::new(0))
+                .unwrap()
+                .stat_stages
+                .atk,
+            expected
+        );
+    }
+
+    let combined_source = set_with_moves(&dex, "goodra", "sapsipper", &["nobleroar"]);
+    let combined = execute_single_move(
+        &dex,
+        &selected_primary_battle(&dex, &combined_source, &ordinary, 0x1342),
+        0,
+        foe_target,
+    );
+    let combined_target = combined
+        .state
+        .side(SideId::P2)
+        .pokemon(PokemonIndex::new(0))
+        .unwrap();
+    assert_eq!(combined_target.stat_stages.atk, -1);
+    assert_eq!(combined_target.stat_stages.spa, -1);
+}
+
+#[test]
+#[allow(clippy::too_many_lines)]
+fn field_side_and_volatile_reapplication_matches_showdown_semantics() {
+    let dex = champions_reg_mc().unwrap();
+    let foe = set_with_moves(&dex, "blastoise", "torrent", &["swordsdance"]);
+    let field_user = set_with_moves(
+        &dex,
+        "goodra",
+        "sapsipper",
+        &["sunnyday", "raindance", "electricterrain", "trickroom"],
+    );
+
+    let initial = selected_primary_battle(&dex, &field_user, &foe, 0x1350);
+    let sun = execute_single_move(&dex, &initial, 0, ActionTarget::Automatic);
+    let sun_id = dex.field_effect_ids().sun.unwrap();
+    assert_eq!(sun.state.field().weather.unwrap().id, sun_id);
+    assert_eq!(sun.state.field().weather.unwrap().turns_remaining, Some(4));
+    let repeated_sun = execute_single_move(&dex, &sun.state, 0, ActionTarget::Automatic);
+    assert_eq!(
+        repeated_sun.state.field().weather.unwrap().turns_remaining,
+        Some(3),
+        "same weather fails instead of refreshing"
+    );
+    let rain = execute_single_move(&dex, &repeated_sun.state, 1, ActionTarget::Automatic);
+    assert_eq!(
+        rain.state.field().weather.unwrap().id,
+        dex.field_effect_ids().rain.unwrap(),
+        "a different weather replaces the old weather"
+    );
+    assert_eq!(rain.state.field().weather.unwrap().turns_remaining, Some(4));
+
+    let terrain = execute_single_move(&dex, &initial, 2, ActionTarget::Automatic);
+    let electric = dex.field_effect_ids().electric_terrain.unwrap();
+    assert_eq!(terrain.state.field().terrain.unwrap().id, electric);
+    assert_eq!(
+        terrain.state.field().terrain.unwrap().turns_remaining,
+        Some(4)
+    );
+    let repeated_terrain = execute_single_move(&dex, &terrain.state, 2, ActionTarget::Automatic);
+    assert_eq!(
+        repeated_terrain
+            .state
+            .field()
+            .terrain
+            .unwrap()
+            .turns_remaining,
+        Some(3)
+    );
+
+    let room = execute_single_move(&dex, &initial, 3, ActionTarget::Automatic);
+    let trick_room = dex.field_effect_ids().trick_room.unwrap();
+    assert!(room
+        .state
+        .field()
+        .conditions
+        .iter()
+        .any(|condition| condition.id == trick_room));
+    let toggled = execute_single_move(&dex, &room.state, 3, ActionTarget::Automatic);
+    assert!(!toggled
+        .state
+        .field()
+        .conditions
+        .iter()
+        .any(|condition| condition.id == trick_room));
+
+    let condition_user = set_with_moves(
+        &dex,
+        "goodra",
+        "sapsipper",
+        &["reflect", "lightscreen", "tailwind", "magnetrise"],
+    );
+    for (slot, condition, initial_turns, repeated_turns) in [
+        (0_u8, dex.field_effect_ids().reflect.unwrap(), 4, 3),
+        (1_u8, dex.field_effect_ids().light_screen.unwrap(), 4, 3),
+        (2_u8, dex.field_effect_ids().tailwind.unwrap(), 3, 2),
+    ] {
+        let state = selected_primary_battle(&dex, &condition_user, &foe, 0x1351 + u64::from(slot));
+        let first = execute_single_move(&dex, &state, slot, ActionTarget::Automatic);
+        assert_eq!(
+            first
+                .state
+                .side(SideId::P1)
+                .side_conditions
+                .iter()
+                .find(|state| state.id == condition)
+                .unwrap()
+                .turns_remaining,
+            Some(initial_turns)
+        );
+        let repeated = execute_single_move(&dex, &first.state, slot, ActionTarget::Automatic);
+        assert_eq!(
+            repeated
+                .state
+                .side(SideId::P1)
+                .side_conditions
+                .iter()
+                .find(|state| state.id == condition)
+                .unwrap()
+                .turns_remaining,
+            Some(repeated_turns),
+            "reapplication must not refresh the condition"
+        );
+    }
+
+    let state = selected_primary_battle(&dex, &condition_user, &foe, 0x1355);
+    let risen = execute_single_move(&dex, &state, 3, ActionTarget::Automatic);
+    let magnet_rise = dex.field_effect_ids().magnet_rise.unwrap();
+    assert_eq!(
+        risen
+            .state
+            .side(SideId::P1)
+            .pokemon(PokemonIndex::new(0))
+            .unwrap()
+            .volatiles
+            .iter()
+            .find(|state| state.id == magnet_rise)
+            .unwrap()
+            .turns_remaining,
+        Some(4)
+    );
+    let repeated = execute_single_move(&dex, &risen.state, 3, ActionTarget::Automatic);
+    assert_eq!(
+        repeated
+            .state
+            .side(SideId::P1)
+            .pokemon(PokemonIndex::new(0))
+            .unwrap()
+            .volatiles
+            .iter()
+            .find(|state| state.id == magnet_rise)
+            .unwrap()
+            .turns_remaining,
+        Some(3)
+    );
+
+    let mut gravity_builder = BattleStateBuilder::from_state(state).unwrap();
+    gravity_builder.edit_field(|field| {
+        field.conditions.push(ConditionState::new(
+            dex.field_effect_ids().gravity.unwrap(),
+            Some(5),
+        ));
+    });
+    let blocked = execute_single_move(
+        &dex,
+        &gravity_builder.build().unwrap(),
+        3,
+        ActionTarget::Automatic,
+    );
+    assert!(!blocked
+        .state
+        .side(SideId::P1)
+        .pokemon(PokemonIndex::new(0))
+        .unwrap()
+        .has_volatile(magnet_rise));
+}
+
+#[test]
+fn primary_non_damage_fixture_is_executed_from_the_pinned_showdown() {
+    let fixture = primary_non_damage_fixture();
+    assert_eq!(fixture["showdown_commit"], SHOWDOWN_COMMIT);
+    assert_eq!(fixture["format"], "gen9championsvgc2026regmc");
+    assert_eq!(fixture["methodology"]["move_execution"], true);
+    assert_eq!(fixture["methodology"]["full_transition_comparison"], false);
+    for case in [
+        "will_o_wisp",
+        "thunder_wave",
+        "sleep",
+        "stat_stages",
+        "recover",
+        "field_conditions",
+        "side_conditions",
+        "trick_room",
+        "magnet_rise",
+        "protect",
+    ] {
+        assert!(
+            fixture["observations"][case].is_object(),
+            "missing {case} corpus"
+        );
+    }
+    assert_eq!(
+        fixture["observations"]["recover"]["odd_max_hp"]["healed"],
+        78
+    );
+    assert_eq!(
+        fixture["observations"]["trick_room"]["repeated"]["active"],
+        false
+    );
+    let cases = fixture["cases"].as_array().unwrap();
+    let recover = cases
+        .iter()
+        .find(|case| case["name"] == "recover-rounding")
+        .unwrap();
+    assert_eq!(recover["expected"]["odd_max_hp_healed"], 78);
+    let room = cases
+        .iter()
+        .find(|case| case["name"] == "trick-room-toggle")
+        .unwrap();
+    assert_eq!(room["expected"]["repeated_active"], false);
 }
 
 #[derive(Debug, Deserialize)]

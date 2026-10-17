@@ -164,6 +164,178 @@
         "interaction_unit:crates/rotom-dex/tests/combat.rs#rage_powder_respects_grass_overcoat_and_safety_goggles_and_feint_breaks_protect",
         "interaction_differential:data/fixtures/differential/doubles-targeting.json#feint-break-protect"
       ]
+    },
+    {
+      "id": "willowisp",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 13.3.1",
+      "evidence": [
+        "unit:crates/rotom-dex/tests/combat.rs#status_and_stat_moves_cover_success_immunity_prevention_miss_and_bounds",
+        "differential:data/fixtures/differential/primary-non-damage.json#will-o-wisp-matrix",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#status_and_stat_moves_cover_success_immunity_prevention_miss_and_bounds",
+        "interaction_differential:data/fixtures/differential/primary-non-damage.json#will-o-wisp-matrix"
+      ]
+    },
+    {
+      "id": "thunderwave",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 13.3.1",
+      "evidence": [
+        "unit:crates/rotom-dex/tests/combat.rs#status_and_stat_moves_cover_success_immunity_prevention_miss_and_bounds",
+        "differential:data/fixtures/differential/primary-non-damage.json#thunder-wave-immunities",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#status_and_stat_moves_cover_success_immunity_prevention_miss_and_bounds",
+        "interaction_differential:data/fixtures/differential/primary-non-damage.json#thunder-wave-immunities"
+      ]
+    },
+    {
+      "id": "hypnosis",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.3.1",
+      "evidence": [
+        "unit:crates/rotom-dex/tests/combat.rs#status_and_stat_moves_cover_success_immunity_prevention_miss_and_bounds",
+        "differential:data/fixtures/differential/primary-non-damage.json#hypnosis-sleep-rng",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#status_and_stat_moves_cover_success_immunity_prevention_miss_and_bounds"
+      ]
+    },
+    {
+      "id": "swordsdance",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "owner_pr": "PR 13.3.1",
+      "evidence": [
+        "unit:crates/rotom-dex/tests/combat.rs#status_and_stat_moves_cover_success_immunity_prevention_miss_and_bounds",
+        "differential:data/fixtures/differential/primary-non-damage.json#swords-dance-limits"
+      ]
+    },
+    {
+      "id": "nobleroar",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "owner_pr": "PR 13.3.1",
+      "evidence": [
+        "unit:crates/rotom-dex/tests/combat.rs#status_and_stat_moves_cover_success_immunity_prevention_miss_and_bounds",
+        "differential:data/fixtures/differential/primary-non-damage.json#noble-roar-combined"
+      ]
+    },
+    {
+      "id": "recover",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "owner_pr": "PR 13.3.1",
+      "evidence": [
+        "unit:crates/rotom-dex/tests/combat.rs#healing_uses_showdown_rounding_and_full_hp_fails",
+        "differential:data/fixtures/differential/primary-non-damage.json#recover-rounding"
+      ]
+    },
+    {
+      "id": "sunnyday",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 13.3.1",
+      "evidence": [
+        "unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics",
+        "differential:data/fixtures/differential/primary-non-damage.json#sunny-day-reapplication",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics",
+        "interaction_differential:data/fixtures/differential/primary-non-damage.json#sunny-day-reapplication"
+      ]
+    },
+    {
+      "id": "electricterrain",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 13.3.1",
+      "evidence": [
+        "unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics",
+        "differential:data/fixtures/differential/primary-non-damage.json#electric-terrain-reapplication",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics",
+        "interaction_differential:data/fixtures/differential/primary-non-damage.json#electric-terrain-reapplication"
+      ]
+    },
+    {
+      "id": "reflect",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 13.3.1",
+      "evidence": [
+        "unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics",
+        "differential:data/fixtures/differential/primary-non-damage.json#reflect-reapplication",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics",
+        "interaction_differential:data/fixtures/differential/primary-non-damage.json#reflect-reapplication"
+      ]
+    },
+    {
+      "id": "lightscreen",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 13.3.1",
+      "evidence": [
+        "unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics",
+        "differential:data/fixtures/differential/primary-non-damage.json#light-screen-reapplication",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics",
+        "interaction_differential:data/fixtures/differential/primary-non-damage.json#light-screen-reapplication"
+      ]
+    },
+    {
+      "id": "tailwind",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 13.3.1",
+      "evidence": [
+        "unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics",
+        "differential:data/fixtures/differential/primary-non-damage.json#tailwind-reapplication",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics",
+        "interaction_differential:data/fixtures/differential/primary-non-damage.json#tailwind-reapplication"
+      ]
+    },
+    {
+      "id": "trickroom",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 13.3.1",
+      "evidence": [
+        "unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics",
+        "differential:data/fixtures/differential/primary-non-damage.json#trick-room-toggle",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics",
+        "interaction_differential:data/fixtures/differential/primary-non-damage.json#trick-room-toggle"
+      ]
+    },
+    {
+      "id": "magnetrise",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 13.3.1",
+      "evidence": [
+        "unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics",
+        "differential:data/fixtures/differential/primary-non-damage.json#magnet-rise-reapplication",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics",
+        "interaction_differential:data/fixtures/differential/primary-non-damage.json#magnet-rise-reapplication"
+      ]
     }
   ]
 }

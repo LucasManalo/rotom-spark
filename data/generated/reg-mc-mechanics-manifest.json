@@ -18176,8 +18176,11 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/primary-non-damage.json#electric-terrain-reapplication",
         "file:crates/rotom-core/src/combat.rs",
         "file:crates/rotom-dex/src/combat.rs",
+        "interaction_differential:data/fixtures/differential/primary-non-damage.json#electric-terrain-reapplication",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics",
         "species/ampharos",
         "species/bellibolt",
         "species/dedenne",
@@ -18200,7 +18203,8 @@
         "species/rotomwash",
         "species/stunfisk",
         "species/toxtricity",
-        "species/toxtricitylowkey"
+        "species/toxtricitylowkey",
+        "unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics"
       ],
       "effect_families": [
         "field_or_side_condition",
@@ -18214,9 +18218,9 @@
         "field_or_side_condition"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.3"
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 13.3.1"
     },
     {
       "id": "electrify",
@@ -24274,8 +24278,10 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/primary-non-damage.json#hypnosis-sleep-rng",
         "file:crates/rotom-core/src/combat.rs",
         "file:crates/rotom-dex/src/combat.rs",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#status_and_stat_moves_cover_success_immunity_prevention_miss_and_bounds",
         "species/aromatisse",
         "species/chimecho",
         "species/delphox",
@@ -24299,7 +24305,8 @@
         "species/politoed",
         "species/spiritomb",
         "species/watchog",
-        "species/wyrdeer"
+        "species/wyrdeer",
+        "unit:crates/rotom-dex/tests/combat.rs#status_and_stat_moves_cover_success_immunity_prevention_miss_and_bounds"
       ],
       "effect_families": [
         "major_status",
@@ -24313,9 +24320,9 @@
         "major_status"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.3"
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.3.1"
     },
     {
       "id": "icebeam",
@@ -26089,8 +26096,11 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/primary-non-damage.json#light-screen-reapplication",
         "file:crates/rotom-core/src/combat.rs",
         "file:crates/rotom-dex/src/combat.rs",
+        "interaction_differential:data/fixtures/differential/primary-non-damage.json#light-screen-reapplication",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics",
         "species/alakazam",
         "species/alcremie",
         "species/alcremiecaramelswirl",
@@ -26216,7 +26226,8 @@
         "species/watchog",
         "species/whimsicott",
         "species/wigglytuff",
-        "species/wyrdeer"
+        "species/wyrdeer",
+        "unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics"
       ],
       "effect_families": [
         "field_or_side_condition",
@@ -26230,9 +26241,9 @@
         "field_or_side_condition"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.3"
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 13.3.1"
     },
     {
       "id": "liquidation",
@@ -26702,12 +26713,18 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/primary-non-damage.json#magnet-rise-reapplication",
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "interaction_differential:data/fixtures/differential/primary-non-damage.json#magnet-rise-reapplication",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics",
         "species/dedenne",
         "species/forretress",
         "species/klefki",
         "species/metagross",
         "species/steelix",
-        "species/vanilluxe"
+        "species/vanilluxe",
+        "unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics"
       ],
       "effect_families": [
         "custom_callback",
@@ -26719,14 +26736,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "volatile",
-        "custom_callback",
-        "special_behavior"
+        "volatile"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 13.3.1"
     },
     {
       "id": "makeitrain",
@@ -28090,13 +28105,15 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/primary-non-damage.json#noble-roar-combined",
         "file:crates/rotom-core/src/combat.rs",
         "file:crates/rotom-dex/src/combat.rs",
         "species/kommoo",
         "species/pyroar",
         "species/rillaboom",
         "species/toxtricity",
-        "species/toxtricitylowkey"
+        "species/toxtricitylowkey",
+        "unit:crates/rotom-dex/tests/combat.rs#status_and_stat_moves_cover_success_immunity_prevention_miss_and_bounds"
       ],
       "effect_families": [
         "stat_change",
@@ -28110,9 +28127,9 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "differential_verified",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.3"
+      "owner_pr": "PR 13.3.1"
     },
     {
       "id": "noretreat",
@@ -31088,6 +31105,7 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/primary-non-damage.json#recover-rounding",
         "file:crates/rotom-core/src/combat.rs",
         "file:crates/rotom-dex/src/combat.rs",
         "species/alakazam",
@@ -31112,7 +31130,8 @@
         "species/reuniclus",
         "species/sableye",
         "species/starmie",
-        "species/toxapex"
+        "species/toxapex",
+        "unit:crates/rotom-dex/tests/combat.rs#healing_uses_showdown_rounding_and_full_hp_fails"
       ],
       "effect_families": [
         "healing",
@@ -31126,9 +31145,9 @@
         "healing"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "differential_verified",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.3"
+      "owner_pr": "PR 13.3.1"
     },
     {
       "id": "recycle",
@@ -31171,8 +31190,11 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/primary-non-damage.json#reflect-reapplication",
         "file:crates/rotom-core/src/combat.rs",
         "file:crates/rotom-dex/src/combat.rs",
+        "interaction_differential:data/fixtures/differential/primary-non-damage.json#reflect-reapplication",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics",
         "species/aegislash",
         "species/alakazam",
         "species/ampharos",
@@ -31249,7 +31271,8 @@
         "species/victreebel",
         "species/weavile",
         "species/wigglytuff",
-        "species/wyrdeer"
+        "species/wyrdeer",
+        "unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics"
       ],
       "effect_families": [
         "field_or_side_condition",
@@ -31263,9 +31286,9 @@
         "field_or_side_condition"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.3"
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 13.3.1"
     },
     {
       "id": "reflecttype",
@@ -37155,8 +37178,11 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/primary-non-damage.json#sunny-day-reapplication",
         "file:crates/rotom-core/src/combat.rs",
         "file:crates/rotom-dex/src/combat.rs",
+        "interaction_differential:data/fixtures/differential/primary-non-damage.json#sunny-day-reapplication",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics",
         "species/absol",
         "species/aegislash",
         "species/aerodactyl",
@@ -37366,7 +37392,8 @@
         "species/whimsicott",
         "species/wigglytuff",
         "species/wyrdeer",
-        "species/zoroark"
+        "species/zoroark",
+        "unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics"
       ],
       "effect_families": [
         "field_or_side_condition",
@@ -37380,9 +37407,9 @@
         "field_or_side_condition"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.3"
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 13.3.1"
     },
     {
       "id": "supercellslam",
@@ -37894,6 +37921,7 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/primary-non-damage.json#swords-dance-limits",
         "file:crates/rotom-core/src/combat.rs",
         "file:crates/rotom-dex/src/combat.rs",
         "species/abomasnow",
@@ -37975,7 +38003,8 @@
         "species/watchog",
         "species/weavile",
         "species/zoroark",
-        "species/zoroarkhisui"
+        "species/zoroarkhisui",
+        "unit:crates/rotom-dex/tests/combat.rs#status_and_stat_moves_cover_success_immunity_prevention_miss_and_bounds"
       ],
       "effect_families": [
         "stat_change",
@@ -37989,9 +38018,9 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "differential_verified",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.3"
+      "owner_pr": "PR 13.3.1"
     },
     {
       "id": "synthesis",
@@ -38102,8 +38131,11 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/primary-non-damage.json#tailwind-reapplication",
         "file:crates/rotom-core/src/combat.rs",
         "file:crates/rotom-dex/src/combat.rs",
+        "interaction_differential:data/fixtures/differential/primary-non-damage.json#tailwind-reapplication",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics",
         "species/aerodactyl",
         "species/altaria",
         "species/corviknight",
@@ -38147,7 +38179,8 @@
         "species/vivillonsun",
         "species/vivillontundra",
         "species/volcarona",
-        "species/whimsicott"
+        "species/whimsicott",
+        "unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics"
       ],
       "effect_families": [
         "field_or_side_condition",
@@ -38161,9 +38194,9 @@
         "field_or_side_condition"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.3"
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 13.3.1"
     },
     {
       "id": "taunt",
@@ -39159,8 +39192,11 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/primary-non-damage.json#thunder-wave-immunities",
         "file:crates/rotom-core/src/combat.rs",
         "file:crates/rotom-dex/src/combat.rs",
+        "interaction_differential:data/fixtures/differential/primary-non-damage.json#thunder-wave-immunities",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#status_and_stat_moves_cover_success_immunity_prevention_miss_and_bounds",
         "species/absol",
         "species/aggron",
         "species/alakazam",
@@ -39240,7 +39276,8 @@
         "species/umbreon",
         "species/watchog",
         "species/wigglytuff",
-        "species/wyrdeer"
+        "species/wyrdeer",
+        "unit:crates/rotom-dex/tests/combat.rs#status_and_stat_moves_cover_success_immunity_prevention_miss_and_bounds"
       ],
       "effect_families": [
         "major_status",
@@ -39254,9 +39291,9 @@
         "major_status"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.3"
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 13.3.1"
     },
     {
       "id": "tickle",
@@ -39898,8 +39935,11 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/primary-non-damage.json#trick-room-toggle",
         "file:crates/rotom-core/src/combat.rs",
         "file:crates/rotom-dex/src/combat.rs",
+        "interaction_differential:data/fixtures/differential/primary-non-damage.json#trick-room-toggle",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics",
         "species/alakazam",
         "species/armarouge",
         "species/aromatisse",
@@ -39947,7 +39987,8 @@
         "species/starmie",
         "species/trevenant",
         "species/whimsicott",
-        "species/wyrdeer"
+        "species/wyrdeer",
+        "unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics"
       ],
       "effect_families": [
         "field_or_side_condition",
@@ -39961,9 +40002,9 @@
         "field_or_side_condition"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.3"
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 13.3.1"
     },
     {
       "id": "triplearrows",
@@ -41106,8 +41147,11 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/primary-non-damage.json#will-o-wisp-matrix",
         "file:crates/rotom-core/src/combat.rs",
         "file:crates/rotom-dex/src/combat.rs",
+        "interaction_differential:data/fixtures/differential/primary-non-damage.json#will-o-wisp-matrix",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#status_and_stat_moves_cover_success_immunity_prevention_miss_and_bounds",
         "species/absol",
         "species/altaria",
         "species/arcanine",
@@ -41162,7 +41206,8 @@
         "species/typhlosion",
         "species/typhlosionhisui",
         "species/volcarona",
-        "species/zoroarkhisui"
+        "species/zoroarkhisui",
+        "unit:crates/rotom-dex/tests/combat.rs#status_and_stat_moves_cover_success_immunity_prevention_miss_and_bounds"
       ],
       "effect_families": [
         "major_status",
@@ -41176,9 +41221,9 @@
         "major_status"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.3"
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 13.3.1"
     },
     {
       "id": "wish",
@@ -46894,19 +46939,19 @@
       "move": {
         "total": 510,
         "implementation": {
-          "unsupported": 399,
+          "unsupported": 398,
           "partial": 0,
-          "implemented": 111
+          "implemented": 112
         },
         "verification": {
-          "not_tested": 499,
+          "not_tested": 486,
           "unit_tested": 1,
-          "differential_verified": 10
+          "differential_verified": 23
         },
         "interaction_verification": {
-          "not_tested": 505,
-          "unit_tested": 0,
-          "differential_verified": 5
+          "not_tested": 495,
+          "unit_tested": 1,
+          "differential_verified": 14
         },
         "reachability": {
           "direct_legal_set": 510,

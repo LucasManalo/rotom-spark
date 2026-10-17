@@ -178,9 +178,11 @@ function moveExecutionRequirements(move) {
 		(move.sideCondition && !['reflect', 'lightscreen', 'tailwind'].includes(move.sideCondition)) ||
 		(move.pseudoWeather && !['trickroom', 'gravity', 'magicroom', 'wonderroom'].includes(move.pseudoWeather));
 	for (const effectKind of behavior.effect_kinds) capabilities.add(effectKind);
-	if (behavior.callbacks.length) capabilities.add('custom_callback');
+	if (behavior.callbacks.length && move.id !== 'magnetrise') capabilities.add('custom_callback');
 	if (move.id === 'toxic' || unsupportedCondition ||
-		behavior.intrinsic_flags.some(flag => flag !== 'heal' || !move.heal) ||
+		behavior.intrinsic_flags.some(flag =>
+			(flag !== 'heal' || !move.heal) && !(move.id === 'magnetrise' && flag === 'gravity')
+		) ||
 		behavior.special_properties.some(property => !['breaksProtect', 'ignoreImmunity'].includes(property))) {
 		capabilities.add('special_behavior');
 	}

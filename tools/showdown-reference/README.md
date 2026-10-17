@@ -51,3 +51,11 @@ residual ordering metadata with:
 node tools/showdown-reference/field-effects.cjs
 node tools/showdown-reference/field-effects.cjs --check
 ```
+
+Regenerate or verify primary non-damage move success, failure, rounding,
+reapplication, protection, and multi-effect behavior with:
+
+```text
+node tools/showdown-reference/primary-non-damage.cjs
+node tools/showdown-reference/primary-non-damage.cjs --check
+```
