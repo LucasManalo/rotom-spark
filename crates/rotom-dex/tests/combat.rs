@@ -1,20 +1,181 @@
 use rotom_core::{
-    calculate_move_damage, step, ActionTarget, ActiveSlot, BattlePhase, BattleState,
-    BattleStateBuilder, CombatData, ConditionState, EffectRegistry, FaintTarget, FormId, Gender,
-    JointAction, Mechanics, MoveCapabilities, MoveCapability, MoveId, MoveOperation, MoveSlotIndex,
-    PokemonAction, PokemonIndex, PokemonPosition, PokemonRef, PokemonSet, RngOperation, RngReason,
-    SideId, SideState, StatAllocation, StatStages, TargetResult, TeamState, TurnChoice,
+    calculate_move_damage, step, ActionTarget, ActiveSlot, BattleEvent, BattlePhase, BattleStat,
+    BattleState, BattleStateBuilder, CombatData, ConditionState, EffectInvocation, EffectOrder,
+    EffectRegistry, EffectSource, EffectState, EventContext, EventDispatch, FaintTarget, FormId,
+    Gender, JointAction, MajorStatus, Mechanics, MoveCapabilities, MoveCapability, MoveId,
+    MoveOperation, MoveSlotIndex, PokemonAction, PokemonIndex, PokemonPosition, PokemonRef,
+    PokemonSet, RngOperation, RngReason, SideId, SideState, StatAllocation, StatStages,
+    TargetResult, TeamState, TurnChoice,
 };
 use rotom_dex::champions_reg_mc;
 use serde::Deserialize;
 
 const SHOWDOWN_COMMIT: &str = "b79ce06d06b8f0dc8de8bb348bc9cab5d931553f";
 
+#[allow(clippy::unnecessary_wraps)]
+fn prevent_status(
+    _: &mut EffectState<'_>,
+    _: &EffectInvocation,
+    _: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), rotom_core::BattleError> {
+    dispatch.cancel();
+    Ok(())
+}
+
 fn doubles_targeting_fixture() -> serde_json::Value {
     serde_json::from_str(include_str!(
         "../../../data/fixtures/differential/doubles-targeting.json"
     ))
     .expect("doubles targeting fixture")
+}
+
+#[test]
+#[allow(clippy::too_many_lines)]
+fn primary_non_damage_operations_share_the_canonical_executor() {
+    let dex = champions_reg_mc().unwrap();
+    let p1 = set_with_moves(
+        &dex,
+        "charizard",
+        "blaze",
+        &["swordsdance", "recover", "willowisp", "sunnyday"],
+    );
+    let p2 = set_with_moves(&dex, "blastoise", "torrent", &["swordsdance"]);
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let action = |slot, target| PokemonAction::Move {
+        move_slot: MoveSlotIndex::new(slot),
+        target,
+        mega: false,
+    };
+    let passive = action(0, ActionTarget::Automatic);
+
+    let initial = selected_battle_for_sets(&dex, &p1, &p2, 41, false);
+    let mut builder = BattleStateBuilder::from_state(initial).unwrap();
+    builder
+        .edit_pokemon(
+            PokemonRef::new(SideId::P1, PokemonIndex::new(1)),
+            |pokemon| {
+                pokemon.current_hp -= 20;
+            },
+        )
+        .unwrap();
+    let battle = builder.build().unwrap();
+    let result = step(
+        &battle,
+        &JointAction::Turn {
+            p1: TurnChoice {
+                actions: [
+                    action(0, ActionTarget::Automatic),
+                    action(1, ActionTarget::Automatic),
+                ],
+            },
+            p2: TurnChoice {
+                actions: [passive, passive],
+            },
+        },
+        &mechanics,
+    )
+    .unwrap();
+    assert_eq!(
+        result
+            .state
+            .side(SideId::P1)
+            .pokemon(PokemonIndex::new(0))
+            .unwrap()
+            .stat_stages
+            .get(BattleStat::Attack),
+        2
+    );
+    let healed = result
+        .state
+        .side(SideId::P1)
+        .pokemon(PokemonIndex::new(1))
+        .unwrap();
+    assert_eq!(healed.current_hp, healed.stats.hp);
+
+    let result = step(
+        &selected_battle_for_sets(&dex, &p1, &p2, 42, false),
+        &JointAction::Turn {
+            p1: TurnChoice {
+                actions: [
+                    action(2, ActionTarget::Foe(ActiveSlot::Left)),
+                    action(0, ActionTarget::Automatic),
+                ],
+            },
+            p2: TurnChoice {
+                actions: [passive, passive],
+            },
+        },
+        &mechanics,
+    )
+    .unwrap();
+    assert_eq!(
+        result
+            .state
+            .side(SideId::P2)
+            .pokemon(PokemonIndex::new(0))
+            .unwrap()
+            .status,
+        Some(MajorStatus::Burn)
+    );
+
+    let mut prevention = EffectRegistry::new();
+    prevention.register(
+        BattleEvent::TrySetStatus,
+        EffectSource::Ability(dex.resolve_ability("torrent").unwrap().0),
+        EffectOrder::default(),
+        prevent_status,
+    );
+    let blocked = step(
+        &selected_battle_for_sets(&dex, &p1, &p2, 44, false),
+        &JointAction::Turn {
+            p1: TurnChoice {
+                actions: [
+                    action(2, ActionTarget::Foe(ActiveSlot::Left)),
+                    action(0, ActionTarget::Automatic),
+                ],
+            },
+            p2: TurnChoice {
+                actions: [passive, passive],
+            },
+        },
+        &Mechanics::new(&dex, &prevention),
+    )
+    .unwrap();
+    assert_eq!(
+        blocked
+            .state
+            .side(SideId::P2)
+            .pokemon(PokemonIndex::new(0))
+            .unwrap()
+            .status,
+        None
+    );
+
+    let field_result = step(
+        &selected_battle_for_sets(&dex, &p1, &p2, 43, false),
+        &JointAction::Turn {
+            p1: TurnChoice {
+                actions: [
+                    action(3, ActionTarget::Automatic),
+                    action(0, ActionTarget::Automatic),
+                ],
+            },
+            p2: TurnChoice {
+                actions: [passive, passive],
+            },
+        },
+        &mechanics,
+    )
+    .unwrap();
+    assert_eq!(
+        field_result.state.field().weather.unwrap().id,
+        dex.field_effect_ids().sun.unwrap()
+    );
+    assert_eq!(
+        field_result.state.field().weather.unwrap().turns_remaining,
+        Some(4)
+    );
 }
 
 #[derive(Debug, Deserialize)]

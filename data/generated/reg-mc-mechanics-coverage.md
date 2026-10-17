@@ -12,7 +12,7 @@ This report is generated from `reg-mc-mechanics-manifest.json`. Presence means r
 | condition | 96 | 0 | 0 | 96 | 0 | 0 | 96 | 0 |
 | form | 153 | 0 | 0 | 153 | 0 | 0 | 153 | 0 |
 | item | 166 | 0 | 0 | 166 | 0 | 0 | 166 | 0 |
-| move | 510 | 58 | 0 | 452 | 10 | 1 | 499 | 5 |
+| move | 510 | 111 | 0 | 399 | 10 | 1 | 499 | 5 |
 | species | 293 | 0 | 0 | 293 | 0 | 0 | 293 | 0 |
 
 ## Next unsupported reachable mechanics
@@ -21,7 +21,7 @@ This report is generated from `reg-mc-mechanics-manifest.json`. Presence means r
 - condition: `allyswitch` — Ally Switch (battle_generated)
 - form: `abomasnowmega` — Abomasnow-Mega (battle_generated)
 - item: `abomasite` — Abomasite (direct_legal_set)
-- move: `acidarmor` — Acid Armor (direct_legal_set)
+- move: `acidspray` — Acid Spray (direct_legal_set)
 - species: `abomasnow` — Abomasnow (direct_legal_set)
 
 ## Unresolved reachability

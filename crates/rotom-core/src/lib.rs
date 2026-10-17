@@ -26,7 +26,7 @@ pub use combat::{
     calculate_damage, calculate_move_damage, CombatData, CombatMove, DamageResult,
     ExpiredCondition, ExpiredVolatile, FieldHpChange, Modifier, MoveAccuracy, MoveCapabilities,
     MoveCapability, MoveCategory, MoveIntrinsic, MoveOperation, PokemonType, PokemonTypes,
-    ResidualDamage, ResolvedAction, TargetOutcome, TargetResult, TurnResolution,
+    PrimaryMoveEffect, ResidualDamage, ResolvedAction, TargetOutcome, TargetResult, TurnResolution,
 };
 pub use error::BattleError;
 pub use event::{

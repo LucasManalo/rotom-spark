@@ -1,9 +1,9 @@
 use crate::{
     kernel::StateKernel, ActionTarget, ActiveSlot, BattleError, BattleEvent, BattlePhase,
-    BattleState, ConditionId, ConditionState, EffectRegistry, EventContext, EventDispatch,
-    EventValue, FaintTarget, FieldEffectIds, FormId, MajorStatus, MoveId, MoveSlotIndex,
-    MoveTarget, PokemonAction, PokemonIndex, PokemonRef, PokemonState, RngReason, SideId,
-    SpeciesId,
+    BattleStat, BattleState, ConditionId, ConditionState, EffectRegistry, EventContext,
+    EventDispatch, EventValue, FaintTarget, FieldEffectIds, FormId, MajorStatus, MoveId,
+    MoveSlotIndex, MoveTarget, PokemonAction, PokemonIndex, PokemonRef, PokemonState, RngReason,
+    SideId, SpeciesId,
 };
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
@@ -59,6 +59,43 @@ pub enum MoveOperation {
     LevelDamage,
     /// A move whose primary behavior does not use the standard damage formula.
     NonDamage,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(tag = "kind", rename_all = "snake_case")]
+pub enum PrimaryMoveEffect {
+    InflictStatus {
+        status: MajorStatus,
+    },
+    CureStatus,
+    ChangeStatStage {
+        stat: BattleStat,
+        delta: i8,
+    },
+    Heal {
+        numerator: u16,
+        denominator: u16,
+    },
+    AddVolatile {
+        condition: ConditionId,
+        duration: Option<u8>,
+    },
+    SetWeather {
+        condition: ConditionId,
+        duration: u8,
+    },
+    SetTerrain {
+        condition: ConditionId,
+        duration: u8,
+    },
+    AddFieldCondition {
+        condition: ConditionId,
+        duration: u8,
+    },
+    AddSideCondition {
+        condition: ConditionId,
+        duration: u8,
+    },
 }
 
 /// A move-execution facility required by a resolved move definition.
@@ -183,6 +220,13 @@ impl MoveCapabilities {
             | MoveCapability::NonDamagePrimary as u32
             | MoveCapability::Volatile as u32,
     );
+    pub const PR_13_3: Self = Self(
+        Self::PR_13_2.0
+            | MoveCapability::MajorStatus as u32
+            | MoveCapability::StatStage as u32
+            | MoveCapability::Healing as u32
+            | MoveCapability::FieldOrSideCondition as u32,
+    );
 
     #[must_use]
     pub const fn with(self, capability: MoveCapability) -> Self {
@@ -232,6 +276,10 @@ pub trait CombatData {
     /// Narrow intrinsic behavior implemented by the unified move executor.
     fn move_intrinsic(&self, _move_id: MoveId) -> MoveIntrinsic {
         MoveIntrinsic::Ordinary
+    }
+
+    fn primary_move_effects(&self, _move_id: MoveId) -> Vec<PrimaryMoveEffect> {
+        Vec::new()
     }
 
     /// Whether the move is stopped by Protect-like guards.
@@ -429,6 +477,7 @@ struct MoveExecutionContext {
     move_data: CombatMove,
     source_species: SpeciesId,
     source_form: Option<FormId>,
+    primary_effects: Vec<PrimaryMoveEffect>,
 }
 
 #[derive(Clone, Copy)]
@@ -651,7 +700,8 @@ impl BattleState {
             BattleError::DataMismatch(format!("missing combat data for move {move_id}"))
         })?;
         let intrinsic = data.move_intrinsic(move_id);
-        preflight_move(move_id, move_data, intrinsic)?;
+        let primary_effects = data.primary_move_effects(move_id);
+        preflight_move(move_id, move_data, intrinsic, &primary_effects)?;
         let original_target = self.resolve_original_target(queued, move_data.target)?;
         let targets = self.resolve_target_set(
             data,
@@ -669,6 +719,7 @@ impl BattleState {
             move_data,
             source_species: source.species,
             source_form: source.form,
+            primary_effects,
         })
     }
 
@@ -932,6 +983,15 @@ impl BattleState {
         field_effects: &FieldEffectIds,
         resolution: &mut TurnResolution,
     ) -> Result<(), BattleError> {
+        if !move_context.primary_effects.is_empty() {
+            return self.execute_declarative_non_damage(
+                data,
+                move_context,
+                effects,
+                field_effects,
+                resolution,
+            );
+        }
         let context = EventContext {
             source: Some(move_context.source),
             target: Some(move_context.source),
@@ -1057,6 +1117,365 @@ impl BattleState {
         Ok(())
     }
 
+    #[allow(clippy::too_many_lines)]
+    fn execute_declarative_non_damage<D: CombatData>(
+        &mut self,
+        data: &D,
+        move_context: &MoveExecutionContext,
+        effects: &EffectRegistry,
+        field_effects: &FieldEffectIds,
+        resolution: &mut TurnResolution,
+    ) -> Result<(), BattleError> {
+        let global = move_context.primary_effects.iter().all(|effect| {
+            matches!(
+                effect,
+                PrimaryMoveEffect::SetWeather { .. }
+                    | PrimaryMoveEffect::SetTerrain { .. }
+                    | PrimaryMoveEffect::AddFieldCondition { .. }
+                    | PrimaryMoveEffect::AddSideCondition { .. }
+            )
+        });
+        let targets = if global {
+            vec![None]
+        } else {
+            move_context.targets.iter().copied().map(Some).collect()
+        };
+        let mut any_applied = false;
+        for target_context in targets {
+            let target = target_context.map(|target| target.target);
+            let context = EventContext {
+                source: Some(move_context.source),
+                target,
+                move_id: Some(move_context.move_id),
+            };
+            if let Some(target) = target {
+                let try_hit = effects.dispatch(
+                    self,
+                    BattleEvent::TryHit,
+                    context,
+                    EventValue::Boolean(true),
+                )?;
+                let cancelled = try_hit.cancelled || try_hit.value == EventValue::Boolean(false);
+                resolution.events.push(try_hit);
+                let blocked = !cancelled
+                    && (self.priority_move_blocked_target(
+                        data,
+                        field_effects,
+                        move_context,
+                        target,
+                    )? || self.target_is_protected(data, field_effects, move_context, target));
+                if cancelled || blocked {
+                    Self::record_non_damage_outcome(
+                        move_context,
+                        target_context,
+                        false,
+                        resolution,
+                    );
+                    continue;
+                }
+                if !self.check_accuracy(
+                    move_context.move_data.accuracy,
+                    move_context.move_id,
+                    field_effects,
+                    move_context.source,
+                    target,
+                )? {
+                    Self::record_non_damage_outcome(
+                        move_context,
+                        target_context,
+                        false,
+                        resolution,
+                    );
+                    continue;
+                }
+            }
+            let mut applied = false;
+            for effect in &move_context.primary_effects {
+                applied |= self.apply_primary_effect(
+                    data,
+                    effects,
+                    field_effects,
+                    move_context,
+                    target,
+                    *effect,
+                    resolution,
+                )?;
+            }
+            if applied {
+                resolution.events.push(effects.dispatch(
+                    self,
+                    BattleEvent::Hit,
+                    context,
+                    EventValue::None,
+                )?);
+            }
+            if let Some(target_context) = target_context {
+                Self::record_non_damage_outcome(
+                    move_context,
+                    Some(target_context),
+                    applied,
+                    resolution,
+                );
+            }
+            any_applied |= applied;
+        }
+        resolution.actions.push(if any_applied {
+            ResolvedAction::Used {
+                side: move_context.queued.side,
+                slot: move_context.queued.slot,
+                move_slot: move_context.queued.move_slot,
+            }
+        } else {
+            ResolvedAction::Skipped {
+                side: move_context.queued.side,
+                slot: move_context.queued.slot,
+            }
+        });
+        resolution.events.push(effects.dispatch(
+            self,
+            BattleEvent::AfterMove,
+            EventContext {
+                source: Some(move_context.source),
+                target: move_context.targets.last().map(|target| target.target),
+                move_id: Some(move_context.move_id),
+            },
+            EventValue::None,
+        )?);
+        Ok(())
+    }
+
+    fn record_non_damage_outcome(
+        context: &MoveExecutionContext,
+        target: Option<TargetExecutionContext>,
+        applied: bool,
+        resolution: &mut TurnResolution,
+    ) {
+        if let Some(target) = target {
+            resolution.target_outcomes.push(TargetOutcome {
+                source: context.source,
+                move_id: context.move_id,
+                target: target.target,
+                redirected: target.redirected,
+                result: if applied {
+                    TargetResult::Hit
+                } else {
+                    TargetResult::Cancelled
+                },
+                calculated_damage: 0,
+                applied_hp_loss: 0,
+                fainted: false,
+            });
+        }
+    }
+
+    #[allow(clippy::too_many_arguments, clippy::too_many_lines)]
+    fn apply_primary_effect<D: CombatData>(
+        &mut self,
+        data: &D,
+        effects: &EffectRegistry,
+        field_effects: &FieldEffectIds,
+        context: &MoveExecutionContext,
+        target: Option<PokemonRef>,
+        effect: PrimaryMoveEffect,
+        resolution: &mut TurnResolution,
+    ) -> Result<bool, BattleError> {
+        let pokemon = || {
+            target.ok_or_else(|| {
+                BattleError::DataMismatch(
+                    "Pokémon-targeted primary effect has no target".to_owned(),
+                )
+            })
+        };
+        match effect {
+            PrimaryMoveEffect::InflictStatus { status } => {
+                let target = pokemon()?;
+                if !self.status_is_eligible(
+                    data,
+                    field_effects,
+                    target,
+                    status,
+                    context.move_data.move_type,
+                )? {
+                    return Ok(false);
+                }
+                let event = effects.dispatch(
+                    self,
+                    BattleEvent::TrySetStatus,
+                    EventContext {
+                        source: Some(context.source),
+                        target: Some(target),
+                        move_id: Some(context.move_id),
+                    },
+                    EventValue::Boolean(true),
+                )?;
+                let allowed = !event.cancelled && event.value == EventValue::Boolean(true);
+                resolution.events.push(event);
+                if allowed {
+                    self.apply_major_status(target, status)?;
+                }
+                Ok(allowed)
+            }
+            PrimaryMoveEffect::CureStatus => Ok(self.cure_major_status(pokemon()?)?.is_some()),
+            PrimaryMoveEffect::ChangeStatStage { stat, delta } => Ok(StateKernel::new(self)
+                .change_stat_stage(pokemon()?, stat, delta)?
+                .applied_delta
+                != 0),
+            PrimaryMoveEffect::Heal {
+                numerator,
+                denominator,
+            } => {
+                if denominator == 0 {
+                    return Err(BattleError::DataMismatch(
+                        "healing denominator is zero".to_owned(),
+                    ));
+                }
+                let target = pokemon()?;
+                let max_hp = self
+                    .side(target.side)
+                    .pokemon(target.pokemon)
+                    .ok_or_else(|| {
+                        BattleError::InvalidState("healing target is invalid".to_owned())
+                    })?
+                    .stats
+                    .hp;
+                let amount = (u32::from(max_hp) * u32::from(numerator)
+                    + u32::from(denominator) / 2)
+                    / u32::from(denominator);
+                Ok(StateKernel::new(self)
+                    .heal_hp(target, u16::try_from(amount).unwrap_or(u16::MAX))?
+                    .applied
+                    != 0)
+            }
+            PrimaryMoveEffect::AddVolatile {
+                condition,
+                duration,
+            } => {
+                let target = pokemon()?;
+                if self
+                    .side(target.side)
+                    .pokemon(target.pokemon)
+                    .is_some_and(|state| state.has_volatile(condition))
+                {
+                    return Ok(false);
+                }
+                StateKernel::new(self)
+                    .add_volatile(target, ConditionState::new(condition, duration))?;
+                Ok(true)
+            }
+            PrimaryMoveEffect::SetWeather {
+                condition,
+                duration,
+            } => {
+                if self
+                    .field
+                    .weather
+                    .is_some_and(|state| state.id == condition)
+                {
+                    return Ok(false);
+                }
+                StateKernel::new(self)
+                    .set_weather(Some(ConditionState::new(condition, Some(duration))))?;
+                Ok(true)
+            }
+            PrimaryMoveEffect::SetTerrain {
+                condition,
+                duration,
+            } => {
+                if self
+                    .field
+                    .terrain
+                    .is_some_and(|state| state.id == condition)
+                {
+                    return Ok(false);
+                }
+                StateKernel::new(self)
+                    .set_terrain(Some(ConditionState::new(condition, Some(duration))))?;
+                Ok(true)
+            }
+            PrimaryMoveEffect::AddFieldCondition {
+                condition,
+                duration,
+            } => {
+                if self
+                    .field
+                    .conditions
+                    .iter()
+                    .any(|state| state.id == condition)
+                {
+                    return Ok(false);
+                }
+                StateKernel::new(self)
+                    .add_field_condition(ConditionState::new(condition, Some(duration)))?;
+                Ok(true)
+            }
+            PrimaryMoveEffect::AddSideCondition {
+                condition,
+                duration,
+            } => {
+                let side = match context.move_data.target {
+                    MoveTarget::FoeSide => context.source.side.opponent(),
+                    _ => context.source.side,
+                };
+                if self
+                    .side(side)
+                    .side_conditions
+                    .iter()
+                    .any(|state| state.id == condition)
+                {
+                    return Ok(false);
+                }
+                StateKernel::new(self)
+                    .add_side_condition(side, ConditionState::new(condition, Some(duration)))?;
+                Ok(true)
+            }
+        }
+    }
+
+    fn status_is_eligible<D: CombatData>(
+        &self,
+        data: &D,
+        ids: &FieldEffectIds,
+        target: PokemonRef,
+        status: MajorStatus,
+        move_type: PokemonType,
+    ) -> Result<bool, BattleError> {
+        let pokemon = self
+            .side(target.side)
+            .pokemon(target.pokemon)
+            .ok_or_else(|| BattleError::InvalidState("status target is invalid".to_owned()))?;
+        if pokemon.status.is_some() || pokemon.is_fainted() {
+            return Ok(false);
+        }
+        let types = data
+            .pokemon_types(pokemon.species, pokemon.form)
+            .ok_or_else(|| BattleError::DataMismatch("missing status target types".to_owned()))?;
+        let immune = match status {
+            MajorStatus::Burn => {
+                types.primary == PokemonType::Fire || types.secondary == Some(PokemonType::Fire)
+            }
+            MajorStatus::Freeze => {
+                types.primary == PokemonType::Ice || types.secondary == Some(PokemonType::Ice)
+            }
+            MajorStatus::Paralysis => {
+                types.primary == PokemonType::Electric
+                    || types.secondary == Some(PokemonType::Electric)
+                    || (move_type == PokemonType::Electric
+                        && (types.primary == PokemonType::Ground
+                            || types.secondary == Some(PokemonType::Ground)))
+            }
+            MajorStatus::Poison | MajorStatus::BadlyPoisoned => {
+                [types.primary, types.secondary.unwrap_or(types.primary)]
+                    .into_iter()
+                    .any(|kind| matches!(kind, PokemonType::Poison | PokemonType::Steel))
+            }
+            MajorStatus::Sleep => false,
+        };
+        Ok(
+            !immune
+                && crate::field_effects::terrain_allows_status(self, data, ids, target, status)?,
+        )
+    }
+
     fn resolve_original_target(
         &self,
         queued: QueuedMoveAction,
@@ -1162,11 +1581,8 @@ impl BattleState {
                 .into_iter()
                 .filter_map(|slot| active(queued.side, slot))
                 .collect(),
-            MoveTarget::AllySide
-            | MoveTarget::AllyTeam
-            | MoveTarget::FoeSide
-            | MoveTarget::RandomNormal
-            | MoveTarget::Scripted => {
+            MoveTarget::AllySide | MoveTarget::AllyTeam | MoveTarget::FoeSide => Vec::new(),
+            MoveTarget::RandomNormal | MoveTarget::Scripted => {
                 return Err(BattleError::UnsupportedMechanic(format!(
                     "target category {move_target:?} requires a deferred non-Pokémon or random target operation"
                 )));
@@ -2076,7 +2492,7 @@ pub fn calculate_move_damage<D: CombatData>(
     let move_data = data.move_data(move_id).ok_or_else(|| {
         BattleError::DataMismatch(format!("missing combat data for move {move_id}"))
     })?;
-    preflight_move(move_id, move_data, MoveIntrinsic::Ordinary)?;
+    preflight_move(move_id, move_data, MoveIntrinsic::Ordinary, &[])?;
     let source_types = data
         .pokemon_types(source.species, source.form)
         .ok_or_else(|| BattleError::DataMismatch("missing source type data".to_owned()))?;
@@ -2108,10 +2524,11 @@ fn preflight_move(
     move_id: MoveId,
     move_data: CombatMove,
     intrinsic: MoveIntrinsic,
+    primary_effects: &[PrimaryMoveEffect],
 ) -> Result<(), BattleError> {
     if let Some(missing) = move_data
         .required_capabilities
-        .first_missing_from(MoveCapabilities::PR_13_2)
+        .first_missing_from(MoveCapabilities::PR_13_3)
     {
         return Err(BattleError::UnsupportedMechanic(format!(
             "move {move_id} requires unsupported capability {missing}"
@@ -2123,7 +2540,7 @@ fn preflight_move(
     let valid_intrinsic = move_data.operation == MoveOperation::NonDamage
         && move_data.category == MoveCategory::Status
         && move_data.base_power == 0
-        && intrinsic != MoveIntrinsic::Ordinary;
+        && (intrinsic != MoveIntrinsic::Ordinary || !primary_effects.is_empty());
     if !valid_damage && !valid_intrinsic {
         return Err(BattleError::DataMismatch(format!(
             "move {move_id} declares inconsistent standard-damage metadata"
@@ -2131,11 +2548,7 @@ fn preflight_move(
     }
     if matches!(
         move_data.target,
-        MoveTarget::AllySide
-            | MoveTarget::AllyTeam
-            | MoveTarget::FoeSide
-            | MoveTarget::RandomNormal
-            | MoveTarget::Scripted
+        MoveTarget::RandomNormal | MoveTarget::Scripted
     ) {
         return Err(BattleError::DataMismatch(format!(
             "move {move_id} declares selected-target support for an incompatible target"
@@ -2250,7 +2663,7 @@ mod tests {
     fn move_preflight_accepts_the_foundation_and_names_missing_capabilities() {
         let move_id = MoveId::new(1);
         assert_eq!(
-            preflight_move(move_id, standard_move(), MoveIntrinsic::Ordinary),
+            preflight_move(move_id, standard_move(), MoveIntrinsic::Ordinary, &[]),
             Ok(())
         );
 
@@ -2258,7 +2671,7 @@ mod tests {
         secondary.required_capabilities = secondary
             .required_capabilities
             .with(MoveCapability::SecondaryEffect);
-        let error = preflight_move(move_id, secondary, MoveIntrinsic::Ordinary).unwrap_err();
+        let error = preflight_move(move_id, secondary, MoveIntrinsic::Ordinary, &[]).unwrap_err();
         assert_eq!(
             error,
             BattleError::UnsupportedMechanic(
@@ -2272,7 +2685,7 @@ mod tests {
         let mut inconsistent = standard_move();
         inconsistent.category = MoveCategory::Status;
         assert!(matches!(
-            preflight_move(MoveId::new(1), inconsistent, MoveIntrinsic::Ordinary),
+            preflight_move(MoveId::new(1), inconsistent, MoveIntrinsic::Ordinary, &[]),
             Err(BattleError::DataMismatch(_))
         ));
     }

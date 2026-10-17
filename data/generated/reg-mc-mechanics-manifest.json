@@ -11039,6 +11039,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/alcremie",
         "species/alcremiecaramelswirl",
         "species/alcremielemoncream",
@@ -11065,13 +11067,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "acidspray",
@@ -11240,8 +11241,7 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -11380,8 +11380,7 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -11394,6 +11393,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/aerodactyl",
         "species/altaria",
         "species/ampharos",
@@ -11479,13 +11480,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "aircutter",
@@ -11745,8 +11745,7 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -11759,6 +11758,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/appletun",
         "species/audino",
         "species/azumarill",
@@ -11803,13 +11804,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "ancientpower",
@@ -12113,6 +12113,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/alcremie",
         "species/alcremiecaramelswirl",
         "species/alcremielemoncream",
@@ -12136,13 +12138,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "assurance",
@@ -12543,6 +12544,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/alcremie",
         "species/alcremiecaramelswirl",
         "species/alcremielemoncream",
@@ -12581,13 +12584,12 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "banefulbunker",
@@ -12724,8 +12726,7 @@
         "advanced_targeting",
         "self_effect",
         "switch_control",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -12876,8 +12877,7 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -12890,8 +12890,6 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:crates/rotom-core/src/combat.rs",
-        "file:crates/rotom-dex/src/combat.rs",
         "species/grapploct",
         "species/inteleon",
         "species/pinsir",
@@ -12908,15 +12906,16 @@
         "selected_single_target",
         "accuracy",
         "volatile",
+        "special_behavior",
         "protection",
         "redirection",
         "retargeting",
         "per_target_hit"
       ],
-      "implementation": "implemented",
+      "implementation": "unsupported",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.2"
+      "owner_pr": null
     },
     {
       "id": "bite",
@@ -13274,8 +13273,7 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -14122,6 +14120,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/annihilape",
         "species/barbaracle",
         "species/beartic",
@@ -14184,13 +14184,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "bulldoze",
@@ -14520,6 +14519,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/absol",
         "species/alakazam",
         "species/alcremie",
@@ -14626,13 +14627,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "ceaselessedge",
@@ -14784,6 +14784,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/alcremie",
         "species/alcremiecaramelswirl",
         "species/alcremielemoncream",
@@ -14873,13 +14875,12 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "chillingwater",
@@ -15000,8 +15001,7 @@
         "advanced_targeting",
         "field_or_side_condition",
         "switch_control",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -15090,8 +15090,7 @@
         "non_damage_primary",
         "advanced_targeting",
         "stat_stage",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -15221,6 +15220,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/annihilape",
         "species/blaziken",
         "species/chesnaught",
@@ -15257,13 +15258,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "coil",
@@ -15271,6 +15271,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/arbok",
         "species/eelektross",
         "species/milotic",
@@ -15287,13 +15289,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "comeuppance",
@@ -15472,8 +15473,7 @@
         "non_damage_primary",
         "advanced_targeting",
         "calls_move",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -15502,8 +15502,7 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -15516,6 +15515,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/castform",
         "species/chimecho",
         "species/clefable",
@@ -15532,13 +15533,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "cottonguard",
@@ -15546,6 +15546,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/altaria",
         "species/ampharos",
         "species/furfrou",
@@ -15562,13 +15564,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "cottonspore",
@@ -15678,8 +15679,7 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -16087,8 +16087,7 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -16314,6 +16313,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/alcremie",
         "species/alcremiecaramelswirl",
         "species/alcremielemoncream",
@@ -16332,13 +16333,12 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "defog",
@@ -16368,8 +16368,7 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -17070,6 +17069,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/absol",
         "species/alakazam",
         "species/chandelure",
@@ -17120,13 +17121,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "dracometeor",
@@ -17281,6 +17281,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/aerodactyl",
         "species/altaria",
         "species/baxcalibur",
@@ -17312,13 +17314,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "dragondarts",
@@ -18099,6 +18100,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/ampharos",
         "species/bellibolt",
         "species/dedenne",
@@ -18132,13 +18135,12 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "eeriespell",
@@ -18174,6 +18176,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/ampharos",
         "species/bellibolt",
         "species/dedenne",
@@ -18207,13 +18211,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "field_or_side_condition",
-        "special_behavior"
+        "field_or_side_condition"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "electrify",
@@ -19044,8 +19047,7 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -19656,6 +19658,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/alcremie",
         "species/alcremiecaramelswirl",
         "species/alcremielemoncream",
@@ -19730,13 +19734,12 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "featherdance",
@@ -19744,6 +19747,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/altaria",
         "species/blaziken",
         "species/corviknight",
@@ -19774,13 +19779,12 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "feint",
@@ -20235,8 +20239,6 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:crates/rotom-core/src/combat.rs",
-        "file:crates/rotom-dex/src/combat.rs",
         "species/altaria",
         "species/arcanine",
         "species/arcaninehisui",
@@ -20278,15 +20280,16 @@
         "selected_single_target",
         "accuracy",
         "volatile",
+        "special_behavior",
         "protection",
         "redirection",
         "retargeting",
         "per_target_hit"
       ],
-      "implementation": "implemented",
+      "implementation": "unsupported",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.2"
+      "owner_pr": null
     },
     {
       "id": "firstimpression",
@@ -21378,8 +21381,7 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -22142,6 +22144,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/arbok",
         "species/drampa",
         "species/heliolisk",
@@ -22157,13 +22161,12 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "major_status",
-        "special_behavior"
+        "major_status"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "grassknot",
@@ -22343,6 +22346,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/appletun",
         "species/arboliva",
         "species/chesnaught",
@@ -22379,13 +22384,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "field_or_side_condition",
-        "special_behavior"
+        "field_or_side_condition"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "gravapple",
@@ -22422,6 +22426,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/chimecho",
         "species/clefable",
         "species/espeon",
@@ -22454,13 +22460,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "field_or_side_condition",
-        "special_behavior"
+        "field_or_side_condition"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "growth",
@@ -22497,8 +22502,7 @@
         "non_damage_primary",
         "advanced_targeting",
         "stat_stage",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -22527,8 +22531,7 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -22567,8 +22570,7 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -22855,8 +22857,7 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -22948,8 +22949,7 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -23644,6 +23644,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/arcanine",
         "species/arcaninehisui",
         "species/camerupt",
@@ -23671,13 +23673,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "hurricane",
@@ -24273,6 +24274,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/aromatisse",
         "species/chimecho",
         "species/delphox",
@@ -24307,13 +24310,12 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "major_status",
-        "special_behavior"
+        "major_status"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "icebeam",
@@ -25003,8 +25005,6 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:crates/rotom-core/src/combat.rs",
-        "file:crates/rotom-dex/src/combat.rs",
         "species/araquanid",
         "species/ariados",
         "species/dragapult",
@@ -25021,15 +25021,16 @@
         "selected_single_target",
         "accuracy",
         "volatile",
+        "special_behavior",
         "protection",
         "redirection",
         "retargeting",
         "per_target_hit"
       ],
-      "implementation": "implemented",
+      "implementation": "unsupported",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.2"
+      "owner_pr": null
     },
     {
       "id": "ingrain",
@@ -25080,8 +25081,7 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -25094,6 +25094,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/aegislash",
         "species/aggron",
         "species/appletun",
@@ -25191,13 +25193,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "ironhead",
@@ -26021,6 +26022,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/audino",
         "species/blastoise",
         "species/clefable",
@@ -26045,13 +26048,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "healing",
-        "special_behavior"
+        "healing"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "lightofruin",
@@ -26087,6 +26089,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/alakazam",
         "species/alcremie",
         "species/alcremiecaramelswirl",
@@ -26223,13 +26227,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "field_or_side_condition",
-        "special_behavior"
+        "field_or_side_condition"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "liquidation",
@@ -26315,8 +26318,7 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -26625,6 +26627,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/alakazam",
         "species/alcremie",
         "species/alcremiecaramelswirl",
@@ -26661,13 +26665,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "field_or_side_condition",
-        "special_behavior"
+        "field_or_side_condition"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "magneticflux",
@@ -26686,8 +26689,7 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -26818,8 +26820,7 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -27031,6 +27032,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/aegislash",
         "species/aggron",
         "species/archaludon",
@@ -27063,13 +27066,12 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "meteorassault",
@@ -27181,6 +27183,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/gogoat"
       ],
       "effect_families": [
@@ -27192,13 +27196,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "healing",
-        "special_behavior"
+        "healing"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "minimize",
@@ -27321,6 +27324,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/alcremie",
         "species/alcremiecaramelswirl",
         "species/alcremielemoncream",
@@ -27362,13 +27367,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "field_or_side_condition",
-        "special_behavior"
+        "field_or_side_condition"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "moonblast",
@@ -27834,6 +27838,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/alakazam",
         "species/aromatisse",
         "species/banette",
@@ -27913,13 +27919,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "nightdaze",
@@ -28085,6 +28090,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/kommoo",
         "species/pyroar",
         "species/rillaboom",
@@ -28100,13 +28107,12 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "noretreat",
@@ -28448,8 +28454,7 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -28518,8 +28523,7 @@
         "accuracy",
         "non_damage_primary",
         "switch_control",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -28660,8 +28664,7 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -29406,8 +29409,7 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -29447,8 +29449,7 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -30118,6 +30119,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/alakazam",
         "species/armarouge",
         "species/delphox",
@@ -30152,13 +30155,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "field_or_side_condition",
-        "special_behavior"
+        "field_or_side_condition"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "psychocut",
@@ -30286,8 +30288,7 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -30450,8 +30451,7 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -30592,6 +30592,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/vivillon",
         "species/vivillonarchipelago",
         "species/vivilloncontinental",
@@ -30623,13 +30625,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "ragefist",
@@ -30780,6 +30781,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/abomasnow",
         "species/absol",
         "species/aegislash",
@@ -30998,13 +31001,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "field_or_side_condition",
-        "special_behavior"
+        "field_or_side_condition"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "rapidspin",
@@ -31086,6 +31088,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/alakazam",
         "species/alcremie",
         "species/alcremiecaramelswirl",
@@ -31119,13 +31123,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "healing",
-        "special_behavior"
+        "healing"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "recycle",
@@ -31155,8 +31158,7 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -31169,6 +31171,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/aegislash",
         "species/alakazam",
         "species/ampharos",
@@ -31256,13 +31260,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "field_or_side_condition",
-        "special_behavior"
+        "field_or_side_condition"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "reflecttype",
@@ -31283,8 +31286,7 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -31859,8 +31861,7 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "switch_control",
-        "special_behavior"
+        "switch_control"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -31931,6 +31932,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/barbaracle",
         "species/garganacl",
         "species/glimmora",
@@ -31947,13 +31950,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "rockslide",
@@ -32273,8 +32275,7 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -32326,8 +32327,7 @@
         "non_damage_primary",
         "advanced_targeting",
         "self_effect",
-        "healing",
-        "special_behavior"
+        "healing"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -32782,6 +32782,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/absol",
         "species/aerodactyl",
         "species/aggron",
@@ -32854,13 +32856,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "field_or_side_condition",
-        "special_behavior"
+        "field_or_side_condition"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "sandtomb",
@@ -32868,8 +32869,6 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:crates/rotom-core/src/combat.rs",
-        "file:crates/rotom-dex/src/combat.rs",
         "species/aggron",
         "species/bastiodon",
         "species/diggersby",
@@ -32901,15 +32900,16 @@
         "selected_single_target",
         "accuracy",
         "volatile",
+        "special_behavior",
         "protection",
         "redirection",
         "retargeting",
         "per_target_hit"
       ],
-      "implementation": "implemented",
+      "implementation": "unsupported",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.2"
+      "owner_pr": null
     },
     {
       "id": "scald",
@@ -33020,6 +33020,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/abomasnow",
         "species/aerodactyl",
         "species/aggron",
@@ -33152,13 +33154,12 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "scorchingsands",
@@ -33224,6 +33225,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/aegislash",
         "species/aggron",
         "species/ampharos",
@@ -33287,13 +33290,12 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "seedbomb",
@@ -33868,6 +33870,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/barbaracle",
         "species/blastoise",
         "species/polteageist",
@@ -33884,13 +33888,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "shelter",
@@ -33898,6 +33901,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/goodrahisui"
       ],
       "effect_families": [
@@ -33909,13 +33914,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "shiftgear",
@@ -33923,6 +33927,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/toxtricity"
       ],
       "effect_families": [
@@ -33934,13 +33940,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "simplebeam",
@@ -33961,8 +33966,7 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -33975,6 +33979,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/altaria",
         "species/azumarill",
         "species/clefable",
@@ -33992,13 +33998,12 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "major_status",
-        "special_behavior"
+        "major_status"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "skillswap",
@@ -34066,8 +34071,7 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -34206,6 +34210,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/bellibolt",
         "species/hippowdon",
         "species/infernape",
@@ -34225,13 +34231,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "healing",
-        "special_behavior"
+        "healing"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "slash",
@@ -34800,8 +34805,6 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:crates/rotom-core/src/combat.rs",
-        "file:crates/rotom-dex/src/combat.rs",
         "species/annihilape",
         "species/arcaninehisui",
         "species/archaludon",
@@ -34852,15 +34855,16 @@
         "selected_single_target",
         "accuracy",
         "volatile",
+        "special_behavior",
         "protection",
         "redirection",
         "retargeting",
         "per_target_hit"
       ],
-      "implementation": "implemented",
+      "implementation": "unsupported",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.2"
+      "owner_pr": null
     },
     {
       "id": "smartstrike",
@@ -34911,8 +34915,6 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:crates/rotom-core/src/combat.rs",
-        "file:crates/rotom-dex/src/combat.rs",
         "species/stunfiskgalar"
       ],
       "effect_families": [
@@ -34925,15 +34927,16 @@
         "selected_single_target",
         "accuracy",
         "volatile",
+        "special_behavior",
         "protection",
         "redirection",
         "retargeting",
         "per_target_hit"
       ],
-      "implementation": "implemented",
+      "implementation": "unsupported",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.2"
+      "owner_pr": null
     },
     {
       "id": "snarl",
@@ -35324,6 +35327,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/abomasnow",
         "species/altaria",
         "species/aurorus",
@@ -35368,13 +35373,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "field_or_side_condition",
-        "special_behavior"
+        "field_or_side_condition"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "soak",
@@ -35402,8 +35406,7 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -35637,8 +35640,7 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -35651,6 +35653,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/scovillain"
       ],
       "effect_families": [
@@ -35662,13 +35666,12 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "spikes",
@@ -35874,8 +35877,7 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -36581,6 +36583,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/ariados",
         "species/beedrill",
         "species/slurpuff",
@@ -36615,13 +36619,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "strugglebug",
@@ -36699,8 +36702,7 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -37153,6 +37155,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/absol",
         "species/aegislash",
         "species/aerodactyl",
@@ -37373,13 +37377,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "field_or_side_condition",
-        "special_behavior"
+        "field_or_side_condition"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "supercellslam",
@@ -37801,6 +37804,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/alcremie",
         "species/alcremiecaramelswirl",
         "species/alcremielemoncream",
@@ -37835,13 +37840,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "switcheroo",
@@ -37877,8 +37881,7 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -37891,6 +37894,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/abomasnow",
         "species/absol",
         "species/aegislash",
@@ -37981,13 +37986,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "synthesis",
@@ -38098,6 +38102,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/aerodactyl",
         "species/altaria",
         "species/corviknight",
@@ -38152,13 +38158,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "field_or_side_condition",
-        "special_behavior"
+        "field_or_side_condition"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "taunt",
@@ -38291,6 +38296,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/dedenne",
         "species/floetteeternal",
         "species/florges",
@@ -38309,13 +38316,12 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "teatime",
@@ -38334,8 +38340,7 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -39154,6 +39159,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/absol",
         "species/aggron",
         "species/alakazam",
@@ -39246,10 +39253,10 @@
         "non_damage_primary",
         "major_status"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "tickle",
@@ -39257,6 +39264,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/azumarill",
         "species/clefable",
         "species/drampa",
@@ -39297,13 +39306,12 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "tidyup",
@@ -39323,8 +39331,7 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -39349,8 +39356,7 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -39546,6 +39552,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/ariados"
       ],
       "effect_families": [
@@ -39559,13 +39567,12 @@
         "accuracy",
         "non_damage_primary",
         "major_status",
-        "stat_stage",
-        "special_behavior"
+        "stat_stage"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "trailblaze",
@@ -39720,8 +39727,7 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -39852,8 +39858,7 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -39880,8 +39885,7 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -39894,6 +39898,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/alakazam",
         "species/armarouge",
         "species/aromatisse",
@@ -39952,13 +39958,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "field_or_side_condition",
-        "special_behavior"
+        "field_or_side_condition"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "triplearrows",
@@ -40877,8 +40882,6 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:crates/rotom-core/src/combat.rs",
-        "file:crates/rotom-dex/src/combat.rs",
         "species/aggron",
         "species/azumarill",
         "species/barbaracle",
@@ -40922,15 +40925,16 @@
         "selected_single_target",
         "accuracy",
         "volatile",
+        "special_behavior",
         "protection",
         "redirection",
         "retargeting",
         "per_target_hit"
       ],
-      "implementation": "implemented",
+      "implementation": "unsupported",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.2"
+      "owner_pr": null
     },
     {
       "id": "whirlwind",
@@ -40979,8 +40983,7 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "switch_control",
-        "special_behavior"
+        "switch_control"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -41103,6 +41106,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/absol",
         "species/altaria",
         "species/arcanine",
@@ -41168,13 +41173,12 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "major_status",
-        "special_behavior"
+        "major_status"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "wish",
@@ -41232,6 +41236,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
         "species/alakazam",
         "species/alcremie",
         "species/alcremiecaramelswirl",
@@ -41281,13 +41287,12 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "field_or_side_condition",
-        "special_behavior"
+        "field_or_side_condition"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.3"
     },
     {
       "id": "woodhammer",
@@ -41353,8 +41358,7 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "custom_callback",
-        "special_behavior"
+        "custom_callback"
       ],
       "implementation": "unsupported",
       "verification": "not_tested",
@@ -41367,8 +41371,6 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:crates/rotom-core/src/combat.rs",
-        "file:crates/rotom-dex/src/combat.rs",
         "species/arbok",
         "species/chimecho",
         "species/dragonite",
@@ -41389,15 +41391,16 @@
         "selected_single_target",
         "accuracy",
         "volatile",
+        "special_behavior",
         "protection",
         "redirection",
         "retargeting",
         "per_target_hit"
       ],
-      "implementation": "implemented",
+      "implementation": "unsupported",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.2"
+      "owner_pr": null
     },
     {
       "id": "xscissor",
@@ -46891,9 +46894,9 @@
       "move": {
         "total": 510,
         "implementation": {
-          "unsupported": 452,
+          "unsupported": 399,
           "partial": 0,
-          "implemented": 58
+          "implemented": 111
         },
         "verification": {
           "not_tested": 499,

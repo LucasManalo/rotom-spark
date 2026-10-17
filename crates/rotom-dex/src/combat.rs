@@ -1,9 +1,9 @@
 use crate::{Accuracy, DexData, MoveBehaviorKind, MoveData, SpeciesData, Stats};
 use rotom_core::{
-    BattleError, BattleStats, CombatData, CombatMove, ConditionId, FieldEffectIds, MoveAccuracy,
-    MoveCapabilities, MoveCapability, MoveCategory, MoveId, MoveIntrinsic, MoveOperation, MoveSlot,
-    MoveTarget, PokemonPosition, PokemonSet, PokemonState, PokemonType, PokemonTypes,
-    StatAllocation, StatStages, StatusState,
+    BattleError, BattleStat, BattleStats, CombatData, CombatMove, ConditionId, FieldEffectIds,
+    MajorStatus, MoveAccuracy, MoveCapabilities, MoveCapability, MoveCategory, MoveId,
+    MoveIntrinsic, MoveOperation, MoveSlot, MoveTarget, PokemonPosition, PokemonSet, PokemonState,
+    PokemonType, PokemonTypes, PrimaryMoveEffect, StatAllocation, StatStages, StatusState,
 };
 
 impl CombatData for DexData {
@@ -60,6 +60,78 @@ impl CombatData for DexData {
             Some("ragepowder") => MoveIntrinsic::RagePowder,
             _ => MoveIntrinsic::Ordinary,
         }
+    }
+
+    fn primary_move_effects(&self, move_id: MoveId) -> Vec<PrimaryMoveEffect> {
+        let Some(data) = self.move_data(move_id) else {
+            return Vec::new();
+        };
+        let mut effects = Vec::new();
+        if let Some(status) = data.status.as_deref().and_then(parse_status) {
+            effects.push(PrimaryMoveEffect::InflictStatus { status });
+        }
+        for boost in &data.boosts {
+            if let Some(stat) = parse_stat(&boost.key) {
+                effects.push(PrimaryMoveEffect::ChangeStatStage {
+                    stat,
+                    delta: boost.value,
+                });
+            }
+        }
+        if let Some(heal) = data.heal {
+            effects.push(PrimaryMoveEffect::Heal {
+                numerator: heal.numerator,
+                denominator: heal.denominator,
+            });
+        }
+        if data.volatile_status.as_deref() == Some("magnetrise") {
+            effects.push(PrimaryMoveEffect::AddVolatile {
+                condition: ConditionId::new(move_id.get()),
+                duration: Some(5),
+            });
+        }
+        let condition = |name: &str| {
+            self.resolve_move(name)
+                .map(|(id, _)| ConditionId::new(id.get()))
+        };
+        if let Some(name) = data.weather.as_deref() {
+            if let Some(condition) = condition(name) {
+                effects.push(PrimaryMoveEffect::SetWeather {
+                    condition,
+                    duration: 5,
+                });
+            }
+        }
+        if let Some(name) = data.terrain.as_deref() {
+            if let Some(condition) = condition(name) {
+                effects.push(PrimaryMoveEffect::SetTerrain {
+                    condition,
+                    duration: 5,
+                });
+            }
+        }
+        if let Some(name) = data.pseudo_weather.as_deref() {
+            if matches!(name, "trickroom" | "gravity" | "magicroom" | "wonderroom") {
+                if let Some(condition) = condition(name) {
+                    effects.push(PrimaryMoveEffect::AddFieldCondition {
+                        condition,
+                        duration: 5,
+                    });
+                }
+            }
+        }
+        if let Some(name) = data.side_condition.as_deref() {
+            if matches!(name, "reflect" | "lightscreen" | "tailwind") {
+                if let Some(condition) = condition(name) {
+                    let duration = if name == "tailwind" { 4 } else { 5 };
+                    effects.push(PrimaryMoveEffect::AddSideCondition {
+                        condition,
+                        duration,
+                    });
+                }
+            }
+        }
+        effects
     }
 
     fn move_is_protectable(&self, move_id: MoveId) -> bool {
@@ -281,15 +353,58 @@ fn behavior_capabilities(data: &MoveData, mut required: MoveCapabilities) -> Mov
     if !data.behavior.callbacks.is_empty() {
         required = required.with(MoveCapability::CustomCallback);
     }
+    if data.volatile_status.is_some() && data.volatile_status.as_deref() != Some("magnetrise") {
+        required = required.with(MoveCapability::SpecialBehavior);
+    }
+    let unsupported_condition = data
+        .side_condition
+        .as_deref()
+        .is_some_and(|condition| !matches!(condition, "reflect" | "lightscreen" | "tailwind"))
+        || data.pseudo_weather.as_deref().is_some_and(|condition| {
+            !matches!(
+                condition,
+                "trickroom" | "gravity" | "magicroom" | "wonderroom"
+            )
+        });
     let unsupported_special = data
         .behavior
         .special_properties
         .iter()
-        .any(|property| property != "breaksProtect");
-    if !data.behavior.intrinsic_flags.is_empty() || unsupported_special {
+        .any(|property| !matches!(property.as_str(), "breaksProtect" | "ignoreImmunity"));
+    let unsupported_flag = data
+        .behavior
+        .intrinsic_flags
+        .iter()
+        .any(|flag| flag != "heal" || data.heal.is_none());
+    if data.id == "toxic" || unsupported_condition || unsupported_flag || unsupported_special {
         required = required.with(MoveCapability::SpecialBehavior);
     }
     required
+}
+
+fn parse_status(value: &str) -> Option<MajorStatus> {
+    match value {
+        "brn" => Some(MajorStatus::Burn),
+        "frz" => Some(MajorStatus::Freeze),
+        "par" => Some(MajorStatus::Paralysis),
+        "psn" => Some(MajorStatus::Poison),
+        "tox" => Some(MajorStatus::BadlyPoisoned),
+        "slp" => Some(MajorStatus::Sleep),
+        _ => None,
+    }
+}
+
+fn parse_stat(value: &str) -> Option<BattleStat> {
+    match value {
+        "atk" => Some(BattleStat::Attack),
+        "def" => Some(BattleStat::Defense),
+        "spa" => Some(BattleStat::SpecialAttack),
+        "spd" => Some(BattleStat::SpecialDefense),
+        "spe" => Some(BattleStat::Speed),
+        "accuracy" => Some(BattleStat::Accuracy),
+        "evasion" => Some(BattleStat::Evasion),
+        _ => None,
+    }
 }
 
 impl DexData {

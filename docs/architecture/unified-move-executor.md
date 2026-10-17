@@ -164,3 +164,19 @@ field/side conditions, move calls, switch control, move-specific callbacks,
 charge/recharge and other special behavior. Struggle and Mega Evolution also
 remain explicit unsupported mechanics.
 
+## PR 13.3 primary-operation extension
+
+`CombatData::primary_move_effects` now supplies ordered, typed persistent
+effects to the same `execute_move` lifecycle. The executor reuses target-set,
+TryHit, protection, accuracy, Hit and AfterMove stages, then delegates rule
+eligibility to mechanics helpers before applying HP, status, stage, volatile
+or field writes through `StateKernel`. `TrySetStatus` is a cancellable ordered
+hook for ability/item prevention without putting that policy in the kernel.
+
+The normalized Dex schema records boosts, healing fractions, weather,
+terrain, pseudo-weather and side conditions. Capability preflight now admits
+the reusable PR 13.3 families while callback-driven or behavior-bearing
+volatiles remain explicit unsupported mechanics. Secondary effects, custom
+callbacks, item-extended durations, complex cures, and volatile behavior not
+already modeled by the engine remain later-PR work.
+

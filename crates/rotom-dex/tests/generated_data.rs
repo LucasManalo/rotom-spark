@@ -21,7 +21,7 @@ struct MechanicsEntry {
 fn generated_data_has_expected_source_and_format() {
     let data = champions_reg_mc().expect("checked-in data should match the Rust schema");
 
-    assert_eq!(data.schema_version, 4);
+    assert_eq!(data.schema_version, 5);
     assert_eq!(data.source.commit, SHOWDOWN_COMMIT);
     assert_eq!(data.format.id, "gen9championsvgc2026regmc");
     assert_eq!(data.format.mod_name, "champions");
@@ -156,7 +156,7 @@ fn generated_move_coverage_matches_runtime_capability_preflight() {
             .expect("reachable move has combat data");
         let runtime_supported = definition
             .required_capabilities
-            .first_missing_from(MoveCapabilities::PR_13_2)
+            .first_missing_from(MoveCapabilities::PR_13_3)
             .is_none();
         assert_eq!(
             entry.implementation == "implemented",

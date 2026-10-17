@@ -22,6 +22,7 @@ pub enum BattleEvent {
     ModifyBasePower,
     ModifyDamage,
     TryHit,
+    TrySetStatus,
     Hit,
     AfterDamage,
     AfterMove,
@@ -37,7 +38,9 @@ impl BattleEvent {
     pub const fn contract(self) -> EventContract {
         match self {
             Self::BeforeMove | Self::SwitchOut => EventContract::new(EventRelay::None, true, false),
-            Self::TryHit => EventContract::new(EventRelay::Boolean, true, true),
+            Self::TryHit | Self::TrySetStatus => {
+                EventContract::new(EventRelay::Boolean, true, true)
+            }
             Self::ModifyPriority
             | Self::ModifySpeed
             | Self::ModifyAttack

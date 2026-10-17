@@ -224,6 +224,12 @@ function exportMoves(dex, validator) {
 			damage: normalizeDamage(move.damage),
 			status: optional(move.status),
 			volatile_status: optional(move.volatileStatus),
+			boosts: sortedObjectEntries(move.boosts),
+			heal: normalizeFraction(move.heal),
+			weather: optional(move.weather),
+			terrain: optional(move.terrain),
+			pseudo_weather: optional(move.pseudoWeather),
+			side_condition: optional(move.sideCondition),
 			behavior: moveBehavior(move),
 			is_nonstandard: move.isNonstandard || null,
 			legal: banReason == null,
@@ -323,7 +329,7 @@ function buildExport(version, Showdown) {
 	const species = exportSpecies(dex, validator);
 
 	return {
-		schema_version: 4,
+		schema_version: 5,
 		source: {repo: version.repo, commit: version.commit},
 		format: {
 			id: format.id,

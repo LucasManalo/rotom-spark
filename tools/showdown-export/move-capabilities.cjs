@@ -98,6 +98,9 @@ const PR_13_2_CAPABILITIES = new Set([
 	'retargeting',
 	'per_target_hit',
 ]);
+const PR_13_3_CAPABILITIES = new Set([
+	...PR_13_2_CAPABILITIES, 'major_status', 'stat_stage', 'healing', 'field_or_side_condition',
+]);
 
 function sortedStrings(values) {
 	return [...(values || [])].sort((left, right) => left < right ? -1 : left > right ? 1 : 0);
@@ -167,10 +170,18 @@ function moveExecutionRequirements(move) {
 	if (move.drain) capabilities.add('drain');
 	if (move.recoil) capabilities.add('recoil');
 	if (move.status) capabilities.add('major_status');
-	if (move.volatileStatus) capabilities.add('volatile');
+	if (move.volatileStatus) {
+		capabilities.add('volatile');
+		if (move.volatileStatus !== 'magnetrise') capabilities.add('special_behavior');
+	}
+	const unsupportedCondition =
+		(move.sideCondition && !['reflect', 'lightscreen', 'tailwind'].includes(move.sideCondition)) ||
+		(move.pseudoWeather && !['trickroom', 'gravity', 'magicroom', 'wonderroom'].includes(move.pseudoWeather));
 	for (const effectKind of behavior.effect_kinds) capabilities.add(effectKind);
 	if (behavior.callbacks.length) capabilities.add('custom_callback');
-	if (behavior.intrinsic_flags.length || behavior.special_properties.some(property => property !== 'breaksProtect')) {
+	if (move.id === 'toxic' || unsupportedCondition ||
+		behavior.intrinsic_flags.some(flag => flag !== 'heal' || !move.heal) ||
+		behavior.special_properties.some(property => !['breaksProtect', 'ignoreImmunity'].includes(property))) {
 		capabilities.add('special_behavior');
 	}
 	return {
@@ -189,4 +200,9 @@ function isPr132Supported(move) {
 		.every(capability => PR_13_2_CAPABILITIES.has(capability));
 }
 
-module.exports = {isPr131Supported, isPr132Supported, moveBehavior, moveExecutionRequirements};
+function isPr133Supported(move) {
+	return moveExecutionRequirements(move).required_capabilities
+		.every(capability => PR_13_3_CAPABILITIES.has(capability));
+}
+
+module.exports = {isPr131Supported, isPr132Supported, isPr133Supported, moveBehavior, moveExecutionRequirements};
