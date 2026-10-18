@@ -364,3 +364,19 @@ Intrinsic behavior missing from the executor is rejected before PP or move RNG
 within the private transaction. See `unified-move-executor.md` for the detailed
 mapping, interfaces, and deferred capabilities.
 
+## PR 13.4 sequenced damaging moves
+
+PR 13.4 preserves the same pure `step()` transaction while extending its
+private move executor with conditional power, effective-stat overrides,
+chance secondaries, declarative self effects, multi-hit and fixed/level
+damage, drain, and recoil. Every random branch consumes the battle-owned RNG;
+every authoritative HP/status/stage change uses the mutation kernel; and
+capability/data mismatches fail inside the cloned transaction so the input
+state and RNG remain unchanged.
+
+The order is explicit: resolve hit count; for each hit resolve any repeated
+accuracy, critical and damage, apply actual HP loss, settle fainting, and apply
+per-hit drain, secondary, and applicable self effects; then apply aggregate
+recoil or max-HP self-damage. Move-local derived power and effective stats are
+never persisted.
+

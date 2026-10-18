@@ -180,3 +180,37 @@ volatiles remain explicit unsupported mechanics. Secondary effects, custom
 callbacks, item-extended durations, complex cures, and volatile behavior not
 already modeled by the engine remain later-PR work.
 
+## PR 13.4 sequenced-effect extension
+
+The executor now represents reusable damaging-move sequences that were
+previously rejected as broad capability flags. State-dependent power (Facade)
+and effective offensive/defensive stat selection are ephemeral inputs to the
+shared damage pipeline. `ModifyBasePower`, `ModifyAttack`, and
+`ModifyDefense` dispatch before the existing damage modifier hook and do not
+write derived values into authoritative state.
+
+Fixed/level damage avoids critical-hit and damage-roll draws. Multi-hit moves
+draw their hit count once and then perform any later-hit accuracy check,
+critical-hit, damage-roll, HP application, faint settlement, drain,
+secondaries, and applicable per-hit self effects for each completed hit.
+Ordinary self effects run once after successful damage; recoil runs once from
+total actual HP lost. Drain and recoil therefore use kernel-reported clamped
+damage, with the pinned generation's rounding rules.
+
+The Dex supplies typed hit-count, fixed-damage, fraction, secondary,
+self-effect, conditional-power, and stat-override data. A capability claim
+without its corresponding declarative payload fails preflight before PP or
+RNG changes. Callback-shaped moves and effect shapes that are not represented
+remain explicit unsupported mechanics.
+
+PR 13.4 raises structurally executable reachable move definitions to 223.
+The pinned `sequenced-effects.json` fixture independently executes
+representative moves through Showdown's `Battle.actions.useMove`; Rust tests
+cover RNG order, per-hit boundaries, shared status/stage rules, stat relays,
+clamped drain/recoil, and error atomicity.
+
+Charge/recharge turn state, self-KO timing, delayed/future attacks, OHKO moves,
+random or scripted targeting, move calls, switch control, and bespoke
+callbacks remain deferred. Those definitions continue to fail capability
+preflight rather than falling back to standard damage.
+

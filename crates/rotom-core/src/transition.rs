@@ -248,6 +248,17 @@ mod tests {
                 target: MoveTarget::Normal,
                 operation: MoveOperation::StandardDamage,
                 required_capabilities: MoveCapabilities::PR_13_1,
+                hit_sequence: crate::HitSequence::Single,
+                multi_accuracy: false,
+                fixed_damage: None,
+                drain: None,
+                recoil: None,
+                self_damage: None,
+                prior_effect: crate::PriorMoveEffect::None,
+                offensive_stat: None,
+                defensive_stat: None,
+                ignore_negative_offensive: false,
+                ignore_positive_defensive: false,
             })
         }
 

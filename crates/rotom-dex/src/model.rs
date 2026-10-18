@@ -254,6 +254,7 @@ pub struct KeyValue<T> {
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
+#[allow(clippy::struct_excessive_bools)]
 pub struct MoveData {
     pub id: String,
     pub name: String,
@@ -271,8 +272,10 @@ pub struct MoveData {
     pub flags: Vec<String>,
     pub crit_ratio: u8,
     pub multi_hit: Option<MultiHit>,
+    pub multi_accuracy: bool,
     pub drain: Option<Fraction>,
     pub recoil: Option<Fraction>,
+    pub self_damage: Option<Fraction>,
     pub damage: Option<Damage>,
     pub status: Option<String>,
     pub volatile_status: Option<String>,
@@ -282,10 +285,32 @@ pub struct MoveData {
     pub terrain: Option<String>,
     pub pseudo_weather: Option<String>,
     pub side_condition: Option<String>,
+    pub secondaries: Vec<MoveSecondaryData>,
+    pub self_effect: Option<MoveSelfEffectData>,
+    pub override_offensive_stat: Option<String>,
+    pub override_defensive_stat: Option<String>,
+    pub ignore_negative_offensive: bool,
+    pub ignore_positive_defensive: bool,
     pub behavior: MoveBehaviorData,
     pub is_nonstandard: Option<String>,
     pub legal: bool,
     pub ban_reason: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct MoveSecondaryData {
+    pub chance: u8,
+    pub status: Option<String>,
+    pub boosts: Vec<KeyValue<i8>>,
+    pub self_boosts: Vec<KeyValue<i8>>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct MoveSelfEffectData {
+    pub chance: Option<u8>,
+    pub boosts: Vec<KeyValue<i8>>,
 }
 
 /// Resolved move behavior that is not captured by the ordinary numeric fields.
@@ -300,6 +325,7 @@ pub struct MoveBehaviorData {
     pub callbacks: Vec<String>,
     pub intrinsic_flags: Vec<String>,
     pub special_properties: Vec<String>,
+    pub structured_effects_supported: bool,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]

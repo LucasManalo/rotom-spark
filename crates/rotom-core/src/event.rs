@@ -14,11 +14,11 @@ pub enum BattleEvent {
     BeforeMove,
     ModifyPriority,
     ModifySpeed,
-    /// Reserved for the common-condition damage pipeline; not yet dispatched.
+    /// Relays the effective offensive stat after move-specific selection.
     ModifyAttack,
-    /// Reserved for the common-condition damage pipeline; not yet dispatched.
+    /// Relays the effective defensive stat after move-specific selection.
     ModifyDefense,
-    /// Reserved for the common-condition damage pipeline; not yet dispatched.
+    /// Relays base power after state-dependent move behavior.
     ModifyBasePower,
     ModifyDamage,
     TryHit,

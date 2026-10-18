@@ -82,10 +82,10 @@ test('move support is derived from complete executor capabilities', () => {
 	);
 	assert.equal(dragonClaw.implementation, 'implemented');
 	assert.equal(dragonClaw.owner_pr, 'PR 13.1');
-	assert.equal(manifest.summary.by_kind.move.implementation.implemented, 112);
+	assert.equal(manifest.summary.by_kind.move.implementation.implemented, 223);
 	assert.deepEqual(
 		manifest.summary.by_kind.move.verification,
-		{not_tested: 398, unit_tested: 89, differential_verified: 23}
+		{not_tested: 287, unit_tested: 200, differential_verified: 23}
 	);
 	const implementedMoves = manifest.entries.filter(candidate =>
 		candidate.kind === 'move' && candidate.implementation === 'implemented'
@@ -109,15 +109,18 @@ test('move support is derived from complete executor capabilities', () => {
 
 	for (const [id, capability] of [
 		['flamethrower', 'secondary_effect'],
-		['facade', 'custom_callback'],
+		['facade', 'conditional_power'],
 		['bulletseed', 'multi_hit'],
 		['gigadrain', 'drain'],
-		['electroshot', 'custom_callback'],
 	]) {
 		const move = entry('move', id);
 		assert.ok(move.required_capabilities.includes(capability), `${id} should require ${capability}`);
-		assert.equal(move.implementation, 'unsupported');
+		assert.equal(move.implementation, 'implemented');
+		assert.equal(move.owner_pr, 'PR 13.4');
 	}
+	const electroShot = entry('move', 'electroshot');
+	assert.ok(electroShot.required_capabilities.includes('custom_callback'));
+	assert.equal(electroShot.implementation, 'unsupported');
 });
 
 test('structured generated conditions retain their provenance', () => {

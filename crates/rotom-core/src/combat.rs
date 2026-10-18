@@ -61,6 +61,50 @@ pub enum MoveOperation {
     NonDamage,
 }
 
+#[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(tag = "kind", rename_all = "snake_case")]
+pub enum HitSequence {
+    #[default]
+    Single,
+    Fixed {
+        hits: u8,
+    },
+    Range {
+        min: u8,
+        max: u8,
+    },
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct EffectFraction {
+    pub numerator: u16,
+    pub denominator: u16,
+}
+
+#[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PriorMoveEffect {
+    #[default]
+    None,
+    Facade,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct SecondaryMoveEffect {
+    pub chance: u8,
+    pub effects: Vec<PrimaryMoveEffect>,
+    pub self_effects: Vec<PrimaryMoveEffect>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct SelfMoveEffect {
+    pub chance: Option<u8>,
+    pub effects: Vec<PrimaryMoveEffect>,
+}
+
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum PrimaryMoveEffect {
@@ -133,10 +177,12 @@ pub enum MoveCapability {
     Redirection = 1 << 23,
     Retargeting = 1 << 24,
     PerTargetHit = 1 << 25,
+    ConditionalPower = 1 << 26,
+    EffectiveStatOverride = 1 << 27,
 }
 
 impl MoveCapability {
-    const ALL: [Self; 26] = [
+    const ALL: [Self; 28] = [
         Self::StandardDamage,
         Self::SelectedSingleTarget,
         Self::Accuracy,
@@ -163,6 +209,8 @@ impl MoveCapability {
         Self::Redirection,
         Self::Retargeting,
         Self::PerTargetHit,
+        Self::ConditionalPower,
+        Self::EffectiveStatOverride,
     ];
 }
 
@@ -195,6 +243,8 @@ impl fmt::Display for MoveCapability {
             Self::Redirection => "redirection",
             Self::Retargeting => "retargeting",
             Self::PerTargetHit => "per_target_hit",
+            Self::ConditionalPower => "conditional_power",
+            Self::EffectiveStatOverride => "effective_stat_override",
         };
         formatter.write_str(name)
     }
@@ -231,6 +281,17 @@ impl MoveCapabilities {
             | MoveCapability::Healing as u32
             | MoveCapability::FieldOrSideCondition as u32,
     );
+    pub const PR_13_4: Self = Self(
+        Self::PR_13_3.0
+            | MoveCapability::FixedDamage as u32
+            | MoveCapability::MultiHit as u32
+            | MoveCapability::SecondaryEffect as u32
+            | MoveCapability::SelfEffect as u32
+            | MoveCapability::Drain as u32
+            | MoveCapability::Recoil as u32
+            | MoveCapability::ConditionalPower as u32
+            | MoveCapability::EffectiveStatOverride as u32,
+    );
 
     #[must_use]
     pub const fn with(self, capability: MoveCapability) -> Self {
@@ -261,6 +322,17 @@ pub struct CombatMove {
     pub target: MoveTarget,
     pub operation: MoveOperation,
     pub required_capabilities: MoveCapabilities,
+    pub hit_sequence: HitSequence,
+    pub multi_accuracy: bool,
+    pub fixed_damage: Option<u16>,
+    pub drain: Option<EffectFraction>,
+    pub recoil: Option<EffectFraction>,
+    pub self_damage: Option<EffectFraction>,
+    pub prior_effect: PriorMoveEffect,
+    pub offensive_stat: Option<BattleStat>,
+    pub defensive_stat: Option<BattleStat>,
+    pub ignore_negative_offensive: bool,
+    pub ignore_positive_defensive: bool,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -284,6 +356,14 @@ pub trait CombatData {
 
     fn primary_move_effects(&self, _move_id: MoveId) -> Vec<PrimaryMoveEffect> {
         Vec::new()
+    }
+
+    fn secondary_move_effects(&self, _move_id: MoveId) -> Vec<SecondaryMoveEffect> {
+        Vec::new()
+    }
+
+    fn self_move_effect(&self, _move_id: MoveId) -> Option<SelfMoveEffect> {
+        None
     }
 
     /// Whether the move is stopped by Protect-like guards.
@@ -482,6 +562,8 @@ struct MoveExecutionContext {
     source_species: SpeciesId,
     source_form: Option<FormId>,
     primary_effects: Vec<PrimaryMoveEffect>,
+    secondary_effects: Vec<SecondaryMoveEffect>,
+    self_effect: Option<SelfMoveEffect>,
 }
 
 #[derive(Clone, Copy)]
@@ -508,8 +590,11 @@ struct DamageApplication {
 #[derive(Clone, Copy, Default)]
 struct DamageEnvironment {
     weather: Option<(u32, u32)>,
-    defense: Option<(u32, u32)>,
+    defense_modifier: Option<(u32, u32)>,
+    attack_override: Option<u32>,
+    defense_override: Option<u32>,
     spread: bool,
+    ignore_burn: bool,
 }
 
 impl BattleState {
@@ -710,7 +795,16 @@ impl BattleState {
         })?;
         let intrinsic = data.move_intrinsic(move_id);
         let primary_effects = data.primary_move_effects(move_id);
-        preflight_move(move_id, move_data, intrinsic, &primary_effects)?;
+        let secondary_effects = data.secondary_move_effects(move_id);
+        let self_effect = data.self_move_effect(move_id);
+        preflight_move(
+            move_id,
+            move_data,
+            intrinsic,
+            &primary_effects,
+            &secondary_effects,
+            self_effect.as_ref(),
+        )?;
         let original_target = self.resolve_original_target(queued, move_data.target)?;
         let targets = self.resolve_target_set(
             data,
@@ -729,6 +823,8 @@ impl BattleState {
             source_species: source.species,
             source_form: source.form,
             primary_effects,
+            secondary_effects,
+            self_effect,
         })
     }
 
@@ -748,10 +844,7 @@ impl BattleState {
                 self.execute_non_damage(data, move_context, effects, field_effects, resolution)
             }
             MoveOperation::FixedDamage | MoveOperation::LevelDamage => {
-                Err(BattleError::UnsupportedMechanic(format!(
-                    "move {} reached an unsupported primary operation after preflight",
-                    move_context.move_id
-                )))
+                self.execute_fixed_damage(data, move_context, effects, field_effects, resolution)
             }
         }
     }
@@ -785,7 +878,11 @@ impl BattleState {
             resolution,
         )?;
 
+        let hit_count = self.resolve_hit_count(move_context.move_data.hit_sequence)?;
         let mut any_hit = false;
+        let mut total_applied_damage = 0_u32;
+        let mut hit_outcomes = Vec::new();
+        let mut self_effect_applied = false;
         for (index, target_context) in eligible {
             let target = target_context.target;
             let context = EventContext {
@@ -793,73 +890,117 @@ impl BattleState {
                 target: Some(target),
                 move_id: Some(move_context.move_id),
             };
-            let mut damage = self.calculate_standard_damage(
-                data,
-                field_effects,
-                move_context,
-                target_context,
-                spread,
-            )?;
-            let modify_damage = effects.dispatch(
-                self,
-                BattleEvent::ModifyDamage,
-                context,
-                EventValue::Integer(i64::from(damage.final_damage)),
-            )?;
-            damage.final_damage = match modify_damage.value {
-                EventValue::Integer(value) => u16::try_from(value).map_err(|_| {
-                    BattleError::InvalidState(
-                        "ModifyDamage produced a value outside the u16 damage range".to_owned(),
-                    )
-                })?,
-                EventValue::None | EventValue::Boolean(_) => {
-                    return Err(BattleError::InvalidState(
-                        "ModifyDamage replaced its integer relay with an incompatible value"
-                            .to_owned(),
-                    ));
+            let mut target_hit = false;
+            for hit_index in 0..hit_count {
+                if self
+                    .side(target.side)
+                    .pokemon(target.pokemon)
+                    .map_or(true, PokemonState::is_fainted)
+                {
+                    break;
                 }
-            };
-            resolution.events.push(modify_damage);
-            resolution.events.push(effects.dispatch(
-                self,
-                BattleEvent::Hit,
-                context,
-                EventValue::None,
-            )?);
-            resolution.actions.push(ResolvedAction::Damaged {
-                side: move_context.queued.side,
-                slot: move_context.queued.slot,
-                target_side: target.side,
-                target_slot: target_context.slot,
-                move_slot: move_context.queued.move_slot,
-                damage,
-            });
-            let (applied_hp_loss, fainted) = self.apply_damage(
-                effects,
-                DamageApplication {
+                if hit_index > 0
+                    && move_context.move_data.multi_accuracy
+                    && !self.check_accuracy(
+                        move_context.move_data.accuracy,
+                        move_context.move_id,
+                        field_effects,
+                        move_context.source,
+                        target,
+                    )?
+                {
+                    break;
+                }
+                let mut damage = self.calculate_standard_damage(
+                    data,
+                    effects,
+                    field_effects,
+                    move_context,
+                    target_context,
+                    spread,
+                    resolution,
+                )?;
+                let modify_damage = effects.dispatch(
+                    self,
+                    BattleEvent::ModifyDamage,
                     context,
-                    side: target.side,
-                    slot: target_context.slot,
-                    pokemon: target.pokemon,
-                    damage: damage.final_damage,
-                },
-                resolution,
-            )?;
-            outcomes[index] = Some(TargetOutcome {
-                source: move_context.source,
-                move_id: move_context.move_id,
-                target,
-                redirected: target_context.redirected,
-                result: TargetResult::Hit,
-                calculated_damage: damage.final_damage,
-                applied_hp_loss,
-                fainted,
-            });
-            any_hit = true;
+                    EventValue::Integer(i64::from(damage.final_damage)),
+                )?;
+                damage.final_damage = integer_relay_u16(&modify_damage, "ModifyDamage")?;
+                resolution.events.push(modify_damage);
+                resolution.events.push(effects.dispatch(
+                    self,
+                    BattleEvent::Hit,
+                    context,
+                    EventValue::None,
+                )?);
+                resolution.actions.push(ResolvedAction::Damaged {
+                    side: move_context.queued.side,
+                    slot: move_context.queued.slot,
+                    target_side: target.side,
+                    target_slot: target_context.slot,
+                    move_slot: move_context.queued.move_slot,
+                    damage,
+                });
+                let (applied_hp_loss, fainted) = self.apply_damage(
+                    effects,
+                    DamageApplication {
+                        context,
+                        side: target.side,
+                        slot: target_context.slot,
+                        pokemon: target.pokemon,
+                        damage: damage.final_damage,
+                    },
+                    resolution,
+                )?;
+                total_applied_damage =
+                    total_applied_damage.saturating_add(u32::from(applied_hp_loss));
+                let outcome = TargetOutcome {
+                    source: move_context.source,
+                    move_id: move_context.move_id,
+                    target,
+                    redirected: target_context.redirected,
+                    result: TargetResult::Hit,
+                    calculated_damage: damage.final_damage,
+                    applied_hp_loss,
+                    fainted,
+                };
+                if target_hit {
+                    hit_outcomes.push(outcome);
+                } else {
+                    outcomes[index] = Some(outcome);
+                }
+                target_hit = true;
+                any_hit = true;
+                self.apply_drain(move_context, applied_hp_loss)?;
+                if hit_count > 1 || !self_effect_applied {
+                    self.apply_self_move_effect(
+                        data,
+                        effects,
+                        field_effects,
+                        move_context,
+                        resolution,
+                    )?;
+                    self_effect_applied = true;
+                }
+                self.apply_secondary_effects(
+                    data,
+                    effects,
+                    field_effects,
+                    move_context,
+                    target,
+                    resolution,
+                )?;
+                if fainted {
+                    break;
+                }
+            }
         }
         resolution
             .target_outcomes
             .extend(outcomes.into_iter().flatten());
+        resolution.target_outcomes.extend(hit_outcomes);
+        self.apply_recoil(move_context, total_applied_damage, effects, resolution)?;
         if !any_hit {
             resolution.actions.push(ResolvedAction::Skipped {
                 side: move_context.queued.side,
@@ -875,6 +1016,307 @@ impl BattleState {
             self,
             BattleEvent::AfterMove,
             after_context,
+            EventValue::None,
+        )?);
+        Ok(())
+    }
+
+    fn resolve_hit_count(&mut self, sequence: HitSequence) -> Result<u8, BattleError> {
+        match sequence {
+            HitSequence::Single => Ok(1),
+            HitSequence::Fixed { hits } if hits > 0 => Ok(hits),
+            HitSequence::Range { min: 2, max: 5 } => {
+                const DISTRIBUTION: [u8; 20] =
+                    [2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 5, 5, 5];
+                self.rng.sample(RngReason::MultiHit, &DISTRIBUTION).copied()
+            }
+            HitSequence::Range { min, max } if min > 0 && min <= max => self
+                .rng
+                .range(RngReason::MultiHit, u64::from(min)..u64::from(max) + 1)
+                .and_then(|value| {
+                    u8::try_from(value).map_err(|_| {
+                        BattleError::InvalidState("multi-hit count does not fit in u8".to_owned())
+                    })
+                }),
+            HitSequence::Fixed { .. } | HitSequence::Range { .. } => Err(
+                BattleError::DataMismatch("move declares an invalid hit sequence".to_owned()),
+            ),
+        }
+    }
+
+    fn apply_drain(
+        &mut self,
+        context: &MoveExecutionContext,
+        applied_damage: u16,
+    ) -> Result<(), BattleError> {
+        let Some(fraction) = context.move_data.drain else {
+            return Ok(());
+        };
+        let amount = rounded_fraction(u32::from(applied_damage), fraction)?;
+        if amount > 0 {
+            StateKernel::new(self)
+                .heal_hp(context.source, u16::try_from(amount).unwrap_or(u16::MAX))?;
+        }
+        Ok(())
+    }
+
+    fn apply_recoil(
+        &mut self,
+        context: &MoveExecutionContext,
+        applied_damage: u32,
+        effects: &EffectRegistry,
+        resolution: &mut TurnResolution,
+    ) -> Result<(), BattleError> {
+        let fraction_and_basis = context
+            .move_data
+            .recoil
+            .map(|fraction| (fraction, applied_damage))
+            .or_else(|| {
+                context.move_data.self_damage.map(|fraction| {
+                    let max_hp = self
+                        .side(context.source.side)
+                        .pokemon(context.source.pokemon)
+                        .map_or(0, |source| u32::from(source.stats.hp));
+                    (fraction, max_hp)
+                })
+            });
+        let Some((fraction, basis)) = fraction_and_basis else {
+            return Ok(());
+        };
+        if applied_damage == 0 {
+            return Ok(());
+        }
+        let requested = rounded_fraction(basis, fraction)?.max(1);
+        let source_state = self
+            .side(context.source.side)
+            .pokemon(context.source.pokemon)
+            .ok_or_else(|| BattleError::InvalidState("recoil source is invalid".to_owned()))?;
+        if source_state.is_fainted() {
+            return Ok(());
+        }
+        let slot = match source_state.position {
+            crate::PokemonPosition::Active { slot } => slot,
+            crate::PokemonPosition::Team | crate::PokemonPosition::Fainted => {
+                return Err(BattleError::InvalidState(
+                    "recoil source is not active".to_owned(),
+                ));
+            }
+        };
+        let event_context = EventContext {
+            source: Some(context.source),
+            target: Some(context.source),
+            move_id: Some(context.move_id),
+        };
+        let _ = self.apply_damage(
+            effects,
+            DamageApplication {
+                context: event_context,
+                side: context.source.side,
+                slot,
+                pokemon: context.source.pokemon,
+                damage: u16::try_from(requested).unwrap_or(u16::MAX),
+            },
+            resolution,
+        )?;
+        Ok(())
+    }
+
+    fn apply_self_move_effect<D: CombatData>(
+        &mut self,
+        data: &D,
+        effects: &EffectRegistry,
+        field_effects: &FieldEffectIds,
+        context: &MoveExecutionContext,
+        resolution: &mut TurnResolution,
+    ) -> Result<(), BattleError> {
+        let Some(effect) = &context.self_effect else {
+            return Ok(());
+        };
+        // Showdown samples the self-effect roll even when `chance` is omitted.
+        let roll = self.rng.range(RngReason::SecondaryEffect, 0..100)?;
+        if effect
+            .chance
+            .is_some_and(|chance| roll >= u64::from(chance))
+        {
+            return Ok(());
+        }
+        for operation in &effect.effects {
+            let _ = self.apply_primary_effect(
+                data,
+                effects,
+                field_effects,
+                context,
+                Some(context.source),
+                *operation,
+                resolution,
+            )?;
+        }
+        Ok(())
+    }
+
+    fn apply_secondary_effects<D: CombatData>(
+        &mut self,
+        data: &D,
+        effects: &EffectRegistry,
+        field_effects: &FieldEffectIds,
+        context: &MoveExecutionContext,
+        target: PokemonRef,
+        resolution: &mut TurnResolution,
+    ) -> Result<(), BattleError> {
+        for secondary in &context.secondary_effects {
+            let applies =
+                self.rng
+                    .chance(RngReason::SecondaryEffect, u64::from(secondary.chance), 100)?;
+            if !applies {
+                continue;
+            }
+            for operation in &secondary.effects {
+                let _ = self.apply_primary_effect(
+                    data,
+                    effects,
+                    field_effects,
+                    context,
+                    Some(target),
+                    *operation,
+                    resolution,
+                )?;
+            }
+            for operation in &secondary.self_effects {
+                let _ = self.apply_primary_effect(
+                    data,
+                    effects,
+                    field_effects,
+                    context,
+                    Some(context.source),
+                    *operation,
+                    resolution,
+                )?;
+            }
+        }
+        Ok(())
+    }
+
+    #[allow(clippy::too_many_lines)]
+    fn execute_fixed_damage<D: CombatData>(
+        &mut self,
+        data: &D,
+        context: &MoveExecutionContext,
+        effects: &EffectRegistry,
+        field_effects: &FieldEffectIds,
+        resolution: &mut TurnResolution,
+    ) -> Result<(), BattleError> {
+        let HitLifecycle {
+            eligible,
+            mut outcomes,
+        } = self.resolve_hit_lifecycle(data, context, effects, field_effects, true, resolution)?;
+        let requested = match context.move_data.operation {
+            MoveOperation::FixedDamage => context.move_data.fixed_damage.ok_or_else(|| {
+                BattleError::DataMismatch("fixed-damage move has no damage value".to_owned())
+            })?,
+            MoveOperation::LevelDamage => self
+                .side(context.source.side)
+                .pokemon(context.source.pokemon)
+                .ok_or_else(|| {
+                    BattleError::InvalidState("level-damage source is invalid".to_owned())
+                })?
+                .level
+                .into(),
+            MoveOperation::StandardDamage | MoveOperation::NonDamage => {
+                return Err(BattleError::InvalidState(
+                    "non-fixed move entered fixed-damage execution".to_owned(),
+                ));
+            }
+        };
+        let mut any_hit = false;
+        let mut total_applied = 0_u32;
+        for (index, target_context) in eligible {
+            let event_context = EventContext {
+                source: Some(context.source),
+                target: Some(target_context.target),
+                move_id: Some(context.move_id),
+            };
+            resolution.events.push(effects.dispatch(
+                self,
+                BattleEvent::Hit,
+                event_context,
+                EventValue::None,
+            )?);
+            let damage = DamageResult {
+                base_damage: u32::from(requested),
+                attack_stat: 0,
+                defense_stat: 0,
+                stab_modifier: Modifier::NEUTRAL,
+                type_modifier: Modifier::NEUTRAL,
+                critical_modifier: Modifier::NEUTRAL,
+                random_modifier: Modifier::NEUTRAL,
+                final_damage: requested,
+            };
+            resolution.actions.push(ResolvedAction::Damaged {
+                side: context.queued.side,
+                slot: context.queued.slot,
+                target_side: target_context.target.side,
+                target_slot: target_context.slot,
+                move_slot: context.queued.move_slot,
+                damage,
+            });
+            let (applied_hp_loss, fainted) = self.apply_damage(
+                effects,
+                DamageApplication {
+                    context: event_context,
+                    side: target_context.target.side,
+                    slot: target_context.slot,
+                    pokemon: target_context.target.pokemon,
+                    damage: requested,
+                },
+                resolution,
+            )?;
+            total_applied = total_applied.saturating_add(u32::from(applied_hp_loss));
+            outcomes[index] = Some(TargetOutcome {
+                source: context.source,
+                move_id: context.move_id,
+                target: target_context.target,
+                redirected: target_context.redirected,
+                result: TargetResult::Hit,
+                calculated_damage: requested,
+                applied_hp_loss,
+                fainted,
+            });
+            self.apply_drain(context, applied_hp_loss)?;
+            self.apply_self_move_effect(data, effects, field_effects, context, resolution)?;
+            self.apply_secondary_effects(
+                data,
+                effects,
+                field_effects,
+                context,
+                target_context.target,
+                resolution,
+            )?;
+            any_hit = true;
+        }
+        resolution
+            .target_outcomes
+            .extend(outcomes.into_iter().flatten());
+        self.apply_recoil(context, total_applied, effects, resolution)?;
+        resolution.actions.push(if any_hit {
+            ResolvedAction::Used {
+                side: context.queued.side,
+                slot: context.queued.slot,
+                move_slot: context.queued.move_slot,
+            }
+        } else {
+            ResolvedAction::Skipped {
+                side: context.queued.side,
+                slot: context.queued.slot,
+            }
+        });
+        resolution.events.push(effects.dispatch(
+            self,
+            BattleEvent::AfterMove,
+            EventContext {
+                source: Some(context.source),
+                target: context.targets.last().map(|target| target.target),
+                move_id: Some(context.move_id),
+            },
             EventValue::None,
         )?);
         Ok(())
@@ -1307,10 +1749,20 @@ impl BattleState {
                 Ok(allowed)
             }
             PrimaryMoveEffect::CureStatus => Ok(self.cure_major_status(pokemon()?)?.is_some()),
-            PrimaryMoveEffect::ChangeStatStage { stat, delta } => Ok(StateKernel::new(self)
-                .change_stat_stage(pokemon()?, stat, delta)?
-                .applied_delta
-                != 0),
+            PrimaryMoveEffect::ChangeStatStage { stat, delta } => {
+                let target = pokemon()?;
+                if self
+                    .side(target.side)
+                    .pokemon(target.pokemon)
+                    .map_or(true, PokemonState::is_fainted)
+                {
+                    return Ok(false);
+                }
+                Ok(StateKernel::new(self)
+                    .change_stat_stage(target, stat, delta)?
+                    .applied_delta
+                    != 0)
+            }
             PrimaryMoveEffect::Heal {
                 numerator,
                 denominator,
@@ -1739,13 +2191,16 @@ impl BattleState {
         Ok(combined_type_modifier(data, move_data.move_type, types)?.is_none())
     }
 
+    #[allow(clippy::too_many_arguments, clippy::too_many_lines)]
     fn calculate_standard_damage<D: CombatData>(
         &mut self,
         data: &D,
+        effects: &EffectRegistry,
         field_effects: &FieldEffectIds,
         move_context: &MoveExecutionContext,
         target_context: TargetExecutionContext,
         spread: bool,
+        resolution: &mut TurnResolution,
     ) -> Result<DamageResult, BattleError> {
         let source = move_context.source;
         let target = target_context.target;
@@ -1754,8 +2209,6 @@ impl BattleState {
         let source_species = move_context.source_species;
         let source_form = move_context.source_form;
         let critical = roll_critical(&mut self.rng, move_data.crit_ratio)?;
-        let random_percent = u8::try_from(self.rng.range(RngReason::DamageRoll, 85..101)?)
-            .map_err(|_| BattleError::InvalidState("damage roll does not fit in u8".to_owned()))?;
         let source_types = data
             .pokemon_types(source_species, source_form)
             .ok_or_else(|| BattleError::DataMismatch("missing source type data".to_owned()))?;
@@ -1782,12 +2235,51 @@ impl BattleState {
             move_id,
             &mut adjusted_move,
         )?;
-        let defense = self.apply_field_defense(
+        if adjusted_move.prior_effect == PriorMoveEffect::Facade
+            && source_state.status.is_some()
+            && source_state.status != Some(MajorStatus::Sleep)
+        {
+            adjusted_move.base_power = adjusted_move.base_power.saturating_mul(2);
+        }
+        let event_context = EventContext {
+            source: Some(source),
+            target: Some(target),
+            move_id: Some(move_id),
+        };
+        let base_power = effects.dispatch(
+            self,
+            BattleEvent::ModifyBasePower,
+            event_context,
+            EventValue::Integer(i64::from(adjusted_move.base_power)),
+        )?;
+        adjusted_move.base_power = integer_relay_u16(&base_power, "ModifyBasePower")?.max(1);
+        resolution.events.push(base_power);
+        let defense_modifier = self.apply_field_defense(
             data,
             field_effects,
             adjusted_move.category,
             &mut target_state,
         )?;
+        let (mut attack, mut defense) =
+            effective_damage_stats(&source_state, &target_state, adjusted_move, critical)?;
+        let modify_attack = effects.dispatch(
+            self,
+            BattleEvent::ModifyAttack,
+            event_context,
+            EventValue::Integer(i64::from(attack)),
+        )?;
+        attack = integer_relay_u32(&modify_attack, "ModifyAttack")?;
+        resolution.events.push(modify_attack);
+        let modify_defense = effects.dispatch(
+            self,
+            BattleEvent::ModifyDefense,
+            event_context,
+            EventValue::Integer(i64::from(defense)),
+        )?;
+        defense = integer_relay_u32(&modify_defense, "ModifyDefense")?.max(1);
+        resolution.events.push(modify_defense);
+        let random_percent = u8::try_from(self.rng.range(RngReason::DamageRoll, 85..101)?)
+            .map_err(|_| BattleError::InvalidState("damage roll does not fit in u8".to_owned()))?;
         let weather =
             crate::field_effects::weather_damage_modifier(self, field_effects, move_data.move_type);
         let mut damage = calculate_damage_inner(
@@ -1800,8 +2292,11 @@ impl BattleState {
             random_percent,
             DamageEnvironment {
                 weather,
-                defense,
+                defense_modifier,
+                attack_override: Some(attack),
+                defense_override: Some(defense),
                 spread,
+                ignore_burn: adjusted_move.prior_effect == PriorMoveEffect::Facade,
             },
         )?;
         if let Some((numerator, denominator)) = crate::field_effects::screen_modifier(
@@ -2349,6 +2844,7 @@ pub fn calculate_damage(
 }
 
 #[allow(clippy::too_many_arguments)]
+#[allow(clippy::too_many_lines)]
 fn calculate_damage_inner(
     source: &PokemonState,
     target: &PokemonState,
@@ -2393,9 +2889,14 @@ fn calculate_damage_inner(
     } else {
         defense_stage
     };
-    let attack = staged_stat(raw_attack, attack_stage);
-    let mut defense = staged_stat(raw_defense, defense_stage).max(1);
-    if let Some((numerator, denominator)) = environment.defense {
+    let attack = environment
+        .attack_override
+        .unwrap_or_else(|| staged_stat(raw_attack, attack_stage));
+    let mut defense = environment
+        .defense_override
+        .unwrap_or_else(|| staged_stat(raw_defense, defense_stage))
+        .max(1);
+    if let Some((numerator, denominator)) = environment.defense_modifier {
         defense = showdown_modify(defense, numerator, denominator).max(1);
     }
     let level_factor = (2 * u32::from(source.level) / 5) + 2;
@@ -2434,7 +2935,10 @@ fn calculate_damage_inner(
     };
     let (typed_damage, type_modifier) = apply_type_modifier(final_damage, type_exponent);
     final_damage = typed_damage;
-    if source.status == Some(MajorStatus::Burn) && move_data.category == MoveCategory::Physical {
+    if source.status == Some(MajorStatus::Burn)
+        && move_data.category == MoveCategory::Physical
+        && !environment.ignore_burn
+    {
         final_damage /= 2;
     }
     if type_exponent.is_some() && final_damage == 0 {
@@ -2500,7 +3004,9 @@ fn apply_type_modifier(damage: u32, exponent: Option<i8>) -> (u32, Modifier) {
 /// # Errors
 ///
 /// Returns an error when static data is missing, the move requires a capability
-/// outside the PR 13.1 executor slice, or damage inputs are invalid.
+/// outside the static damage seam, or damage inputs are invalid. Moves with
+/// state-dependent power or effective-stat behavior must run through the
+/// authoritative transition executor.
 pub fn calculate_move_damage<D: CombatData>(
     data: &D,
     source: &PokemonState,
@@ -2512,7 +3018,27 @@ pub fn calculate_move_damage<D: CombatData>(
     let move_data = data.move_data(move_id).ok_or_else(|| {
         BattleError::DataMismatch(format!("missing combat data for move {move_id}"))
     })?;
-    preflight_move(move_id, move_data, MoveIntrinsic::Ordinary, &[])?;
+    let transition_only = [
+        MoveCapability::ConditionalPower,
+        MoveCapability::EffectiveStatOverride,
+    ]
+    .into_iter()
+    .find(|capability| move_data.required_capabilities.contains(*capability));
+    if let Some(capability) = transition_only {
+        return Err(BattleError::UnsupportedMechanic(format!(
+            "move {move_id} requires transition-only capability {capability}"
+        )));
+    }
+    let secondaries = data.secondary_move_effects(move_id);
+    let self_effect = data.self_move_effect(move_id);
+    preflight_move(
+        move_id,
+        move_data,
+        MoveIntrinsic::Ordinary,
+        &[],
+        &secondaries,
+        self_effect.as_ref(),
+    )?;
     let source_types = data
         .pokemon_types(source.species, source.form)
         .ok_or_else(|| BattleError::DataMismatch("missing source type data".to_owned()))?;
@@ -2540,30 +3066,184 @@ fn staged_stat(stat: u16, stage: i8) -> u32 {
     }
 }
 
+fn effective_damage_stats(
+    source: &PokemonState,
+    target: &PokemonState,
+    move_data: CombatMove,
+    critical: bool,
+) -> Result<(u32, u32), BattleError> {
+    let (default_attack, default_defense) = match move_data.category {
+        MoveCategory::Physical => (BattleStat::Attack, BattleStat::Defense),
+        MoveCategory::Special => (BattleStat::SpecialAttack, BattleStat::SpecialDefense),
+        MoveCategory::Status => {
+            return Err(BattleError::DataMismatch(
+                "status move requested effective damage stats".to_owned(),
+            ));
+        }
+    };
+    let attack_stat = move_data.offensive_stat.unwrap_or(default_attack);
+    let defense_stat = move_data.defensive_stat.unwrap_or(default_defense);
+    let raw = |pokemon: &PokemonState, stat: BattleStat| match stat {
+        BattleStat::Attack => Some(pokemon.stats.atk),
+        BattleStat::Defense => Some(pokemon.stats.def),
+        BattleStat::SpecialAttack => Some(pokemon.stats.spa),
+        BattleStat::SpecialDefense => Some(pokemon.stats.spd),
+        BattleStat::Speed => Some(pokemon.stats.spe),
+        BattleStat::Accuracy | BattleStat::Evasion => None,
+    };
+    let mut attack_stage = source.stat_stages.get(attack_stat);
+    let mut defense_stage = target.stat_stages.get(defense_stat);
+    if (critical || move_data.ignore_negative_offensive) && attack_stage < 0 {
+        attack_stage = 0;
+    }
+    if (critical || move_data.ignore_positive_defensive) && defense_stage > 0 {
+        defense_stage = 0;
+    }
+    let attack = raw(source, attack_stat).ok_or_else(|| {
+        BattleError::DataMismatch("move declares an invalid offensive stat override".to_owned())
+    })?;
+    let defense = raw(target, defense_stat).ok_or_else(|| {
+        BattleError::DataMismatch("move declares an invalid defensive stat override".to_owned())
+    })?;
+    Ok((
+        staged_stat(attack, attack_stage),
+        staged_stat(defense, defense_stage).max(1),
+    ))
+}
+
+fn integer_relay_u16(dispatch: &EventDispatch, name: &str) -> Result<u16, BattleError> {
+    let EventValue::Integer(value) = dispatch.value else {
+        return Err(BattleError::InvalidState(format!(
+            "{name} replaced its integer relay with an incompatible value"
+        )));
+    };
+    u16::try_from(value).map_err(|_| {
+        BattleError::InvalidState(format!("{name} produced a value outside the u16 range"))
+    })
+}
+
+fn integer_relay_u32(dispatch: &EventDispatch, name: &str) -> Result<u32, BattleError> {
+    let EventValue::Integer(value) = dispatch.value else {
+        return Err(BattleError::InvalidState(format!(
+            "{name} replaced its integer relay with an incompatible value"
+        )));
+    };
+    u32::try_from(value).map_err(|_| {
+        BattleError::InvalidState(format!("{name} produced a value outside the u32 range"))
+    })
+}
+
+fn rounded_fraction(value: u32, fraction: EffectFraction) -> Result<u32, BattleError> {
+    if fraction.denominator == 0 {
+        return Err(BattleError::DataMismatch(
+            "move fraction denominator is zero".to_owned(),
+        ));
+    }
+    Ok(value
+        .saturating_mul(u32::from(fraction.numerator))
+        .saturating_add(u32::from(fraction.denominator) / 2)
+        / u32::from(fraction.denominator))
+}
+
+#[allow(clippy::too_many_lines)]
 fn preflight_move(
     move_id: MoveId,
     move_data: CombatMove,
     intrinsic: MoveIntrinsic,
     primary_effects: &[PrimaryMoveEffect],
+    secondary_effects: &[SecondaryMoveEffect],
+    self_effect: Option<&SelfMoveEffect>,
 ) -> Result<(), BattleError> {
     if let Some(missing) = move_data
         .required_capabilities
-        .first_missing_from(MoveCapabilities::PR_13_3)
+        .first_missing_from(MoveCapabilities::PR_13_4)
     {
         return Err(BattleError::UnsupportedMechanic(format!(
             "move {move_id} requires unsupported capability {missing}"
         )));
     }
+    if move_data
+        .required_capabilities
+        .contains(MoveCapability::SecondaryEffect)
+        && secondary_effects.is_empty()
+    {
+        return Err(BattleError::UnsupportedMechanic(format!(
+            "move {move_id} requires secondary effect data"
+        )));
+    }
+    if move_data
+        .required_capabilities
+        .contains(MoveCapability::SelfEffect)
+        && self_effect.is_none()
+    {
+        return Err(BattleError::UnsupportedMechanic(format!(
+            "move {move_id} requires self-effect data"
+        )));
+    }
+    if move_data
+        .required_capabilities
+        .contains(MoveCapability::MultiHit)
+        && move_data.hit_sequence == HitSequence::Single
+    {
+        return Err(BattleError::UnsupportedMechanic(format!(
+            "move {move_id} requires multi-hit sequence data"
+        )));
+    }
+    if move_data
+        .required_capabilities
+        .contains(MoveCapability::Drain)
+        && move_data.drain.is_none()
+    {
+        return Err(BattleError::UnsupportedMechanic(format!(
+            "move {move_id} requires drain data"
+        )));
+    }
+    if move_data
+        .required_capabilities
+        .contains(MoveCapability::Recoil)
+        && move_data.recoil.is_none()
+        && move_data.self_damage.is_none()
+    {
+        return Err(BattleError::UnsupportedMechanic(format!(
+            "move {move_id} requires recoil or self-damage data"
+        )));
+    }
+    if move_data
+        .required_capabilities
+        .contains(MoveCapability::ConditionalPower)
+        && move_data.prior_effect == PriorMoveEffect::None
+    {
+        return Err(BattleError::UnsupportedMechanic(format!(
+            "move {move_id} requires conditional-power data"
+        )));
+    }
+    if move_data
+        .required_capabilities
+        .contains(MoveCapability::EffectiveStatOverride)
+        && move_data.offensive_stat.is_none()
+        && move_data.defensive_stat.is_none()
+        && !move_data.ignore_negative_offensive
+        && !move_data.ignore_positive_defensive
+    {
+        return Err(BattleError::UnsupportedMechanic(format!(
+            "move {move_id} requires effective-stat override data"
+        )));
+    }
     let valid_damage = move_data.operation == MoveOperation::StandardDamage
         && move_data.category != MoveCategory::Status
         && move_data.base_power > 0;
+    let valid_fixed = match move_data.operation {
+        MoveOperation::FixedDamage => move_data.base_power == 0 && move_data.fixed_damage.is_some(),
+        MoveOperation::LevelDamage => move_data.base_power == 0 && move_data.fixed_damage.is_none(),
+        MoveOperation::StandardDamage | MoveOperation::NonDamage => false,
+    };
     let valid_intrinsic = move_data.operation == MoveOperation::NonDamage
         && move_data.category == MoveCategory::Status
         && move_data.base_power == 0
         && (intrinsic != MoveIntrinsic::Ordinary || !primary_effects.is_empty());
-    if !valid_damage && !valid_intrinsic {
+    if !valid_damage && !valid_fixed && !valid_intrinsic {
         return Err(BattleError::DataMismatch(format!(
-            "move {move_id} declares inconsistent standard-damage metadata"
+            "move {move_id} declares inconsistent operation metadata"
         )));
     }
     if matches!(
@@ -2679,26 +3359,52 @@ mod tests {
             target: MoveTarget::Normal,
             operation: MoveOperation::StandardDamage,
             required_capabilities: MoveCapabilities::PR_13_1,
+            hit_sequence: crate::HitSequence::Single,
+            multi_accuracy: false,
+            fixed_damage: None,
+            drain: None,
+            recoil: None,
+            self_damage: None,
+            prior_effect: crate::PriorMoveEffect::None,
+            offensive_stat: None,
+            defensive_stat: None,
+            ignore_negative_offensive: false,
+            ignore_positive_defensive: false,
         }
     }
 
     #[test]
-    fn move_preflight_accepts_the_foundation_and_names_missing_capabilities() {
+    fn move_preflight_accepts_pr_13_4_and_names_missing_capabilities() {
         let move_id = MoveId::new(1);
         assert_eq!(
-            preflight_move(move_id, standard_move(), MoveIntrinsic::Ordinary, &[]),
+            preflight_move(
+                move_id,
+                standard_move(),
+                MoveIntrinsic::Ordinary,
+                &[],
+                &[],
+                None,
+            ),
             Ok(())
         );
 
-        let mut secondary = standard_move();
-        secondary.required_capabilities = secondary
+        let mut unsupported = standard_move();
+        unsupported.required_capabilities = unsupported
             .required_capabilities
-            .with(MoveCapability::SecondaryEffect);
-        let error = preflight_move(move_id, secondary, MoveIntrinsic::Ordinary, &[]).unwrap_err();
+            .with(MoveCapability::SpecialBehavior);
+        let error = preflight_move(
+            move_id,
+            unsupported,
+            MoveIntrinsic::Ordinary,
+            &[],
+            &[],
+            None,
+        )
+        .unwrap_err();
         assert_eq!(
             error,
             BattleError::UnsupportedMechanic(
-                "move 1 requires unsupported capability secondary_effect".to_owned()
+                "move 1 requires unsupported capability special_behavior".to_owned()
             )
         );
     }
@@ -2708,7 +3414,14 @@ mod tests {
         let mut inconsistent = standard_move();
         inconsistent.category = MoveCategory::Status;
         assert!(matches!(
-            preflight_move(MoveId::new(1), inconsistent, MoveIntrinsic::Ordinary, &[]),
+            preflight_move(
+                MoveId::new(1),
+                inconsistent,
+                MoveIntrinsic::Ordinary,
+                &[],
+                &[],
+                None,
+            ),
             Err(BattleError::DataMismatch(_))
         ));
     }

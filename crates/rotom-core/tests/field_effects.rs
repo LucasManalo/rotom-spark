@@ -92,6 +92,17 @@ impl CombatData for TestData {
             } else {
                 MoveCapabilities::PR_13_2
             },
+            hit_sequence: rotom_core::HitSequence::Single,
+            multi_accuracy: false,
+            fixed_damage: None,
+            drain: None,
+            recoil: None,
+            self_damage: None,
+            prior_effect: rotom_core::PriorMoveEffect::None,
+            offensive_stat: None,
+            defensive_stat: None,
+            ignore_negative_offensive: false,
+            ignore_positive_defensive: false,
         })
     }
 

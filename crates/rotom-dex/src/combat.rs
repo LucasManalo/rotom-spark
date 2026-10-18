@@ -1,9 +1,10 @@
 use crate::{Accuracy, DexData, MoveBehaviorKind, MoveData, SpeciesData, Stats};
 use rotom_core::{
-    BattleError, BattleStat, BattleStats, CombatData, CombatMove, ConditionId, FieldEffectIds,
-    MajorStatus, MoveAccuracy, MoveCapabilities, MoveCapability, MoveCategory, MoveId,
-    MoveIntrinsic, MoveOperation, MoveSlot, MoveTarget, PokemonPosition, PokemonSet, PokemonState,
-    PokemonType, PokemonTypes, PrimaryMoveEffect, StatAllocation, StatStages, StatusState,
+    BattleError, BattleStat, BattleStats, CombatData, CombatMove, ConditionId, EffectFraction,
+    FieldEffectIds, HitSequence, MajorStatus, MoveAccuracy, MoveCapabilities, MoveCapability,
+    MoveCategory, MoveId, MoveIntrinsic, MoveOperation, MoveSlot, MoveTarget, PokemonPosition,
+    PokemonSet, PokemonState, PokemonType, PokemonTypes, PrimaryMoveEffect, PriorMoveEffect,
+    SecondaryMoveEffect, SelfMoveEffect, StatAllocation, StatStages, StatusState,
 };
 
 impl CombatData for DexData {
@@ -22,6 +23,42 @@ impl CombatData for DexData {
             target: data.target,
             operation,
             required_capabilities,
+            hit_sequence: data.multi_hit.map_or(HitSequence::Single, |hits| {
+                if hits.min == hits.max {
+                    HitSequence::Fixed { hits: hits.min }
+                } else {
+                    HitSequence::Range {
+                        min: hits.min,
+                        max: hits.max,
+                    }
+                }
+            }),
+            multi_accuracy: data.multi_accuracy,
+            fixed_damage: match data.damage {
+                Some(crate::Damage::Fixed { value }) => Some(value),
+                Some(crate::Damage::Level) | None => None,
+            },
+            drain: data.drain.map(|value| EffectFraction {
+                numerator: value.numerator,
+                denominator: value.denominator,
+            }),
+            recoil: data.recoil.map(|value| EffectFraction {
+                numerator: value.numerator,
+                denominator: value.denominator,
+            }),
+            self_damage: data.self_damage.map(|value| EffectFraction {
+                numerator: value.numerator,
+                denominator: value.denominator,
+            }),
+            prior_effect: if data.id == "facade" {
+                PriorMoveEffect::Facade
+            } else {
+                PriorMoveEffect::None
+            },
+            offensive_stat: data.override_offensive_stat.as_deref().and_then(parse_stat),
+            defensive_stat: data.override_defensive_stat.as_deref().and_then(parse_stat),
+            ignore_negative_offensive: data.ignore_negative_offensive,
+            ignore_positive_defensive: data.ignore_positive_defensive,
         })
     }
 
@@ -139,6 +176,64 @@ impl CombatData for DexData {
             }
         }
         effects
+    }
+
+    fn secondary_move_effects(&self, move_id: MoveId) -> Vec<SecondaryMoveEffect> {
+        let Some(data) = self.move_data(move_id) else {
+            return Vec::new();
+        };
+        data.secondaries
+            .iter()
+            .map(|secondary| {
+                let mut effects = secondary
+                    .status
+                    .as_deref()
+                    .and_then(parse_status)
+                    .map(|status| PrimaryMoveEffect::InflictStatus { status })
+                    .into_iter()
+                    .collect::<Vec<_>>();
+                effects.extend(secondary.boosts.iter().filter_map(|boost| {
+                    Some(PrimaryMoveEffect::ChangeStatStage {
+                        stat: parse_stat(&boost.key)?,
+                        delta: boost.value,
+                    })
+                }));
+                // Self-targeted secondary boosts are kept separate from target
+                // effects by applying them through the move's self-effect path.
+                SecondaryMoveEffect {
+                    chance: secondary.chance,
+                    effects,
+                    self_effects: secondary
+                        .self_boosts
+                        .iter()
+                        .filter_map(|boost| {
+                            Some(PrimaryMoveEffect::ChangeStatStage {
+                                stat: parse_stat(&boost.key)?,
+                                delta: boost.value,
+                            })
+                        })
+                        .collect(),
+                }
+            })
+            .collect()
+    }
+
+    fn self_move_effect(&self, move_id: MoveId) -> Option<SelfMoveEffect> {
+        let data = self.move_data(move_id)?;
+        let value = data.self_effect.as_ref()?;
+        Some(SelfMoveEffect {
+            chance: value.chance,
+            effects: value
+                .boosts
+                .iter()
+                .filter_map(|boost| {
+                    Some(PrimaryMoveEffect::ChangeStatStage {
+                        stat: parse_stat(&boost.key)?,
+                        delta: boost.value,
+                    })
+                })
+                .collect(),
+        })
     }
 
     fn move_is_protectable(&self, move_id: MoveId) -> bool {
@@ -275,8 +370,18 @@ fn move_execution_requirements(data: &MoveData) -> (MoveOperation, MoveCapabilit
     if data.drain.is_some() {
         required = required.with(MoveCapability::Drain);
     }
-    if data.recoil.is_some() {
+    if data.recoil.is_some() || data.self_damage.is_some() {
         required = required.with(MoveCapability::Recoil);
+    }
+    if data.id == "facade" {
+        required = required.with(MoveCapability::ConditionalPower);
+    }
+    if data.override_offensive_stat.is_some()
+        || data.override_defensive_stat.is_some()
+        || data.ignore_negative_offensive
+        || data.ignore_positive_defensive
+    {
+        required = required.with(MoveCapability::EffectiveStatOverride);
     }
     if data.status.is_some() {
         required = required.with(MoveCapability::MajorStatus);
@@ -357,7 +462,11 @@ fn behavior_capabilities(data: &MoveData, mut required: MoveCapabilities) -> Mov
     {
         required = required.with(MoveCapability::SwitchControl);
     }
-    if !data.behavior.callbacks.is_empty() && data.id != "magnetrise" {
+    let has_unsupported_callback = data.behavior.callbacks.iter().any(|callback| {
+        !((data.id == "magnetrise" && callback == "onTry")
+            || (data.id == "facade" && callback == "onBasePower"))
+    });
+    if has_unsupported_callback {
         required = required.with(MoveCapability::CustomCallback);
     }
     if data.volatile_status.is_some() && data.volatile_status.as_deref() != Some("magnetrise") {
@@ -373,15 +482,31 @@ fn behavior_capabilities(data: &MoveData, mut required: MoveCapabilities) -> Mov
                 "trickroom" | "gravity" | "magicroom" | "wonderroom"
             )
         });
-    let unsupported_special = data
-        .behavior
-        .special_properties
-        .iter()
-        .any(|property| !matches!(property.as_str(), "breaksProtect" | "ignoreImmunity"));
-    let unsupported_flag = data.behavior.intrinsic_flags.iter().any(|flag| {
-        (flag != "heal" || data.heal.is_none()) && !(data.id == "magnetrise" && flag == "gravity")
+    let unsupported_special = data.behavior.special_properties.iter().any(|property| {
+        !matches!(
+            property.as_str(),
+            "breaksProtect"
+                | "ignoreImmunity"
+                | "ignoreNegativeOffensive"
+                | "ignorePositiveDefensive"
+                | "overrideOffensiveStat"
+                | "overrideDefensiveStat"
+                | "multiaccuracy"
+                | "chloroblastRecoil"
+                | "mindBlownRecoil"
+        )
     });
-    if data.id == "toxic" || unsupported_condition || unsupported_flag || unsupported_special {
+    let unsupported_flag = data.behavior.intrinsic_flags.iter().any(|flag| {
+        (flag != "heal" || (data.heal.is_none() && data.drain.is_none()))
+            && !(data.id == "magnetrise" && flag == "gravity")
+    });
+    if data.id == "toxic"
+        || unsupported_condition
+        || unsupported_flag
+        || unsupported_special
+        || !data.behavior.structured_effects_supported
+        || matches!(data.target, MoveTarget::RandomNormal | MoveTarget::Scripted)
+    {
         required = required.with(MoveCapability::SpecialBehavior);
     }
     required

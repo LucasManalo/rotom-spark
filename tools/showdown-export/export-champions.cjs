@@ -99,6 +99,28 @@ function normalizeDamage(value) {
 	return typeof value === 'number' ? {kind: 'fixed', value} : {kind: value};
 }
 
+function normalizeSecondary(value) {
+	return {
+		chance: value.chance ?? 100,
+		status: optional(value.status),
+		boosts: sortedObjectEntries(value.boosts),
+		self_boosts: sortedObjectEntries(value.self?.boosts),
+	};
+}
+
+function normalizeSecondaries(move) {
+	const values = move.secondaries || (move.secondary ? [move.secondary] : []);
+	return values.map(normalizeSecondary);
+}
+
+function normalizeSelfEffect(value) {
+	if (!value) return null;
+	return {
+		chance: value.chance ?? null,
+		boosts: sortedObjectEntries(value.boosts),
+	};
+}
+
 function formatRuleEntries(ruleTable) {
 	return [...ruleTable.entries()]
 		.map(([rule, source]) => ({rule, source}))
@@ -219,8 +241,13 @@ function exportMoves(dex, validator) {
 			flags: sortedStrings(Object.keys(move.flags || {}).filter(flag => move.flags[flag])),
 			crit_ratio: move.critRatio || 1,
 			multi_hit: normalizeMultiHit(move.multihit),
+			multi_accuracy: Boolean(move.multiaccuracy),
 			drain: normalizeFraction(move.drain),
 			recoil: normalizeFraction(move.recoil),
+			self_damage: normalizeFraction(
+				move.struggleRecoil ? [1, 4] :
+					(move.mindBlownRecoil || move.chloroblastRecoil ? [1, 2] : null)
+			),
 			damage: normalizeDamage(move.damage),
 			status: optional(move.status),
 			volatile_status: optional(move.volatileStatus),
@@ -230,6 +257,12 @@ function exportMoves(dex, validator) {
 			terrain: optional(move.terrain),
 			pseudo_weather: optional(move.pseudoWeather),
 			side_condition: optional(move.sideCondition),
+			secondaries: normalizeSecondaries(move),
+			self_effect: normalizeSelfEffect(move.self || move.selfBoost),
+			override_offensive_stat: optional(move.overrideOffensiveStat),
+			override_defensive_stat: optional(move.overrideDefensiveStat),
+			ignore_negative_offensive: Boolean(move.ignoreNegativeOffensive),
+			ignore_positive_defensive: Boolean(move.ignorePositiveDefensive),
 			behavior: moveBehavior(move),
 			is_nonstandard: move.isNonstandard || null,
 			legal: banReason == null,
@@ -329,7 +362,7 @@ function buildExport(version, Showdown) {
 	const species = exportSpecies(dex, validator);
 
 	return {
-		schema_version: 5,
+		schema_version: 7,
 		source: {repo: version.repo, commit: version.commit},
 		format: {
 			id: format.id,

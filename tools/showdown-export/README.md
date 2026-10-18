@@ -34,9 +34,10 @@ node --test tools/showdown-export/mechanics-manifest.test.cjs
 
 `data/mechanics-coverage.json` contains reviewed implementation and verification
 claims. Move implementation status is derived from the complete operation and
-capability requirements exported from the resolved move: only the PR 13.1
-single-target, one-hit standard-damage capability set is automatically marked
-implemented. Reviewed claims may add stronger verification, but cannot mark a
+capability requirements exported from the resolved move. The current PR 13.4
+set includes reusable primary operations plus conditional power, effective
+stat overrides, chance secondaries, self effects, fixed/level and multi-hit
+damage, drain, and recoil. Reviewed claims may add stronger verification, but cannot mark a
 move implemented when its runtime requirements are unsupported. Other entries
 default to `unsupported` / `not_tested`. Dynamic callbacks whose reachability
 closure cannot be proven from structured data are reported under

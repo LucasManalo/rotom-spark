@@ -37,6 +37,13 @@ fn primary_non_damage_fixture() -> serde_json::Value {
     .expect("primary non-damage fixture")
 }
 
+fn sequenced_effects_fixture() -> serde_json::Value {
+    serde_json::from_str(include_str!(
+        "../../../data/fixtures/differential/sequenced-effects.json"
+    ))
+    .expect("sequenced effects fixture")
+}
+
 fn single_move_action(move_slot: u8, target: ActionTarget) -> JointAction {
     JointAction::Turn {
         p1: TurnChoice {
@@ -3968,24 +3975,381 @@ fn resolved_dex_requirements_drive_support_without_a_move_id_allowlist() {
     for (id, capability) in [
         ("flamethrower", MoveCapability::SecondaryEffect),
         ("shadowball", MoveCapability::SecondaryEffect),
-        ("facade", MoveCapability::CustomCallback),
+        ("facade", MoveCapability::ConditionalPower),
         ("bulletseed", MoveCapability::MultiHit),
+        ("populationbomb", MoveCapability::MultiHit),
         ("gigadrain", MoveCapability::Drain),
-        ("electroshot", MoveCapability::CustomCallback),
     ] {
         let move_data = definition(id);
         assert!(
             move_data.required_capabilities.contains(capability),
-            "{id} must retain its unsupported intrinsic behavior"
+            "{id} must retain its intrinsic behavior capability"
         );
-        assert!(
+        assert_eq!(
             move_data
                 .required_capabilities
-                .first_missing_from(MoveCapabilities::PR_13_2)
-                .is_some(),
-            "{id} must not degrade to plain damage"
+                .first_missing_from(MoveCapabilities::PR_13_4),
+            None,
+            "{id} must be supported through its PR 13.4 operation"
         );
     }
+    let electro_shot = definition("electroshot");
+    assert!(electro_shot
+        .required_capabilities
+        .contains(MoveCapability::CustomCallback));
+    assert!(electro_shot
+        .required_capabilities
+        .first_missing_from(MoveCapabilities::PR_13_4)
+        .is_some());
+}
+
+fn pr_13_4_battle(dex: &rotom_dex::DexData, move_name: &str, seed: u64) -> BattleState {
+    let source = set_with_moves(dex, "goodra", "sapsipper", &[move_name]);
+    let target = set_with_moves(dex, "blastoise", "torrent", &["recover"]);
+    selected_primary_battle(dex, &source, &target, seed)
+}
+
+fn p1_left_hits(result: &rotom_core::StepResult) -> Vec<&rotom_core::TargetOutcome> {
+    result
+        .diagnostics
+        .turn
+        .as_ref()
+        .expect("turn diagnostics")
+        .target_outcomes
+        .iter()
+        .filter(|outcome| {
+            outcome.source == PokemonRef::new(SideId::P1, PokemonIndex::new(0))
+                && outcome.result == TargetResult::Hit
+        })
+        .collect()
+}
+
+#[test]
+fn facade_uses_ephemeral_power_and_effective_stat_hooks() {
+    let dex = champions_reg_mc().unwrap();
+    let action = single_move_action(0, ActionTarget::Foe(ActiveSlot::Left));
+    let normal = step(
+        &pr_13_4_battle(&dex, "facade", 73),
+        &action,
+        &Mechanics::new(&dex, &EffectRegistry::new()),
+    )
+    .unwrap();
+    let mut builder = BattleStateBuilder::from_state(pr_13_4_battle(&dex, "facade", 73)).unwrap();
+    builder
+        .apply_major_status(
+            PokemonRef::new(SideId::P1, PokemonIndex::new(0)),
+            MajorStatus::Burn,
+        )
+        .unwrap();
+    let burned = step(
+        &builder.build().unwrap(),
+        &action,
+        &Mechanics::new(&dex, &EffectRegistry::new()),
+    )
+    .unwrap();
+    assert!(
+        p1_left_hits(&burned)[0].calculated_damage > p1_left_hits(&normal)[0].calculated_damage
+    );
+    let turn = burned.diagnostics.turn.as_ref().unwrap();
+    let relays = turn
+        .events
+        .iter()
+        .filter(|event| {
+            event.context.source == Some(PokemonRef::new(SideId::P1, PokemonIndex::new(0)))
+        })
+        .map(|event| event.event)
+        .collect::<Vec<_>>();
+    assert!(relays.windows(3).any(|events| {
+        events
+            == [
+                BattleEvent::ModifyBasePower,
+                BattleEvent::ModifyAttack,
+                BattleEvent::ModifyDefense,
+            ]
+    }));
+}
+
+#[test]
+fn effective_stat_overrides_feed_the_shared_damage_relays() {
+    let dex = champions_reg_mc().unwrap();
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let action = single_move_action(0, ActionTarget::Foe(ActiveSlot::Left));
+    for (move_name, event, expected_stat) in [
+        ("bodypress", BattleEvent::ModifyAttack, BattleStat::Defense),
+        ("psyshock", BattleEvent::ModifyDefense, BattleStat::Defense),
+    ] {
+        let state = pr_13_4_battle(&dex, move_name, 97);
+        let selected_stats = match event {
+            BattleEvent::ModifyAttack => {
+                state
+                    .side(SideId::P1)
+                    .pokemon(PokemonIndex::new(0))
+                    .unwrap()
+                    .stats
+            }
+            BattleEvent::ModifyDefense => {
+                state
+                    .side(SideId::P2)
+                    .pokemon(PokemonIndex::new(0))
+                    .unwrap()
+                    .stats
+            }
+            _ => unreachable!(),
+        };
+        let expected = match expected_stat {
+            BattleStat::Attack => selected_stats.atk,
+            BattleStat::Defense => selected_stats.def,
+            BattleStat::SpecialAttack => selected_stats.spa,
+            BattleStat::SpecialDefense => selected_stats.spd,
+            BattleStat::Speed => selected_stats.spe,
+            BattleStat::Accuracy | BattleStat::Evasion => unreachable!(),
+        };
+        let result = step(&state, &action, &mechanics).unwrap();
+        let dispatch = result
+            .diagnostics
+            .turn
+            .as_ref()
+            .unwrap()
+            .events
+            .iter()
+            .find(|dispatch| dispatch.event == event)
+            .unwrap();
+        assert_eq!(
+            dispatch.value,
+            rotom_core::EventValue::Integer(i64::from(expected))
+        );
+    }
+}
+
+#[test]
+fn declarative_self_effects_apply_after_successful_damage() {
+    let dex = champions_reg_mc().unwrap();
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let action = single_move_action(0, ActionTarget::Foe(ActiveSlot::Left));
+    for (move_name, stat, expected) in [
+        ("closecombat", BattleStat::Defense, -1),
+        ("closecombat", BattleStat::SpecialDefense, -1),
+        ("overheat", BattleStat::SpecialAttack, -2),
+    ] {
+        let result = step(&pr_13_4_battle(&dex, move_name, 101), &action, &mechanics).unwrap();
+        assert_eq!(
+            result
+                .state
+                .side(SideId::P1)
+                .pokemon(PokemonIndex::new(0))
+                .unwrap()
+                .stat_stages
+                .get(stat),
+            expected,
+            "{move_name} must apply its declarative self effect"
+        );
+    }
+}
+
+#[test]
+fn declarative_secondaries_roll_after_damage_and_use_shared_status_and_stage_rules() {
+    let dex = champions_reg_mc().unwrap();
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let action = single_move_action(0, ActionTarget::Foe(ActiveSlot::Left));
+    let flamethrower = (0..2_000)
+        .find_map(|seed| {
+            let mut builder =
+                BattleStateBuilder::from_state(pr_13_4_battle(&dex, "flamethrower", seed)).unwrap();
+            builder.enable_rng_trace();
+            let result = step(&builder.build().unwrap(), &action, &mechanics).unwrap();
+            (result
+                .state
+                .side(SideId::P2)
+                .pokemon(PokemonIndex::new(0))
+                .unwrap()
+                .status
+                == Some(MajorStatus::Burn))
+            .then_some(result)
+        })
+        .expect("deterministic seed with Flamethrower burn");
+    let reasons = flamethrower
+        .state
+        .rng()
+        .trace()
+        .unwrap()
+        .iter()
+        .map(|entry| entry.reason.clone())
+        .collect::<Vec<_>>();
+    let damage = reasons
+        .iter()
+        .position(|reason| *reason == RngReason::DamageRoll)
+        .unwrap();
+    let secondary = reasons
+        .iter()
+        .position(|reason| *reason == RngReason::SecondaryEffect)
+        .unwrap();
+    assert!(secondary > damage);
+
+    let shadow_ball = (0..2_000)
+        .find_map(|seed| {
+            let result = step(
+                &pr_13_4_battle(&dex, "shadowball", seed),
+                &action,
+                &mechanics,
+            )
+            .unwrap();
+            (result
+                .state
+                .side(SideId::P2)
+                .pokemon(PokemonIndex::new(0))
+                .unwrap()
+                .stat_stages
+                .spd
+                == -1)
+                .then_some(result)
+        })
+        .expect("deterministic seed with Shadow Ball drop");
+    shadow_ball.state.validate_stable_state().unwrap();
+}
+
+#[test]
+fn multi_hit_and_fixed_damage_preserve_per_hit_rng_and_faint_boundaries() {
+    let dex = champions_reg_mc().unwrap();
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let action = single_move_action(0, ActionTarget::Foe(ActiveSlot::Left));
+    let mut builder =
+        BattleStateBuilder::from_state(pr_13_4_battle(&dex, "bulletseed", 137)).unwrap();
+    builder.enable_rng_trace();
+    let bullet_seed = step(&builder.build().unwrap(), &action, &mechanics).unwrap();
+    let hits = p1_left_hits(&bullet_seed).len();
+    assert!((2..=5).contains(&hits));
+    let trace = bullet_seed.state.rng().trace().unwrap();
+    let multi_hit = trace
+        .iter()
+        .position(|entry| entry.reason == RngReason::MultiHit)
+        .unwrap();
+    let first_critical = trace
+        .iter()
+        .position(|entry| entry.reason == RngReason::CriticalHit)
+        .unwrap();
+    assert!(multi_hit < first_critical);
+    assert_eq!(
+        trace
+            .iter()
+            .filter(|entry| entry.reason == RngReason::CriticalHit)
+            .count(),
+        hits
+    );
+
+    let seismic = step(
+        &pr_13_4_battle(&dex, "seismictoss", 19),
+        &action,
+        &mechanics,
+    )
+    .unwrap();
+    assert_eq!(p1_left_hits(&seismic)[0].applied_hp_loss, 50);
+}
+
+#[test]
+fn multi_accuracy_rechecks_each_later_hit_and_stops_the_sequence_on_a_miss() {
+    let dex = champions_reg_mc().unwrap();
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let action = single_move_action(0, ActionTarget::Foe(ActiveSlot::Left));
+    let mut builder =
+        BattleStateBuilder::from_state(pr_13_4_battle(&dex, "populationbomb", 149)).unwrap();
+    builder.enable_rng_trace();
+    let result = step(&builder.build().unwrap(), &action, &mechanics).unwrap();
+    let hits = p1_left_hits(&result).len();
+    let accuracy_draws = result
+        .state
+        .rng()
+        .trace()
+        .unwrap()
+        .iter()
+        .filter(|entry| entry.reason == RngReason::Accuracy)
+        .count();
+    assert!((1..=10).contains(&hits));
+    assert_eq!(accuracy_draws, hits + usize::from(hits < 10));
+}
+
+#[test]
+fn drain_and_recoil_use_actual_clamped_damage_with_showdown_rounding() {
+    let dex = champions_reg_mc().unwrap();
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let action = single_move_action(0, ActionTarget::Foe(ActiveSlot::Left));
+    for (move_name, expected_delta) in [("gigadrain", 5_i32), ("doubleedge", -3_i32)] {
+        let state = pr_13_4_battle(&dex, move_name, 211);
+        let mut builder = BattleStateBuilder::from_state(state).unwrap();
+        let source = PokemonRef::new(SideId::P1, PokemonIndex::new(0));
+        let target = PokemonRef::new(SideId::P2, PokemonIndex::new(0));
+        let source_max = builder
+            .state()
+            .side(SideId::P1)
+            .pokemon(source.pokemon)
+            .unwrap()
+            .stats
+            .hp;
+        let source_before = if expected_delta > 0 {
+            source_max / 2
+        } else {
+            source_max
+        };
+        builder
+            .edit_pokemon(source, |pokemon| pokemon.current_hp = source_before)
+            .unwrap()
+            .edit_pokemon(target, |pokemon| pokemon.current_hp = 10)
+            .unwrap();
+        let result = step(&builder.build().unwrap(), &action, &mechanics).unwrap();
+        assert_eq!(p1_left_hits(&result)[0].applied_hp_loss, 10);
+        let source_after = result
+            .state
+            .side(SideId::P1)
+            .pokemon(source.pokemon)
+            .unwrap()
+            .current_hp;
+        assert_eq!(
+            i32::from(source_after) - i32::from(source_before),
+            expected_delta
+        );
+    }
+}
+
+#[test]
+fn max_hp_self_damage_runs_after_a_successful_hit() {
+    let dex = champions_reg_mc().unwrap();
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let action = single_move_action(0, ActionTarget::Foe(ActiveSlot::Left));
+    let state = pr_13_4_battle(&dex, "chloroblast", 227);
+    let source_before = state
+        .side(SideId::P1)
+        .pokemon(PokemonIndex::new(0))
+        .unwrap()
+        .current_hp;
+    let result = step(&state, &action, &mechanics).unwrap();
+    let source_after = result
+        .state
+        .side(SideId::P1)
+        .pokemon(PokemonIndex::new(0))
+        .unwrap()
+        .current_hp;
+    assert_eq!(source_before - source_after, source_before.div_ceil(2));
+}
+
+#[test]
+fn pinned_showdown_fixture_covers_pr_13_4_effect_ordering_and_rounding() {
+    let fixture = sequenced_effects_fixture();
+    assert_eq!(fixture["showdown_commit"], SHOWDOWN_COMMIT);
+    let cases = &fixture["cases"];
+    assert!(
+        cases["facade"]["burned_damage"].as_u64().unwrap()
+            > cases["facade"]["clear_damage"].as_u64().unwrap()
+    );
+    assert_eq!(cases["flamethrower"]["status"], "brn");
+    assert!((2..=5).contains(&cases["bullet_seed"]["hits"].as_u64().unwrap()));
+    assert_eq!(cases["population_bomb"]["hits"], 10);
+    assert_eq!(cases["seismic_toss"]["damage"], 50);
+    assert_eq!(cases["close_combat"]["source_boosts"]["def"], -1);
+    assert_eq!(cases["close_combat"]["source_boosts"]["spd"], -1);
+    assert!(cases["chloroblast"]["self_damage"].as_u64().unwrap() > 0);
+    assert_eq!(cases["giga_drain"]["damage"], 10);
+    assert_eq!(cases["giga_drain"]["healing"], 5);
+    assert_eq!(cases["double_edge"]["damage"], 10);
+    assert_eq!(cases["double_edge"]["recoil"], 3);
 }
 
 fn assert_combat_rng_trace(trace: &[rotom_core::RngTraceEntry]) {
@@ -4030,75 +4394,67 @@ fn assert_combat_rng_trace(trace: &[rotom_core::RngTraceEntry]) {
 #[test]
 fn unsupported_move_capabilities_are_explicit_and_atomic() {
     let dex = champions_reg_mc().expect("generated Dex");
-    for (move_name, expected_capability) in [
-        ("flamethrower", "secondary_effect"),
-        ("shadowball", "secondary_effect"),
-        ("facade", "custom_callback"),
-        ("bulletseed", "multi_hit"),
-        ("gigadrain", "drain"),
-        ("electroshot", "custom_callback"),
-    ] {
-        let unsupported = set(
-            &dex,
-            "goodra",
-            "gooey",
-            "serious",
-            move_name,
-            StatAllocation::ZERO,
-        );
-        let make_side = || {
-            let pokemon = dex.pokemon_state(&unsupported).expect("state");
-            SideState::new(TeamState::new(vec![
-                pokemon.clone(),
-                pokemon.clone(),
-                pokemon.clone(),
-                pokemon,
-            ]))
-        };
-        let mut builder =
-            BattleStateBuilder::new_with_seed(make_side(), make_side(), 4, 7).expect("battle");
-        let selection = vec![
-            PokemonIndex::new(0),
-            PokemonIndex::new(1),
-            PokemonIndex::new(2),
-            PokemonIndex::new(3),
-        ];
-        builder
-            .select_teams(selection.clone(), selection)
-            .expect("preview");
-        let battle = builder.build().unwrap();
-        let targets = [
-            ActionTarget::Foe(rotom_core::ActiveSlot::Left),
-            ActionTarget::Foe(rotom_core::ActiveSlot::Right),
-        ];
-        let choice = TurnChoice {
-            actions: targets.map(|target| PokemonAction::Move {
-                move_slot: MoveSlotIndex::new(0),
-                target,
-                mega: false,
-            }),
-        };
-        let before = battle.clone();
+    let (move_name, expected_capability) = ("electroshot", "custom_callback");
+    let unsupported = set(
+        &dex,
+        "goodra",
+        "gooey",
+        "serious",
+        move_name,
+        StatAllocation::ZERO,
+    );
+    let make_side = || {
+        let pokemon = dex.pokemon_state(&unsupported).expect("state");
+        SideState::new(TeamState::new(vec![
+            pokemon.clone(),
+            pokemon.clone(),
+            pokemon.clone(),
+            pokemon,
+        ]))
+    };
+    let mut builder =
+        BattleStateBuilder::new_with_seed(make_side(), make_side(), 4, 7).expect("battle");
+    let selection = vec![
+        PokemonIndex::new(0),
+        PokemonIndex::new(1),
+        PokemonIndex::new(2),
+        PokemonIndex::new(3),
+    ];
+    builder
+        .select_teams(selection.clone(), selection)
+        .expect("preview");
+    let battle = builder.build().unwrap();
+    let targets = [
+        ActionTarget::Foe(rotom_core::ActiveSlot::Left),
+        ActionTarget::Foe(rotom_core::ActiveSlot::Right),
+    ];
+    let choice = TurnChoice {
+        actions: targets.map(|target| PokemonAction::Move {
+            move_slot: MoveSlotIndex::new(0),
+            target,
+            mega: false,
+        }),
+    };
+    let before = battle.clone();
 
-        let error = step(
-            &battle,
-            &JointAction::Turn {
-                p1: choice,
-                p2: choice,
-            },
-            &Mechanics::new(&dex, &EffectRegistry::new()),
-        )
-        .unwrap_err();
-        assert!(
-            matches!(error, rotom_core::BattleError::UnsupportedMechanic(_)),
-            "{move_name}: {error}"
-        );
-        assert!(
-            error.to_string().contains(expected_capability),
-            "{move_name}: {error}"
-        );
-        assert_eq!(battle, before, "{move_name} mutated its public input");
-    }
+    let error = step(
+        &battle,
+        &JointAction::Turn {
+            p1: choice,
+            p2: choice,
+        },
+        &Mechanics::new(&dex, &EffectRegistry::new()),
+    )
+    .unwrap_err();
+    assert!(
+        matches!(error, rotom_core::BattleError::UnsupportedMechanic(_)),
+        "{move_name}: {error}"
+    );
+    assert!(
+        error.to_string().contains(expected_capability),
+        "{move_name}: {error}"
+    );
+    assert_eq!(battle, before, "{move_name} mutated its public input");
 }
 
 #[derive(Debug, Deserialize)]
@@ -4194,8 +4550,8 @@ fn mechanics_manifest_drives_every_move_capability_and_execution_smoke_case() {
         .iter()
         .filter(|entry| entry.implementation == "unsupported")
         .count();
-    assert_eq!(implemented, 112);
-    assert_eq!(unsupported, 398);
+    assert_eq!(implemented, 223);
+    assert_eq!(unsupported, 287);
 
     for entry in moves {
         let move_id = dex
@@ -4206,7 +4562,7 @@ fn mechanics_manifest_drives_every_move_capability_and_execution_smoke_case() {
             .unwrap_or_else(|| panic!("manifest move {} missing combat data", entry.id));
         let missing = move_data
             .required_capabilities
-            .first_missing_from(MoveCapabilities::PR_13_3);
+            .first_missing_from(MoveCapabilities::PR_13_4);
         let target = representative_action_target(move_data.target);
 
         match entry.implementation.as_str() {

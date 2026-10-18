@@ -164,3 +164,10 @@ the Protect stall counter use typed volatile add/remove/tick operations.
 Target selection, redirection eligibility, protection, immunity, damage and
 RNG decisions remain mechanics-owned.
 
+PR 13.4 adds no direct authoritative write path. Multi-hit, fixed/level
+damage, drain, recoil, secondary status/stages, and self stages all call typed
+`StateKernel` operations. Actual clamped HP deltas returned by the kernel are
+the only inputs to drain and recoil accounting. Conditional power, selected
+effective stats, hit counts, and aggregate damage are transaction-local
+calculation data; mechanics owns their rules and RNG requests.
+

@@ -79,6 +79,8 @@ const CAPABILITY_ORDER = [
 	'redirection',
 	'retargeting',
 	'per_target_hit',
+	'conditional_power',
+	'effective_stat_override',
 ];
 
 const PR_13_1_CAPABILITIES = new Set([
@@ -101,9 +103,29 @@ const PR_13_2_CAPABILITIES = new Set([
 const PR_13_3_CAPABILITIES = new Set([
 	...PR_13_2_CAPABILITIES, 'major_status', 'stat_stage', 'healing', 'field_or_side_condition',
 ]);
+const PR_13_4_CAPABILITIES = new Set([
+	...PR_13_3_CAPABILITIES, 'fixed_damage', 'multi_hit', 'secondary_effect', 'self_effect',
+	'drain', 'recoil', 'conditional_power', 'effective_stat_override',
+]);
 
 function sortedStrings(values) {
 	return [...(values || [])].sort((left, right) => left < right ? -1 : left > right ? 1 : 0);
+}
+
+function structuredEffectsSupported(move) {
+	const selfEffect = move.self || move.selfBoost;
+	if (selfEffect) {
+		const keys = Object.keys(selfEffect);
+		if (!selfEffect.boosts || keys.some(key => !['boosts', 'chance'].includes(key))) return false;
+	}
+	const secondaries = move.secondaries || (move.secondary ? [move.secondary] : []);
+	for (const secondary of secondaries) {
+		const keys = Object.keys(secondary);
+		if (keys.some(key => !['chance', 'status', 'boosts', 'self', 'dust'].includes(key))) return false;
+		if (!secondary.status && !secondary.boosts && !secondary.self?.boosts) return false;
+		if (secondary.self && Object.keys(secondary.self).some(key => key !== 'boosts')) return false;
+	}
+	return true;
 }
 
 function moveBehavior(move) {
@@ -124,6 +146,7 @@ function moveBehavior(move) {
 			Object.keys(move.flags || {}).filter(flag => move.flags[flag] && INTRINSIC_MOVE_FLAGS.has(flag))
 		),
 		special_properties: SPECIAL_MOVE_PROPERTIES.filter(property => Boolean(move[property])),
+		structured_effects_supported: structuredEffectsSupported(move),
 	};
 }
 
@@ -168,7 +191,14 @@ function moveExecutionRequirements(move) {
 	}
 	if (move.multihit) capabilities.add('multi_hit');
 	if (move.drain) capabilities.add('drain');
-	if (move.recoil) capabilities.add('recoil');
+	if (move.recoil || move.mindBlownRecoil || move.chloroblastRecoil || move.struggleRecoil) {
+		capabilities.add('recoil');
+	}
+	if (move.id === 'facade') capabilities.add('conditional_power');
+	if (move.overrideOffensiveStat || move.overrideDefensiveStat ||
+		move.ignoreNegativeOffensive || move.ignorePositiveDefensive) {
+		capabilities.add('effective_stat_override');
+	}
 	if (move.status) capabilities.add('major_status');
 	if (move.volatileStatus) {
 		capabilities.add('volatile');
@@ -178,12 +208,24 @@ function moveExecutionRequirements(move) {
 		(move.sideCondition && !['reflect', 'lightscreen', 'tailwind'].includes(move.sideCondition)) ||
 		(move.pseudoWeather && !['trickroom', 'gravity', 'magicroom', 'wonderroom'].includes(move.pseudoWeather));
 	for (const effectKind of behavior.effect_kinds) capabilities.add(effectKind);
-	if (behavior.callbacks.length && move.id !== 'magnetrise') capabilities.add('custom_callback');
-	if (move.id === 'toxic' || unsupportedCondition ||
+	const supportedCallbacks = new Set([
+		...(move.id === 'magnetrise' ? ['onTry'] : []),
+		...(move.id === 'facade' ? ['onBasePower'] : []),
+	]);
+	if (behavior.callbacks.some(callback => !supportedCallbacks.has(callback))) {
+		capabilities.add('custom_callback');
+	}
+	if (move.id === 'toxic' || unsupportedCondition || !behavior.structured_effects_supported ||
+		['randomNormal', 'scripted'].includes(move.target) ||
 		behavior.intrinsic_flags.some(flag =>
-			(flag !== 'heal' || !move.heal) && !(move.id === 'magnetrise' && flag === 'gravity')
+			(flag !== 'heal' || (!move.heal && !move.drain)) &&
+			!(move.id === 'magnetrise' && flag === 'gravity')
 		) ||
-		behavior.special_properties.some(property => !['breaksProtect', 'ignoreImmunity'].includes(property))) {
+		behavior.special_properties.some(property => ![
+			'breaksProtect', 'ignoreImmunity', 'ignoreNegativeOffensive', 'ignorePositiveDefensive',
+			'overrideOffensiveStat', 'overrideDefensiveStat', 'multiaccuracy',
+			'chloroblastRecoil', 'mindBlownRecoil',
+		].includes(property))) {
 		capabilities.add('special_behavior');
 	}
 	return {
@@ -207,4 +249,12 @@ function isPr133Supported(move) {
 		.every(capability => PR_13_3_CAPABILITIES.has(capability));
 }
 
-module.exports = {isPr131Supported, isPr132Supported, isPr133Supported, moveBehavior, moveExecutionRequirements};
+function isPr134Supported(move) {
+	return moveExecutionRequirements(move).required_capabilities
+		.every(capability => PR_13_4_CAPABILITIES.has(capability));
+}
+
+module.exports = {
+	isPr131Supported, isPr132Supported, isPr133Supported, isPr134Supported,
+	moveBehavior, moveExecutionRequirements,
+};

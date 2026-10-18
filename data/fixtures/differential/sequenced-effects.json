@@ -1,0 +1,50 @@
+{
+  "showdown_commit": "b79ce06d06b8f0dc8de8bb348bc9cab5d931553f",
+  "format": "gen9championsvgc2026regmc",
+  "methodology": {
+    "source": "pinned Battle.actions.useMove with resolved Champions data",
+    "move_execution": true,
+    "full_transition_comparison": false,
+    "rng_comparison": "Controlled semantic outcomes; raw PRNG seed/state parity is not claimed."
+  },
+  "cases": {
+    "facade": {
+      "clear_damage": 32,
+      "burned_damage": 63
+    },
+    "flamethrower": {
+      "status": "brn"
+    },
+    "bullet_seed": {
+      "hits": 2
+    },
+    "population_bomb": {
+      "hits": 10
+    },
+    "seismic_toss": {
+      "damage": 50
+    },
+    "close_combat": {
+      "source_boosts": {
+        "atk": 0,
+        "def": -1,
+        "spa": 0,
+        "spd": -1,
+        "spe": 0,
+        "accuracy": 0,
+        "evasion": 0
+      }
+    },
+    "chloroblast": {
+      "self_damage": 83
+    },
+    "giga_drain": {
+      "damage": 10,
+      "healing": 5
+    },
+    "double_edge": {
+      "damage": 10,
+      "recoil": 3
+    }
+  }
+}
