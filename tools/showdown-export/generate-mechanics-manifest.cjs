@@ -395,9 +395,10 @@ function entryWithCoverage(base, claims) {
 	} = base;
 	const key = `${base.kind}:${base.id}`;
 	const claim = claims.get(key);
+	const manifestMoveSmoke = base.kind === 'move' && pr133Supported;
 	const automatic = pr133Supported ? {
 		implementation: 'implemented',
-		verification: 'not_tested',
+		verification: manifestMoveSmoke ? 'unit_tested' : 'not_tested',
 		interaction_verification: 'not_tested',
 		owner_pr: pr131Supported ? 'PR 13.1' : pr132Supported ? 'PR 13.2' : 'PR 13.3',
 	} : defaultCoverage();
@@ -414,6 +415,9 @@ function entryWithCoverage(base, claims) {
 			...(pr133Supported ? [
 				'file:crates/rotom-core/src/combat.rs',
 				'file:crates/rotom-dex/src/combat.rs',
+			] : []),
+			...(manifestMoveSmoke ? [
+				'unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case',
 			] : []),
 			...(claim?.evidence || []),
 		]),

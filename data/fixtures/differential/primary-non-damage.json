@@ -5,7 +5,7 @@
     "source": "pinned Battle.actions.useMove with resolved Champions data",
     "move_execution": true,
     "full_transition_comparison": false,
-    "rng_comparison": "fixed Showdown seeds with explicit hit/miss controls where named"
+    "rng_comparison": "semantic operation and result comparison; PRNG seed/state parity is not claimed"
   },
   "cases": [
     {
@@ -32,8 +32,31 @@
       "move": "hypnosis",
       "expected": {
         "status": "slp",
-        "sleep_turns": null,
-        "electric_terrain_prevented": true
+        "sleep_turns": 3,
+        "electric_terrain_prevented": true,
+        "rng": [
+          {
+            "reason": "accuracy",
+            "operation": {
+              "kind": "chance",
+              "numerator": 60,
+              "denominator": 100
+            },
+            "result": true
+          },
+          {
+            "reason": "sleep_duration",
+            "operation": {
+              "kind": "sample",
+              "values": [
+                2,
+                3,
+                3
+              ]
+            },
+            "result": 3
+          }
+        ]
       }
     },
     {
@@ -127,6 +150,13 @@
         "initial_duration": 5,
         "repeated_failed": true,
         "gravity_blocked": true
+      }
+    },
+    {
+      "name": "protect-blocks-status",
+      "move": "protect",
+      "expected": {
+        "blocked": true
       }
     }
   ],
@@ -541,7 +571,7 @@
             "hp": 154,
             "max_hp": 154,
             "status": "slp",
-            "sleep_turns": null,
+            "sleep_turns": 3,
             "boosts": {
               "atk": 0,
               "def": 0,
@@ -589,6 +619,29 @@
         "log": [
           "|move|p1a: Goodra|Hypnosis|p2a: Blastoise",
           "|-status|p2a: Blastoise|slp|[from] move: Hypnosis"
+        ],
+        "rng": [
+          {
+            "reason": "accuracy",
+            "operation": {
+              "kind": "chance",
+              "numerator": 60,
+              "denominator": 100
+            },
+            "result": true
+          },
+          {
+            "reason": "sleep_duration",
+            "operation": {
+              "kind": "sample",
+              "values": [
+                2,
+                3,
+                3
+              ]
+            },
+            "result": 3
+          }
         ]
       },
       "electric_terrain_prevented": {

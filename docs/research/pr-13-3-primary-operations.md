@@ -49,3 +49,27 @@ Damage and non-damage target execution now share one staged TryHit, priority,
 Protect, optional type-immunity, accuracy, and break-Protection helper. This
 preserves the pinned all-targets-per-stage ordering while keeping effect
 application in the primary operation.
+
+## PR 13.3 acceptance verification
+
+The differential fixture now reads the Champions sleep counter from
+`data/mods/champions/conditions.ts:slp.onStart`, where Showdown stores the
+sampled `[2, 3, 3]` value in `statusState.time`. The fixture records semantic
+accuracy and sleep-duration operations and their outcomes. Rotom compares the
+same operation order and selected duration through its traced `BattleRng`; it
+does not claim that the two engines share a PRNG algorithm or seed state.
+
+Every declared primary non-damage fixture case is executed through Rotom's
+canonical `step()`. Because the Showdown fixture intentionally invokes
+`Battle.actions.useMove` rather than a complete turn, timed conditions are
+normalized across Rotom's one end-of-turn residual boundary. The fixture keeps
+`full_transition_comparison: false`; complete Showdown turn and battle parity
+remain later differential-harness work.
+
+The generated mechanics manifest is also exercised as an executable contract.
+All 112 moves marked implemented must complete at least one deterministic
+successful use and produce a stable serializable state. All 398 moves marked
+unsupported must have a missing PR 13.3 capability, return
+`UnsupportedMechanic`, and leave their public input state unchanged. This is
+move-level smoke verification, not interaction-level or full behavioral
+equivalence, so those stronger coverage fields remain unchanged.

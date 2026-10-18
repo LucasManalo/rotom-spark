@@ -32,7 +32,7 @@ function state(battle) {
 	return {
 		target: {
 			hp: pokemon.hp, max_hp: pokemon.maxhp, status: pokemon.status || null,
-			sleep_turns: pokemon.statusState.sleepTurns ?? null, boosts: {...pokemon.boosts},
+			sleep_turns: pokemon.statusState.time ?? null, boosts: {...pokemon.boosts},
 			volatiles: Object.fromEntries(Object.entries(pokemon.volatiles)
 				.map(([id, value]) => [id, conditionState(value)])),
 		},
@@ -95,8 +95,19 @@ function thunderWaveCases() {
 
 function sleepCases() {
 	const battle = battleWith(['hypnosis'], 'Blastoise', 'gen5,0000000000000011');
-	battle.randomChance = () => true;
+	const rng = [];
+	battle.randomChance = (numerator, denominator) => {
+		rng.push({reason: 'accuracy', operation: {kind: 'chance', numerator, denominator}, result: true});
+		return true;
+	};
+	const originalSample = battle.sample.bind(battle);
+	battle.sample = values => {
+		const result = originalSample(values);
+		rng.push({reason: 'sleep_duration', operation: {kind: 'sample', values}, result});
+		return result;
+	};
 	const hypnosis = use(battle, 'hypnosis');
+	hypnosis.rng = rng;
 	const terrain = battleWith(['hypnosis']);
 	terrain.field.setTerrain('electricterrain', terrain.p1.active[0]);
 	terrain.randomChance = () => true;
@@ -204,7 +215,7 @@ const output = {
 		source: 'pinned Battle.actions.useMove with resolved Champions data',
 		move_execution: true,
 		full_transition_comparison: false,
-		rng_comparison: 'fixed Showdown seeds with explicit hit/miss controls where named',
+		rng_comparison: 'semantic operation and result comparison; PRNG seed/state parity is not claimed',
 	},
 	cases: [
 		{name: 'will-o-wisp-matrix', move: 'willowisp', expected: {
@@ -222,6 +233,7 @@ const output = {
 			status: observations.sleep.hypnosis.state.target.status,
 			sleep_turns: observations.sleep.hypnosis.state.target.sleep_turns,
 			electric_terrain_prevented: !observations.sleep.electric_terrain_prevented.result,
+			rng: observations.sleep.hypnosis.rng,
 		}},
 		{name: 'swords-dance-limits', move: 'swordsdance', expected: Object.fromEntries(
 			Object.entries(observations.stat_stages.swords_dance).map(([name, value]) =>
@@ -266,6 +278,9 @@ const output = {
 			initial_duration: observations.magnet_rise.initial.state.source.volatiles.magnetrise.duration,
 			repeated_failed: !observations.magnet_rise.repeated.result,
 			gravity_blocked: !observations.magnet_rise.gravity_blocked.result,
+		}},
+		{name: 'protect-blocks-status', move: 'protect', expected: {
+			blocked: !observations.protect.result,
 		}},
 	],
 	observations,

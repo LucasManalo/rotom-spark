@@ -73,20 +73,22 @@
       "id": "powerwhip",
       "kind": "move",
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "owner_pr": "PR 9",
       "evidence": [
-        "file:crates/rotom-dex/src/combat.rs"
+        "file:crates/rotom-dex/src/combat.rs",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ]
     },
     {
       "id": "seedbomb",
       "kind": "move",
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "owner_pr": "PR 9",
       "evidence": [
-        "file:crates/rotom-dex/src/combat.rs"
+        "file:crates/rotom-dex/src/combat.rs",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ]
     },
     {

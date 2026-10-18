@@ -3,9 +3,9 @@ use rotom_core::{
     BattleState, BattleStateBuilder, CombatData, ConditionState, EffectInvocation, EffectOrder,
     EffectRegistry, EffectSource, EffectState, EventContext, EventDispatch, FaintTarget, FormId,
     Gender, JointAction, MajorStatus, Mechanics, MoveCapabilities, MoveCapability, MoveId,
-    MoveOperation, MoveSlotIndex, PokemonAction, PokemonIndex, PokemonPosition, PokemonRef,
-    PokemonSet, RngOperation, RngReason, SideId, SideState, StatAllocation, StatStages,
-    TargetResult, TeamState, TurnChoice,
+    MoveOperation, MoveSlotIndex, MoveTarget, PokemonAction, PokemonIndex, PokemonPosition,
+    PokemonRef, PokemonSet, ResolvedAction, RngOperation, RngReason, SideId, SideState,
+    StatAllocation, StatStages, TargetResult, TeamState, TurnChoice,
 };
 use rotom_dex::champions_reg_mc;
 use serde::Deserialize;
@@ -722,49 +722,601 @@ fn field_side_and_volatile_reapplication_matches_showdown_semantics() {
         .has_volatile(magnet_rise));
 }
 
+fn fixture_integer(case: &serde_json::Value, key: &str) -> i64 {
+    case["expected"][key]
+        .as_i64()
+        .unwrap_or_else(|| panic!("{} missing integer {key}", case["name"]))
+}
+
+fn fixture_bool(case: &serde_json::Value, key: &str) -> bool {
+    case["expected"][key]
+        .as_bool()
+        .unwrap_or_else(|| panic!("{} missing boolean {key}", case["name"]))
+}
+
+fn primary_outcome(result: &rotom_core::StepResult, move_id: MoveId) -> TargetResult {
+    result
+        .diagnostics
+        .turn
+        .as_ref()
+        .expect("turn diagnostics")
+        .target_outcomes
+        .iter()
+        .find(|outcome| {
+            outcome.source == PokemonRef::new(SideId::P1, PokemonIndex::new(0))
+                && outcome.move_id == move_id
+        })
+        .unwrap_or_else(|| panic!("missing target outcome for move {}", move_id.get()))
+        .result
+}
+
 #[test]
-fn primary_non_damage_fixture_is_executed_from_the_pinned_showdown() {
+#[allow(clippy::too_many_lines)]
+fn primary_non_damage_fixture_is_an_automated_differential_sweep() {
     let fixture = primary_non_damage_fixture();
     assert_eq!(fixture["showdown_commit"], SHOWDOWN_COMMIT);
     assert_eq!(fixture["format"], "gen9championsvgc2026regmc");
     assert_eq!(fixture["methodology"]["move_execution"], true);
     assert_eq!(fixture["methodology"]["full_transition_comparison"], false);
-    for case in [
-        "will_o_wisp",
-        "thunder_wave",
-        "sleep",
-        "stat_stages",
-        "recover",
-        "field_conditions",
-        "side_conditions",
-        "trick_room",
-        "magnet_rise",
-        "protect",
-    ] {
-        assert!(
-            fixture["observations"][case].is_object(),
-            "missing {case} corpus"
-        );
-    }
     assert_eq!(
-        fixture["observations"]["recover"]["odd_max_hp"]["healed"],
-        78
+        fixture["methodology"]["rng_comparison"],
+        "semantic operation and result comparison; PRNG seed/state parity is not claimed"
     );
-    assert_eq!(
-        fixture["observations"]["trick_room"]["repeated"]["active"],
-        false
-    );
+
+    let dex = champions_reg_mc().expect("generated Dex");
+    let ordinary = set_with_moves(&dex, "blastoise", "torrent", &["recover"]);
+    let foe_target = ActionTarget::Foe(ActiveSlot::Left);
     let cases = fixture["cases"].as_array().unwrap();
-    let recover = cases
-        .iter()
-        .find(|case| case["name"] == "recover-rounding")
-        .unwrap();
-    assert_eq!(recover["expected"]["odd_max_hp_healed"], 78);
-    let room = cases
-        .iter()
-        .find(|case| case["name"] == "trick-room-toggle")
-        .unwrap();
-    assert_eq!(room["expected"]["repeated_active"], false);
+    let mut executed = Vec::new();
+
+    for case in cases {
+        let name = case["name"].as_str().expect("case name");
+        executed.push(name);
+        match name {
+            "will-o-wisp-matrix" => {
+                let source = set_with_moves(&dex, "goodra", "sapsipper", &["willowisp"]);
+                let move_id = dex.resolve_move("willowisp").unwrap().0;
+                let success = (0..10_000)
+                    .map(|seed| {
+                        execute_single_move(
+                            &dex,
+                            &selected_primary_battle(&dex, &source, &ordinary, seed),
+                            0,
+                            foe_target,
+                        )
+                    })
+                    .find(|result| primary_outcome(result, move_id) == TargetResult::Hit)
+                    .expect("controlled Will-O-Wisp hit");
+                assert_eq!(
+                    success
+                        .state
+                        .side(SideId::P2)
+                        .pokemon(PokemonIndex::new(0))
+                        .unwrap()
+                        .status,
+                    Some(MajorStatus::Burn)
+                );
+                assert_eq!(case["expected"]["success_status"], "brn");
+
+                let target = set_with_moves(&dex, "charizard", "blaze", &["swordsdance"]);
+                let result = (0..10_000)
+                    .map(|seed| {
+                        execute_single_move(
+                            &dex,
+                            &selected_primary_battle(&dex, &source, &target, seed),
+                            0,
+                            foe_target,
+                        )
+                    })
+                    .find(|result| primary_outcome(result, move_id) == TargetResult::Cancelled)
+                    .expect("controlled Will-O-Wisp hit rejected by Fire immunity");
+                assert_eq!(
+                    result
+                        .state
+                        .side(SideId::P2)
+                        .pokemon(PokemonIndex::new(0))
+                        .unwrap()
+                        .status,
+                    None
+                );
+                assert!(fixture_bool(case, "fire_immune"));
+
+                let state = selected_primary_battle(&dex, &source, &ordinary, 0x3302);
+                let mut builder = BattleStateBuilder::from_state(state).unwrap();
+                builder
+                    .edit_pokemon(
+                        PokemonRef::new(SideId::P2, PokemonIndex::new(0)),
+                        |pokemon| pokemon.status = Some(MajorStatus::Paralysis),
+                    )
+                    .unwrap();
+                let already = execute_single_move(&dex, &builder.build().unwrap(), 0, foe_target);
+                assert_eq!(
+                    already
+                        .state
+                        .side(SideId::P2)
+                        .pokemon(PokemonIndex::new(0))
+                        .unwrap()
+                        .status,
+                    Some(MajorStatus::Paralysis)
+                );
+                assert_eq!(case["expected"]["already_statused"], "par");
+
+                let state = selected_primary_battle(&dex, &source, &ordinary, 0x3303);
+                let mut builder = BattleStateBuilder::from_state(state).unwrap();
+                builder.edit_field(|field| {
+                    field.terrain = Some(ConditionState::new(
+                        dex.field_effect_ids().misty_terrain.unwrap(),
+                        Some(5),
+                    ));
+                });
+                let terrain = execute_single_move(&dex, &builder.build().unwrap(), 0, foe_target);
+                assert_eq!(
+                    terrain
+                        .state
+                        .side(SideId::P2)
+                        .pokemon(PokemonIndex::new(0))
+                        .unwrap()
+                        .status,
+                    None
+                );
+                assert!(fixture_bool(case, "terrain_prevented"));
+
+                let missed = (0..10_000)
+                    .map(|seed| {
+                        execute_single_move(
+                            &dex,
+                            &selected_primary_battle(&dex, &source, &ordinary, seed),
+                            0,
+                            foe_target,
+                        )
+                    })
+                    .find(|result| primary_outcome(result, move_id) == TargetResult::Missed)
+                    .expect("controlled Will-O-Wisp miss");
+                assert_eq!(primary_outcome(&missed, move_id), TargetResult::Missed);
+                assert!(fixture_bool(case, "missed"));
+            }
+            "thunder-wave-immunities" => {
+                let source = set_with_moves(&dex, "goodra", "sapsipper", &["thunderwave"]);
+                let move_id = dex.resolve_move("thunderwave").unwrap().0;
+                for (species, ability, key) in [
+                    ("pikachu", "static", "electric_immune"),
+                    ("garchomp", "sandveil", "ground_immune"),
+                ] {
+                    let target = set_with_moves(&dex, species, ability, &["swordsdance"]);
+                    let result = (0..10_000)
+                        .map(|seed| {
+                            execute_single_move(
+                                &dex,
+                                &selected_primary_battle(&dex, &source, &target, seed),
+                                0,
+                                foe_target,
+                            )
+                        })
+                        .find(|result| primary_outcome(result, move_id) == TargetResult::Cancelled)
+                        .expect("controlled Thunder Wave hit rejected by status immunity");
+                    assert_eq!(
+                        result
+                            .state
+                            .side(SideId::P2)
+                            .pokemon(PokemonIndex::new(0))
+                            .unwrap()
+                            .status,
+                        None
+                    );
+                    assert!(fixture_bool(case, key));
+                }
+            }
+            "hypnosis-sleep-rng" => {
+                let source = set_with_moves(&dex, "goodra", "sapsipper", &["hypnosis"]);
+                let move_id = dex.resolve_move("hypnosis").unwrap().0;
+                let expected_turns = u8::try_from(fixture_integer(case, "sleep_turns")).unwrap();
+                let asleep = (0..10_000)
+                    .map(|seed| {
+                        let state = selected_primary_battle(&dex, &source, &ordinary, seed);
+                        let mut builder = BattleStateBuilder::from_state(state).unwrap();
+                        builder
+                            .edit_pokemon(
+                                PokemonRef::new(SideId::P2, PokemonIndex::new(0)),
+                                |pokemon| pokemon.stats.spe = u16::MAX,
+                            )
+                            .unwrap();
+                        execute_single_move(&dex, &builder.build().unwrap(), 0, foe_target)
+                    })
+                    .find(|result| {
+                        let pokemon = result
+                            .state
+                            .side(SideId::P2)
+                            .pokemon(PokemonIndex::new(0))
+                            .unwrap();
+                        pokemon.status == Some(MajorStatus::Sleep)
+                            && pokemon.status_state.sleep_turns == expected_turns
+                    })
+                    .expect("controlled Hypnosis hit and duration");
+                let trace = asleep.state.rng().trace().unwrap();
+                let relevant = trace
+                    .iter()
+                    .filter(|entry| {
+                        matches!(entry.reason, RngReason::Accuracy | RngReason::SleepDuration)
+                    })
+                    .collect::<Vec<_>>();
+                assert_eq!(relevant.len(), 2);
+                assert_eq!(relevant[0].reason, RngReason::Accuracy);
+                assert_eq!(
+                    relevant[0].operation,
+                    RngOperation::Chance {
+                        numerator: 60,
+                        denominator: 100,
+                    }
+                );
+                assert!(relevant[0].result < 60);
+                assert_eq!(relevant[1].reason, RngReason::SleepDuration);
+                assert_eq!(relevant[1].operation, RngOperation::Sample { len: 3 });
+                assert_eq!(
+                    [2, 3, 3][usize::try_from(relevant[1].result).unwrap()],
+                    expected_turns
+                );
+                assert_eq!(case["expected"]["status"], "slp");
+                assert_eq!(case["expected"]["rng"][0]["reason"], "accuracy");
+                assert_eq!(case["expected"]["rng"][1]["reason"], "sleep_duration");
+                assert_eq!(primary_outcome(&asleep, move_id), TargetResult::Hit);
+
+                let state = selected_primary_battle(&dex, &source, &ordinary, 0x3311);
+                let mut builder = BattleStateBuilder::from_state(state).unwrap();
+                builder.edit_field(|field| {
+                    field.terrain = Some(ConditionState::new(
+                        dex.field_effect_ids().electric_terrain.unwrap(),
+                        Some(5),
+                    ));
+                });
+                let prevented = execute_single_move(&dex, &builder.build().unwrap(), 0, foe_target);
+                assert_eq!(
+                    prevented
+                        .state
+                        .side(SideId::P2)
+                        .pokemon(PokemonIndex::new(0))
+                        .unwrap()
+                        .status,
+                    None
+                );
+                assert!(fixture_bool(case, "electric_terrain_prevented"));
+            }
+            "swords-dance-limits" | "growl-limits" => {
+                let is_self = name == "swords-dance-limits";
+                let move_name = if is_self { "swordsdance" } else { "growl" };
+                let source = set_with_moves(&dex, "goodra", "sapsipper", &[move_name]);
+                for (initial, key) in if is_self {
+                    [(0, "from_0"), (5, "from_5"), (6, "from_6")]
+                } else {
+                    [(0, "from_0"), (-5, "from_-5"), (-6, "from_-6")]
+                } {
+                    let state = selected_primary_battle(&dex, &source, &ordinary, 0x3320);
+                    let target = PokemonRef::new(
+                        if is_self { SideId::P1 } else { SideId::P2 },
+                        PokemonIndex::new(0),
+                    );
+                    let mut builder = BattleStateBuilder::from_state(state).unwrap();
+                    builder
+                        .edit_pokemon(target, |pokemon| pokemon.stat_stages.atk = initial)
+                        .unwrap();
+                    let result = execute_single_move(
+                        &dex,
+                        &builder.build().unwrap(),
+                        0,
+                        ActionTarget::Automatic,
+                    );
+                    assert_eq!(
+                        i64::from(
+                            result
+                                .state
+                                .side(target.side)
+                                .pokemon(target.pokemon)
+                                .unwrap()
+                                .stat_stages
+                                .atk
+                        ),
+                        fixture_integer(case, key)
+                    );
+                }
+            }
+            "noble-roar-combined" => {
+                let source = set_with_moves(&dex, "goodra", "sapsipper", &["nobleroar"]);
+                let result = execute_single_move(
+                    &dex,
+                    &selected_primary_battle(&dex, &source, &ordinary, 0x3330),
+                    0,
+                    foe_target,
+                );
+                let target = result
+                    .state
+                    .side(SideId::P2)
+                    .pokemon(PokemonIndex::new(0))
+                    .unwrap();
+                assert_eq!(
+                    i64::from(target.stat_stages.atk),
+                    fixture_integer(case, "atk")
+                );
+                assert_eq!(
+                    i64::from(target.stat_stages.spa),
+                    fixture_integer(case, "spa")
+                );
+            }
+            "recover-rounding" => {
+                let source = set_with_moves(&dex, "goodra", "sapsipper", &["recover"]);
+                for (max_hp, current_hp, key) in [
+                    (None, None, "normal_healed"),
+                    (Some(155), Some(50), "odd_max_hp_healed"),
+                ] {
+                    let state = selected_primary_battle(&dex, &source, &ordinary, 0x3340);
+                    let mut builder = BattleStateBuilder::from_state(state).unwrap();
+                    builder
+                        .edit_pokemon(
+                            PokemonRef::new(SideId::P1, PokemonIndex::new(0)),
+                            |pokemon| {
+                                if let Some(max_hp) = max_hp {
+                                    pokemon.stats.hp = max_hp;
+                                }
+                                pokemon.current_hp = current_hp
+                                    .unwrap_or_else(|| pokemon.stats.hp.saturating_div(4));
+                            },
+                        )
+                        .unwrap();
+                    let state = builder.build().unwrap();
+                    let before = state
+                        .side(SideId::P1)
+                        .pokemon(PokemonIndex::new(0))
+                        .unwrap()
+                        .current_hp;
+                    let result = execute_single_move(&dex, &state, 0, ActionTarget::Automatic);
+                    let after = result
+                        .state
+                        .side(SideId::P1)
+                        .pokemon(PokemonIndex::new(0))
+                        .unwrap()
+                        .current_hp;
+                    assert_eq!(i64::from(after - before), fixture_integer(case, key));
+                }
+                let state = selected_primary_battle(&dex, &source, &ordinary, 0x3341);
+                let before = state
+                    .side(SideId::P1)
+                    .pokemon(PokemonIndex::new(0))
+                    .unwrap()
+                    .current_hp;
+                let result = execute_single_move(&dex, &state, 0, ActionTarget::Automatic);
+                assert_eq!(
+                    result
+                        .state
+                        .side(SideId::P1)
+                        .pokemon(PokemonIndex::new(0))
+                        .unwrap()
+                        .current_hp,
+                    before
+                );
+                assert_eq!(
+                    primary_outcome(&result, dex.resolve_move("recover").unwrap().0),
+                    TargetResult::Cancelled
+                );
+                assert!(fixture_bool(case, "full_hp_failed"));
+            }
+            "sunny-day-reapplication" | "electric-terrain-reapplication" => {
+                let is_weather = name == "sunny-day-reapplication";
+                let moves: &[&str] = if is_weather {
+                    &["sunnyday", "raindance"]
+                } else {
+                    &["electricterrain"]
+                };
+                let source = set_with_moves(&dex, "goodra", "sapsipper", moves);
+                let state = selected_primary_battle(&dex, &source, &ordinary, 0x3350);
+                let first = execute_single_move(&dex, &state, 0, ActionTarget::Automatic);
+                let duration = if is_weather {
+                    first
+                        .state
+                        .field()
+                        .weather
+                        .as_ref()
+                        .unwrap()
+                        .turns_remaining
+                } else {
+                    first
+                        .state
+                        .field()
+                        .terrain
+                        .as_ref()
+                        .unwrap()
+                        .turns_remaining
+                };
+                assert_eq!(
+                    duration,
+                    Some(u8::try_from(fixture_integer(case, "initial_duration") - 1).unwrap()),
+                    "Showdown direct-use duration normalized through one Rotom residual boundary"
+                );
+                let repeated = execute_single_move(&dex, &first.state, 0, ActionTarget::Automatic);
+                let repeated_duration = if is_weather {
+                    repeated
+                        .state
+                        .field()
+                        .weather
+                        .as_ref()
+                        .unwrap()
+                        .turns_remaining
+                } else {
+                    repeated
+                        .state
+                        .field()
+                        .terrain
+                        .as_ref()
+                        .unwrap()
+                        .turns_remaining
+                };
+                assert_eq!(repeated_duration, duration.map(|value| value - 1));
+                assert!(fixture_bool(case, "repeated_failed"));
+                if is_weather {
+                    let replaced =
+                        execute_single_move(&dex, &repeated.state, 1, ActionTarget::Automatic);
+                    assert_eq!(case["expected"]["replacement"], "raindance");
+                    assert_eq!(
+                        replaced.state.field().weather.as_ref().unwrap().id,
+                        dex.field_effect_ids().rain.unwrap()
+                    );
+                }
+            }
+            "reflect-reapplication" | "light-screen-reapplication" | "tailwind-reapplication" => {
+                let move_name = case["move"].as_str().unwrap();
+                let source = set_with_moves(&dex, "goodra", "sapsipper", &[move_name]);
+                let condition = dex.resolve_move(move_name).unwrap().0;
+                let condition = rotom_core::ConditionId::new(condition.get());
+                let state = selected_primary_battle(&dex, &source, &ordinary, 0x3360);
+                let first = execute_single_move(&dex, &state, 0, ActionTarget::Automatic);
+                let first_duration = first
+                    .state
+                    .side(SideId::P1)
+                    .side_conditions
+                    .iter()
+                    .find(|value| value.id == condition)
+                    .unwrap()
+                    .turns_remaining;
+                assert_eq!(
+                    first_duration,
+                    Some(u8::try_from(fixture_integer(case, "initial_duration") - 1).unwrap())
+                );
+                let repeated = execute_single_move(&dex, &first.state, 0, ActionTarget::Automatic);
+                let repeated_duration = repeated
+                    .state
+                    .side(SideId::P1)
+                    .side_conditions
+                    .iter()
+                    .find(|value| value.id == condition)
+                    .unwrap()
+                    .turns_remaining;
+                assert_eq!(repeated_duration, first_duration.map(|value| value - 1));
+                assert!(fixture_bool(case, "repeated_failed"));
+            }
+            "trick-room-toggle" => {
+                let source = set_with_moves(&dex, "goodra", "sapsipper", &["trickroom"]);
+                let condition = dex.field_effect_ids().trick_room.unwrap();
+                let state = selected_primary_battle(&dex, &source, &ordinary, 0x3370);
+                let first = execute_single_move(&dex, &state, 0, ActionTarget::Automatic);
+                let is_active = |state: &BattleState| {
+                    state
+                        .field()
+                        .conditions
+                        .iter()
+                        .any(|value| value.id == condition)
+                };
+                assert_eq!(
+                    is_active(&first.state),
+                    fixture_bool(case, "initial_active")
+                );
+                let repeated = execute_single_move(&dex, &first.state, 0, ActionTarget::Automatic);
+                assert_eq!(
+                    is_active(&repeated.state),
+                    fixture_bool(case, "repeated_active")
+                );
+            }
+            "magnet-rise-reapplication" => {
+                let source = set_with_moves(&dex, "goodra", "sapsipper", &["magnetrise"]);
+                let condition = dex.field_effect_ids().magnet_rise.unwrap();
+                let state = selected_primary_battle(&dex, &source, &ordinary, 0x3380);
+                let first = execute_single_move(&dex, &state, 0, ActionTarget::Automatic);
+                let volatile = |state: &BattleState| {
+                    state
+                        .side(SideId::P1)
+                        .pokemon(PokemonIndex::new(0))
+                        .unwrap()
+                        .volatiles
+                        .iter()
+                        .find(|value| value.id == condition)
+                        .map(|value| value.turns_remaining)
+                };
+                assert_eq!(
+                    volatile(&first.state),
+                    Some(Some(
+                        u8::try_from(fixture_integer(case, "initial_duration") - 1).unwrap()
+                    ))
+                );
+                let repeated = execute_single_move(&dex, &first.state, 0, ActionTarget::Automatic);
+                assert_eq!(volatile(&repeated.state), Some(Some(3)));
+                assert!(fixture_bool(case, "repeated_failed"));
+                let mut builder = BattleStateBuilder::from_state(state).unwrap();
+                builder.edit_field(|field| {
+                    field.conditions.push(ConditionState::new(
+                        dex.field_effect_ids().gravity.unwrap(),
+                        Some(5),
+                    ));
+                });
+                let blocked = execute_single_move(
+                    &dex,
+                    &builder.build().unwrap(),
+                    0,
+                    ActionTarget::Automatic,
+                );
+                assert_eq!(volatile(&blocked.state), None);
+                assert!(fixture_bool(case, "gravity_blocked"));
+            }
+            "protect-blocks-status" => {
+                let source = set_with_moves(&dex, "goodra", "sapsipper", &["willowisp"]);
+                let target = set_with_moves(&dex, "blastoise", "torrent", &["protect"]);
+                let state = selected_primary_battle(&dex, &source, &target, 0x3390);
+                let action = |target| PokemonAction::Move {
+                    move_slot: MoveSlotIndex::new(0),
+                    target,
+                    mega: false,
+                };
+                let result = step(
+                    &state,
+                    &JointAction::Turn {
+                        p1: TurnChoice {
+                            actions: [action(foe_target), action(ActionTarget::Automatic)],
+                        },
+                        p2: TurnChoice {
+                            actions: [
+                                action(ActionTarget::Automatic),
+                                action(ActionTarget::Automatic),
+                            ],
+                        },
+                    },
+                    &Mechanics::new(&dex, &EffectRegistry::new()),
+                )
+                .unwrap();
+                assert_eq!(
+                    primary_outcome(&result, dex.resolve_move("willowisp").unwrap().0),
+                    TargetResult::Protected
+                );
+                assert_eq!(
+                    result
+                        .state
+                        .side(SideId::P2)
+                        .pokemon(PokemonIndex::new(0))
+                        .unwrap()
+                        .status,
+                    None
+                );
+                assert!(fixture_bool(case, "blocked"));
+            }
+            other => panic!("unexecuted primary non-damage fixture case {other}"),
+        }
+    }
+
+    executed.sort_unstable();
+    assert_eq!(
+        executed,
+        [
+            "electric-terrain-reapplication",
+            "growl-limits",
+            "hypnosis-sleep-rng",
+            "light-screen-reapplication",
+            "magnet-rise-reapplication",
+            "noble-roar-combined",
+            "protect-blocks-status",
+            "recover-rounding",
+            "reflect-reapplication",
+            "sunny-day-reapplication",
+            "swords-dance-limits",
+            "tailwind-reapplication",
+            "thunder-wave-immunities",
+            "trick-room-toggle",
+            "will-o-wisp-matrix",
+        ]
+    );
 }
 
 #[derive(Debug, Deserialize)]
@@ -3546,6 +4098,157 @@ fn unsupported_move_capabilities_are_explicit_and_atomic() {
             "{move_name}: {error}"
         );
         assert_eq!(battle, before, "{move_name} mutated its public input");
+    }
+}
+
+#[derive(Debug, Deserialize)]
+struct MechanicsManifest {
+    entries: Vec<MechanicsManifestEntry>,
+}
+
+#[derive(Debug, Deserialize)]
+struct MechanicsManifestEntry {
+    id: String,
+    kind: String,
+    implementation: String,
+}
+
+fn representative_action_target(target: MoveTarget) -> ActionTarget {
+    match target {
+        MoveTarget::AdjacentAlly => ActionTarget::Ally(ActiveSlot::Right),
+        MoveTarget::AdjacentAllyOrSelf => ActionTarget::Self_,
+        MoveTarget::AdjacentFoe | MoveTarget::Any | MoveTarget::Normal => {
+            ActionTarget::Foe(ActiveSlot::Left)
+        }
+        MoveTarget::All
+        | MoveTarget::AllAdjacent
+        | MoveTarget::AllAdjacentFoes
+        | MoveTarget::Allies
+        | MoveTarget::AllySide
+        | MoveTarget::AllyTeam
+        | MoveTarget::FoeSide
+        | MoveTarget::RandomNormal
+        | MoveTarget::Scripted
+        | MoveTarget::Self_ => ActionTarget::Automatic,
+    }
+}
+
+fn manifest_move_battle(dex: &rotom_dex::DexData, move_name: &str, seed: u64) -> BattleState {
+    let source = set_with_moves(dex, "goodra", "sapsipper", &[move_name]);
+    let target = set_with_moves(dex, "blastoise", "torrent", &["recover"]);
+    let state = selected_primary_battle(dex, &source, &target, seed);
+    let mut builder = BattleStateBuilder::from_state(state).unwrap();
+    for side in [SideId::P1, SideId::P2] {
+        for pokemon in [PokemonIndex::new(0), PokemonIndex::new(1)] {
+            builder
+                .edit_pokemon(PokemonRef::new(side, pokemon), |state| {
+                    state.current_hp = state.stats.hp.saturating_div(2).max(1);
+                })
+                .unwrap();
+        }
+    }
+    builder.build().unwrap()
+}
+
+fn primary_move_succeeded(result: &rotom_core::StepResult, move_id: MoveId) -> bool {
+    let turn = result.diagnostics.turn.as_ref().expect("turn diagnostics");
+    turn.target_outcomes.iter().any(|outcome| {
+        outcome.source == PokemonRef::new(SideId::P1, PokemonIndex::new(0))
+            && outcome.move_id == move_id
+            && outcome.result == TargetResult::Hit
+    }) || turn.actions.iter().any(|action| {
+        matches!(
+            action,
+            ResolvedAction::Used {
+                side: SideId::P1,
+                slot: ActiveSlot::Left,
+                move_slot,
+            } | ResolvedAction::Damaged {
+                side: SideId::P1,
+                slot: ActiveSlot::Left,
+                move_slot,
+                ..
+            } if *move_slot == MoveSlotIndex::new(0)
+        )
+    })
+}
+
+#[test]
+fn mechanics_manifest_drives_every_move_capability_and_execution_smoke_case() {
+    let manifest: MechanicsManifest = serde_json::from_str(include_str!(
+        "../../../data/generated/reg-mc-mechanics-manifest.json"
+    ))
+    .expect("mechanics manifest");
+    let dex = champions_reg_mc().expect("generated Dex");
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let moves = manifest
+        .entries
+        .iter()
+        .filter(|entry| entry.kind == "move")
+        .collect::<Vec<_>>();
+    let implemented = moves
+        .iter()
+        .filter(|entry| entry.implementation == "implemented")
+        .count();
+    let unsupported = moves
+        .iter()
+        .filter(|entry| entry.implementation == "unsupported")
+        .count();
+    assert_eq!(implemented, 112);
+    assert_eq!(unsupported, 398);
+
+    for entry in moves {
+        let move_id = dex
+            .resolve_move(&entry.id)
+            .unwrap_or_else(|| panic!("manifest move {} missing from Dex", entry.id))
+            .0;
+        let move_data = <rotom_dex::DexData as CombatData>::move_data(&dex, move_id)
+            .unwrap_or_else(|| panic!("manifest move {} missing combat data", entry.id));
+        let missing = move_data
+            .required_capabilities
+            .first_missing_from(MoveCapabilities::PR_13_3);
+        let target = representative_action_target(move_data.target);
+
+        match entry.implementation.as_str() {
+            "implemented" => {
+                assert_eq!(missing, None, "{} manifest/runtime support drift", entry.id);
+                let successful = (0..1_024).find_map(|seed| {
+                    let state = manifest_move_battle(&dex, &entry.id, seed);
+                    let result = step(&state, &single_move_action(0, target), &mechanics)
+                        .unwrap_or_else(|error| {
+                            panic!("implemented move {} failed: {error}", entry.id)
+                        });
+                    assert_stable_serializable_state(&result.state, &entry.id);
+                    primary_move_succeeded(&result, move_id).then_some(result)
+                });
+                assert!(
+                    successful.is_some(),
+                    "implemented move {} had no successful execution in the deterministic seed sweep",
+                    entry.id
+                );
+            }
+            "unsupported" => {
+                assert!(
+                    missing.is_some(),
+                    "{} is unsupported in the manifest but runtime preflight has no missing capability",
+                    entry.id
+                );
+                let state = manifest_move_battle(&dex, &entry.id, 0x13_03);
+                let before = state.clone();
+                let error = step(&state, &single_move_action(0, target), &mechanics)
+                    .expect_err("unsupported move must fail preflight");
+                assert!(
+                    matches!(error, rotom_core::BattleError::UnsupportedMechanic(_)),
+                    "{} returned the wrong capability-gate error: {error}",
+                    entry.id
+                );
+                assert_eq!(state, before, "{} mutated the public input", entry.id);
+            }
+            implementation => panic!(
+                "move {} has unhandled manifest implementation {implementation}",
+                entry.id
+            ),
+        }
     }
 }
 

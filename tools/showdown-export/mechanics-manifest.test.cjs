@@ -85,12 +85,15 @@ test('move support is derived from complete executor capabilities', () => {
 	assert.equal(manifest.summary.by_kind.move.implementation.implemented, 112);
 	assert.deepEqual(
 		manifest.summary.by_kind.move.verification,
-		{not_tested: 486, unit_tested: 1, differential_verified: 23}
+		{not_tested: 398, unit_tested: 89, differential_verified: 23}
 	);
 	const implementedMoves = manifest.entries.filter(candidate =>
 		candidate.kind === 'move' && candidate.implementation === 'implemented'
 	);
-	assert.equal(implementedMoves.filter(candidate => candidate.verification === 'not_tested').length, 88);
+	assert.equal(implementedMoves.filter(candidate => candidate.verification === 'not_tested').length, 0);
+	assert.ok(entry('move', 'powerwhip').evidence.includes(
+		'unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case'
+	));
 	assert.deepEqual(
 		manifest.summary.by_kind.move.interaction_verification,
 		{not_tested: 495, unit_tested: 1, differential_verified: 14}

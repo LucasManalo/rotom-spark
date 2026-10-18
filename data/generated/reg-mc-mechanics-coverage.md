@@ -12,7 +12,7 @@ This report is generated from `reg-mc-mechanics-manifest.json`. Presence means r
 | condition | 96 | 0 | 0 | 96 | 0 | 0 | 96 | 0 |
 | form | 153 | 0 | 0 | 153 | 0 | 0 | 153 | 0 |
 | item | 166 | 0 | 0 | 166 | 0 | 0 | 166 | 0 |
-| move | 510 | 112 | 0 | 398 | 23 | 1 | 486 | 15 |
+| move | 510 | 112 | 0 | 398 | 23 | 89 | 398 | 15 |
 | species | 293 | 0 | 0 | 293 | 0 | 0 | 293 | 0 |
 
 ## Next unsupported reachable mechanics

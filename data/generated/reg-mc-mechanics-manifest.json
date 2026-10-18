@@ -11013,7 +11013,8 @@
         "file:crates/rotom-core/src/combat.rs",
         "file:crates/rotom-dex/src/combat.rs",
         "species/lycanroc",
-        "species/lycanrocdusk"
+        "species/lycanrocdusk",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -11029,7 +11030,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -11056,7 +11057,8 @@
         "species/reuniclus",
         "species/swalot",
         "species/vanilluxe",
-        "species/vaporeon"
+        "species/vaporeon",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "stat_change",
@@ -11070,7 +11072,7 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -11330,7 +11332,8 @@
         "species/tyranitar",
         "species/weavile",
         "species/zoroark",
-        "species/zoroarkhisui"
+        "species/zoroarkhisui",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -11346,7 +11349,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -11469,7 +11472,8 @@
         "species/weavile",
         "species/wyrdeer",
         "species/zoroark",
-        "species/zoroarkhisui"
+        "species/zoroarkhisui",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "stat_change",
@@ -11483,7 +11487,7 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -11537,7 +11541,8 @@
         "species/vivillonsavanna",
         "species/vivillonsun",
         "species/vivillontundra",
-        "species/volcarona"
+        "species/volcarona",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -11554,7 +11559,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -11793,7 +11798,8 @@
         "species/torterra",
         "species/venusaur",
         "species/volcarona",
-        "species/wigglytuff"
+        "species/wigglytuff",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "stat_change",
@@ -11807,7 +11813,7 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -11903,7 +11909,8 @@
         "species/gallade",
         "species/quaquaval",
         "species/samurott",
-        "species/samurotthisui"
+        "species/samurotthisui",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -11919,7 +11926,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -11952,7 +11959,8 @@
         "species/samurotthisui",
         "species/sharpedo",
         "species/starmie",
-        "species/taurospaldeaaqua"
+        "species/taurospaldeaaqua",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -12059,6 +12067,7 @@
         "species/qwilfish",
         "species/samurott",
         "species/samurotthisui",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case",
         "unit:crates/rotom-dex/tests/combat.rs#queued_turn_consumes_pp_and_updates_hp"
       ],
       "effect_families": [
@@ -12127,7 +12136,8 @@
         "species/hatterene",
         "species/polteageist",
         "species/polteageistantique",
-        "species/tsareena"
+        "species/tsareena",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "stat_change",
@@ -12141,7 +12151,7 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -12361,7 +12371,8 @@
         "species/lucario",
         "species/medicham",
         "species/meowscarada",
-        "species/palafin"
+        "species/palafin",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -12377,7 +12388,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -12573,7 +12584,8 @@
         "species/sylveon",
         "species/tinkaton",
         "species/umbreon",
-        "species/vaporeon"
+        "species/vaporeon",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "stat_change",
@@ -12587,7 +12599,7 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -13596,7 +13608,8 @@
         "species/rillaboom",
         "species/toucannon",
         "species/toxtricity",
-        "species/toxtricitylowkey"
+        "species/toxtricitylowkey",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -13613,7 +13626,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -13977,7 +13990,8 @@
         "species/tinkaton",
         "species/trevenant",
         "species/tyranitar",
-        "species/tyrantrum"
+        "species/tyrantrum",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -13994,7 +14008,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -14173,7 +14187,8 @@
         "species/taurospaldeaaqua",
         "species/taurospaldeablaze",
         "species/taurospaldeacombat",
-        "species/toxicroak"
+        "species/toxicroak",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "stat_change",
@@ -14187,7 +14202,7 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -14341,7 +14356,8 @@
         "species/metagross",
         "species/pangoro",
         "species/scizor",
-        "species/toxicroak"
+        "species/toxicroak",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -14357,7 +14373,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -14616,7 +14632,8 @@
         "species/wigglytuff",
         "species/wyrdeer",
         "species/zoroark",
-        "species/zoroarkhisui"
+        "species/zoroarkhisui",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "stat_change",
@@ -14630,7 +14647,7 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -14864,7 +14881,8 @@
         "species/venusaur",
         "species/vileplume",
         "species/whimsicott",
-        "species/wigglytuff"
+        "species/wigglytuff",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "stat_change",
@@ -14878,7 +14896,7 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -15247,7 +15265,8 @@
         "species/scrafty",
         "species/sirfetchd",
         "species/sneasler",
-        "species/toxicroak"
+        "species/toxicroak",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "stat_change",
@@ -15261,7 +15280,7 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -15278,7 +15297,8 @@
         "species/milotic",
         "species/orthworm",
         "species/sandaconda",
-        "species/serperior"
+        "species/serperior",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "stat_change",
@@ -15292,7 +15312,7 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -15522,7 +15542,8 @@
         "species/clefable",
         "species/lopunny",
         "species/metagross",
-        "species/starmie"
+        "species/starmie",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "stat_change",
@@ -15536,7 +15557,7 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -15553,7 +15574,8 @@
         "species/furfrou",
         "species/lopunny",
         "species/slurpuff",
-        "species/whimsicott"
+        "species/whimsicott",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "stat_change",
@@ -15567,7 +15589,7 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -15747,7 +15769,8 @@
         "file:crates/rotom-dex/src/combat.rs",
         "species/clawitzer",
         "species/crabominable",
-        "species/gliscor"
+        "species/gliscor",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -15763,7 +15786,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -15781,7 +15804,8 @@
         "species/incineroar",
         "species/lucario",
         "species/machamp",
-        "species/toxicroak"
+        "species/toxicroak",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -15797,7 +15821,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -16286,7 +16310,8 @@
         "species/tsareena",
         "species/vileplume",
         "species/whimsicott",
-        "species/wigglytuff"
+        "species/wigglytuff",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -16303,7 +16328,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -16322,7 +16347,8 @@
         "species/alcremiemintcream",
         "species/alcremierainbowswirl",
         "species/alcremierubycream",
-        "species/alcremierubyswirl"
+        "species/alcremierubyswirl",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "stat_change",
@@ -16336,7 +16362,7 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -17110,7 +17136,8 @@
         "species/sceptile",
         "species/scizor",
         "species/staraptor",
-        "species/thievul"
+        "species/thievul",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "stat_change",
@@ -17124,7 +17151,7 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -17255,7 +17282,8 @@
         "species/sceptile",
         "species/scrafty",
         "species/tyranitar",
-        "species/tyrantrum"
+        "species/tyrantrum",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -17303,7 +17331,8 @@
         "species/scrafty",
         "species/steelix",
         "species/tyranitar",
-        "species/tyrantrum"
+        "species/tyrantrum",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "stat_change",
@@ -17317,7 +17346,7 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -17401,7 +17430,8 @@
         "species/serperior",
         "species/steelix",
         "species/tyranitar",
-        "species/tyrantrum"
+        "species/tyrantrum",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -17711,7 +17741,8 @@
         "species/empoleon",
         "species/espathra",
         "species/skarmory",
-        "species/toucannon"
+        "species/toucannon",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -17727,7 +17758,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -17753,7 +17784,8 @@
         "species/steelix",
         "species/taurospaldeaaqua",
         "species/taurospaldeablaze",
-        "species/taurospaldeacombat"
+        "species/taurospaldeacombat",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -17769,7 +17801,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -18073,7 +18105,8 @@
         "species/tyranitar",
         "species/tyrantrum",
         "species/venusaur",
-        "species/wyrdeer"
+        "species/wyrdeer",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -18090,7 +18123,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -18124,7 +18157,8 @@
         "species/rotomwash",
         "species/stunfisk",
         "species/toxtricity",
-        "species/toxtricitylowkey"
+        "species/toxtricitylowkey",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "stat_change",
@@ -18138,7 +18172,7 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -18204,7 +18238,8 @@
         "species/stunfisk",
         "species/toxtricity",
         "species/toxtricitylowkey",
-        "unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics"
+        "unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "field_or_side_condition",
@@ -19235,7 +19270,8 @@
         "species/arcanine",
         "species/arcaninehisui",
         "species/dragonite",
-        "species/lucario"
+        "species/lucario",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -19251,7 +19287,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -19727,7 +19763,8 @@
         "species/whimsicott",
         "species/wigglytuff",
         "species/zoroark",
-        "species/zoroarkhisui"
+        "species/zoroarkhisui",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "stat_change",
@@ -19741,7 +19778,7 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -19772,7 +19809,8 @@
         "species/squawkabillyyellow",
         "species/staraptor",
         "species/talonflame",
-        "species/toucannon"
+        "species/toucannon",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "stat_change",
@@ -19786,7 +19824,7 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -19837,6 +19875,7 @@
         "species/tinkaton",
         "species/toxicroak",
         "species/weavile",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case",
         "unit:crates/rotom-dex/tests/combat.rs#rage_powder_respects_grass_overcoat_and_safety_goggles_and_feint_breaks_protect"
       ],
       "effect_families": [
@@ -21350,7 +21389,8 @@
         "species/indeedeef",
         "species/maushold",
         "species/mausholdfour",
-        "unit:crates/rotom-dex/tests/combat.rs#follow_me_redirects_single_target_moves_and_repeat_protect_uses_the_battle_rng"
+        "unit:crates/rotom-dex/tests/combat.rs#follow_me_redirects_single_target_moves_and_repeat_protect_uses_the_battle_rng",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "custom_callback",
@@ -22154,7 +22194,8 @@
         "species/drampa",
         "species/heliolisk",
         "species/sandaconda",
-        "species/serperior"
+        "species/serperior",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "major_status",
@@ -22168,7 +22209,7 @@
         "major_status"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -22377,7 +22418,8 @@
         "species/venusaur",
         "species/victreebel",
         "species/vileplume",
-        "species/whimsicott"
+        "species/whimsicott",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "field_or_side_condition",
@@ -22391,7 +22433,7 @@
         "field_or_side_condition"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -22453,7 +22495,8 @@
         "species/sableye",
         "species/starmie",
         "species/wigglytuff",
-        "species/wyrdeer"
+        "species/wyrdeer",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "field_or_side_condition",
@@ -22467,7 +22510,7 @@
         "field_or_side_condition"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -23532,7 +23575,8 @@
         "species/torterra",
         "species/tyranitar",
         "species/tyrantrum",
-        "species/wyrdeer"
+        "species/wyrdeer",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -23666,7 +23710,8 @@
         "species/ninetalesalola",
         "species/thievul",
         "species/typhlosion",
-        "species/typhlosionhisui"
+        "species/typhlosionhisui",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "stat_change",
@@ -23680,7 +23725,7 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -23853,7 +23898,8 @@
         "species/taurospaldeaaqua",
         "species/toxapex",
         "species/tyranitar",
-        "species/vaporeon"
+        "species/vaporeon",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -23869,7 +23915,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -24251,7 +24297,8 @@
         "species/vaporeon",
         "species/wigglytuff",
         "species/zoroark",
-        "species/zoroarkhisui"
+        "species/zoroarkhisui",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -24268,7 +24315,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -24306,6 +24353,7 @@
         "species/spiritomb",
         "species/watchog",
         "species/wyrdeer",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case",
         "unit:crates/rotom-dex/tests/combat.rs#status_and_stat_moves_cover_success_immunity_prevention_miss_and_bounds"
       ],
       "effect_families": [
@@ -24610,7 +24658,8 @@
         "species/mrrime",
         "species/ninetalesalola",
         "species/vanilluxe",
-        "species/weavile"
+        "species/weavile",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -24626,7 +24675,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -25189,7 +25238,8 @@
         "species/vivillonsandstorm",
         "species/vivillonsavanna",
         "species/vivillonsun",
-        "species/vivillontundra"
+        "species/vivillontundra",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "stat_change",
@@ -25203,7 +25253,7 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -25460,7 +25510,8 @@
       "evidence": [
         "file:crates/rotom-core/src/combat.rs",
         "file:crates/rotom-dex/src/combat.rs",
-        "species/palafin"
+        "species/palafin",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -25476,7 +25527,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -25617,7 +25668,8 @@
       "evidence": [
         "file:crates/rotom-core/src/combat.rs",
         "file:crates/rotom-dex/src/combat.rs",
-        "species/kingambit"
+        "species/kingambit",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -25633,7 +25685,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -25860,7 +25912,8 @@
         "species/sceptile",
         "species/serperior",
         "species/sirfetchd",
-        "species/victreebel"
+        "species/victreebel",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -25876,7 +25929,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -26044,7 +26097,8 @@
         "species/primarina",
         "species/roserade",
         "species/sinistcha",
-        "species/sinistchamasterpiece"
+        "species/sinistchamasterpiece",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "healing",
@@ -26058,7 +26112,7 @@
         "healing"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -26227,7 +26281,8 @@
         "species/whimsicott",
         "species/wigglytuff",
         "species/wyrdeer",
-        "unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics"
+        "unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "field_or_side_condition",
@@ -26587,7 +26642,8 @@
         "species/grapploct",
         "species/infernape",
         "species/lopunny",
-        "species/pawmot"
+        "species/pawmot",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -26603,7 +26659,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -26665,7 +26721,8 @@
         "species/mrrime",
         "species/oranguru",
         "species/raichualola",
-        "species/wigglytuff"
+        "species/wigglytuff",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "field_or_side_condition",
@@ -26679,7 +26736,7 @@
         "field_or_side_condition"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -26724,7 +26781,8 @@
         "species/metagross",
         "species/steelix",
         "species/vanilluxe",
-        "unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics"
+        "unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "custom_callback",
@@ -26864,7 +26922,8 @@
         "species/taurospaldeaaqua",
         "species/taurospaldeablaze",
         "species/taurospaldeacombat",
-        "species/wyrdeer"
+        "species/wyrdeer",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -26880,7 +26939,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -26948,7 +27007,8 @@
         "species/weavile",
         "species/wigglytuff",
         "species/zoroark",
-        "species/zoroarkhisui"
+        "species/zoroarkhisui",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -26964,7 +27024,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -27070,7 +27130,8 @@
         "species/stunfiskgalar",
         "species/tinkaton",
         "species/toxtricity",
-        "species/toxtricitylowkey"
+        "species/toxtricitylowkey",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "stat_change",
@@ -27084,7 +27145,7 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -27200,7 +27261,8 @@
       "evidence": [
         "file:crates/rotom-core/src/combat.rs",
         "file:crates/rotom-dex/src/combat.rs",
-        "species/gogoat"
+        "species/gogoat",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "healing",
@@ -27214,7 +27276,7 @@
         "healing"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -27371,7 +27433,8 @@
         "species/quaquaval",
         "species/sylveon",
         "species/whimsicott",
-        "species/wigglytuff"
+        "species/wigglytuff",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "field_or_side_condition",
@@ -27385,7 +27448,7 @@
         "field_or_side_condition"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -27923,7 +27986,8 @@
         "species/weavile",
         "species/wigglytuff",
         "species/zoroark",
-        "species/zoroarkhisui"
+        "species/zoroarkhisui",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "stat_change",
@@ -27937,7 +28001,7 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -28079,7 +28143,8 @@
         "species/sneasler",
         "species/thievul",
         "species/weavile",
-        "species/zoroark"
+        "species/zoroark",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -28095,7 +28160,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -28113,6 +28178,7 @@
         "species/rillaboom",
         "species/toxtricity",
         "species/toxtricitylowkey",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case",
         "unit:crates/rotom-dex/tests/combat.rs#status_and_stat_moves_cover_success_immunity_prevention_miss_and_bounds"
       ],
       "effect_families": [
@@ -28316,7 +28382,8 @@
         "file:crates/rotom-core/src/combat.rs",
         "file:crates/rotom-dex/src/combat.rs",
         "species/toxtricity",
-        "species/toxtricitylowkey"
+        "species/toxtricitylowkey",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -28333,7 +28400,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -28705,7 +28772,8 @@
         "species/serperior",
         "species/tsareena",
         "species/venusaur",
-        "species/vileplume"
+        "species/vileplume",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -28722,7 +28790,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -29383,7 +29451,8 @@
         "species/slowking",
         "species/slowkinggalar",
         "species/starmie",
-        "species/tyranitar"
+        "species/tyranitar",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -29554,7 +29623,8 @@
         "species/roserade",
         "species/tsareena",
         "species/venusaur",
-        "species/victreebel"
+        "species/victreebel",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -29570,7 +29640,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 9"
     },
@@ -29878,7 +29948,8 @@
         "species/wyrdeer",
         "species/zoroark",
         "species/zoroarkhisui",
-        "unit:crates/rotom-dex/tests/combat.rs#follow_me_redirects_single_target_moves_and_repeat_protect_uses_the_battle_rng"
+        "unit:crates/rotom-dex/tests/combat.rs#follow_me_redirects_single_target_moves_and_repeat_protect_uses_the_battle_rng",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "custom_callback",
@@ -30161,7 +30232,8 @@
         "species/slowbro",
         "species/slowbrogalar",
         "species/slowking",
-        "species/slowkinggalar"
+        "species/slowkinggalar",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "field_or_side_condition",
@@ -30175,7 +30247,7 @@
         "field_or_side_condition"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -30200,7 +30272,8 @@
         "species/metagross",
         "species/scizor",
         "species/starmie",
-        "species/weavile"
+        "species/weavile",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -30216,7 +30289,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -30534,7 +30607,8 @@
         "species/typhlosionhisui",
         "species/umbreon",
         "species/vaporeon",
-        "species/weavile"
+        "species/weavile",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -30550,7 +30624,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -30631,7 +30705,8 @@
         "species/vivillonsavanna",
         "species/vivillonsun",
         "species/vivillontundra",
-        "species/volcarona"
+        "species/volcarona",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "stat_change",
@@ -30645,7 +30720,7 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -30714,6 +30789,7 @@
         "species/vivillonsun",
         "species/vivillontundra",
         "species/volcarona",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case",
         "unit:crates/rotom-dex/tests/combat.rs#rage_powder_respects_grass_overcoat_and_safety_goggles_and_feint_breaks_protect"
       ],
       "effect_families": [
@@ -31007,7 +31083,8 @@
         "species/wigglytuff",
         "species/wyrdeer",
         "species/zoroark",
-        "species/zoroarkhisui"
+        "species/zoroarkhisui",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "field_or_side_condition",
@@ -31021,7 +31098,7 @@
         "field_or_side_condition"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -31131,7 +31208,8 @@
         "species/sableye",
         "species/starmie",
         "species/toxapex",
-        "unit:crates/rotom-dex/tests/combat.rs#healing_uses_showdown_rounding_and_full_hp_fails"
+        "unit:crates/rotom-dex/tests/combat.rs#healing_uses_showdown_rounding_and_full_hp_fails",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "healing",
@@ -31272,7 +31350,8 @@
         "species/weavile",
         "species/wigglytuff",
         "species/wyrdeer",
-        "unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics"
+        "unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "field_or_side_condition",
@@ -31962,7 +32041,8 @@
         "species/glimmora",
         "species/rhyperior",
         "species/steelix",
-        "species/tyrantrum"
+        "species/tyrantrum",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "stat_change",
@@ -31976,7 +32056,7 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -32868,7 +32948,8 @@
         "species/torterra",
         "species/tyranitar",
         "species/tyrantrum",
-        "species/wigglytuff"
+        "species/wigglytuff",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "field_or_side_condition",
@@ -32882,7 +32963,7 @@
         "field_or_side_condition"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -33166,7 +33247,8 @@
         "species/weavile",
         "species/wyrdeer",
         "species/zoroark",
-        "species/zoroarkhisui"
+        "species/zoroarkhisui",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "stat_change",
@@ -33180,7 +33262,7 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -33302,7 +33384,8 @@
         "species/volcarona",
         "species/watchog",
         "species/weavile",
-        "species/wigglytuff"
+        "species/wigglytuff",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "stat_change",
@@ -33316,7 +33399,7 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -33384,7 +33467,8 @@
         "species/victreebel",
         "species/vileplume",
         "species/watchog",
-        "species/whimsicott"
+        "species/whimsicott",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -33400,7 +33484,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 9"
     },
@@ -33694,7 +33778,8 @@
         "species/tyranitar",
         "species/weavile",
         "species/zoroark",
-        "species/zoroarkhisui"
+        "species/zoroarkhisui",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -33710,7 +33795,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -33731,7 +33816,8 @@
         "species/metagross",
         "species/runerigus",
         "species/sableye",
-        "species/trevenant"
+        "species/trevenant",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -33747,7 +33833,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -33777,7 +33863,8 @@
         "species/mimikyu",
         "species/sableye",
         "species/spiritomb",
-        "species/zoroarkhisui"
+        "species/zoroarkhisui",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -33793,7 +33880,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -33900,7 +33987,8 @@
         "species/polteageist",
         "species/polteageistantique",
         "species/torkoal",
-        "species/torterra"
+        "species/torterra",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "stat_change",
@@ -33914,7 +34002,7 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -33926,7 +34014,8 @@
       "evidence": [
         "file:crates/rotom-core/src/combat.rs",
         "file:crates/rotom-dex/src/combat.rs",
-        "species/goodrahisui"
+        "species/goodrahisui",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "stat_change",
@@ -33940,7 +34029,7 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -33952,7 +34041,8 @@
       "evidence": [
         "file:crates/rotom-core/src/combat.rs",
         "file:crates/rotom-dex/src/combat.rs",
-        "species/toxtricity"
+        "species/toxtricity",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "stat_change",
@@ -33966,7 +34056,7 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -34010,7 +34100,8 @@
         "species/indeedeef",
         "species/primarina",
         "species/skeledirge",
-        "species/wigglytuff"
+        "species/wigglytuff",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "major_status",
@@ -34024,7 +34115,7 @@
         "major_status"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -34243,7 +34334,8 @@
         "species/slowbro",
         "species/slowbrogalar",
         "species/slowking",
-        "species/slowkinggalar"
+        "species/slowkinggalar",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "healing",
@@ -34257,7 +34349,7 @@
         "healing"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -34304,7 +34396,8 @@
         "species/sirfetchd",
         "species/skarmory",
         "species/sneasler",
-        "species/weavile"
+        "species/weavile",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -34320,7 +34413,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -34912,7 +35005,8 @@
         "species/tauros",
         "species/taurospaldeaaqua",
         "species/taurospaldeablaze",
-        "species/taurospaldeacombat"
+        "species/taurospaldeacombat",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -34928,7 +35022,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -35385,7 +35479,8 @@
         "species/slowkinggalar",
         "species/vanilluxe",
         "species/weavile",
-        "species/zoroarkhisui"
+        "species/zoroarkhisui",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "field_or_side_condition",
@@ -35399,7 +35494,7 @@
         "field_or_side_condition"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -35678,7 +35773,8 @@
       "evidence": [
         "file:crates/rotom-core/src/combat.rs",
         "file:crates/rotom-dex/src/combat.rs",
-        "species/scovillain"
+        "species/scovillain",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "stat_change",
@@ -35692,7 +35788,7 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -36428,7 +36524,8 @@
         "species/torterra",
         "species/toxicroak",
         "species/tyranitar",
-        "species/tyrantrum"
+        "species/tyrantrum",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -36444,7 +36541,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -36631,7 +36728,8 @@
         "species/vivillonsavanna",
         "species/vivillonsun",
         "species/vivillontundra",
-        "species/volcarona"
+        "species/volcarona",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "stat_change",
@@ -36645,7 +36743,7 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -37393,7 +37491,8 @@
         "species/wigglytuff",
         "species/wyrdeer",
         "species/zoroark",
-        "unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics"
+        "unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "field_or_side_condition",
@@ -37650,6 +37749,7 @@
         "species/tyranitar",
         "species/vaporeon",
         "species/weavile",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case",
         "unit:crates/rotom-dex/tests/combat.rs#spread_damage_keeps_protected_targets_in_the_spread_modifier_and_ignores_redirection"
       ],
       "effect_families": [
@@ -37856,7 +37956,8 @@
         "species/tsareena",
         "species/venusaur",
         "species/victreebel",
-        "species/vileplume"
+        "species/vileplume",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "stat_change",
@@ -37870,7 +37971,7 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -38004,6 +38105,7 @@
         "species/weavile",
         "species/zoroark",
         "species/zoroarkhisui",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case",
         "unit:crates/rotom-dex/tests/combat.rs#status_and_stat_moves_cover_success_immunity_prevention_miss_and_bounds"
       ],
       "effect_families": [
@@ -38180,7 +38282,8 @@
         "species/vivillontundra",
         "species/volcarona",
         "species/whimsicott",
-        "unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics"
+        "unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "field_or_side_condition",
@@ -38338,7 +38441,8 @@
         "species/goodrahisui",
         "species/inteleon",
         "species/toxtricity",
-        "species/toxtricitylowkey"
+        "species/toxtricitylowkey",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "stat_change",
@@ -38352,7 +38456,7 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -39277,6 +39381,7 @@
         "species/watchog",
         "species/wigglytuff",
         "species/wyrdeer",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case",
         "unit:crates/rotom-dex/tests/combat.rs#status_and_stat_moves_cover_success_immunity_prevention_miss_and_bounds"
       ],
       "effect_families": [
@@ -39332,7 +39437,8 @@
         "species/vaporeon",
         "species/victreebel",
         "species/vileplume",
-        "species/whimsicott"
+        "species/whimsicott",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "stat_change",
@@ -39346,7 +39452,7 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -39591,7 +39697,8 @@
       "evidence": [
         "file:crates/rotom-core/src/combat.rs",
         "file:crates/rotom-dex/src/combat.rs",
-        "species/ariados"
+        "species/ariados",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "major_status",
@@ -39607,7 +39714,7 @@
         "stat_stage"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -39988,7 +40095,8 @@
         "species/trevenant",
         "species/whimsicott",
         "species/wyrdeer",
-        "unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics"
+        "unit:crates/rotom-dex/tests/combat.rs#field_side_and_volatile_reapplication_matches_showdown_semantics",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "field_or_side_condition",
@@ -40435,7 +40543,8 @@
         "species/sceptile",
         "species/scizor",
         "species/sneasler",
-        "species/toxicroak"
+        "species/toxicroak",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -40451,7 +40560,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -41207,6 +41316,7 @@
         "species/typhlosionhisui",
         "species/volcarona",
         "species/zoroarkhisui",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case",
         "unit:crates/rotom-dex/tests/combat.rs#status_and_stat_moves_cover_success_immunity_prevention_miss_and_bounds"
       ],
       "effect_families": [
@@ -41321,7 +41431,8 @@
         "species/slowking",
         "species/slowkinggalar",
         "species/spiritomb",
-        "species/starmie"
+        "species/starmie",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "field_or_side_condition",
@@ -41335,7 +41446,7 @@
         "field_or_side_condition"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.3"
     },
@@ -41486,7 +41597,8 @@
         "species/sneasler",
         "species/toxicroak",
         "species/trevenant",
-        "species/weavile"
+        "species/weavile",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -41502,7 +41614,7 @@
         "per_target_hit"
       ],
       "implementation": "implemented",
-      "verification": "not_tested",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
       "owner_pr": "PR 13.2"
     },
@@ -46944,8 +47056,8 @@
           "implemented": 112
         },
         "verification": {
-          "not_tested": 486,
-          "unit_tested": 1,
+          "not_tested": 398,
+          "unit_tested": 89,
           "differential_verified": 23
         },
         "interaction_verification": {
