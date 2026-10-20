@@ -1,0 +1,76 @@
+{
+  "showdown_commit": "b79ce06d06b8f0dc8de8bb348bc9cab5d931553f",
+  "format": "gen9championsvgc2026regmc",
+  "methodology": {
+    "source": "pinned Battle.actions.getDamage with resolved Champions data",
+    "damage_roll_percent": 100,
+    "critical_hit": false,
+    "full_transition_comparison": false
+  },
+  "cases": [
+    {
+      "id": "huge-power-physical",
+      "ability": "hugepower",
+      "move": "dragonclaw",
+      "source_status": null,
+      "target_status": null,
+      "damage": 68
+    },
+    {
+      "id": "huge-power-special-unaffected",
+      "ability": "hugepower",
+      "move": "dragonpulse",
+      "source_status": null,
+      "target_status": null,
+      "damage": 25
+    },
+    {
+      "id": "pure-power-physical",
+      "ability": "purepower",
+      "move": "dragonclaw",
+      "source_status": null,
+      "target_status": null,
+      "damage": 68
+    },
+    {
+      "id": "guts-burn",
+      "ability": "guts",
+      "move": "dragonclaw",
+      "source_status": "brn",
+      "target_status": null,
+      "damage": 51
+    },
+    {
+      "id": "fur-coat-physical-defense",
+      "ability": "furcoat",
+      "move": "dragonclaw",
+      "source_status": null,
+      "target_status": null,
+      "damage": 18
+    },
+    {
+      "id": "marvel-scale-statused",
+      "ability": "marvelscale",
+      "move": "dragonclaw",
+      "source_status": null,
+      "target_status": "psn",
+      "damage": 24
+    },
+    {
+      "id": "technician-threshold",
+      "ability": "technician",
+      "move": "tackle",
+      "source_status": null,
+      "target_status": null,
+      "damage": 26
+    },
+    {
+      "id": "multiscale-full-hp",
+      "ability": "multiscale",
+      "move": "dragonclaw",
+      "source_status": null,
+      "target_status": null,
+      "damage": 17
+    }
+  ]
+}

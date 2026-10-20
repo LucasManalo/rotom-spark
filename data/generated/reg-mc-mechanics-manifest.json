@@ -976,16 +976,22 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/ability-modifiers.json#fur-coat-physical-defense",
+        "file:crates/rotom-core/src/abilities.rs",
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "interaction_differential:data/fixtures/differential/ability-modifiers.json#fur-coat-physical-defense",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture",
         "species/furfrou/ability-slot/0",
-        "species/persianalola/ability-slot/0"
+        "species/persianalola/ability-slot/0",
+        "unit:crates/rotom-core/src/abilities.rs#conditional_and_defensive_handlers_use_authoritative_state"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "galewings",
@@ -1113,21 +1119,27 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/ability-modifiers.json#guts-burn",
+        "file:crates/rotom-core/src/abilities.rs",
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "interaction_differential:data/fixtures/differential/ability-modifiers.json#guts-burn",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture",
         "species/conkeldurr/ability-slot/0",
         "species/flareon/ability-slot/H",
         "species/heracross/ability-slot/1",
         "species/luxray/ability-slot/H",
         "species/machamp/ability-slot/0",
         "species/squawkabilly/ability-slot/H",
-        "species/squawkabillyblue/ability-slot/H"
+        "species/squawkabillyblue/ability-slot/H",
+        "unit:crates/rotom-core/src/abilities.rs#conditional_and_defensive_handlers_use_authoritative_state"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "harvest",
@@ -1220,16 +1232,22 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/ability-modifiers.json#huge-power-physical",
+        "file:crates/rotom-core/src/abilities.rs",
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "interaction_differential:data/fixtures/differential/ability-modifiers.json#huge-power-physical",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture",
         "species/azumarill/ability-slot/1",
-        "species/diggersby/ability-slot/H"
+        "species/diggersby/ability-slot/H",
+        "unit:crates/rotom-core/src/abilities.rs#source_stat_and_base_power_handlers_are_scoped_to_the_holder"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "hungerswitch",
@@ -1840,15 +1858,21 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/milotic/ability-slot/0"
+        "differential:data/fixtures/differential/ability-modifiers.json#marvel-scale-statused",
+        "file:crates/rotom-core/src/abilities.rs",
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "interaction_differential:data/fixtures/differential/ability-modifiers.json#marvel-scale-statused",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture",
+        "species/milotic/ability-slot/0",
+        "unit:crates/rotom-core/src/abilities.rs#conditional_and_defensive_handlers_use_authoritative_state"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "megalauncher",
@@ -2032,15 +2056,21 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/dragonite/ability-slot/H"
+        "differential:data/fixtures/differential/ability-modifiers.json#multiscale-full-hp",
+        "file:crates/rotom-core/src/abilities.rs",
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "interaction_differential:data/fixtures/differential/ability-modifiers.json#multiscale-full-hp",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture",
+        "species/dragonite/ability-slot/H",
+        "unit:crates/rotom-core/src/abilities.rs#conditional_and_defensive_handlers_use_authoritative_state"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "mummy",
@@ -2458,15 +2488,21 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/medicham/ability-slot/0"
+        "differential:data/fixtures/differential/ability-modifiers.json#pure-power-physical",
+        "file:crates/rotom-core/src/abilities.rs",
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "interaction_differential:data/fixtures/differential/ability-modifiers.json#pure-power-physical",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture",
+        "species/medicham/ability-slot/0",
+        "unit:crates/rotom-core/src/abilities.rs#source_stat_and_base_power_handlers_are_scoped_to_the_holder"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "purifyingsalt",
@@ -3620,6 +3656,11 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/ability-modifiers.json#technician-threshold",
+        "file:crates/rotom-core/src/abilities.rs",
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "interaction_differential:data/fixtures/differential/ability-modifiers.json#technician-threshold",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture",
         "species/grapploct/ability-slot/H",
         "species/maushold/ability-slot/H",
         "species/mausholdfour/ability-slot/H",
@@ -3629,15 +3670,16 @@
         "species/roserade/ability-slot/H",
         "species/scizor/ability-slot/1",
         "species/toxtricity/ability-slot/H",
-        "species/toxtricitylowkey/ability-slot/H"
+        "species/toxtricitylowkey/ability-slot/H",
+        "unit:crates/rotom-core/src/abilities.rs#source_stat_and_base_power_handlers_are_scoped_to_the_holder"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "telepathy",
@@ -47329,19 +47371,19 @@
       "ability": {
         "total": 215,
         "implementation": {
-          "unsupported": 215,
+          "unsupported": 208,
           "partial": 0,
-          "implemented": 0
+          "implemented": 7
         },
         "verification": {
-          "not_tested": 215,
+          "not_tested": 208,
           "unit_tested": 0,
-          "differential_verified": 0
+          "differential_verified": 7
         },
         "interaction_verification": {
-          "not_tested": 215,
+          "not_tested": 208,
           "unit_tested": 0,
-          "differential_verified": 0
+          "differential_verified": 7
         },
         "reachability": {
           "direct_legal_set": 202,

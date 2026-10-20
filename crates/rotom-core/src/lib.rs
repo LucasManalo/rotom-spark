@@ -4,6 +4,7 @@
 //! phase-aware [`step`] function is the canonical deterministic advancement
 //! API; its diagnostics never replace authoritative battle state.
 
+mod abilities;
 mod action;
 mod combat;
 mod conditions;
@@ -18,6 +19,7 @@ mod state;
 mod team;
 mod transition;
 
+pub use abilities::AbilityEffectIds;
 pub use action::{
     ActionTarget, LegalActions, MoveSlotIndex, MoveTarget, PokemonAction, SlotLegalActions,
     TurnChoice,

@@ -1,10 +1,10 @@
 use crate::{Accuracy, DexData, MoveBehaviorKind, MoveData, SpeciesData, Stats};
 use rotom_core::{
-    BattleError, BattleStat, BattleStats, CombatData, CombatMove, ConditionId, EffectFraction,
-    FieldEffectIds, HitSequence, MajorStatus, MoveAccuracy, MoveCapabilities, MoveCapability,
-    MoveCategory, MoveId, MoveIntrinsic, MoveOperation, MoveSlot, MoveTarget, PokemonPosition,
-    PokemonSet, PokemonState, PokemonType, PokemonTypes, PrimaryMoveEffect, PriorMoveEffect,
-    SecondaryMoveEffect, SelfMoveEffect, StatAllocation, StatStages, StatusState,
+    AbilityEffectIds, BattleError, BattleStat, BattleStats, CombatData, CombatMove, ConditionId,
+    EffectFraction, FieldEffectIds, HitSequence, MajorStatus, MoveAccuracy, MoveCapabilities,
+    MoveCapability, MoveCategory, MoveId, MoveIntrinsic, MoveOperation, MoveSlot, MoveTarget,
+    PokemonPosition, PokemonSet, PokemonState, PokemonType, PokemonTypes, PrimaryMoveEffect,
+    PriorMoveEffect, SecondaryMoveEffect, SelfMoveEffect, StatAllocation, StatStages, StatusState,
 };
 
 impl CombatData for DexData {
@@ -301,6 +301,19 @@ impl CombatData for DexData {
             )),
             overcoat: self.resolve_ability("overcoat").map(|(id, _)| id),
             safety_goggles: self.resolve_item("safetygoggles").map(|(id, _)| id),
+        }
+    }
+
+    fn ability_effect_ids(&self) -> AbilityEffectIds {
+        let ability = |id: &str| self.resolve_ability(id).map(|(ability_id, _)| ability_id);
+        AbilityEffectIds {
+            huge_power: ability("hugepower"),
+            pure_power: ability("purepower"),
+            guts: ability("guts"),
+            fur_coat: ability("furcoat"),
+            marvel_scale: ability("marvelscale"),
+            technician: ability("technician"),
+            multiscale: ability("multiscale"),
         }
     }
 }

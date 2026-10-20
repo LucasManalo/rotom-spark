@@ -68,3 +68,11 @@ drain, and recoil behavior with:
 node tools/showdown-reference/sequenced-effects.cjs
 node tools/showdown-reference/sequenced-effects.cjs --check
 ```
+
+Regenerate or verify the PR 13.5 stat, base-power, burn, and full-HP damage
+ability modifier fixture with:
+
+```text
+node tools/showdown-reference/ability-modifiers.cjs
+node tools/showdown-reference/ability-modifiers.cjs --check
+```

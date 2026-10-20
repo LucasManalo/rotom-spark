@@ -351,8 +351,12 @@ function validateCoverageClaims(source, root = repositoryRoot) {
 			if (kind === 'differential' || kind === 'interaction_differential') {
 				const fixtureCase = differentialFixtureCase(root, relativePath, anchor);
 				if (!fixtureCase) fail(`Differential evidence ${evidence} does not name an existing fixture case for ${key}`);
-				if (claim.kind !== 'move' || fixtureCase.move !== claim.id) {
-					fail(`Differential evidence ${evidence} does not reference claimed move ${key}`);
+				const matchesIdentity = claim.kind === 'move'
+					? fixtureCase.move === claim.id
+					: claim.kind === 'ability' && fixtureCase.ability === claim.id;
+				if (!matchesIdentity) {
+					const noun = claim.kind === 'move' ? 'move' : 'mechanic';
+					fail(`Differential evidence ${evidence} does not reference claimed ${noun} ${key}`);
 				}
 				(kind === 'differential' ? differentialEvidence : interactionDifferentialEvidence).push(evidence);
 			}

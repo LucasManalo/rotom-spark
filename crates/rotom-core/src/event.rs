@@ -16,8 +16,16 @@ pub enum BattleEvent {
     ModifySpeed,
     /// Relays the effective offensive stat after move-specific selection.
     ModifyAttack,
+    /// Relays the effective Special Attack stat after move-specific selection.
+    ModifySpecialAttack,
     /// Relays the effective defensive stat after move-specific selection.
     ModifyDefense,
+    /// Relays the source's Defense when a move uses it offensively.
+    ModifySourceDefense,
+    /// Relays the effective Special Defense stat after move-specific selection.
+    ModifySpecialDefense,
+    /// Relays the source's Special Defense when a move uses it offensively.
+    ModifySourceSpecialDefense,
     /// Relays base power after state-dependent move behavior.
     ModifyBasePower,
     ModifyDamage,
@@ -44,7 +52,11 @@ impl BattleEvent {
             Self::ModifyPriority
             | Self::ModifySpeed
             | Self::ModifyAttack
+            | Self::ModifySpecialAttack
             | Self::ModifyDefense
+            | Self::ModifySourceDefense
+            | Self::ModifySpecialDefense
+            | Self::ModifySourceSpecialDefense
             | Self::ModifyBasePower
             | Self::ModifyDamage => EventContract::new(EventRelay::Integer, false, true),
             Self::AfterDamage => EventContract::new(EventRelay::Integer, false, false),

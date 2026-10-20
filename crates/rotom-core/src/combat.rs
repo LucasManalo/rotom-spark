@@ -381,6 +381,11 @@ pub trait CombatData {
     fn field_effect_ids(&self) -> crate::FieldEffectIds {
         crate::FieldEffectIds::default()
     }
+
+    /// Resolves identities for built-in ability handlers.
+    fn ability_effect_ids(&self) -> crate::AbilityEffectIds {
+        crate::AbilityEffectIds::default()
+    }
 }
 
 #[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
@@ -2286,7 +2291,7 @@ impl BattleState {
             effective_damage_stats(&source_state, &target_state, adjusted_move, critical)?;
         let modify_attack = effects.dispatch(
             self,
-            BattleEvent::ModifyAttack,
+            offensive_stat_event(adjusted_move)?,
             event_context,
             EventValue::Integer(i64::from(attack)),
         )?;
@@ -2294,7 +2299,7 @@ impl BattleState {
         resolution.events.push(modify_attack);
         let modify_defense = effects.dispatch(
             self,
-            BattleEvent::ModifyDefense,
+            defensive_stat_event(adjusted_move)?,
             event_context,
             EventValue::Integer(i64::from(defense)),
         )?;
@@ -2318,7 +2323,12 @@ impl BattleState {
                 attack_override: Some(attack),
                 defense_override: Some(defense),
                 spread,
-                ignore_burn: adjusted_move.prior_effect == PriorMoveEffect::Facade && facade_active,
+                ignore_burn: (adjusted_move.prior_effect == PriorMoveEffect::Facade
+                    && facade_active)
+                    || crate::abilities::ignores_burn_attack_penalty(
+                        source_state.ability,
+                        data.ability_effect_ids(),
+                    ),
             },
         )?;
         if let Some((numerator, denominator)) = crate::field_effects::screen_modifier(
@@ -3166,6 +3176,50 @@ fn effective_damage_stats(
     ))
 }
 
+fn offensive_stat_event(move_data: CombatMove) -> Result<BattleEvent, BattleError> {
+    let default = match move_data.category {
+        MoveCategory::Physical => BattleStat::Attack,
+        MoveCategory::Special => BattleStat::SpecialAttack,
+        MoveCategory::Status => {
+            return Err(BattleError::DataMismatch(
+                "status move requested an offensive stat event".to_owned(),
+            ));
+        }
+    };
+    match move_data.offensive_stat.unwrap_or(default) {
+        BattleStat::Attack => Ok(BattleEvent::ModifyAttack),
+        BattleStat::SpecialAttack => Ok(BattleEvent::ModifySpecialAttack),
+        BattleStat::Defense => Ok(BattleEvent::ModifySourceDefense),
+        BattleStat::SpecialDefense => Ok(BattleEvent::ModifySourceSpecialDefense),
+        BattleStat::Speed | BattleStat::Accuracy | BattleStat::Evasion => Err(
+            BattleError::DataMismatch("move selected a non-damage calculation stat".to_owned()),
+        ),
+    }
+}
+
+fn defensive_stat_event(move_data: CombatMove) -> Result<BattleEvent, BattleError> {
+    let default = match move_data.category {
+        MoveCategory::Physical => BattleStat::Defense,
+        MoveCategory::Special => BattleStat::SpecialDefense,
+        MoveCategory::Status => {
+            return Err(BattleError::DataMismatch(
+                "status move requested a defensive stat event".to_owned(),
+            ));
+        }
+    };
+    match move_data.defensive_stat.unwrap_or(default) {
+        BattleStat::Defense => Ok(BattleEvent::ModifyDefense),
+        BattleStat::SpecialDefense => Ok(BattleEvent::ModifySpecialDefense),
+        BattleStat::Attack
+        | BattleStat::SpecialAttack
+        | BattleStat::Speed
+        | BattleStat::Accuracy
+        | BattleStat::Evasion => Err(BattleError::DataMismatch(
+            "move selected a non-damage calculation stat".to_owned(),
+        )),
+    }
+}
+
 fn integer_relay_u16(dispatch: &EventDispatch, name: &str) -> Result<u16, BattleError> {
     let EventValue::Integer(value) = dispatch.value else {
         return Err(BattleError::InvalidState(format!(
@@ -3453,6 +3507,41 @@ mod tests {
         ] {
             assert_eq!(facade_activates(status), expected, "status: {status:?}");
         }
+    }
+
+    #[test]
+    fn damage_stat_hooks_distinguish_physical_special_and_overrides() {
+        let physical = standard_move();
+        assert_eq!(
+            offensive_stat_event(physical),
+            Ok(BattleEvent::ModifyAttack)
+        );
+        assert_eq!(
+            defensive_stat_event(physical),
+            Ok(BattleEvent::ModifyDefense)
+        );
+
+        let special = CombatMove {
+            category: MoveCategory::Special,
+            ..physical
+        };
+        assert_eq!(
+            offensive_stat_event(special),
+            Ok(BattleEvent::ModifySpecialAttack)
+        );
+        assert_eq!(
+            defensive_stat_event(special),
+            Ok(BattleEvent::ModifySpecialDefense)
+        );
+
+        let body_press = CombatMove {
+            offensive_stat: Some(BattleStat::Defense),
+            ..physical
+        };
+        assert_eq!(
+            offensive_stat_event(body_press),
+            Ok(BattleEvent::ModifySourceDefense)
+        );
     }
 
     #[test]

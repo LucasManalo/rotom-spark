@@ -34,6 +34,10 @@ impl CombatData for MoveFractionOverride<'_> {
         self.dex.pokemon_types(species, form)
     }
 
+    fn ability_effect_ids(&self) -> rotom_core::AbilityEffectIds {
+        self.dex.ability_effect_ids()
+    }
+
     fn type_modifier(
         &self,
         attacking: rotom_core::PokemonType,
@@ -4203,28 +4207,26 @@ fn effective_stat_overrides_feed_the_shared_damage_relays() {
     let dex = champions_reg_mc().unwrap();
     let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
     let action = single_move_action(0, ActionTarget::Foe(ActiveSlot::Left));
-    for (move_name, event, expected_stat) in [
-        ("bodypress", BattleEvent::ModifyAttack, BattleStat::Defense),
-        ("psyshock", BattleEvent::ModifyDefense, BattleStat::Defense),
+    for (move_name, event, stat_owner, expected_stat) in [
+        (
+            "bodypress",
+            BattleEvent::ModifySourceDefense,
+            SideId::P1,
+            BattleStat::Defense,
+        ),
+        (
+            "psyshock",
+            BattleEvent::ModifyDefense,
+            SideId::P2,
+            BattleStat::Defense,
+        ),
     ] {
         let state = pr_13_4_battle(&dex, move_name, 97);
-        let selected_stats = match event {
-            BattleEvent::ModifyAttack => {
-                state
-                    .side(SideId::P1)
-                    .pokemon(PokemonIndex::new(0))
-                    .unwrap()
-                    .stats
-            }
-            BattleEvent::ModifyDefense => {
-                state
-                    .side(SideId::P2)
-                    .pokemon(PokemonIndex::new(0))
-                    .unwrap()
-                    .stats
-            }
-            _ => unreachable!(),
-        };
+        let selected_stats = state
+            .side(stat_owner)
+            .pokemon(PokemonIndex::new(0))
+            .unwrap()
+            .stats;
         let expected = match expected_stat {
             BattleStat::Attack => selected_stats.atk,
             BattleStat::Defense => selected_stats.def,
@@ -5350,4 +5352,223 @@ fn combat_damage_processes_faints_and_requests_replacements() {
             .required,
         2
     );
+}
+
+fn ability_test_damage(
+    dex: &rotom_dex::DexData,
+    source_ability: &str,
+    move_name: &str,
+    target_ability: &str,
+    source_status: Option<MajorStatus>,
+    target_status: Option<MajorStatus>,
+    chip_target: bool,
+) -> u16 {
+    let source = set_with_moves(dex, "medicham", source_ability, &[move_name]);
+    let target = set_with_moves(dex, "snorlax", target_ability, &["recover"]);
+    let attack = |target| PokemonAction::Move {
+        move_slot: MoveSlotIndex::new(0),
+        target: ActionTarget::Foe(target),
+        mega: false,
+    };
+    let recovery = PokemonAction::Move {
+        move_slot: MoveSlotIndex::new(0),
+        target: ActionTarget::Automatic,
+        mega: false,
+    };
+    let action = JointAction::Turn {
+        p1: TurnChoice {
+            actions: [attack(ActiveSlot::Left), attack(ActiveSlot::Right)],
+        },
+        p2: TurnChoice {
+            actions: [recovery, recovery],
+        },
+    };
+    for seed in 0..10_000 {
+        let battle = selected_battle_for_sets(dex, &source, &target, seed, true);
+        let mut builder = BattleStateBuilder::from_state(battle).unwrap();
+        for index in [PokemonIndex::new(0), PokemonIndex::new(1)] {
+            builder
+                .edit_pokemon(PokemonRef::new(SideId::P1, index), |pokemon| {
+                    pokemon.status = source_status;
+                })
+                .unwrap();
+            builder
+                .edit_pokemon(PokemonRef::new(SideId::P2, index), |pokemon| {
+                    pokemon.status = target_status;
+                    if chip_target {
+                        pokemon.current_hp = pokemon.current_hp.saturating_sub(1);
+                    }
+                })
+                .unwrap();
+        }
+        let battle = builder.build().unwrap();
+        let result = step(
+            &battle,
+            &action,
+            &Mechanics::new(dex, &EffectRegistry::new()),
+        )
+        .expect("ability modifier turn");
+        let first_roll = result.state.rng().trace().and_then(|trace| {
+            trace
+                .iter()
+                .find(|entry| entry.reason == RngReason::DamageRoll)
+                .map(|entry| entry.result)
+        });
+        if first_roll == Some(100) {
+            return result
+                .diagnostics
+                .turn
+                .unwrap()
+                .actions
+                .into_iter()
+                .find_map(|action| match action {
+                    ResolvedAction::Damaged {
+                        side: SideId::P1,
+                        damage,
+                        ..
+                    } => Some(damage.final_damage),
+                    _ => None,
+                })
+                .expect("source damage");
+        }
+    }
+    panic!("no seed produced a 100% first damage roll")
+}
+
+#[test]
+fn built_in_ability_modifiers_compose_with_the_unified_executor() {
+    let dex = champions_reg_mc().unwrap();
+    let neutral_physical = ability_test_damage(
+        &dex,
+        "telepathy",
+        "dragonclaw",
+        "immunity",
+        None,
+        None,
+        false,
+    );
+    let huge_power = ability_test_damage(
+        &dex,
+        "hugepower",
+        "dragonclaw",
+        "immunity",
+        None,
+        None,
+        false,
+    );
+    assert!(huge_power > neutral_physical);
+
+    let neutral_special = ability_test_damage(
+        &dex,
+        "telepathy",
+        "dragonpulse",
+        "immunity",
+        None,
+        None,
+        false,
+    );
+    let huge_power_special = ability_test_damage(
+        &dex,
+        "hugepower",
+        "dragonpulse",
+        "immunity",
+        None,
+        None,
+        false,
+    );
+    assert_eq!(huge_power_special, neutral_special);
+
+    let burned = ability_test_damage(
+        &dex,
+        "telepathy",
+        "dragonclaw",
+        "immunity",
+        Some(MajorStatus::Burn),
+        None,
+        false,
+    );
+    let guts = ability_test_damage(
+        &dex,
+        "guts",
+        "dragonclaw",
+        "immunity",
+        Some(MajorStatus::Burn),
+        None,
+        false,
+    );
+    assert!(guts > burned.saturating_mul(2));
+
+    let weak_neutral =
+        ability_test_damage(&dex, "telepathy", "tackle", "immunity", None, None, false);
+    let technician =
+        ability_test_damage(&dex, "technician", "tackle", "immunity", None, None, false);
+    assert!(technician > weak_neutral);
+
+    let multiscale = ability_test_damage(
+        &dex,
+        "telepathy",
+        "dragonclaw",
+        "multiscale",
+        None,
+        None,
+        false,
+    );
+    let chipped_multiscale = ability_test_damage(
+        &dex,
+        "telepathy",
+        "dragonclaw",
+        "multiscale",
+        None,
+        None,
+        true,
+    );
+    assert!(chipped_multiscale > multiscale);
+
+    let marvel_scale = ability_test_damage(
+        &dex,
+        "telepathy",
+        "dragonclaw",
+        "marvelscale",
+        None,
+        Some(MajorStatus::Poison),
+        false,
+    );
+    assert!(marvel_scale < neutral_physical);
+}
+
+#[test]
+fn ability_modifier_damage_matches_pinned_showdown_fixture() {
+    let dex = champions_reg_mc().unwrap();
+    let fixture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../data/fixtures/differential/ability-modifiers.json"
+    ))
+    .unwrap();
+    assert_eq!(fixture["showdown_commit"], SHOWDOWN_COMMIT);
+    for case in fixture["cases"].as_array().unwrap() {
+        let ability = case["ability"].as_str().unwrap();
+        let defensive = matches!(ability, "furcoat" | "marvelscale" | "multiscale");
+        let source_ability = if defensive { "telepathy" } else { ability };
+        let target_ability = if defensive { ability } else { "immunity" };
+        let status = |value: &serde_json::Value| match value.as_str() {
+            Some("brn") => Some(MajorStatus::Burn),
+            Some("psn") => Some(MajorStatus::Poison),
+            Some(other) => panic!("unsupported fixture status {other}"),
+            None => None,
+        };
+        let actual = ability_test_damage(
+            &dex,
+            source_ability,
+            case["move"].as_str().unwrap(),
+            target_ability,
+            status(&case["source_status"]),
+            status(&case["target_status"]),
+            false,
+        );
+        assert_eq!(
+            actual,
+            u16::try_from(case["damage"].as_u64().unwrap()).unwrap(),
+            "{}",
+            case["id"].as_str().unwrap()
+        );
+    }
 }

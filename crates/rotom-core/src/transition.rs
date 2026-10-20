@@ -49,7 +49,7 @@ impl<'a, D: CombatData> Mechanics<'a, D> {
     pub fn new(data: &'a D, effects: &EffectRegistry) -> Self {
         Self {
             data,
-            effects: crate::conditions::composed_registry(effects),
+            effects: crate::conditions::composed_registry(effects, data.ability_effect_ids()),
             field_effects: data.field_effect_ids(),
         }
     }

@@ -6,9 +6,13 @@ use crate::{
 
 const CHAMPIONS_SLEEP_DURATIONS: [u8; 3] = [2, 3, 3];
 
-pub(crate) fn composed_registry(custom: &EffectRegistry) -> EffectRegistry {
+pub(crate) fn composed_registry(
+    custom: &EffectRegistry,
+    ability_ids: crate::AbilityEffectIds,
+) -> EffectRegistry {
     let mut registry = EffectRegistry::new();
     register_common_conditions(&mut registry);
+    crate::abilities::register(&mut registry, ability_ids);
     registry.append(custom);
     registry
 }
