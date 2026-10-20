@@ -1,4 +1,4 @@
-# PR 13.5 initial ability modifier batch
+# PR 13.5 ability modifier batches
 
 Pinned reference: Pokémon Showdown commit
 `b79ce06d06b8f0dc8de8bb348bc9cab5d931553f`, resolved format
@@ -22,6 +22,21 @@ unified move executor's calculation relays:
 - `data/abilities.ts::multiscale` uses
   `onSourceModifyDamage` to halve damage while the target is at full HP.
 
+The next cohesive batch extends those relays to Speed and critical-hit rules:
+
+- `data/abilities.ts::quickfeet` multiplies Speed by 1.5 while statused, while
+  `data/conditions.ts::par` skips the ordinary paralysis Speed penalty for a
+  Quick Feet holder. Rotom models these as two independent descriptors on the
+  same stable ability identity.
+- `data/abilities.ts::superluck` adds one critical-hit stage through
+  `onModifyCritRatio`.
+- `data/abilities.ts::battlearmor` and `shellarmor` reject a rolled critical
+  hit through `onCriticalHit`. Both callbacks are marked `breakable`.
+- `data/abilities.ts::sniper` multiplies final damage by 1.5 when the resolved
+  hit is critical.
+- `data/abilities.ts::moldbreaker` sets `move.ignoreAbility` during
+  `onModifyMove`, suppressing breakable target ability callbacks for that move.
+
 Showdown's modifier application uses its fixed-point `chainModify`/`modify`
 rounding. Rotom Spark applies the same 4096-denominator rounding to each typed
 integer relay.
@@ -37,12 +52,24 @@ Common families share Rust callbacks, while genuinely exceptional behaviors
 may retain narrow callbacks. This table is neither a parallel Dex nor an
 interpreted ability language.
 
+One ability identity may produce multiple independent `AbilityHandler`
+descriptors. Registration enumerates the table without identity-specific
+branches, so Quick Feet's status multiplier and paralysis exception compose
+through the same path used by single-handler abilities.
+
 `EffectRegistry` indexes registrations by event and concrete source identity.
 Dispatch selects one event bucket, visits each active holder once, performs
 direct ability/item/status lookups, then applies the existing deterministic
 ordering comparator. The handlers inspect authoritative battle state through
 `EffectState`, modify only ephemeral integer relays, and perform no direct
 gameplay-state writes.
+
+Move execution carries a narrow suppression flag derived from the source
+ability's declarative behavior. The registry omits only suppressible,
+target-owned ability callbacks; unrelated source abilities, conditions, and
+non-breakable callbacks retain their ordinary ordering and semantics. This is
+not a global ability-activation model and does not claim support for Neutralizing
+Gas, Gastro Acid, ability copying, or replacement.
 
 Physical and special calculations now dispatch distinct Attack/Special Attack
 and Defense/Special Defense events. Stat-override moves select the hook for the
@@ -51,30 +78,31 @@ ability handlers rather than inventing a move-specific path.
 
 ## Verification boundary
 
-The pinned `ability-modifiers.json` cases exercise isolated Showdown damage
-calculations. They support each ability's `verification: differential_verified`
-claim, but they are not full cross-mechanic transition comparisons. The current
-end-to-end Rotom tests provide interaction-level unit evidence only, so all
-seven entries use `interaction_verification: unit_tested`. A future
+The pinned `ability-modifiers.json` cases exercise isolated Showdown damage,
+Speed, and critical-ratio calculations. They support each ability's
+`verification: differential_verified` claim, but they are not full
+cross-mechanic transition comparisons. The current end-to-end Rotom tests
+provide interaction-level unit evidence only, so all thirteen entries use
+`interaction_verification: unit_tested`. A future
 `interaction_verification: differential_verified` claim requires a normalized
 fixture that actually executes and compares the relevant ability interaction.
 
 ## Deferred PR 13.5 families
 
-These seven abilities are the initial PR 13.5 batch, not completion of the
-milestone. All other reachable Regulation M-C abilities remain explicitly
-unsupported. The remaining families and prerequisites are:
+These thirteen abilities are incremental PR 13.5 batches, not completion of
+the milestone. The other 202 reachable Regulation M-C abilities remain
+explicitly unsupported. The remaining families and prerequisites are:
 
 | Family | Required event/mechanics capability |
 | --- | --- |
 | Switch-in/out | complete switch lifecycle, ordered field/side changes, stat and form consequences |
-| Priority and Speed | action-queue priority/Speed hooks, suppression and tie-order coverage |
+| Priority and remaining Speed | move-priority hooks, weather/terrain/side-condition context, suppression and tie-order coverage |
 | Attack type and damage | typed move/source context, immunity ordering, shared damage modifiers |
 | Immunity and absorption | pre-hit eligibility, cancellation/result contracts, kernel-backed healing or boosts |
 | Status prevention | shared `TrySetStatus` reasons, source/target context and cure/prevention ordering |
 | Weather and terrain | switch-in setters, duration/override rules and field-condition ordering |
 | Contact and on-hit reactions | contact metadata, actual applied damage, per-hit callbacks and faint settlement |
-| Suppression/copy/override | authoritative activation state, ability replacement/copy rules and exception ordering |
+| Global suppression/copy/override | authoritative activation state, ability replacement/copy rules and exception ordering beyond move-scoped Mold Breaker |
 
 The original PR 13.5 requirements still apply: every reachable ability must use
 the common mechanics/event fabric, have explicit ordering and activation rules,

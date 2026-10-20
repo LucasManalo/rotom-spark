@@ -29,6 +29,10 @@ pub enum BattleEvent {
     ModifySourceSpecialDefense,
     /// Relays base power after state-dependent move behavior.
     ModifyBasePower,
+    /// Relays the move's critical-hit stage before the RNG check.
+    ModifyCritRatio,
+    /// Confirms a rolled or forced critical hit against the target.
+    CriticalHit,
     ModifyDamage,
     TryHit,
     TrySetStatus,
@@ -59,7 +63,9 @@ impl BattleEvent {
             | Self::ModifySpecialDefense
             | Self::ModifySourceSpecialDefense
             | Self::ModifyBasePower
+            | Self::ModifyCritRatio
             | Self::ModifyDamage => EventContract::new(EventRelay::Integer, false, true),
+            Self::CriticalHit => EventContract::new(EventRelay::Boolean, false, true),
             Self::AfterDamage => EventContract::new(EventRelay::Integer, false, false),
             Self::BeforeTurn
             | Self::Hit
@@ -195,6 +201,17 @@ pub struct EventContext {
     pub source: Option<PokemonRef>,
     pub target: Option<PokemonRef>,
     pub move_id: Option<MoveId>,
+    /// Whether the current move ignores suppressible handlers owned by its target.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub suppress_target_ability: bool,
+    /// Whether the current hit was confirmed as critical.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub critical: bool,
+}
+
+#[allow(clippy::trivially_copy_pass_by_ref)] // Serde's skip predicate receives `&T`.
+const fn is_false(value: &bool) -> bool {
+    !*value
 }
 
 /// Typed relay value passed through an event's ordered handlers.
@@ -471,6 +488,7 @@ struct EffectRegistration {
     order: EffectOrder,
     callback: EffectCallback,
     registration_order: usize,
+    suppressible: bool,
 }
 
 #[derive(Clone, Copy)]
@@ -517,6 +535,27 @@ impl EffectRegistry {
         order: EffectOrder,
         callback: EffectCallback,
     ) {
+        self.register_with_suppression(event, source, order, callback, false);
+    }
+
+    pub(crate) fn register_suppressible(
+        &mut self,
+        event: BattleEvent,
+        source: EffectSource,
+        order: EffectOrder,
+        callback: EffectCallback,
+    ) {
+        self.register_with_suppression(event, source, order, callback, true);
+    }
+
+    fn register_with_suppression(
+        &mut self,
+        event: BattleEvent,
+        source: EffectSource,
+        order: EffectOrder,
+        callback: EffectCallback,
+        suppressible: bool,
+    ) {
         let registration_order = self.registration_count;
         let registration = EffectRegistration {
             event,
@@ -524,6 +563,7 @@ impl EffectRegistry {
             order,
             callback,
             registration_order,
+            suppressible,
         };
         self.events.entry(event).or_default().insert(registration);
         self.registration_count += 1;
@@ -533,11 +573,12 @@ impl EffectRegistry {
         let mut registrations = other.registrations();
         registrations.sort_by_key(|registration| registration.registration_order);
         for registration in registrations {
-            self.register(
+            self.register_with_suppression(
                 registration.event,
                 registration.source,
                 registration.order,
                 registration.callback,
+                registration.suppressible,
             );
         }
     }
@@ -639,7 +680,7 @@ impl EffectRegistry {
                 };
                 let speed = state.effective_speed();
                 if let Some(handlers) = registrations.abilities.get(&state.ability) {
-                    collect_registrations(&mut collected, handlers, owner, speed);
+                    collect_ability_registrations(&mut collected, handlers, owner, speed, context);
                 }
                 if let Some(handlers) = state.item.and_then(|item| registrations.items.get(&item)) {
                     collect_registrations(&mut collected, handlers, owner, speed);
@@ -725,6 +766,23 @@ fn collect_registrations(
 ) {
     for registration in registrations {
         push_collected(output, *registration, owner, speed);
+    }
+}
+
+fn collect_ability_registrations(
+    output: &mut Vec<CollectedEffect>,
+    registrations: &[EffectRegistration],
+    owner: EffectOwner,
+    speed: u16,
+    context: EventContext,
+) {
+    let target_is_suppressed = context.suppress_target_ability
+        && context.target != context.source
+        && matches!(owner, EffectOwner::Pokemon { pokemon } if Some(pokemon) == context.target);
+    for registration in registrations {
+        if !(target_is_suppressed && registration.suppressible) {
+            push_collected(output, *registration, owner, speed);
+        }
     }
 }
 

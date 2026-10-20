@@ -340,6 +340,21 @@
       ]
     },
     {
+      "id": "battlearmor",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": [
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "file:crates/rotom-core/src/abilities.rs",
+        "unit:crates/rotom-core/src/abilities.rs#multiple_descriptors_and_critical_handlers_compose_without_identity_branches",
+        "differential:data/fixtures/differential/ability-modifiers.json#battle-armor-critical-prevention",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"
+      ]
+    },
+    {
       "id": "furcoat",
       "kind": "ability",
       "implementation": "implemented",
@@ -415,6 +430,21 @@
       ]
     },
     {
+      "id": "moldbreaker",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": [
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "file:crates/rotom-core/src/event.rs",
+        "unit:crates/rotom-core/src/abilities.rs#multiple_descriptors_and_critical_handlers_compose_without_identity_branches",
+        "differential:data/fixtures/differential/ability-modifiers.json#mold-breaker-bypasses-battle-armor",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"
+      ]
+    },
+    {
       "id": "purepower",
       "kind": "ability",
       "implementation": "implemented",
@@ -427,6 +457,66 @@
         "unit:crates/rotom-core/src/abilities.rs#source_stat_and_base_power_handlers_are_scoped_to_the_holder",
         "differential:data/fixtures/differential/ability-modifiers.json#pure-power-physical",
         "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"
+      ]
+    },
+    {
+      "id": "quickfeet",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": [
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "file:crates/rotom-core/src/abilities.rs",
+        "unit:crates/rotom-core/src/abilities.rs#multiple_descriptors_and_critical_handlers_compose_without_identity_branches",
+        "differential:data/fixtures/differential/ability-modifiers.json#quick-feet-paralysis",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_batch_interactions_replay_deterministically"
+      ]
+    },
+    {
+      "id": "shellarmor",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": [
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "file:crates/rotom-core/src/abilities.rs",
+        "unit:crates/rotom-core/src/abilities.rs#multiple_descriptors_and_critical_handlers_compose_without_identity_branches",
+        "differential:data/fixtures/differential/ability-modifiers.json#shell-armor-critical-prevention",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_batch_interactions_replay_deterministically"
+      ]
+    },
+    {
+      "id": "sniper",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": [
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "file:crates/rotom-core/src/abilities.rs",
+        "unit:crates/rotom-core/src/abilities.rs#multiple_descriptors_and_critical_handlers_compose_without_identity_branches",
+        "differential:data/fixtures/differential/ability-modifiers.json#sniper-critical",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"
+      ]
+    },
+    {
+      "id": "superluck",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": [
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "file:crates/rotom-core/src/abilities.rs",
+        "unit:crates/rotom-core/src/abilities.rs#multiple_descriptors_and_critical_handlers_compose_without_identity_branches",
+        "differential:data/fixtures/differential/ability-modifiers.json#super-luck-critical-ratio",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_batch_interactions_replay_deterministically"
       ]
     },
     {

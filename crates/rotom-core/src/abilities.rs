@@ -16,6 +16,12 @@ pub enum AbilityBehavior {
     StatusedDefense,
     LowPowerBoost,
     FullHpDamageReduction,
+    StatusedSpeed,
+    IgnoreParalysisSpeedPenalty,
+    IncreaseCriticalRatio,
+    PreventCriticalHit,
+    BoostCriticalDamage,
+    BreaksTargetAbilities,
 }
 
 /// Joins a stable Dex ability identity to one native behavior family.
@@ -74,12 +80,43 @@ fn register_handler(registry: &mut EffectRegistry, handler: AbilityHandler) {
             EffectOrder::new(0, 30, 0),
             technician_base_power,
         ),
-        AbilityBehavior::FullHpDamageReduction => registry.register(
+        AbilityBehavior::FullHpDamageReduction => registry.register_suppressible(
             BattleEvent::ModifyDamage,
             source,
             EffectOrder::default(),
             full_hp_damage_reduction,
         ),
+        AbilityBehavior::StatusedSpeed => registry.register(
+            BattleEvent::ModifySpeed,
+            source,
+            EffectOrder::default(),
+            statused_speed,
+        ),
+        AbilityBehavior::IgnoreParalysisSpeedPenalty => registry.register(
+            BattleEvent::ModifySpeed,
+            source,
+            EffectOrder::new(0, -100, 0),
+            compensate_paralysis_speed,
+        ),
+        AbilityBehavior::IncreaseCriticalRatio => registry.register(
+            BattleEvent::ModifyCritRatio,
+            source,
+            EffectOrder::default(),
+            increase_critical_ratio,
+        ),
+        AbilityBehavior::PreventCriticalHit => registry.register_suppressible(
+            BattleEvent::CriticalHit,
+            source,
+            EffectOrder::default(),
+            prevent_critical_hit,
+        ),
+        AbilityBehavior::BoostCriticalDamage => registry.register(
+            BattleEvent::ModifyDamage,
+            source,
+            EffectOrder::default(),
+            boost_critical_damage,
+        ),
+        AbilityBehavior::BreaksTargetAbilities => {}
     }
 }
 
@@ -90,7 +127,7 @@ fn register_defense_handlers(
     callback: crate::EffectCallback,
 ) {
     for event in [BattleEvent::ModifyDefense, BattleEvent::ModifySourceDefense] {
-        registry.register(event, source, order, callback);
+        registry.register_suppressible(event, source, order, callback);
     }
 }
 
@@ -176,6 +213,73 @@ fn full_hp_damage_reduction(
     Ok(())
 }
 
+fn statused_speed(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = matching_source(invocation, context) else {
+        return Ok(());
+    };
+    if pokemon(state, owner)?.status.is_some() {
+        modify_integer(dispatch, 3, 2)?;
+    }
+    Ok(())
+}
+
+fn compensate_paralysis_speed(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = matching_source(invocation, context) else {
+        return Ok(());
+    };
+    if pokemon(state, owner)?.status == Some(crate::MajorStatus::Paralysis) {
+        modify_integer(dispatch, 2, 1)?;
+    }
+    Ok(())
+}
+
+fn increase_critical_ratio(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if matching_source(invocation, context).is_some() {
+        dispatch.value = EventValue::Integer(integer(dispatch)?.saturating_add(1));
+    }
+    Ok(())
+}
+
+fn prevent_critical_hit(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if matching_target(invocation, context).is_some() {
+        boolean(dispatch)?;
+        dispatch.value = EventValue::Boolean(false);
+    }
+    Ok(())
+}
+
+fn boost_critical_damage(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if context.critical && matching_source(invocation, context).is_some() {
+        modify_integer(dispatch, 3, 2)?;
+    }
+    Ok(())
+}
+
 fn matching_source(invocation: &EffectInvocation, context: &EventContext) -> Option<PokemonRef> {
     let owner = owner_pokemon(invocation)?;
     (Some(owner) == context.source).then_some(owner)
@@ -229,6 +333,15 @@ fn integer(dispatch: &EventDispatch) -> Result<i64, BattleError> {
     }
 }
 
+fn boolean(dispatch: &EventDispatch) -> Result<bool, BattleError> {
+    match dispatch.value {
+        EventValue::Boolean(value) => Ok(value),
+        EventValue::None | EventValue::Integer(_) => Err(BattleError::InvalidState(
+            "ability modifier received a non-boolean relay".to_owned(),
+        )),
+    }
+}
+
 fn modify_integer(
     dispatch: &mut EventDispatch,
     numerator: i64,
@@ -239,10 +352,6 @@ fn modify_integer(
     dispatch.value =
         EventValue::Integer(value.saturating_mul(modifier).saturating_add(2047) / 4096);
     Ok(())
-}
-
-pub(crate) fn ignores_burn_attack_penalty(behavior: Option<AbilityBehavior>) -> bool {
-    behavior == Some(AbilityBehavior::StatusedAttack)
 }
 
 #[cfg(test)]
@@ -303,6 +412,7 @@ mod tests {
             source: Some(PokemonRef::new(SideId::P1, PokemonIndex::new(0))),
             target: Some(PokemonRef::new(SideId::P2, PokemonIndex::new(0))),
             move_id: Some(MoveId::new(1)),
+            ..EventContext::default()
         }
     }
 
@@ -323,9 +433,8 @@ mod tests {
         let huge_power = AbilityId::new(10);
         let technician = AbilityId::new(11);
         let pure_power = AbilityId::new(12);
-        let mut registry = EffectRegistry::new();
-        register(
-            &mut registry,
+        let registry = crate::conditions::composed_registry(
+            &EffectRegistry::new(),
             [
                 AbilityHandler::new(huge_power, AbilityBehavior::DoubleAttack),
                 AbilityHandler::new(pure_power, AbilityBehavior::DoubleAttack),
@@ -383,9 +492,8 @@ mod tests {
         let marvel_scale = AbilityId::new(21);
         let multiscale = AbilityId::new(22);
         let fur_coat = AbilityId::new(24);
-        let mut registry = EffectRegistry::new();
-        register(
-            &mut registry,
+        let registry = crate::conditions::composed_registry(
+            &EffectRegistry::new(),
             [
                 AbilityHandler::new(guts, AbilityBehavior::StatusedAttack),
                 AbilityHandler::new(marvel_scale, AbilityBehavior::StatusedDefense),
@@ -473,5 +581,88 @@ mod tests {
             ),
             EventValue::Integer(51)
         );
+    }
+
+    #[test]
+    fn multiple_descriptors_and_critical_handlers_compose_without_identity_branches() {
+        let quick_feet = AbilityId::new(30);
+        let super_luck = AbilityId::new(31);
+        let battle_armor = AbilityId::new(32);
+        let sniper = AbilityId::new(33);
+        let registry = crate::conditions::composed_registry(
+            &EffectRegistry::new(),
+            [
+                AbilityHandler::new(quick_feet, AbilityBehavior::StatusedSpeed),
+                AbilityHandler::new(quick_feet, AbilityBehavior::IgnoreParalysisSpeedPenalty),
+                AbilityHandler::new(super_luck, AbilityBehavior::IncreaseCriticalRatio),
+                AbilityHandler::new(battle_armor, AbilityBehavior::PreventCriticalHit),
+                AbilityHandler::new(sniper, AbilityBehavior::BoostCriticalDamage),
+            ],
+        );
+
+        let mut quick_feet_battle = battle(quick_feet, AbilityId::new(1));
+        quick_feet_battle
+            .side_mut(SideId::P1)
+            .pokemon_mut(PokemonIndex::new(0))
+            .unwrap()
+            .status = Some(MajorStatus::Paralysis);
+        assert_eq!(
+            dispatch_integer(
+                &registry,
+                &mut quick_feet_battle,
+                BattleEvent::ModifySpeed,
+                100,
+            ),
+            EventValue::Integer(150)
+        );
+
+        let mut super_luck_battle = battle(super_luck, AbilityId::new(1));
+        assert_eq!(
+            dispatch_integer(
+                &registry,
+                &mut super_luck_battle,
+                BattleEvent::ModifyCritRatio,
+                1,
+            ),
+            EventValue::Integer(2)
+        );
+
+        let mut armor_battle = battle(AbilityId::new(1), battle_armor);
+        let normal = registry
+            .dispatch(
+                &mut armor_battle,
+                BattleEvent::CriticalHit,
+                context(),
+                EventValue::Boolean(true),
+            )
+            .unwrap();
+        assert_eq!(normal.value, EventValue::Boolean(false));
+        let suppressed = registry
+            .dispatch(
+                &mut armor_battle,
+                BattleEvent::CriticalHit,
+                EventContext {
+                    suppress_target_ability: true,
+                    ..context()
+                },
+                EventValue::Boolean(true),
+            )
+            .unwrap();
+        assert_eq!(suppressed.value, EventValue::Boolean(true));
+
+        let mut sniper_battle = battle(sniper, AbilityId::new(1));
+        let critical_context = EventContext {
+            critical: true,
+            ..context()
+        };
+        let boosted = registry
+            .dispatch(
+                &mut sniper_battle,
+                BattleEvent::ModifyDamage,
+                critical_context,
+                EventValue::Integer(100),
+            )
+            .unwrap();
+        assert_eq!(boosted.value, EventValue::Integer(150));
     }
 }

@@ -34,11 +34,12 @@ impl CombatData for MoveFractionOverride<'_> {
         self.dex.pokemon_types(species, form)
     }
 
-    fn ability_behavior(
+    fn ability_has_behavior(
         &self,
         ability: rotom_core::AbilityId,
-    ) -> Option<rotom_core::AbilityBehavior> {
-        self.dex.ability_behavior(ability)
+        behavior: rotom_core::AbilityBehavior,
+    ) -> bool {
+        self.dex.ability_has_behavior(ability, behavior)
     }
 
     fn ability_handlers(&self) -> Vec<rotom_core::AbilityHandler> {
@@ -5370,6 +5371,29 @@ fn ability_test_damage(
     target_status: Option<MajorStatus>,
     chip_target: bool,
 ) -> u16 {
+    ability_test_damage_case(
+        dex,
+        source_ability,
+        move_name,
+        target_ability,
+        source_status,
+        target_status,
+        chip_target,
+        None,
+    )
+}
+
+#[allow(clippy::too_many_arguments)]
+fn ability_test_damage_case(
+    dex: &rotom_dex::DexData,
+    source_ability: &str,
+    move_name: &str,
+    target_ability: &str,
+    source_status: Option<MajorStatus>,
+    target_status: Option<MajorStatus>,
+    chip_target: bool,
+    expected_critical: Option<bool>,
+) -> u16 {
     let source = set_with_moves(dex, "medicham", source_ability, &[move_name]);
     let target = set_with_moves(dex, "snorlax", target_ability, &["recover"]);
     let attack = |target| PokemonAction::Move {
@@ -5421,7 +5445,20 @@ fn ability_test_damage(
                 .find(|entry| entry.reason == RngReason::DamageRoll)
                 .map(|entry| entry.result)
         });
-        if first_roll == Some(100) {
+        let first_critical = result.state.rng().trace().and_then(|trace| {
+            trace
+                .iter()
+                .find(|entry| entry.reason == RngReason::CriticalHit)
+                .map(|entry| match entry.operation {
+                    RngOperation::Chance { numerator, .. } => entry.result < numerator,
+                    _ => unreachable!("critical-hit traces use chance operations"),
+                })
+        });
+        let expected_critical_matches = match expected_critical {
+            Some(expected) => first_critical == Some(expected),
+            None => true,
+        };
+        if first_roll == Some(100) && expected_critical_matches {
             return result
                 .diagnostics
                 .turn
@@ -5440,6 +5477,86 @@ fn ability_test_damage(
         }
     }
     panic!("no seed produced a 100% first damage roll")
+}
+
+fn ability_test_speed(dex: &rotom_dex::DexData, ability: &str, status: MajorStatus) -> u16 {
+    let source = set_with_moves(dex, "medicham", ability, &["tackle"]);
+    let target = set_with_moves(dex, "snorlax", "immunity", &["recover"]);
+    let battle = selected_battle_for_sets(dex, &source, &target, 0, false);
+    let mut builder = BattleStateBuilder::from_state(battle).unwrap();
+    builder
+        .edit_pokemon(
+            PokemonRef::new(SideId::P1, PokemonIndex::new(0)),
+            |pokemon| pokemon.status = Some(status),
+        )
+        .unwrap();
+    let battle = builder.build().unwrap();
+    let action = TurnChoice {
+        actions: [
+            use_move(0, ActionTarget::Foe(ActiveSlot::Left)),
+            use_move(0, ActionTarget::Foe(ActiveSlot::Right)),
+        ],
+    };
+    let queue = battle
+        .inspect_turn_queue(
+            action,
+            TurnChoice {
+                actions: [
+                    use_move(0, ActionTarget::Automatic),
+                    use_move(0, ActionTarget::Automatic),
+                ],
+            },
+            &Mechanics::new(dex, &EffectRegistry::new()),
+        )
+        .unwrap();
+    queue
+        .actions
+        .iter()
+        .find(|action| action.side == SideId::P1 && action.slot == ActiveSlot::Left)
+        .unwrap()
+        .speed
+}
+
+fn ability_test_critical_ratio(dex: &rotom_dex::DexData, ability: &str) -> i64 {
+    let source = set_with_moves(dex, "medicham", ability, &["dragonclaw"]);
+    let target = set_with_moves(dex, "snorlax", "immunity", &["recover"]);
+    let action = JointAction::Turn {
+        p1: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Foe(ActiveSlot::Left)),
+                use_move(0, ActionTarget::Foe(ActiveSlot::Right)),
+            ],
+        },
+        p2: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Automatic),
+                use_move(0, ActionTarget::Automatic),
+            ],
+        },
+    };
+    let battle = selected_battle_for_sets(dex, &source, &target, 0, false);
+    let result = step(
+        &battle,
+        &action,
+        &Mechanics::new(dex, &EffectRegistry::new()),
+    )
+    .unwrap();
+    result
+        .diagnostics
+        .turn
+        .unwrap()
+        .events
+        .into_iter()
+        .find_map(|event| {
+            (event.event == BattleEvent::ModifyCritRatio
+                && event.context.source == Some(PokemonRef::new(SideId::P1, PokemonIndex::new(0))))
+            .then_some(event.value)
+        })
+        .and_then(|value| match value {
+            rotom_core::EventValue::Integer(value) => Some(value),
+            _ => None,
+        })
+        .unwrap()
 }
 
 #[test]
@@ -5552,40 +5669,119 @@ fn ability_modifier_damage_matches_pinned_showdown_fixture() {
     .unwrap();
     assert_eq!(fixture["showdown_commit"], SHOWDOWN_COMMIT);
     for case in fixture["cases"].as_array().unwrap() {
-        let ability = case["ability"].as_str().unwrap();
-        let defensive = matches!(ability, "furcoat" | "marvelscale" | "multiscale");
-        let source_ability = if defensive { "telepathy" } else { ability };
-        let target_ability = if defensive { ability } else { "immunity" };
         let status = |value: &serde_json::Value| match value.as_str() {
             Some("brn") => Some(MajorStatus::Burn),
+            Some("par") => Some(MajorStatus::Paralysis),
             Some("psn") => Some(MajorStatus::Poison),
             Some(other) => panic!("unsupported fixture status {other}"),
             None => None,
         };
-        let actual = ability_test_damage(
-            &dex,
-            source_ability,
-            case["move"].as_str().unwrap(),
-            target_ability,
-            status(&case["source_status"]),
-            status(&case["target_status"]),
-            false,
-        );
-        assert_eq!(
-            actual,
-            u16::try_from(case["damage"].as_u64().unwrap()).unwrap(),
-            "{}",
-            case["id"].as_str().unwrap()
-        );
+        let actual = match case["operation"].as_str().unwrap() {
+            "damage" => u64::from(ability_test_damage_case(
+                &dex,
+                case["source_ability"].as_str().unwrap(),
+                case["move"].as_str().unwrap(),
+                case["target_ability"].as_str().unwrap(),
+                status(&case["source_status"]),
+                status(&case["target_status"]),
+                false,
+                case["critical"].as_bool(),
+            )),
+            "speed" => u64::from(ability_test_speed(
+                &dex,
+                case["ability"].as_str().unwrap(),
+                status(&case["status"]).unwrap(),
+            )),
+            "critical_ratio" => u64::try_from(ability_test_critical_ratio(
+                &dex,
+                case["ability"].as_str().unwrap(),
+            ))
+            .unwrap(),
+            operation => panic!("unsupported ability fixture operation {operation}"),
+        };
+        let expected = match case["operation"].as_str().unwrap() {
+            "damage" => case["damage"].as_u64().unwrap(),
+            "speed" => case["speed"].as_u64().unwrap(),
+            "critical_ratio" => case["critical_ratio"].as_u64().unwrap(),
+            _ => unreachable!(),
+        };
+        assert_eq!(actual, expected, "{}", case["id"].as_str().unwrap());
     }
+}
+
+#[test]
+fn ability_batch_interactions_replay_deterministically() {
+    let dex = champions_reg_mc().unwrap();
+    let p1 = four_member_team(
+        set_with_moves(&dex, "medicham", "quickfeet", &["tackle"]),
+        set_with_moves(&dex, "medicham", "superluck", &["dragonclaw"]),
+    );
+    let p2 = four_member_team(
+        set_with_moves(&dex, "snorlax", "battlearmor", &["recover"]),
+        set_with_moves(&dex, "snorlax", "shellarmor", &["recover"]),
+    );
+    let action = JointAction::Turn {
+        p1: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Foe(ActiveSlot::Left)),
+                use_move(0, ActionTarget::Foe(ActiveSlot::Right)),
+            ],
+        },
+        p2: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Automatic),
+                use_move(0, ActionTarget::Automatic),
+            ],
+        },
+    };
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let (state, first) = (0..10_000)
+        .find_map(|seed| {
+            let battle = selected_battle_for_teams(&dex, &p1, &p2, seed);
+            let mut builder = BattleStateBuilder::from_state(battle).unwrap();
+            builder
+                .edit_pokemon(
+                    PokemonRef::new(SideId::P1, PokemonIndex::new(0)),
+                    |pokemon| pokemon.status = Some(MajorStatus::Paralysis),
+                )
+                .unwrap();
+            let state = builder.build().unwrap();
+            let result = step(&state, &action, &mechanics).unwrap();
+            let armor_prevented_critical = result
+                .diagnostics
+                .turn
+                .as_ref()
+                .unwrap()
+                .events
+                .iter()
+                .any(|event| {
+                    event.event == BattleEvent::CriticalHit
+                        && event.context.source
+                            == Some(PokemonRef::new(SideId::P1, PokemonIndex::new(1)))
+                        && event.value == rotom_core::EventValue::Boolean(false)
+                });
+            armor_prevented_critical.then_some((state, result))
+        })
+        .expect("a seed should exercise Shell Armor critical prevention");
+
+    let quick_feet_speed = first
+        .diagnostics
+        .queue_events
+        .iter()
+        .find(|event| {
+            event.event == BattleEvent::ModifySpeed
+                && event.context.source == Some(PokemonRef::new(SideId::P1, PokemonIndex::new(0)))
+        })
+        .unwrap();
+    assert_eq!(quick_feet_speed.value, rotom_core::EventValue::Integer(150));
+    assert_eq!(step(&state, &action, &mechanics).unwrap(), first);
 }
 
 #[test]
 fn ability_handler_registration_is_declarative_and_leaves_other_abilities_unsupported() {
     let dex = champions_reg_mc().unwrap();
-    let mut handlers = dex.ability_handlers();
-    handlers.sort_by_key(|handler| handler.ability);
-    assert_eq!(handlers.len(), 7);
+    let handlers = dex.ability_handlers();
+    assert_eq!(handlers.len(), 14);
 
     for (id, expected) in [
         ("hugepower", rotom_core::AbilityBehavior::DoubleAttack),
@@ -5598,16 +5794,37 @@ fn ability_handler_registration_is_declarative_and_leaves_other_abilities_unsupp
             "multiscale",
             rotom_core::AbilityBehavior::FullHpDamageReduction,
         ),
+        ("quickfeet", rotom_core::AbilityBehavior::StatusedSpeed),
+        (
+            "quickfeet",
+            rotom_core::AbilityBehavior::IgnoreParalysisSpeedPenalty,
+        ),
+        (
+            "superluck",
+            rotom_core::AbilityBehavior::IncreaseCriticalRatio,
+        ),
+        (
+            "battlearmor",
+            rotom_core::AbilityBehavior::PreventCriticalHit,
+        ),
+        (
+            "shellarmor",
+            rotom_core::AbilityBehavior::PreventCriticalHit,
+        ),
+        ("sniper", rotom_core::AbilityBehavior::BoostCriticalDamage),
+        (
+            "moldbreaker",
+            rotom_core::AbilityBehavior::BreaksTargetAbilities,
+        ),
     ] {
         let ability = dex.resolve_ability(id).unwrap().0;
-        assert_eq!(dex.ability_behavior(ability), Some(expected));
+        assert!(dex.ability_has_behavior(ability, expected));
         assert!(handlers
             .iter()
             .any(|handler| handler == &rotom_core::AbilityHandler::new(ability, expected)));
     }
 
     let unsupported = dex.resolve_ability("pressure").unwrap().0;
-    assert_eq!(dex.ability_behavior(unsupported), None);
     assert!(!handlers
         .iter()
         .any(|handler| handler.ability == unsupported));

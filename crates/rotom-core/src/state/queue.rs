@@ -148,6 +148,7 @@ impl BattleState {
                 source: Some(PokemonRef::new(side, pokemon)),
                 target: action_target(self, side, slot, action),
                 move_id,
+                ..EventContext::default()
             };
             let priority = if order == ActionOrder::Move {
                 let priority_event = effects.dispatch(

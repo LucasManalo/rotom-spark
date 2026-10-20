@@ -192,16 +192,21 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/ability-modifiers.json#battle-armor-critical-prevention",
+        "file:crates/rotom-core/src/abilities.rs",
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture",
         "species/falinks/ability-slot/0",
-        "species/perrserker/ability-slot/0"
+        "species/perrserker/ability-slot/0",
+        "unit:crates/rotom-core/src/abilities.rs#multiple_descriptors_and_critical_handlers_compose_without_identity_branches"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "berserk",
@@ -1973,6 +1978,10 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/ability-modifiers.json#mold-breaker-bypasses-battle-armor",
+        "file:crates/rotom-core/src/event.rs",
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture",
         "species/basculegion/ability-slot/H",
         "species/basculegionf/ability-slot/H",
         "species/excadrill/ability-slot/H",
@@ -1980,15 +1989,16 @@
         "species/pangoro/ability-slot/1",
         "species/pinsir/ability-slot/1",
         "species/rampardos/ability-slot/0",
-        "species/tinkaton/ability-slot/0"
+        "species/tinkaton/ability-slot/0",
+        "unit:crates/rotom-core/src/abilities.rs#multiple_descriptors_and_critical_handlers_compose_without_identity_branches"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "moody",
@@ -2552,15 +2562,20 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/jolteon/ability-slot/H"
+        "differential:data/fixtures/differential/ability-modifiers.json#quick-feet-paralysis",
+        "file:crates/rotom-core/src/abilities.rs",
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_batch_interactions_replay_deterministically",
+        "species/jolteon/ability-slot/H",
+        "unit:crates/rotom-core/src/abilities.rs#multiple_descriptors_and_critical_handlers_compose_without_identity_branches"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "raindish",
@@ -3000,18 +3015,23 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/ability-modifiers.json#shell-armor-critical-prevention",
+        "file:crates/rotom-core/src/abilities.rs",
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_batch_interactions_replay_deterministically",
         "species/goodrahisui/ability-slot/1",
         "species/samurott/ability-slot/H",
         "species/torkoal/ability-slot/H",
-        "species/torterra/ability-slot/H"
+        "species/torterra/ability-slot/H",
+        "unit:crates/rotom-core/src/abilities.rs#multiple_descriptors_and_critical_handlers_compose_without_identity_branches"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "shielddust",
@@ -3086,18 +3106,23 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/ability-modifiers.json#sniper-critical",
+        "file:crates/rotom-core/src/abilities.rs",
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture",
         "species/ariados/ability-slot/H",
         "species/barbaracle/ability-slot/1",
         "species/beedrill/ability-slot/H",
-        "species/inteleon/ability-slot/H"
+        "species/inteleon/ability-slot/H",
+        "unit:crates/rotom-core/src/abilities.rs#multiple_descriptors_and_critical_handlers_compose_without_identity_branches"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "snowcloak",
@@ -3462,15 +3487,20 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/absol/ability-slot/1"
+        "differential:data/fixtures/differential/ability-modifiers.json#super-luck-critical-ratio",
+        "file:crates/rotom-core/src/abilities.rs",
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_batch_interactions_replay_deterministically",
+        "species/absol/ability-slot/1",
+        "unit:crates/rotom-core/src/abilities.rs#multiple_descriptors_and_critical_handlers_compose_without_identity_branches"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "supersweetsyrup",
@@ -47364,18 +47394,18 @@
       "ability": {
         "total": 215,
         "implementation": {
-          "unsupported": 208,
+          "unsupported": 202,
           "partial": 0,
-          "implemented": 7
+          "implemented": 13
         },
         "verification": {
-          "not_tested": 208,
+          "not_tested": 202,
           "unit_tested": 0,
-          "differential_verified": 7
+          "differential_verified": 13
         },
         "interaction_verification": {
-          "not_tested": 208,
-          "unit_tested": 7,
+          "not_tested": 202,
+          "unit_tested": 13,
           "differential_verified": 0
         },
         "reachability": {

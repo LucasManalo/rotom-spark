@@ -383,8 +383,8 @@ pub trait CombatData {
     }
 
     /// Resolves the native behavior family for one stable ability identity.
-    fn ability_behavior(&self, _ability: AbilityId) -> Option<crate::AbilityBehavior> {
-        None
+    fn ability_has_behavior(&self, _ability: AbilityId, _behavior: crate::AbilityBehavior) -> bool {
+        false
     }
 
     /// Enumerates stable ability identities with implemented native handlers.
@@ -577,6 +577,7 @@ struct MoveExecutionContext {
     primary_effects: Vec<PrimaryMoveEffect>,
     secondary_effects: Vec<SecondaryMoveEffect>,
     self_effect: Option<SelfMoveEffect>,
+    suppress_target_ability: bool,
 }
 
 #[derive(Clone, Copy)]
@@ -750,6 +751,8 @@ impl BattleState {
             source: Some(move_context.source),
             target: move_context.original_target.map(|target| target.target),
             move_id: Some(move_context.move_id),
+            suppress_target_ability: move_context.suppress_target_ability,
+            critical: false,
         };
         let before_move =
             effects.dispatch(self, BattleEvent::BeforeMove, context, EventValue::None)?;
@@ -838,6 +841,10 @@ impl BattleState {
             primary_effects,
             secondary_effects,
             self_effect,
+            suppress_target_ability: data.ability_has_behavior(
+                source.ability,
+                crate::AbilityBehavior::BreaksTargetAbilities,
+            ),
         })
     }
 
@@ -898,10 +905,12 @@ impl BattleState {
         let mut self_effect_applied = false;
         for (index, target_context) in eligible {
             let target = target_context.target;
-            let context = EventContext {
+            let mut context = EventContext {
                 source: Some(move_context.source),
                 target: Some(target),
                 move_id: Some(move_context.move_id),
+                suppress_target_ability: move_context.suppress_target_ability,
+                critical: false,
             };
             let mut target_hit = false;
             for hit_index in 0..hit_count {
@@ -933,6 +942,7 @@ impl BattleState {
                     spread,
                     resolution,
                 )?;
+                context.critical = damage.critical_modifier != Modifier::NEUTRAL;
                 let modify_damage = effects.dispatch(
                     self,
                     BattleEvent::ModifyDamage,
@@ -1035,6 +1045,8 @@ impl BattleState {
             source: Some(move_context.source),
             target: move_context.targets.last().map(|target| target.target),
             move_id: Some(move_context.move_id),
+            suppress_target_ability: move_context.suppress_target_ability,
+            critical: false,
         };
         resolution.events.push(effects.dispatch(
             self,
@@ -1130,6 +1142,8 @@ impl BattleState {
             source: Some(context.source),
             target: Some(context.source),
             move_id: Some(context.move_id),
+            suppress_target_ability: context.suppress_target_ability,
+            critical: false,
         };
         let _ = self.apply_damage(
             effects,
@@ -1258,6 +1272,8 @@ impl BattleState {
                 source: Some(context.source),
                 target: Some(target_context.target),
                 move_id: Some(context.move_id),
+                suppress_target_ability: context.suppress_target_ability,
+                critical: false,
             };
             resolution.events.push(effects.dispatch(
                 self,
@@ -1353,6 +1369,8 @@ impl BattleState {
                 source: Some(context.source),
                 target: context.targets.last().map(|target| target.target),
                 move_id: Some(context.move_id),
+                suppress_target_ability: context.suppress_target_ability,
+                critical: false,
             },
             EventValue::None,
         )?);
@@ -1380,6 +1398,8 @@ impl BattleState {
                 source: Some(move_context.source),
                 target: Some(target),
                 move_id: Some(move_context.move_id),
+                suppress_target_ability: move_context.suppress_target_ability,
+                critical: false,
             };
             let try_hit = effects.dispatch(
                 self,
@@ -1510,6 +1530,8 @@ impl BattleState {
             source: Some(move_context.source),
             target: Some(move_context.source),
             move_id: Some(move_context.move_id),
+            suppress_target_ability: move_context.suppress_target_ability,
+            critical: false,
         };
         let applied = match data.move_intrinsic(move_context.move_id) {
             MoveIntrinsic::Protect => {
@@ -1676,6 +1698,8 @@ impl BattleState {
                 source: Some(move_context.source),
                 target,
                 move_id: Some(move_context.move_id),
+                suppress_target_ability: move_context.suppress_target_ability,
+                critical: false,
             };
             let mut applied = false;
             for effect in &move_context.primary_effects {
@@ -1732,6 +1756,8 @@ impl BattleState {
                 source: Some(move_context.source),
                 target: move_context.targets.last().map(|target| target.target),
                 move_id: Some(move_context.move_id),
+                suppress_target_ability: move_context.suppress_target_ability,
+                critical: false,
             },
             EventValue::None,
         )?);
@@ -1775,6 +1801,8 @@ impl BattleState {
                         source: Some(context.source),
                         target: Some(target),
                         move_id: Some(context.move_id),
+                        suppress_target_ability: context.suppress_target_ability,
+                        critical: false,
                     },
                     EventValue::Boolean(true),
                 )?;
@@ -2245,7 +2273,6 @@ impl BattleState {
         let move_data = move_context.move_data;
         let source_species = move_context.source_species;
         let source_form = move_context.source_form;
-        let critical = roll_critical(&mut self.rng, move_data.crit_ratio)?;
         let source_types = data
             .pokemon_types(source_species, source_form)
             .ok_or_else(|| BattleError::DataMismatch("missing source type data".to_owned()))?;
@@ -2263,6 +2290,33 @@ impl BattleState {
             .pokemon(source.pokemon)
             .ok_or_else(|| BattleError::InvalidState("damage source is out of bounds".to_owned()))?
             .clone();
+        let mut event_context = EventContext {
+            source: Some(source),
+            target: Some(target),
+            move_id: Some(move_id),
+            suppress_target_ability: move_context.suppress_target_ability,
+            critical: false,
+        };
+        let crit_ratio_event = effects.dispatch(
+            self,
+            BattleEvent::ModifyCritRatio,
+            event_context,
+            EventValue::Integer(i64::from(move_data.crit_ratio)),
+        )?;
+        let crit_ratio = integer_relay_u8(&crit_ratio_event, "ModifyCritRatio")?.min(4);
+        resolution.events.push(crit_ratio_event);
+        let mut critical = roll_critical(&mut self.rng, crit_ratio)?;
+        if critical {
+            let critical_hit = effects.dispatch(
+                self,
+                BattleEvent::CriticalHit,
+                event_context,
+                EventValue::Boolean(true),
+            )?;
+            critical = boolean_relay(&critical_hit, "CriticalHit")?;
+            resolution.events.push(critical_hit);
+        }
+        event_context.critical = critical;
         let mut adjusted_move = move_data;
         self.apply_field_base_power(
             data,
@@ -2276,11 +2330,6 @@ impl BattleState {
         if adjusted_move.prior_effect == PriorMoveEffect::Facade && facade_active {
             adjusted_move.base_power = adjusted_move.base_power.saturating_mul(2);
         }
-        let event_context = EventContext {
-            source: Some(source),
-            target: Some(target),
-            move_id: Some(move_id),
-        };
         let base_power = effects.dispatch(
             self,
             BattleEvent::ModifyBasePower,
@@ -2333,8 +2382,9 @@ impl BattleState {
                 spread,
                 ignore_burn: (adjusted_move.prior_effect == PriorMoveEffect::Facade
                     && facade_active)
-                    || crate::abilities::ignores_burn_attack_penalty(
-                        data.ability_behavior(source_state.ability),
+                    || data.ability_has_behavior(
+                        source_state.ability,
+                        crate::AbilityBehavior::StatusedAttack,
                     ),
             },
         )?;
@@ -2569,6 +2619,7 @@ impl BattleState {
             source: Some(PokemonRef::new(side, outgoing)),
             target: Some(PokemonRef::new(side, incoming)),
             move_id: None,
+            ..EventContext::default()
         };
         let switch_out =
             effects.dispatch(self, BattleEvent::SwitchOut, context, EventValue::None)?;
@@ -2585,6 +2636,7 @@ impl BattleState {
                 source: Some(PokemonRef::new(side, incoming)),
                 target: Some(PokemonRef::new(side, outgoing)),
                 move_id: None,
+                ..EventContext::default()
             },
             EventValue::None,
         )?);
@@ -2864,6 +2916,7 @@ impl BattleState {
                 source: None,
                 target: Some(pokemon),
                 move_id: None,
+                ..EventContext::default()
             };
             resolution.events.push(effects.dispatch(
                 self,
@@ -3236,6 +3289,26 @@ fn integer_relay_u16(dispatch: &EventDispatch, name: &str) -> Result<u16, Battle
     u16::try_from(value).map_err(|_| {
         BattleError::InvalidState(format!("{name} produced a value outside the u16 range"))
     })
+}
+
+fn integer_relay_u8(dispatch: &EventDispatch, name: &str) -> Result<u8, BattleError> {
+    let EventValue::Integer(value) = dispatch.value else {
+        return Err(BattleError::InvalidState(format!(
+            "{name} replaced its integer relay with an incompatible value"
+        )));
+    };
+    u8::try_from(value).map_err(|_| {
+        BattleError::InvalidState(format!("{name} produced a value outside the u8 range"))
+    })
+}
+
+fn boolean_relay(dispatch: &EventDispatch, name: &str) -> Result<bool, BattleError> {
+    let EventValue::Boolean(value) = dispatch.value else {
+        return Err(BattleError::InvalidState(format!(
+            "{name} replaced its boolean relay with an incompatible value"
+        )));
+    };
+    Ok(value)
 }
 
 fn integer_relay_u32(dispatch: &EventDispatch, name: &str) -> Result<u32, BattleError> {

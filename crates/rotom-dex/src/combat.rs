@@ -305,8 +305,11 @@ impl CombatData for DexData {
         }
     }
 
-    fn ability_behavior(&self, ability: AbilityId) -> Option<AbilityBehavior> {
-        implemented_ability_behavior(self.ability(ability)?.id.as_str())
+    fn ability_has_behavior(&self, ability: AbilityId, behavior: AbilityBehavior) -> bool {
+        self.ability(ability).is_some_and(|ability| {
+            implemented_ability_behaviors(ability.id.as_str())
+                .any(|candidate| candidate == behavior)
+        })
     }
 
     fn ability_handlers(&self) -> Vec<AbilityHandler> {
@@ -331,12 +334,19 @@ const IMPLEMENTED_ABILITY_BEHAVIORS: &[(&str, AbilityBehavior)] = &[
     ("marvelscale", AbilityBehavior::StatusedDefense),
     ("technician", AbilityBehavior::LowPowerBoost),
     ("multiscale", AbilityBehavior::FullHpDamageReduction),
+    ("quickfeet", AbilityBehavior::StatusedSpeed),
+    ("quickfeet", AbilityBehavior::IgnoreParalysisSpeedPenalty),
+    ("superluck", AbilityBehavior::IncreaseCriticalRatio),
+    ("battlearmor", AbilityBehavior::PreventCriticalHit),
+    ("shellarmor", AbilityBehavior::PreventCriticalHit),
+    ("sniper", AbilityBehavior::BoostCriticalDamage),
+    ("moldbreaker", AbilityBehavior::BreaksTargetAbilities),
 ];
 
-fn implemented_ability_behavior(id: &str) -> Option<AbilityBehavior> {
+fn implemented_ability_behaviors(id: &str) -> impl Iterator<Item = AbilityBehavior> + '_ {
     IMPLEMENTED_ABILITY_BEHAVIORS
         .iter()
-        .find_map(|(key, behavior)| (*key == id).then_some(*behavior))
+        .filter_map(move |(key, behavior)| (*key == id).then_some(*behavior))
 }
 
 fn move_execution_requirements(data: &MoveData) -> (MoveOperation, MoveCapabilities) {

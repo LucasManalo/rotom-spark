@@ -2,16 +2,20 @@
   "showdown_commit": "b79ce06d06b8f0dc8de8bb348bc9cab5d931553f",
   "format": "gen9championsvgc2026regmc",
   "methodology": {
-    "source": "pinned Battle.actions.getDamage with resolved Champions data",
+    "source": "pinned Battle.actions.getDamage, Pokemon.getStat, and ModifyCritRatio with resolved Champions data",
     "damage_roll_percent": 100,
-    "critical_hit": false,
+    "critical_hit": "per_case",
     "full_transition_comparison": false
   },
   "cases": [
     {
       "id": "huge-power-physical",
       "ability": "hugepower",
+      "operation": "damage",
+      "source_ability": "hugepower",
+      "target_ability": "immunity",
       "move": "dragonclaw",
+      "critical": false,
       "source_status": null,
       "target_status": null,
       "damage": 68
@@ -19,7 +23,11 @@
     {
       "id": "huge-power-special-unaffected",
       "ability": "hugepower",
+      "operation": "damage",
+      "source_ability": "hugepower",
+      "target_ability": "immunity",
       "move": "dragonpulse",
+      "critical": false,
       "source_status": null,
       "target_status": null,
       "damage": 25
@@ -27,7 +35,11 @@
     {
       "id": "pure-power-physical",
       "ability": "purepower",
+      "operation": "damage",
+      "source_ability": "purepower",
+      "target_ability": "immunity",
       "move": "dragonclaw",
+      "critical": false,
       "source_status": null,
       "target_status": null,
       "damage": 68
@@ -35,7 +47,11 @@
     {
       "id": "guts-burn",
       "ability": "guts",
+      "operation": "damage",
+      "source_ability": "guts",
+      "target_ability": "immunity",
       "move": "dragonclaw",
+      "critical": false,
       "source_status": "brn",
       "target_status": null,
       "damage": 51
@@ -43,7 +59,11 @@
     {
       "id": "fur-coat-physical-defense",
       "ability": "furcoat",
+      "operation": "damage",
+      "source_ability": "telepathy",
+      "target_ability": "furcoat",
       "move": "dragonclaw",
+      "critical": false,
       "source_status": null,
       "target_status": null,
       "damage": 18
@@ -51,7 +71,11 @@
     {
       "id": "marvel-scale-statused",
       "ability": "marvelscale",
+      "operation": "damage",
+      "source_ability": "telepathy",
+      "target_ability": "marvelscale",
       "move": "dragonclaw",
+      "critical": false,
       "source_status": null,
       "target_status": "psn",
       "damage": 24
@@ -59,7 +83,11 @@
     {
       "id": "technician-threshold",
       "ability": "technician",
+      "operation": "damage",
+      "source_ability": "technician",
+      "target_ability": "immunity",
       "move": "tackle",
+      "critical": false,
       "source_status": null,
       "target_status": null,
       "damage": 26
@@ -67,10 +95,75 @@
     {
       "id": "multiscale-full-hp",
       "ability": "multiscale",
+      "operation": "damage",
+      "source_ability": "telepathy",
+      "target_ability": "multiscale",
       "move": "dragonclaw",
+      "critical": false,
       "source_status": null,
       "target_status": null,
       "damage": 17
+    },
+    {
+      "id": "sniper-critical",
+      "ability": "sniper",
+      "operation": "damage",
+      "source_ability": "sniper",
+      "target_ability": "immunity",
+      "move": "dragonclaw",
+      "critical": true,
+      "source_status": null,
+      "target_status": null,
+      "damage": 78
+    },
+    {
+      "id": "battle-armor-critical-prevention",
+      "ability": "battlearmor",
+      "operation": "damage",
+      "source_ability": "telepathy",
+      "target_ability": "battlearmor",
+      "move": "dragonclaw",
+      "critical": true,
+      "source_status": null,
+      "target_status": null,
+      "damage": 35
+    },
+    {
+      "id": "shell-armor-critical-prevention",
+      "ability": "shellarmor",
+      "operation": "damage",
+      "source_ability": "telepathy",
+      "target_ability": "shellarmor",
+      "move": "dragonclaw",
+      "critical": true,
+      "source_status": null,
+      "target_status": null,
+      "damage": 35
+    },
+    {
+      "id": "mold-breaker-bypasses-battle-armor",
+      "ability": "moldbreaker",
+      "operation": "damage",
+      "source_ability": "moldbreaker",
+      "target_ability": "battlearmor",
+      "move": "dragonclaw",
+      "critical": true,
+      "source_status": null,
+      "target_status": null,
+      "damage": 52
+    },
+    {
+      "id": "quick-feet-paralysis",
+      "ability": "quickfeet",
+      "operation": "speed",
+      "status": "par",
+      "speed": 150
+    },
+    {
+      "id": "super-luck-critical-ratio",
+      "ability": "superluck",
+      "operation": "critical_ratio",
+      "critical_ratio": 2
     }
   ]
 }
