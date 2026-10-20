@@ -942,7 +942,7 @@ impl BattleState {
                     move_slot: move_context.queued.move_slot,
                     damage,
                 });
-                let (applied_hp_loss, fainted) = self.apply_damage(
+                let (applied_hp_loss, fainted) = self.apply_hp_damage(
                     effects,
                     DamageApplication {
                         context,
@@ -973,7 +973,7 @@ impl BattleState {
                 target_hit = true;
                 any_hit = true;
                 self.apply_drain(move_context, applied_hp_loss)?;
-                if hit_count > 1 || !self_effect_applied {
+                if !self_effect_applied {
                     self.apply_self_move_effect(
                         data,
                         effects,
@@ -992,6 +992,17 @@ impl BattleState {
                     resolution,
                 )?;
                 if fainted {
+                    self.settle_faint(
+                        effects,
+                        DamageApplication {
+                            context,
+                            side: target.side,
+                            slot: target_context.slot,
+                            pokemon: target.pokemon,
+                            damage: 0,
+                        },
+                        resolution,
+                    )?;
                     break;
                 }
             }
@@ -1164,10 +1175,10 @@ impl BattleState {
         resolution: &mut TurnResolution,
     ) -> Result<(), BattleError> {
         for secondary in &context.secondary_effects {
-            let applies =
-                self.rng
-                    .chance(RngReason::SecondaryEffect, u64::from(secondary.chance), 100)?;
-            if !applies {
+            // Showdown samples `random(100)` for every secondary, then compares
+            // the sampled value with the declared chance.
+            let roll = self.rng.range(RngReason::SecondaryEffect, 0..100)?;
+            if roll >= u64::from(secondary.chance) {
                 continue;
             }
             for operation in &secondary.effects {
@@ -1259,7 +1270,7 @@ impl BattleState {
                 move_slot: context.queued.move_slot,
                 damage,
             });
-            let (applied_hp_loss, fainted) = self.apply_damage(
+            let (applied_hp_loss, fainted) = self.apply_hp_damage(
                 effects,
                 DamageApplication {
                     context: event_context,
@@ -1291,6 +1302,19 @@ impl BattleState {
                 target_context.target,
                 resolution,
             )?;
+            if fainted {
+                self.settle_faint(
+                    effects,
+                    DamageApplication {
+                        context: event_context,
+                        side: target_context.target.side,
+                        slot: target_context.slot,
+                        pokemon: target_context.target.pokemon,
+                        damage: 0,
+                    },
+                    resolution,
+                )?;
+            }
             any_hit = true;
         }
         resolution
@@ -2235,10 +2259,8 @@ impl BattleState {
             move_id,
             &mut adjusted_move,
         )?;
-        if adjusted_move.prior_effect == PriorMoveEffect::Facade
-            && source_state.status.is_some()
-            && source_state.status != Some(MajorStatus::Sleep)
-        {
+        let facade_active = facade_activates(source_state.status);
+        if adjusted_move.prior_effect == PriorMoveEffect::Facade && facade_active {
             adjusted_move.base_power = adjusted_move.base_power.saturating_mul(2);
         }
         let event_context = EventContext {
@@ -2296,7 +2318,7 @@ impl BattleState {
                 attack_override: Some(attack),
                 defense_override: Some(defense),
                 spread,
-                ignore_burn: adjusted_move.prior_effect == PriorMoveEffect::Facade,
+                ignore_burn: adjusted_move.prior_effect == PriorMoveEffect::Facade && facade_active,
             },
         )?;
         if let Some((numerator, denominator)) = crate::field_effects::screen_modifier(
@@ -2312,7 +2334,7 @@ impl BattleState {
         Ok(damage)
     }
 
-    fn apply_damage(
+    fn apply_hp_damage(
         &mut self,
         effects: &EffectRegistry,
         application: DamageApplication,
@@ -2321,7 +2343,7 @@ impl BattleState {
         let DamageApplication {
             context,
             side,
-            slot,
+            slot: _,
             pokemon,
             damage,
         } = application;
@@ -2338,7 +2360,27 @@ impl BattleState {
             .side(side)
             .pokemon(pokemon)
             .is_some_and(|target| target.current_hp == 0);
-        if fainted {
+        Ok((applied, fainted))
+    }
+
+    fn settle_faint(
+        &mut self,
+        effects: &EffectRegistry,
+        application: DamageApplication,
+        resolution: &mut TurnResolution,
+    ) -> Result<(), BattleError> {
+        let DamageApplication {
+            context,
+            side,
+            slot,
+            pokemon,
+            ..
+        } = application;
+        if self
+            .side(side)
+            .pokemon(pokemon)
+            .is_some_and(|target| target.current_hp == 0)
+        {
             resolution.events.push(effects.dispatch(
                 self,
                 BattleEvent::Faint,
@@ -2346,6 +2388,19 @@ impl BattleState {
                 EventValue::None,
             )?);
             self.process_faints(&[FaintTarget::new(side, slot)])?;
+        }
+        Ok(())
+    }
+
+    fn apply_damage(
+        &mut self,
+        effects: &EffectRegistry,
+        application: DamageApplication,
+        resolution: &mut TurnResolution,
+    ) -> Result<(u16, bool), BattleError> {
+        let (applied, fainted) = self.apply_hp_damage(effects, application, resolution)?;
+        if fainted {
+            self.settle_faint(effects, application, resolution)?;
         }
         Ok((applied, fainted))
     }
@@ -3133,6 +3188,18 @@ fn integer_relay_u32(dispatch: &EventDispatch, name: &str) -> Result<u32, Battle
     })
 }
 
+fn facade_activates(status: Option<MajorStatus>) -> bool {
+    matches!(
+        status,
+        Some(
+            MajorStatus::Burn
+                | MajorStatus::Paralysis
+                | MajorStatus::Poison
+                | MajorStatus::BadlyPoisoned
+        )
+    )
+}
+
 fn rounded_fraction(value: u32, fraction: EffectFraction) -> Result<u32, BattleError> {
     if fraction.denominator == 0 {
         return Err(BattleError::DataMismatch(
@@ -3370,6 +3437,21 @@ mod tests {
             defensive_stat: None,
             ignore_negative_offensive: false,
             ignore_positive_defensive: false,
+        }
+    }
+
+    #[test]
+    fn facade_only_activates_for_supported_major_statuses() {
+        for (status, expected) in [
+            (None, false),
+            (Some(MajorStatus::Burn), true),
+            (Some(MajorStatus::Paralysis), true),
+            (Some(MajorStatus::Poison), true),
+            (Some(MajorStatus::BadlyPoisoned), true),
+            (Some(MajorStatus::Sleep), false),
+            (Some(MajorStatus::Freeze), false),
+        ] {
+            assert_eq!(facade_activates(status), expected, "status: {status:?}");
         }
     }
 

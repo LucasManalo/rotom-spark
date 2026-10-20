@@ -13,13 +13,171 @@
       "burned_damage": 63
     },
     "flamethrower": {
-      "status": "brn"
+      "status": "brn",
+      "rng_trace": [
+        {
+          "reason": "accuracy",
+          "operation": {
+            "kind": "chance",
+            "numerator": 100,
+            "denominator": 100
+          },
+          "result": 1
+        },
+        {
+          "reason": "critical_hit",
+          "operation": {
+            "kind": "chance",
+            "numerator": 1,
+            "denominator": 24
+          },
+          "result": 0
+        },
+        {
+          "reason": "damage_roll",
+          "operation": {
+            "kind": "range",
+            "start": 85,
+            "end_exclusive": 101
+          },
+          "result": 100
+        },
+        {
+          "reason": "secondary_effect",
+          "operation": {
+            "kind": "range",
+            "start": 0,
+            "end_exclusive": 100
+          },
+          "result": 0
+        }
+      ]
     },
     "bullet_seed": {
-      "hits": 2
+      "hits": 2,
+      "rng_trace": [
+        {
+          "reason": "accuracy",
+          "operation": {
+            "kind": "chance",
+            "numerator": 100,
+            "denominator": 100
+          },
+          "result": 1
+        },
+        {
+          "reason": "multi_hit",
+          "operation": {
+            "kind": "sample",
+            "length": 20
+          },
+          "result": 0
+        },
+        {
+          "reason": "critical_hit",
+          "operation": {
+            "kind": "chance",
+            "numerator": 1,
+            "denominator": 24
+          },
+          "result": 0
+        },
+        {
+          "reason": "damage_roll",
+          "operation": {
+            "kind": "range",
+            "start": 85,
+            "end_exclusive": 101
+          },
+          "result": 100
+        },
+        {
+          "reason": "critical_hit",
+          "operation": {
+            "kind": "chance",
+            "numerator": 1,
+            "denominator": 24
+          },
+          "result": 0
+        },
+        {
+          "reason": "damage_roll",
+          "operation": {
+            "kind": "range",
+            "start": 85,
+            "end_exclusive": 101
+          },
+          "result": 100
+        }
+      ]
     },
     "population_bomb": {
-      "hits": 10
+      "hits": 2,
+      "rng_trace": [
+        {
+          "reason": "accuracy",
+          "operation": {
+            "kind": "chance",
+            "numerator": 90,
+            "denominator": 100
+          },
+          "result": 1
+        },
+        {
+          "reason": "critical_hit",
+          "operation": {
+            "kind": "chance",
+            "numerator": 1,
+            "denominator": 24
+          },
+          "result": 0
+        },
+        {
+          "reason": "damage_roll",
+          "operation": {
+            "kind": "range",
+            "start": 85,
+            "end_exclusive": 101
+          },
+          "result": 100
+        },
+        {
+          "reason": "accuracy",
+          "operation": {
+            "kind": "chance",
+            "numerator": 90,
+            "denominator": 100
+          },
+          "result": 1
+        },
+        {
+          "reason": "critical_hit",
+          "operation": {
+            "kind": "chance",
+            "numerator": 1,
+            "denominator": 24
+          },
+          "result": 0
+        },
+        {
+          "reason": "damage_roll",
+          "operation": {
+            "kind": "range",
+            "start": 85,
+            "end_exclusive": 101
+          },
+          "result": 100
+        },
+        {
+          "reason": "accuracy",
+          "operation": {
+            "kind": "chance",
+            "numerator": 90,
+            "denominator": 100
+          },
+          "result": 0
+        }
+      ]
     },
     "seismic_toss": {
       "damage": 50
@@ -33,7 +191,45 @@
         "spe": 0,
         "accuracy": 0,
         "evasion": 0
-      }
+      },
+      "rng_trace": [
+        {
+          "reason": "accuracy",
+          "operation": {
+            "kind": "chance",
+            "numerator": 100,
+            "denominator": 100
+          },
+          "result": 1
+        },
+        {
+          "reason": "critical_hit",
+          "operation": {
+            "kind": "chance",
+            "numerator": 1,
+            "denominator": 24
+          },
+          "result": 0
+        },
+        {
+          "reason": "damage_roll",
+          "operation": {
+            "kind": "range",
+            "start": 85,
+            "end_exclusive": 101
+          },
+          "result": 100
+        },
+        {
+          "reason": "secondary_effect",
+          "operation": {
+            "kind": "range",
+            "start": 0,
+            "end_exclusive": 100
+          },
+          "result": 0
+        }
+      ]
     },
     "chloroblast": {
       "self_damage": 83

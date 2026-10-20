@@ -59,3 +59,12 @@ reapplication, protection, and multi-effect behavior with:
 node tools/showdown-reference/primary-non-damage.cjs
 node tools/showdown-reference/primary-non-damage.cjs --check
 ```
+
+Regenerate or verify PR 13.4 move sequencing, including controlled hit-count,
+later-hit accuracy, critical-hit, damage-roll, secondary-effect, self-effect,
+drain, and recoil behavior with:
+
+```text
+node tools/showdown-reference/sequenced-effects.cjs
+node tools/showdown-reference/sequenced-effects.cjs --check
+```
