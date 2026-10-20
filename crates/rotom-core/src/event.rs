@@ -5,6 +5,7 @@ use crate::{
 };
 use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
+use std::collections::BTreeMap;
 
 /// Stable hook points through which battle effects intercept engine operations.
 #[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
@@ -482,14 +483,29 @@ struct CollectedEffect {
 /// Static behavior registry kept outside serializable, cloneable battle state.
 #[derive(Clone, Default)]
 pub struct EffectRegistry {
-    registrations: Vec<EffectRegistration>,
+    events: BTreeMap<BattleEvent, EventRegistrations>,
+    registration_count: usize,
+}
+
+/// Registrations indexed first by event and then by concrete source identity.
+/// Active holders are visited once per dispatch and probe these maps directly.
+#[derive(Clone, Default)]
+struct EventRegistrations {
+    battle: Vec<EffectRegistration>,
+    moves: BTreeMap<MoveId, Vec<EffectRegistration>>,
+    abilities: BTreeMap<AbilityId, Vec<EffectRegistration>>,
+    items: BTreeMap<ItemId, Vec<EffectRegistration>>,
+    statuses: BTreeMap<MajorStatus, Vec<EffectRegistration>>,
+    conditions: BTreeMap<ConditionId, Vec<EffectRegistration>>,
+    registration_count: usize,
 }
 
 impl EffectRegistry {
     #[must_use]
     pub const fn new() -> Self {
         Self {
-            registrations: Vec::new(),
+            events: BTreeMap::new(),
+            registration_count: 0,
         }
     }
 
@@ -501,18 +517,22 @@ impl EffectRegistry {
         order: EffectOrder,
         callback: EffectCallback,
     ) {
-        let registration_order = self.registrations.len();
-        self.registrations.push(EffectRegistration {
+        let registration_order = self.registration_count;
+        let registration = EffectRegistration {
             event,
             source,
             order,
             callback,
             registration_order,
-        });
+        };
+        self.events.entry(event).or_default().insert(registration);
+        self.registration_count += 1;
     }
 
     pub(crate) fn append(&mut self, other: &Self) {
-        for registration in &other.registrations {
+        let mut registrations = other.registrations();
+        registrations.sort_by_key(|registration| registration.registration_order);
+        for registration in registrations {
             self.register(
                 registration.event,
                 registration.source,
@@ -573,130 +593,192 @@ impl EffectRegistry {
         event: BattleEvent,
         context: EventContext,
     ) -> Result<Vec<CollectedEffect>, BattleError> {
-        let mut collected = Vec::new();
-        for registration in self
-            .registrations
-            .iter()
-            .copied()
-            .filter(|registration| registration.event == event)
-        {
-            Self::collect_registration(battle, context, registration, &mut collected)?;
+        let Some(registrations) = self.events.get(&event) else {
+            return Ok(Vec::new());
+        };
+        let mut collected = Vec::with_capacity(registrations.registration_count);
+        collect_registrations(
+            &mut collected,
+            &registrations.battle,
+            EffectOwner::Battle,
+            0,
+        );
+
+        if let Some(move_id) = context.move_id {
+            if let Some(move_handlers) = registrations.moves.get(&move_id) {
+                let owner = context
+                    .source
+                    .map_or(EffectOwner::Battle, |pokemon| EffectOwner::Move { pokemon });
+                collect_registrations(
+                    &mut collected,
+                    move_handlers,
+                    owner,
+                    owner_speed(battle, owner)?,
+                );
+            }
+        }
+
+        if registrations.has_conditions() {
+            collect_field_conditions(battle, registrations, &mut collected);
+        }
+        if !registrations.has_active_sources() {
+            return Ok(collected);
+        }
+        for side in [SideId::P1, SideId::P2] {
+            if registrations.has_conditions() {
+                collect_side_conditions(battle, registrations, side, &mut collected);
+            }
+            for pokemon in battle.side(side).active.into_iter().flatten() {
+                let state = battle.side(side).pokemon(pokemon).ok_or_else(|| {
+                    BattleError::InvalidState(
+                        "active Pokémon index is out of bounds during effect collection".to_owned(),
+                    )
+                })?;
+                let owner = EffectOwner::Pokemon {
+                    pokemon: PokemonRef::new(side, pokemon),
+                };
+                let speed = state.effective_speed();
+                if let Some(handlers) = registrations.abilities.get(&state.ability) {
+                    collect_registrations(&mut collected, handlers, owner, speed);
+                }
+                if let Some(handlers) = state.item.and_then(|item| registrations.items.get(&item)) {
+                    collect_registrations(&mut collected, handlers, owner, speed);
+                }
+                if let Some(handlers) = state
+                    .status
+                    .and_then(|status| registrations.statuses.get(&status))
+                {
+                    collect_registrations(&mut collected, handlers, owner, speed);
+                }
+                for condition in &state.volatiles {
+                    if let Some(handlers) = registrations.conditions.get(&condition.id) {
+                        collect_registrations(&mut collected, handlers, owner, speed);
+                    }
+                }
+            }
         }
         Ok(collected)
     }
 
-    fn collect_registration(
-        battle: &BattleState,
-        context: EventContext,
-        registration: EffectRegistration,
-        output: &mut Vec<CollectedEffect>,
-    ) -> Result<(), BattleError> {
+    fn registrations(&self) -> Vec<EffectRegistration> {
+        let mut registrations = Vec::with_capacity(self.registration_count);
+        for event in self.events.values() {
+            event.extend_registrations(&mut registrations);
+        }
+        registrations
+    }
+}
+
+impl EventRegistrations {
+    fn has_conditions(&self) -> bool {
+        !self.conditions.is_empty()
+    }
+
+    fn has_active_sources(&self) -> bool {
+        !self.abilities.is_empty()
+            || !self.items.is_empty()
+            || !self.statuses.is_empty()
+            || self.has_conditions()
+    }
+
+    fn insert(&mut self, registration: EffectRegistration) {
         match registration.source {
-            EffectSource::Battle => push_collected(output, registration, EffectOwner::Battle, 0),
-            EffectSource::Move(move_id) => {
-                if context.move_id == Some(move_id) {
-                    let owner = context
-                        .source
-                        .map_or(EffectOwner::Battle, |pokemon| EffectOwner::Move { pokemon });
-                    let speed = owner_speed(battle, owner)?;
-                    push_collected(output, registration, owner, speed);
-                }
-            }
-            EffectSource::Condition(condition_id) => {
-                collect_condition(battle, registration, condition_id, output)?;
-            }
-            EffectSource::Ability(ability_id) => {
-                collect_active_pokemon(battle, registration, output, |pokemon| {
-                    pokemon.ability == ability_id
-                })?;
-            }
-            EffectSource::Item(item_id) => {
-                collect_active_pokemon(battle, registration, output, |pokemon| {
-                    pokemon.item == Some(item_id)
-                })?;
-            }
+            EffectSource::Battle => self.battle.push(registration),
+            EffectSource::Move(id) => self.moves.entry(id).or_default().push(registration),
+            EffectSource::Ability(id) => self.abilities.entry(id).or_default().push(registration),
+            EffectSource::Item(id) => self.items.entry(id).or_default().push(registration),
             EffectSource::MajorStatus(status) => {
-                collect_active_pokemon(battle, registration, output, |pokemon| {
-                    pokemon.status == Some(status)
-                })?;
+                self.statuses.entry(status).or_default().push(registration);
+            }
+            EffectSource::Condition(id) => {
+                self.conditions.entry(id).or_default().push(registration);
             }
         }
-        Ok(())
+        self.registration_count += 1;
+    }
+
+    fn extend_registrations(&self, output: &mut Vec<EffectRegistration>) {
+        output.extend(self.battle.iter().copied());
+        for registrations in self.moves.values() {
+            output.extend(registrations.iter().copied());
+        }
+        for registrations in self.abilities.values() {
+            output.extend(registrations.iter().copied());
+        }
+        for registrations in self.items.values() {
+            output.extend(registrations.iter().copied());
+        }
+        for registrations in self.statuses.values() {
+            output.extend(registrations.iter().copied());
+        }
+        for registrations in self.conditions.values() {
+            output.extend(registrations.iter().copied());
+        }
     }
 }
 
-fn collect_active_pokemon(
-    battle: &BattleState,
-    registration: EffectRegistration,
+fn collect_registrations(
     output: &mut Vec<CollectedEffect>,
-    predicate: impl Fn(&crate::PokemonState) -> bool,
-) -> Result<(), BattleError> {
-    for side in [SideId::P1, SideId::P2] {
-        for pokemon in battle.side(side).active.into_iter().flatten() {
-            let state = battle.side(side).pokemon(pokemon).ok_or_else(|| {
-                BattleError::InvalidState(
-                    "active Pokémon index is out of bounds during effect collection".to_owned(),
-                )
-            })?;
-            if predicate(state) {
-                push_collected(
-                    output,
-                    registration,
-                    EffectOwner::Pokemon {
-                        pokemon: PokemonRef::new(side, pokemon),
-                    },
-                    state.effective_speed(),
-                );
-            }
-        }
+    registrations: &[EffectRegistration],
+    owner: EffectOwner,
+    speed: u16,
+) {
+    for registration in registrations {
+        push_collected(output, *registration, owner, speed);
     }
-    Ok(())
 }
 
-fn collect_condition(
+fn collect_field_conditions(
     battle: &BattleState,
-    registration: EffectRegistration,
-    condition_id: ConditionId,
+    registrations: &EventRegistrations,
     output: &mut Vec<CollectedEffect>,
-) -> Result<(), BattleError> {
+) {
     let field = &battle.field;
-    let field_matches = field.weather.is_some_and(|state| state.id == condition_id)
-        || field.terrain.is_some_and(|state| state.id == condition_id)
-        || field
-            .conditions
-            .iter()
-            .any(|state| state.id == condition_id);
-    if field_matches {
-        push_collected(output, registration, EffectOwner::Field, 0);
+    let weather = field.weather.map(|state| state.id);
+    if let Some(condition) = weather {
+        collect_condition_handlers(registrations, condition, EffectOwner::Field, output);
     }
-    for side in [SideId::P1, SideId::P2] {
-        if battle
-            .side(side)
-            .side_conditions
-            .iter()
-            .any(|state| state.id == condition_id)
+    let terrain = field.terrain.map(|state| state.id);
+    if let Some(condition) = terrain.filter(|condition| Some(*condition) != weather) {
+        collect_condition_handlers(registrations, condition, EffectOwner::Field, output);
+    }
+    for (index, condition) in field.conditions.iter().enumerate() {
+        if Some(condition.id) != weather
+            && Some(condition.id) != terrain
+            && !field.conditions[..index]
+                .iter()
+                .any(|previous| previous.id == condition.id)
         {
-            push_collected(output, registration, EffectOwner::Side { side }, 0);
-        }
-        for pokemon in battle.side(side).active.into_iter().flatten() {
-            let state = battle.side(side).pokemon(pokemon).ok_or_else(|| {
-                BattleError::InvalidState(
-                    "active Pokémon index is out of bounds during condition collection".to_owned(),
-                )
-            })?;
-            if state.volatiles.iter().any(|state| state.id == condition_id) {
-                push_collected(
-                    output,
-                    registration,
-                    EffectOwner::Pokemon {
-                        pokemon: PokemonRef::new(side, pokemon),
-                    },
-                    state.effective_speed(),
-                );
-            }
+            collect_condition_handlers(registrations, condition.id, EffectOwner::Field, output);
         }
     }
-    Ok(())
+}
+
+fn collect_condition_handlers(
+    registrations: &EventRegistrations,
+    condition: ConditionId,
+    owner: EffectOwner,
+    output: &mut Vec<CollectedEffect>,
+) {
+    if let Some(handlers) = registrations.conditions.get(&condition) {
+        collect_registrations(output, handlers, owner, 0);
+    }
+}
+
+fn collect_side_conditions(
+    battle: &BattleState,
+    registrations: &EventRegistrations,
+    side: SideId,
+    output: &mut Vec<CollectedEffect>,
+) {
+    for condition in &battle.side(side).side_conditions {
+        collect_condition_handlers(
+            registrations,
+            condition.id,
+            EffectOwner::Side { side },
+            output,
+        );
+    }
 }
 
 fn push_collected(

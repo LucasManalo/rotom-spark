@@ -3,70 +3,94 @@ use crate::{
     EffectRegistry, EffectSource, EffectState, EventContext, EventDispatch, EventValue, PokemonRef,
 };
 
-/// Resolved identities for the first PR 13.5 ability-handler batch.
-#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
-pub struct AbilityEffectIds {
-    pub huge_power: Option<AbilityId>,
-    pub pure_power: Option<AbilityId>,
-    pub guts: Option<AbilityId>,
-    pub fur_coat: Option<AbilityId>,
-    pub marvel_scale: Option<AbilityId>,
-    pub technician: Option<AbilityId>,
-    pub multiscale: Option<AbilityId>,
+/// A reusable implementation family for an ability resolved by static data.
+///
+/// This is a closed set of native Rust behaviors, not an interpreted command
+/// language. New common families add one descriptor and one callback mapping;
+/// exceptional abilities may still use narrowly scoped callbacks.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum AbilityBehavior {
+    DoubleAttack,
+    StatusedAttack,
+    DoubleDefense,
+    StatusedDefense,
+    LowPowerBoost,
+    FullHpDamageReduction,
 }
 
-pub(crate) fn register(registry: &mut EffectRegistry, ids: AbilityEffectIds) {
-    for ability in [ids.huge_power, ids.pure_power].into_iter().flatten() {
-        registry.register(
+/// Joins a stable Dex ability identity to one native behavior family.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct AbilityHandler {
+    pub ability: AbilityId,
+    pub behavior: AbilityBehavior,
+}
+
+impl AbilityHandler {
+    #[must_use]
+    pub const fn new(ability: AbilityId, behavior: AbilityBehavior) -> Self {
+        Self { ability, behavior }
+    }
+}
+
+pub(crate) fn register(
+    registry: &mut EffectRegistry,
+    handlers: impl IntoIterator<Item = AbilityHandler>,
+) {
+    for handler in handlers {
+        register_handler(registry, handler);
+    }
+}
+
+fn register_handler(registry: &mut EffectRegistry, handler: AbilityHandler) {
+    let source = EffectSource::Ability(handler.ability);
+    match handler.behavior {
+        AbilityBehavior::DoubleAttack => registry.register(
             BattleEvent::ModifyAttack,
-            EffectSource::Ability(ability),
+            source,
             EffectOrder::new(0, 5, 0),
             double_source_stat,
-        );
-    }
-    if let Some(ability) = ids.guts {
-        registry.register(
+        ),
+        AbilityBehavior::StatusedAttack => registry.register(
             BattleEvent::ModifyAttack,
-            EffectSource::Ability(ability),
+            source,
             EffectOrder::new(0, 5, 0),
             guts_attack,
-        );
-    }
-    if let Some(ability) = ids.fur_coat {
-        for event in [BattleEvent::ModifyDefense, BattleEvent::ModifySourceDefense] {
-            registry.register(
-                event,
-                EffectSource::Ability(ability),
-                EffectOrder::new(0, 6, 0),
-                double_holder_defense,
-            );
-        }
-    }
-    if let Some(ability) = ids.marvel_scale {
-        for event in [BattleEvent::ModifyDefense, BattleEvent::ModifySourceDefense] {
-            registry.register(
-                event,
-                EffectSource::Ability(ability),
-                EffectOrder::new(0, 6, 0),
-                marvel_scale_defense,
-            );
-        }
-    }
-    if let Some(ability) = ids.technician {
-        registry.register(
+        ),
+        AbilityBehavior::DoubleDefense => register_defense_handlers(
+            registry,
+            source,
+            EffectOrder::new(0, 6, 0),
+            double_holder_defense,
+        ),
+        AbilityBehavior::StatusedDefense => register_defense_handlers(
+            registry,
+            source,
+            EffectOrder::new(0, 6, 0),
+            marvel_scale_defense,
+        ),
+        AbilityBehavior::LowPowerBoost => registry.register(
             BattleEvent::ModifyBasePower,
-            EffectSource::Ability(ability),
+            source,
             EffectOrder::new(0, 30, 0),
             technician_base_power,
-        );
-    }
-    for ability in [ids.multiscale].into_iter().flatten() {
-        registry.register(
+        ),
+        AbilityBehavior::FullHpDamageReduction => registry.register(
             BattleEvent::ModifyDamage,
-            EffectSource::Ability(ability),
+            source,
             EffectOrder::default(),
             full_hp_damage_reduction,
-        );
+        ),
+    }
+}
+
+fn register_defense_handlers(
+    registry: &mut EffectRegistry,
+    source: EffectSource,
+    order: EffectOrder,
+    callback: crate::EffectCallback,
+) {
+    for event in [BattleEvent::ModifyDefense, BattleEvent::ModifySourceDefense] {
+        registry.register(event, source, order, callback);
     }
 }
 
@@ -217,8 +241,8 @@ fn modify_integer(
     Ok(())
 }
 
-pub(crate) fn ignores_burn_attack_penalty(ability: AbilityId, ids: AbilityEffectIds) -> bool {
-    ids.guts == Some(ability)
+pub(crate) fn ignores_burn_attack_penalty(behavior: Option<AbilityBehavior>) -> bool {
+    behavior == Some(AbilityBehavior::StatusedAttack)
 }
 
 #[cfg(test)]
@@ -302,12 +326,11 @@ mod tests {
         let mut registry = EffectRegistry::new();
         register(
             &mut registry,
-            AbilityEffectIds {
-                huge_power: Some(huge_power),
-                pure_power: Some(pure_power),
-                technician: Some(technician),
-                ..AbilityEffectIds::default()
-            },
+            [
+                AbilityHandler::new(huge_power, AbilityBehavior::DoubleAttack),
+                AbilityHandler::new(pure_power, AbilityBehavior::DoubleAttack),
+                AbilityHandler::new(technician, AbilityBehavior::LowPowerBoost),
+            ],
         );
         let mut huge_power_battle = battle(huge_power, AbilityId::new(1));
         assert_eq!(
@@ -363,13 +386,12 @@ mod tests {
         let mut registry = EffectRegistry::new();
         register(
             &mut registry,
-            AbilityEffectIds {
-                guts: Some(guts),
-                marvel_scale: Some(marvel_scale),
-                multiscale: Some(multiscale),
-                fur_coat: Some(fur_coat),
-                ..AbilityEffectIds::default()
-            },
+            [
+                AbilityHandler::new(guts, AbilityBehavior::StatusedAttack),
+                AbilityHandler::new(marvel_scale, AbilityBehavior::StatusedDefense),
+                AbilityHandler::new(multiscale, AbilityBehavior::FullHpDamageReduction),
+                AbilityHandler::new(fur_coat, AbilityBehavior::DoubleDefense),
+            ],
         );
 
         let mut guts_battle = battle(guts, AbilityId::new(1));

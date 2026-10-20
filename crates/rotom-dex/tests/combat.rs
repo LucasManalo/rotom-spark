@@ -34,8 +34,15 @@ impl CombatData for MoveFractionOverride<'_> {
         self.dex.pokemon_types(species, form)
     }
 
-    fn ability_effect_ids(&self) -> rotom_core::AbilityEffectIds {
-        self.dex.ability_effect_ids()
+    fn ability_behavior(
+        &self,
+        ability: rotom_core::AbilityId,
+    ) -> Option<rotom_core::AbilityBehavior> {
+        self.dex.ability_behavior(ability)
+    }
+
+    fn ability_handlers(&self) -> Vec<rotom_core::AbilityHandler> {
+        self.dex.ability_handlers()
     }
 
     fn type_modifier(
@@ -5571,4 +5578,37 @@ fn ability_modifier_damage_matches_pinned_showdown_fixture() {
             case["id"].as_str().unwrap()
         );
     }
+}
+
+#[test]
+fn ability_handler_registration_is_declarative_and_leaves_other_abilities_unsupported() {
+    let dex = champions_reg_mc().unwrap();
+    let mut handlers = dex.ability_handlers();
+    handlers.sort_by_key(|handler| handler.ability);
+    assert_eq!(handlers.len(), 7);
+
+    for (id, expected) in [
+        ("hugepower", rotom_core::AbilityBehavior::DoubleAttack),
+        ("purepower", rotom_core::AbilityBehavior::DoubleAttack),
+        ("guts", rotom_core::AbilityBehavior::StatusedAttack),
+        ("furcoat", rotom_core::AbilityBehavior::DoubleDefense),
+        ("marvelscale", rotom_core::AbilityBehavior::StatusedDefense),
+        ("technician", rotom_core::AbilityBehavior::LowPowerBoost),
+        (
+            "multiscale",
+            rotom_core::AbilityBehavior::FullHpDamageReduction,
+        ),
+    ] {
+        let ability = dex.resolve_ability(id).unwrap().0;
+        assert_eq!(dex.ability_behavior(ability), Some(expected));
+        assert!(handlers
+            .iter()
+            .any(|handler| handler == &rotom_core::AbilityHandler::new(ability, expected)));
+    }
+
+    let unsupported = dex.resolve_ability("pressure").unwrap().0;
+    assert_eq!(dex.ability_behavior(unsupported), None);
+    assert!(!handlers
+        .iter()
+        .any(|handler| handler.ability == unsupported));
 }

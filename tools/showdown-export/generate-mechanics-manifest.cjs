@@ -304,6 +304,12 @@ function differentialFixtureCase(root, relativePath, anchor) {
 	return fixture.cases.find(entry => entry && (entry.name === anchor || entry.id === anchor)) || null;
 }
 
+function fixtureExecutesInteraction(root, relativePath, fixtureCase) {
+	const fixture = readJson(path.join(root, relativePath));
+	return fixture.methodology?.move_execution === true ||
+		(typeof fixtureCase.execution_path === 'string' && fixtureCase.execution_path.length > 0);
+}
+
 function validateCoverageClaims(source, root = repositoryRoot) {
 	if (source.schema_version !== 1 || !Array.isArray(source.claims)) fail('Invalid mechanics coverage registry schema');
 	const claims = new Map();
@@ -357,6 +363,10 @@ function validateCoverageClaims(source, root = repositoryRoot) {
 				if (!matchesIdentity) {
 					const noun = claim.kind === 'move' ? 'move' : 'mechanic';
 					fail(`Differential evidence ${evidence} does not reference claimed ${noun} ${key}`);
+				}
+				if (kind === 'interaction_differential' &&
+					!fixtureExecutesInteraction(root, relativePath, fixtureCase)) {
+					fail(`Interaction-differential evidence ${evidence} is only an isolated calculation for ${key}`);
 				}
 				(kind === 'differential' ? differentialEvidence : interactionDifferentialEvidence).push(evidence);
 			}
@@ -668,7 +678,7 @@ function buildManifest(version, Showdown) {
 			battle_forms: 'resolved battleOnly form with a reachable source and required held item',
 			conditions: 'structured and literal callback condition references reachable from direct moves, abilities, and items',
 			team_constraints: 'existence is validated per set; Species Clause and Item Clause do not remove individual reachability',
-			verification_scope: 'differential_verified records move-level pinned Showdown calculation evidence; it does not claim a complete Showdown battle-transition comparison',
+			verification_scope: 'differential_verified records isolated pinned Showdown mechanic evidence; cross-mechanic differential evidence is tracked separately by interaction_verification',
 		},
 		entries,
 		reachability_closure: reachabilityClosure.sort((left, right) => compareStrings(left.kind, right.kind) || compareStrings(left.id, right.id)),
@@ -685,7 +695,7 @@ function reportFor(manifest) {
 		`Format: \`${manifest.format.id}\` (mod \`${manifest.format.mod}\`)`,
 		'',
 		'This report is generated from `reg-mc-mechanics-manifest.json`. Presence means reachable, not implemented.',
-		'`Differential` counts move-level pinned Showdown calculation evidence. It does not mean that a complete Showdown battle transition was executed and compared.',
+		'`Differential` counts isolated pinned Showdown mechanic evidence. It does not mean that a complete Showdown battle transition or cross-mechanic interaction was executed and compared.',
 		'',
 		'| Kind | Reachable | Implemented | Partial | Unsupported | Differential | Unit tested | Not tested | Interaction verified |',
 		'| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |',

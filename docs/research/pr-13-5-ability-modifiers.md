@@ -1,4 +1,4 @@
-# PR 13.5 ability modifier handlers
+# PR 13.5 initial ability modifier batch
 
 Pinned reference: Pokémon Showdown commit
 `b79ce06d06b8f0dc8de8bb348bc9cab5d931553f`, resolved format
@@ -26,23 +26,56 @@ Showdown's modifier application uses its fixed-point `chainModify`/`modify`
 rounding. Rotom Spark applies the same 4096-denominator rounding to each typed
 integer relay.
 
-## Rotom Spark mapping
+## Rotom Spark mapping and registration
 
-`CombatData::ability_effect_ids` resolves stable generated-Dex identities.
-`Mechanics::new` composes their stateless registrations with common condition
-handlers and caller-provided effects. The handlers inspect authoritative
-battle state through `EffectState`, modify only ephemeral integer relays, and
-perform no direct gameplay-state writes.
+`CombatData::ability_handlers` declaratively joins stable generated-Dex
+identities to native `AbilityBehavior` families. The generated Dex remains the
+identity/metadata authority; `rotom-core` remains the behavior authority.
+`Mechanics::new` expands those descriptors into stateless registrations and
+composes them with common condition handlers and caller-provided effects.
+Common families share Rust callbacks, while genuinely exceptional behaviors
+may retain narrow callbacks. This table is neither a parallel Dex nor an
+interpreted ability language.
+
+`EffectRegistry` indexes registrations by event and concrete source identity.
+Dispatch selects one event bucket, visits each active holder once, performs
+direct ability/item/status lookups, then applies the existing deterministic
+ordering comparator. The handlers inspect authoritative battle state through
+`EffectState`, modify only ephemeral integer relays, and perform no direct
+gameplay-state writes.
 
 Physical and special calculations now dispatch distinct Attack/Special Attack
 and Defense/Special Defense events. Stat-override moves select the hook for the
 actual effective stat, allowing Defense-based offense to reuse Defense
 ability handlers rather than inventing a move-specific path.
 
-## Deferred ability families
+## Verification boundary
 
-Switch-in/out effects, priority and Speed changes, attack-type modifiers,
-immunity/absorption, status prevention, weather/terrain setters, contact and
-on-hit reactions, ability suppression, copying, replacement, and override
-exceptions need additional typed context or lifecycle support. They remain
-unsupported and are not included in this batch's coverage claims.
+The pinned `ability-modifiers.json` cases exercise isolated Showdown damage
+calculations. They support each ability's `verification: differential_verified`
+claim, but they are not full cross-mechanic transition comparisons. The current
+end-to-end Rotom tests provide interaction-level unit evidence only, so all
+seven entries use `interaction_verification: unit_tested`. A future
+`interaction_verification: differential_verified` claim requires a normalized
+fixture that actually executes and compares the relevant ability interaction.
+
+## Deferred PR 13.5 families
+
+These seven abilities are the initial PR 13.5 batch, not completion of the
+milestone. All other reachable Regulation M-C abilities remain explicitly
+unsupported. The remaining families and prerequisites are:
+
+| Family | Required event/mechanics capability |
+| --- | --- |
+| Switch-in/out | complete switch lifecycle, ordered field/side changes, stat and form consequences |
+| Priority and Speed | action-queue priority/Speed hooks, suppression and tie-order coverage |
+| Attack type and damage | typed move/source context, immunity ordering, shared damage modifiers |
+| Immunity and absorption | pre-hit eligibility, cancellation/result contracts, kernel-backed healing or boosts |
+| Status prevention | shared `TrySetStatus` reasons, source/target context and cure/prevention ordering |
+| Weather and terrain | switch-in setters, duration/override rules and field-condition ordering |
+| Contact and on-hit reactions | contact metadata, actual applied damage, per-hit callbacks and faint settlement |
+| Suppression/copy/override | authoritative activation state, ability replacement/copy rules and exception ordering |
+
+The original PR 13.5 requirements still apply: every reachable ability must use
+the common mechanics/event fabric, have explicit ordering and activation rules,
+and receive isolation plus representative cross-source interaction evidence.

@@ -19,7 +19,7 @@ mod state;
 mod team;
 mod transition;
 
-pub use abilities::AbilityEffectIds;
+pub use abilities::{AbilityBehavior, AbilityHandler};
 pub use action::{
     ActionTarget, LegalActions, MoveSlotIndex, MoveTarget, PokemonAction, SlotLegalActions,
     TurnChoice,

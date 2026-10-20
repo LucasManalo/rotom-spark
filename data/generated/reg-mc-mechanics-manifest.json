@@ -21,7 +21,7 @@
     "battle_forms": "resolved battleOnly form with a reachable source and required held item",
     "conditions": "structured and literal callback condition references reachable from direct moves, abilities, and items",
     "team_constraints": "existence is validated per set; Species Clause and Item Clause do not remove individual reachability",
-    "verification_scope": "differential_verified records move-level pinned Showdown calculation evidence; it does not claim a complete Showdown battle-transition comparison"
+    "verification_scope": "differential_verified records isolated pinned Showdown mechanic evidence; cross-mechanic differential evidence is tracked separately by interaction_verification"
   },
   "entries": [
     {
@@ -979,7 +979,6 @@
         "differential:data/fixtures/differential/ability-modifiers.json#fur-coat-physical-defense",
         "file:crates/rotom-core/src/abilities.rs",
         "file:docs/research/pr-13-5-ability-modifiers.md",
-        "interaction_differential:data/fixtures/differential/ability-modifiers.json#fur-coat-physical-defense",
         "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture",
         "species/furfrou/ability-slot/0",
         "species/persianalola/ability-slot/0",
@@ -990,7 +989,7 @@
       ],
       "implementation": "implemented",
       "verification": "differential_verified",
-      "interaction_verification": "differential_verified",
+      "interaction_verification": "unit_tested",
       "owner_pr": "PR 13.5"
     },
     {
@@ -1122,7 +1121,6 @@
         "differential:data/fixtures/differential/ability-modifiers.json#guts-burn",
         "file:crates/rotom-core/src/abilities.rs",
         "file:docs/research/pr-13-5-ability-modifiers.md",
-        "interaction_differential:data/fixtures/differential/ability-modifiers.json#guts-burn",
         "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture",
         "species/conkeldurr/ability-slot/0",
         "species/flareon/ability-slot/H",
@@ -1138,7 +1136,7 @@
       ],
       "implementation": "implemented",
       "verification": "differential_verified",
-      "interaction_verification": "differential_verified",
+      "interaction_verification": "unit_tested",
       "owner_pr": "PR 13.5"
     },
     {
@@ -1235,7 +1233,6 @@
         "differential:data/fixtures/differential/ability-modifiers.json#huge-power-physical",
         "file:crates/rotom-core/src/abilities.rs",
         "file:docs/research/pr-13-5-ability-modifiers.md",
-        "interaction_differential:data/fixtures/differential/ability-modifiers.json#huge-power-physical",
         "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture",
         "species/azumarill/ability-slot/1",
         "species/diggersby/ability-slot/H",
@@ -1246,7 +1243,7 @@
       ],
       "implementation": "implemented",
       "verification": "differential_verified",
-      "interaction_verification": "differential_verified",
+      "interaction_verification": "unit_tested",
       "owner_pr": "PR 13.5"
     },
     {
@@ -1861,7 +1858,6 @@
         "differential:data/fixtures/differential/ability-modifiers.json#marvel-scale-statused",
         "file:crates/rotom-core/src/abilities.rs",
         "file:docs/research/pr-13-5-ability-modifiers.md",
-        "interaction_differential:data/fixtures/differential/ability-modifiers.json#marvel-scale-statused",
         "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture",
         "species/milotic/ability-slot/0",
         "unit:crates/rotom-core/src/abilities.rs#conditional_and_defensive_handlers_use_authoritative_state"
@@ -1871,7 +1867,7 @@
       ],
       "implementation": "implemented",
       "verification": "differential_verified",
-      "interaction_verification": "differential_verified",
+      "interaction_verification": "unit_tested",
       "owner_pr": "PR 13.5"
     },
     {
@@ -2059,7 +2055,6 @@
         "differential:data/fixtures/differential/ability-modifiers.json#multiscale-full-hp",
         "file:crates/rotom-core/src/abilities.rs",
         "file:docs/research/pr-13-5-ability-modifiers.md",
-        "interaction_differential:data/fixtures/differential/ability-modifiers.json#multiscale-full-hp",
         "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture",
         "species/dragonite/ability-slot/H",
         "unit:crates/rotom-core/src/abilities.rs#conditional_and_defensive_handlers_use_authoritative_state"
@@ -2069,7 +2064,7 @@
       ],
       "implementation": "implemented",
       "verification": "differential_verified",
-      "interaction_verification": "differential_verified",
+      "interaction_verification": "unit_tested",
       "owner_pr": "PR 13.5"
     },
     {
@@ -2491,7 +2486,6 @@
         "differential:data/fixtures/differential/ability-modifiers.json#pure-power-physical",
         "file:crates/rotom-core/src/abilities.rs",
         "file:docs/research/pr-13-5-ability-modifiers.md",
-        "interaction_differential:data/fixtures/differential/ability-modifiers.json#pure-power-physical",
         "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture",
         "species/medicham/ability-slot/0",
         "unit:crates/rotom-core/src/abilities.rs#source_stat_and_base_power_handlers_are_scoped_to_the_holder"
@@ -2501,7 +2495,7 @@
       ],
       "implementation": "implemented",
       "verification": "differential_verified",
-      "interaction_verification": "differential_verified",
+      "interaction_verification": "unit_tested",
       "owner_pr": "PR 13.5"
     },
     {
@@ -3659,7 +3653,6 @@
         "differential:data/fixtures/differential/ability-modifiers.json#technician-threshold",
         "file:crates/rotom-core/src/abilities.rs",
         "file:docs/research/pr-13-5-ability-modifiers.md",
-        "interaction_differential:data/fixtures/differential/ability-modifiers.json#technician-threshold",
         "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture",
         "species/grapploct/ability-slot/H",
         "species/maushold/ability-slot/H",
@@ -3678,7 +3671,7 @@
       ],
       "implementation": "implemented",
       "verification": "differential_verified",
-      "interaction_verification": "differential_verified",
+      "interaction_verification": "unit_tested",
       "owner_pr": "PR 13.5"
     },
     {
@@ -47382,8 +47375,8 @@
         },
         "interaction_verification": {
           "not_tested": 208,
-          "unit_tested": 0,
-          "differential_verified": 7
+          "unit_tested": 7,
+          "differential_verified": 0
         },
         "reachability": {
           "direct_legal_set": 202,

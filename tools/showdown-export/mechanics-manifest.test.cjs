@@ -70,6 +70,23 @@ test('coverage claims do not confuse implementation with verification', () => {
 	assert.equal(entry('move', 'protect').interaction_verification, 'differential_verified');
 });
 
+test('initial ability batch keeps isolated and interaction verification separate', () => {
+	for (const id of ['furcoat', 'guts', 'hugepower', 'marvelscale', 'multiscale', 'purepower', 'technician']) {
+		const ability = entry('ability', id);
+		assert.equal(ability.implementation, 'implemented');
+		assert.equal(ability.verification, 'differential_verified');
+		assert.equal(ability.interaction_verification, 'unit_tested');
+		assert.equal(
+			ability.evidence.some(evidence => evidence.startsWith('interaction_differential:')),
+			false
+		);
+	}
+	assert.deepEqual(
+		manifest.summary.by_kind.ability.interaction_verification,
+		{not_tested: 208, unit_tested: 7, differential_verified: 0}
+	);
+});
+
 test('move support is derived from complete executor capabilities', () => {
 	const dragonClaw = entry('move', 'dragonclaw');
 	assert.equal(dragonClaw.operation, 'standard_damage');
@@ -178,6 +195,7 @@ test('coverage evidence requires real tests and move-specific fixture cases', ()
 			'fn verifies_dragon_claw() {}',
 		].join('\n'));
 		fs.writeFileSync(path.join(root, 'fixtures', 'damage.json'), JSON.stringify({
+			methodology: {move_execution: false},
 			cases: [
 				{name: 'dragon-claw-neutral', move: 'dragonclaw'},
 				{name: 'dragon-pulse-neutral', move: 'dragonpulse'},
@@ -262,6 +280,16 @@ test('coverage evidence requires real tests and move-specific fixture cases', ()
 				interaction_verification: 'unit_tested',
 			})]), root),
 			/no anchored interaction evidence/
+		);
+		assert.throws(
+			() => validateCoverageClaims(registry([claim({
+				interaction_verification: 'differential_verified',
+				evidence: [
+					'unit:tests/combat.rs#verifies_dragon_claw',
+					'interaction_differential:fixtures/damage.json#dragon-claw-neutral',
+				],
+			})]), root),
+			/only an isolated calculation/
 		);
 		assert.equal(validateCoverageClaims(registry([claim({
 			verification: 'not_tested',

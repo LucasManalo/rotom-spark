@@ -1,9 +1,9 @@
 use crate::{
-    kernel::StateKernel, ActionTarget, ActiveSlot, BattleError, BattleEvent, BattlePhase,
-    BattleStat, BattleState, ConditionId, ConditionState, EffectRegistry, EventContext,
-    EventDispatch, EventValue, FaintTarget, FieldEffectIds, FormId, MajorStatus, MoveId,
-    MoveSlotIndex, MoveTarget, PokemonAction, PokemonIndex, PokemonRef, PokemonState, RngReason,
-    SideId, SpeciesId,
+    kernel::StateKernel, AbilityId, ActionTarget, ActiveSlot, BattleError, BattleEvent,
+    BattlePhase, BattleStat, BattleState, ConditionId, ConditionState, EffectRegistry,
+    EventContext, EventDispatch, EventValue, FaintTarget, FieldEffectIds, FormId, MajorStatus,
+    MoveId, MoveSlotIndex, MoveTarget, PokemonAction, PokemonIndex, PokemonRef, PokemonState,
+    RngReason, SideId, SpeciesId,
 };
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
@@ -382,9 +382,17 @@ pub trait CombatData {
         crate::FieldEffectIds::default()
     }
 
-    /// Resolves identities for built-in ability handlers.
-    fn ability_effect_ids(&self) -> crate::AbilityEffectIds {
-        crate::AbilityEffectIds::default()
+    /// Resolves the native behavior family for one stable ability identity.
+    fn ability_behavior(&self, _ability: AbilityId) -> Option<crate::AbilityBehavior> {
+        None
+    }
+
+    /// Enumerates stable ability identities with implemented native handlers.
+    ///
+    /// This is consumed once while building immutable mechanics, outside the
+    /// event-dispatch hot path.
+    fn ability_handlers(&self) -> Vec<crate::AbilityHandler> {
+        Vec::new()
     }
 }
 
@@ -2326,8 +2334,7 @@ impl BattleState {
                 ignore_burn: (adjusted_move.prior_effect == PriorMoveEffect::Facade
                     && facade_active)
                     || crate::abilities::ignores_burn_attack_penalty(
-                        source_state.ability,
-                        data.ability_effect_ids(),
+                        data.ability_behavior(source_state.ability),
                     ),
             },
         )?;

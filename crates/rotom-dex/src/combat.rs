@@ -1,10 +1,11 @@
 use crate::{Accuracy, DexData, MoveBehaviorKind, MoveData, SpeciesData, Stats};
 use rotom_core::{
-    AbilityEffectIds, BattleError, BattleStat, BattleStats, CombatData, CombatMove, ConditionId,
-    EffectFraction, FieldEffectIds, HitSequence, MajorStatus, MoveAccuracy, MoveCapabilities,
-    MoveCapability, MoveCategory, MoveId, MoveIntrinsic, MoveOperation, MoveSlot, MoveTarget,
-    PokemonPosition, PokemonSet, PokemonState, PokemonType, PokemonTypes, PrimaryMoveEffect,
-    PriorMoveEffect, SecondaryMoveEffect, SelfMoveEffect, StatAllocation, StatStages, StatusState,
+    AbilityBehavior, AbilityHandler, AbilityId, BattleError, BattleStat, BattleStats, CombatData,
+    CombatMove, ConditionId, EffectFraction, FieldEffectIds, HitSequence, MajorStatus,
+    MoveAccuracy, MoveCapabilities, MoveCapability, MoveCategory, MoveId, MoveIntrinsic,
+    MoveOperation, MoveSlot, MoveTarget, PokemonPosition, PokemonSet, PokemonState, PokemonType,
+    PokemonTypes, PrimaryMoveEffect, PriorMoveEffect, SecondaryMoveEffect, SelfMoveEffect,
+    StatAllocation, StatStages, StatusState,
 };
 
 impl CombatData for DexData {
@@ -304,18 +305,38 @@ impl CombatData for DexData {
         }
     }
 
-    fn ability_effect_ids(&self) -> AbilityEffectIds {
-        let ability = |id: &str| self.resolve_ability(id).map(|(ability_id, _)| ability_id);
-        AbilityEffectIds {
-            huge_power: ability("hugepower"),
-            pure_power: ability("purepower"),
-            guts: ability("guts"),
-            fur_coat: ability("furcoat"),
-            marvel_scale: ability("marvelscale"),
-            technician: ability("technician"),
-            multiscale: ability("multiscale"),
-        }
+    fn ability_behavior(&self, ability: AbilityId) -> Option<AbilityBehavior> {
+        implemented_ability_behavior(self.ability(ability)?.id.as_str())
     }
+
+    fn ability_handlers(&self) -> Vec<AbilityHandler> {
+        IMPLEMENTED_ABILITY_BEHAVIORS
+            .iter()
+            .filter_map(|(key, behavior)| {
+                let ability = self.resolve_ability(key).map(|(ability, _)| ability)?;
+                Some(AbilityHandler::new(ability, *behavior))
+            })
+            .collect()
+    }
+}
+
+/// Declarative identity-to-behavior join for the implemented PR 13.5 batch.
+/// Ability metadata and numeric identity remain owned by the generated Dex;
+/// callbacks remain owned by `rotom-core`.
+const IMPLEMENTED_ABILITY_BEHAVIORS: &[(&str, AbilityBehavior)] = &[
+    ("hugepower", AbilityBehavior::DoubleAttack),
+    ("purepower", AbilityBehavior::DoubleAttack),
+    ("guts", AbilityBehavior::StatusedAttack),
+    ("furcoat", AbilityBehavior::DoubleDefense),
+    ("marvelscale", AbilityBehavior::StatusedDefense),
+    ("technician", AbilityBehavior::LowPowerBoost),
+    ("multiscale", AbilityBehavior::FullHpDamageReduction),
+];
+
+fn implemented_ability_behavior(id: &str) -> Option<AbilityBehavior> {
+    IMPLEMENTED_ABILITY_BEHAVIORS
+        .iter()
+        .find_map(|(key, behavior)| (*key == id).then_some(*behavior))
 }
 
 fn move_execution_requirements(data: &MoveData) -> (MoveOperation, MoveCapabilities) {

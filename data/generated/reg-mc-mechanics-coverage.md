@@ -4,7 +4,7 @@ Pinned Showdown: `b79ce06d06b8f0dc8de8bb348bc9cab5d931553f`
 Format: `gen9championsvgc2026regmc` (mod `champions`)
 
 This report is generated from `reg-mc-mechanics-manifest.json`. Presence means reachable, not implemented.
-`Differential` counts move-level pinned Showdown calculation evidence. It does not mean that a complete Showdown battle transition was executed and compared.
+`Differential` counts isolated pinned Showdown mechanic evidence. It does not mean that a complete Showdown battle transition or cross-mechanic interaction was executed and compared.
 
 | Kind | Reachable | Implemented | Partial | Unsupported | Differential | Unit tested | Not tested | Interaction verified |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
