@@ -12,14 +12,15 @@ const version = Object.fromEntries(fs.readFileSync(path.join(repositoryRoot, 'SH
 	.trim().split(/\r?\n/u).map(line => line.split('=', 2)));
 const filler = {species: 'Magikarp', ability: 'swiftswim', moves: ['splash'], level: 50};
 
-function battleFor(sourceAbility, move, targetAbility) {
+function battleFor(sourceAbility, move, targetAbility, allyAbility = 'swiftswim') {
 	const set = (species, ability, moves) => ({species, ability, moves, level: 50, nature: 'Serious', evs: {}});
-	const pad = lead => [lead, filler, filler, filler];
+	const p1Team = [set('Medicham', sourceAbility, [move]), set('Magikarp', allyAbility, ['splash']), filler, filler];
+	const p2Team = [set('Snorlax', targetAbility, ['recover']), filler, filler, filler];
 	const battle = new Battle({
 		format: Dex.formats.get(version.format, true),
 		seed: 'gen5,0000000000000001',
-		p1: {team: pad(set('Medicham', sourceAbility, [move]))},
-		p2: {team: pad(set('Snorlax', targetAbility, ['recover']))},
+		p1: {team: p1Team},
+		p2: {team: p2Team},
 	});
 	battle.makeChoices('team 1234', 'team 1234');
 	return battle;
@@ -50,16 +51,39 @@ function damage({id, sourceAbility, move, targetAbility, sourceStatus = '', targ
 	};
 }
 
-function speed({id, ability, status}) {
+function speed({id, ability, status = '', weather = '', terrain = ''}) {
 	const battle = battleFor(ability, 'tackle', 'immunity');
 	const source = battle.p1.active[0];
-	source.status = status;
+	if (status) source.status = status;
+	if (weather) battle.field.setWeather(weather, source);
+	if (terrain) battle.field.setTerrain(terrain, source);
 	return {
 		id,
 		ability,
 		operation: 'speed',
-		status,
+		status: status || null,
+		weather: weather || null,
+		terrain: terrain || null,
 		speed: source.getStat('spe'),
+	};
+}
+
+function tryHit({id, sourceAbility = 'telepathy', targetAbility, allyAbility, move, allyTarget = false}) {
+	const battle = battleFor(sourceAbility, move, targetAbility || 'immunity', allyAbility);
+	const source = battle.p1.active[0];
+	const target = allyTarget ? battle.p1.active[1] : battle.p2.active[0];
+	let activeMove = battle.dex.getActiveMove(move);
+	activeMove = battle.runEvent('ModifyMove', source, target, activeMove, activeMove);
+	battle.setActiveMove(activeMove, source, target);
+	return {
+		id,
+		ability: sourceAbility === 'moldbreaker' ? sourceAbility : (allyTarget ? allyAbility : targetAbility),
+		operation: 'try_hit',
+		source_ability: sourceAbility,
+		target_ability: allyTarget ? allyAbility : targetAbility,
+		move,
+		ally_target: allyTarget,
+		allowed: battle.runEvent('TryHit', target, source, activeMove) === true,
 	};
 }
 
@@ -86,21 +110,32 @@ const cases = [
 	{id: 'technician-threshold', sourceAbility: 'technician', move: 'tackle', targetAbility: 'immunity'},
 	{id: 'multiscale-full-hp', sourceAbility: 'telepathy', move: 'dragonclaw', targetAbility: 'multiscale'},
 	{id: 'sniper-critical', sourceAbility: 'sniper', move: 'dragonclaw', targetAbility: 'immunity', critical: true},
+	{id: 'sniper-critical-blocked-by-battle-armor', sourceAbility: 'sniper', move: 'dragonclaw', targetAbility: 'battlearmor', critical: true},
 	{id: 'battle-armor-critical-prevention', sourceAbility: 'telepathy', move: 'dragonclaw', targetAbility: 'battlearmor', critical: true},
 	{id: 'shell-armor-critical-prevention', sourceAbility: 'telepathy', move: 'dragonclaw', targetAbility: 'shellarmor', critical: true},
 	{id: 'mold-breaker-bypasses-battle-armor', sourceAbility: 'moldbreaker', move: 'dragonclaw', targetAbility: 'battlearmor', critical: true},
+	{id: 'mold-breaker-bypasses-fur-coat', sourceAbility: 'moldbreaker', move: 'dragonclaw', targetAbility: 'furcoat'},
+	{id: 'mold-breaker-bypasses-multiscale', sourceAbility: 'moldbreaker', move: 'dragonclaw', targetAbility: 'multiscale'},
 ].map(damage);
 
 cases.push(
 	speed({id: 'quick-feet-paralysis', ability: 'quickfeet', status: 'par'}),
+	speed({id: 'chlorophyll-sun', ability: 'chlorophyll', weather: 'sunnyday'}),
+	speed({id: 'swift-swim-rain', ability: 'swiftswim', weather: 'raindance'}),
+	speed({id: 'slush-rush-snow', ability: 'slushrush', weather: 'snowscape'}),
+	speed({id: 'surge-surfer-electric-terrain', ability: 'surgesurfer', terrain: 'electricterrain'}),
 	criticalRatio({id: 'super-luck-critical-ratio', ability: 'superluck'}),
+	tryHit({id: 'bulletproof-blocks-aura-sphere', targetAbility: 'bulletproof', move: 'aurasphere'}),
+	tryHit({id: 'soundproof-blocks-hyper-voice', targetAbility: 'soundproof', move: 'hypervoice'}),
+	tryHit({id: 'telepathy-blocks-ally-surf', allyAbility: 'telepathy', move: 'surf', allyTarget: true}),
+	tryHit({id: 'mold-breaker-bypasses-bulletproof', sourceAbility: 'moldbreaker', targetAbility: 'bulletproof', move: 'aurasphere'}),
 );
 
 const contents = `${JSON.stringify({
 	showdown_commit: version.commit,
 	format: version.format,
 	methodology: {
-		source: 'pinned Battle.actions.getDamage, Pokemon.getStat, and ModifyCritRatio with resolved Champions data',
+		source: 'pinned Battle.actions.getDamage, Pokemon.getStat, ModifyCritRatio, and TryHit with resolved Champions data',
 		damage_roll_percent: 100,
 		critical_hit: 'per_case',
 		full_transition_comparison: false,

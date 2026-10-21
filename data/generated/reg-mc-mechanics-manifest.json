@@ -195,7 +195,7 @@
         "differential:data/fixtures/differential/ability-modifiers.json#battle-armor-critical-prevention",
         "file:crates/rotom-core/src/abilities.rs",
         "file:docs/research/pr-13-5-ability-modifiers.md",
-        "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#critical_prevention_preserves_showdown_event_and_rng_order",
         "species/falinks/ability-slot/0",
         "species/perrserker/ability-slot/0",
         "unit:crates/rotom-core/src/abilities.rs#multiple_descriptors_and_critical_handlers_compose_without_identity_branches"
@@ -272,16 +272,21 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/ability-modifiers.json#bulletproof-blocks-aura-sphere",
+        "file:crates/rotom-core/src/abilities.rs",
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture",
         "species/chesnaught/ability-slot/H",
-        "species/kommoo/ability-slot/0"
+        "species/kommoo/ability-slot/0",
+        "unit:crates/rotom-core/src/abilities.rs#environment_immunity_and_suppression_metadata_compose"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "cheekpouch",
@@ -308,20 +313,25 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/ability-modifiers.json#chlorophyll-sun",
+        "file:crates/rotom-core/src/abilities.rs",
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture",
         "species/leafeon/ability-slot/H",
         "species/scovillain/ability-slot/0",
         "species/venusaur/ability-slot/H",
         "species/victreebel/ability-slot/0",
         "species/vileplume/ability-slot/0",
-        "species/whimsicott/ability-slot/H"
+        "species/whimsicott/ability-slot/H",
+        "unit:crates/rotom-core/src/abilities.rs#environment_immunity_and_suppression_metadata_compose"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "clearbody",
@@ -1979,8 +1989,12 @@
       "reachability": "direct_legal_set",
       "evidence": [
         "differential:data/fixtures/differential/ability-modifiers.json#mold-breaker-bypasses-battle-armor",
+        "differential:data/fixtures/differential/ability-modifiers.json#mold-breaker-bypasses-bulletproof",
+        "differential:data/fixtures/differential/ability-modifiers.json#mold-breaker-bypasses-fur-coat",
+        "differential:data/fixtures/differential/ability-modifiers.json#mold-breaker-bypasses-multiscale",
         "file:crates/rotom-core/src/event.rs",
         "file:docs/research/pr-13-5-ability-modifiers.md",
+        "interaction_unit:crates/rotom-core/src/abilities.rs#environment_immunity_and_suppression_metadata_compose",
         "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture",
         "species/basculegion/ability-slot/H",
         "species/basculegionf/ability-slot/H",
@@ -3090,15 +3104,20 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/beartic/ability-slot/1"
+        "differential:data/fixtures/differential/ability-modifiers.json#slush-rush-snow",
+        "file:crates/rotom-core/src/abilities.rs",
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture",
+        "species/beartic/ability-slot/1",
+        "unit:crates/rotom-core/src/abilities.rs#environment_immunity_and_suppression_metadata_compose"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "sniper",
@@ -3107,6 +3126,7 @@
       "reachability": "direct_legal_set",
       "evidence": [
         "differential:data/fixtures/differential/ability-modifiers.json#sniper-critical",
+        "differential:data/fixtures/differential/ability-modifiers.json#sniper-critical-blocked-by-battle-armor",
         "file:crates/rotom-core/src/abilities.rs",
         "file:docs/research/pr-13-5-ability-modifiers.md",
         "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture",
@@ -3203,18 +3223,23 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/ability-modifiers.json#soundproof-blocks-hyper-voice",
+        "file:crates/rotom-core/src/abilities.rs",
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture",
         "species/abomasnow/ability-slot/H",
         "species/bastiodon/ability-slot/H",
         "species/kommoo/ability-slot/1",
-        "species/mrmime/ability-slot/0"
+        "species/mrmime/ability-slot/0",
+        "unit:crates/rotom-core/src/abilities.rs#environment_immunity_and_suppression_metadata_compose"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "speedboost",
@@ -3540,15 +3565,20 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/raichualola/ability-slot/0"
+        "differential:data/fixtures/differential/ability-modifiers.json#surge-surfer-electric-terrain",
+        "file:crates/rotom-core/src/abilities.rs",
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture",
+        "species/raichualola/ability-slot/0",
+        "unit:crates/rotom-core/src/abilities.rs#environment_immunity_and_suppression_metadata_compose"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "swarm",
@@ -3603,19 +3633,24 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/ability-modifiers.json#swift-swim-rain",
+        "file:crates/rotom-core/src/abilities.rs",
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture",
         "species/basculegion/ability-slot/0",
         "species/basculegionf/ability-slot/0",
         "species/beartic/ability-slot/H",
         "species/overqwil/ability-slot/1",
-        "species/qwilfish/ability-slot/1"
+        "species/qwilfish/ability-slot/1",
+        "unit:crates/rotom-core/src/abilities.rs#environment_immunity_and_suppression_metadata_compose"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "symbiosis",
@@ -3710,19 +3745,24 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/ability-modifiers.json#telepathy-blocks-ally-surf",
+        "file:crates/rotom-core/src/abilities.rs",
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture",
         "species/gardevoir/ability-slot/H",
         "species/medicham/ability-slot/H",
         "species/musharna/ability-slot/H",
         "species/noivern/ability-slot/H",
-        "species/oranguru/ability-slot/1"
+        "species/oranguru/ability-slot/1",
+        "unit:crates/rotom-core/src/abilities.rs#environment_immunity_and_suppression_metadata_compose"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "thermalexchange",
@@ -47394,18 +47434,18 @@
       "ability": {
         "total": 215,
         "implementation": {
-          "unsupported": 202,
+          "unsupported": 195,
           "partial": 0,
-          "implemented": 13
+          "implemented": 20
         },
         "verification": {
-          "not_tested": 202,
+          "not_tested": 195,
           "unit_tested": 0,
-          "differential_verified": 13
+          "differential_verified": 20
         },
         "interaction_verification": {
-          "not_tested": 202,
-          "unit_tested": 13,
+          "not_tested": 195,
+          "unit_tested": 20,
           "differential_verified": 0
         },
         "reachability": {

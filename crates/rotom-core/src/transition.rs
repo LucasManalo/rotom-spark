@@ -259,6 +259,7 @@ mod tests {
                 defensive_stat: None,
                 ignore_negative_offensive: false,
                 ignore_positive_defensive: false,
+                interaction_flags: crate::MoveInteractionFlags::default(),
             })
         }
 

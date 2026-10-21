@@ -5479,17 +5479,48 @@ fn ability_test_damage_case(
     panic!("no seed produced a 100% first damage roll")
 }
 
-fn ability_test_speed(dex: &rotom_dex::DexData, ability: &str, status: MajorStatus) -> u16 {
+fn ability_test_speed(
+    dex: &rotom_dex::DexData,
+    ability: &str,
+    status: Option<MajorStatus>,
+    weather: Option<&str>,
+    terrain: Option<&str>,
+) -> u16 {
     let source = set_with_moves(dex, "medicham", ability, &["tackle"]);
     let target = set_with_moves(dex, "snorlax", "immunity", &["recover"]);
     let battle = selected_battle_for_sets(dex, &source, &target, 0, false);
     let mut builder = BattleStateBuilder::from_state(battle).unwrap();
-    builder
-        .edit_pokemon(
-            PokemonRef::new(SideId::P1, PokemonIndex::new(0)),
-            |pokemon| pokemon.status = Some(status),
-        )
+    if let Some(status) = status {
+        builder
+            .edit_pokemon(
+                PokemonRef::new(SideId::P1, PokemonIndex::new(0)),
+                |pokemon| pokemon.status = Some(status),
+            )
+            .unwrap();
+    }
+    let ids = dex.field_effect_ids();
+    if let Some(weather) = weather {
+        let condition = match weather {
+            "sunnyday" => ids.sun,
+            "raindance" => ids.rain,
+            "snowscape" => ids.snow,
+            other => panic!("unsupported fixture weather {other}"),
+        }
         .unwrap();
+        builder.edit_field(|field| {
+            field.weather = Some(ConditionState::new(condition, Some(5)));
+        });
+    }
+    if let Some(terrain) = terrain {
+        let condition = match terrain {
+            "electricterrain" => ids.electric_terrain,
+            other => panic!("unsupported fixture terrain {other}"),
+        }
+        .unwrap();
+        builder.edit_field(|field| {
+            field.terrain = Some(ConditionState::new(condition, Some(5)));
+        });
+    }
     let battle = builder.build().unwrap();
     let action = TurnChoice {
         actions: [
@@ -5515,6 +5546,94 @@ fn ability_test_speed(dex: &rotom_dex::DexData, ability: &str, status: MajorStat
         .find(|action| action.side == SideId::P1 && action.slot == ActiveSlot::Left)
         .unwrap()
         .speed
+}
+
+fn ability_test_try_hit(
+    dex: &rotom_dex::DexData,
+    source_ability: &str,
+    target_ability: &str,
+    move_name: &str,
+    ally_target: bool,
+) -> bool {
+    let source = set_with_moves(dex, "medicham", source_ability, &[move_name]);
+    let target = set_with_moves(dex, "snorlax", target_ability, &["recover"]);
+    let ally = set_with_moves(dex, "magikarp", target_ability, &["tackle"]);
+    let passive = set_with_moves(dex, "snorlax", "immunity", &["recover"]);
+    let battle = if ally_target {
+        selected_battle_for_teams(
+            dex,
+            &four_member_team(source, ally),
+            &four_member_team(passive.clone(), passive),
+            0,
+        )
+    } else {
+        selected_battle_for_teams(
+            dex,
+            &four_member_team(
+                source,
+                set_with_moves(dex, "magikarp", "swiftswim", &["tackle"]),
+            ),
+            &four_member_team(target, passive),
+            0,
+        )
+    };
+    let target_ref = PokemonRef::new(
+        if ally_target { SideId::P1 } else { SideId::P2 },
+        PokemonIndex::new(u8::from(ally_target)),
+    );
+    let result = step(
+        &battle,
+        &JointAction::Turn {
+            p1: TurnChoice {
+                actions: [
+                    use_move(
+                        0,
+                        if ally_target || move_name == "hypervoice" {
+                            ActionTarget::Automatic
+                        } else {
+                            ActionTarget::Foe(ActiveSlot::Left)
+                        },
+                    ),
+                    use_move(0, ActionTarget::Foe(ActiveSlot::Right)),
+                ],
+            },
+            p2: TurnChoice {
+                actions: [
+                    use_move(0, ActionTarget::Automatic),
+                    use_move(0, ActionTarget::Automatic),
+                ],
+            },
+        },
+        &Mechanics::new(dex, &EffectRegistry::new()),
+    )
+    .unwrap();
+    let turn = result.diagnostics.turn.as_ref().unwrap();
+    let allowed = turn
+        .events
+        .iter()
+        .find_map(|event| {
+            (event.event == BattleEvent::TryHit
+                && event.context.source == Some(PokemonRef::new(SideId::P1, PokemonIndex::new(0)))
+                && event.context.target == Some(target_ref))
+            .then_some(event.value == rotom_core::EventValue::Boolean(true))
+        })
+        .unwrap();
+    let outcome = turn
+        .target_outcomes
+        .iter()
+        .find(|outcome| {
+            outcome.source == PokemonRef::new(SideId::P1, PokemonIndex::new(0))
+                && outcome.target == target_ref
+        })
+        .unwrap();
+    if allowed {
+        assert_eq!(outcome.result, TargetResult::Hit);
+        assert!(outcome.applied_hp_loss > 0);
+    } else {
+        assert_eq!(outcome.result, TargetResult::Immune);
+        assert_eq!(outcome.applied_hp_loss, 0);
+    }
+    allowed
 }
 
 fn ability_test_critical_ratio(dex: &rotom_dex::DexData, ability: &str) -> i64 {
@@ -5677,7 +5796,7 @@ fn ability_modifier_damage_matches_pinned_showdown_fixture() {
             None => None,
         };
         let actual = match case["operation"].as_str().unwrap() {
-            "damage" => u64::from(ability_test_damage_case(
+            "damage" => serde_json::json!(ability_test_damage_case(
                 &dex,
                 case["source_ability"].as_str().unwrap(),
                 case["move"].as_str().unwrap(),
@@ -5687,22 +5806,31 @@ fn ability_modifier_damage_matches_pinned_showdown_fixture() {
                 false,
                 case["critical"].as_bool(),
             )),
-            "speed" => u64::from(ability_test_speed(
+            "speed" => serde_json::json!(ability_test_speed(
                 &dex,
                 case["ability"].as_str().unwrap(),
-                status(&case["status"]).unwrap(),
+                status(&case["status"]),
+                case["weather"].as_str(),
+                case["terrain"].as_str(),
             )),
-            "critical_ratio" => u64::try_from(ability_test_critical_ratio(
+            "critical_ratio" => serde_json::json!(ability_test_critical_ratio(
                 &dex,
                 case["ability"].as_str().unwrap(),
-            ))
-            .unwrap(),
+            )),
+            "try_hit" => serde_json::json!(ability_test_try_hit(
+                &dex,
+                case["source_ability"].as_str().unwrap(),
+                case["target_ability"].as_str().unwrap(),
+                case["move"].as_str().unwrap(),
+                case["ally_target"].as_bool().unwrap(),
+            )),
             operation => panic!("unsupported ability fixture operation {operation}"),
         };
         let expected = match case["operation"].as_str().unwrap() {
-            "damage" => case["damage"].as_u64().unwrap(),
-            "speed" => case["speed"].as_u64().unwrap(),
-            "critical_ratio" => case["critical_ratio"].as_u64().unwrap(),
+            "damage" => case["damage"].clone(),
+            "speed" => case["speed"].clone(),
+            "critical_ratio" => case["critical_ratio"].clone(),
+            "try_hit" => case["allowed"].clone(),
             _ => unreachable!(),
         };
         assert_eq!(actual, expected, "{}", case["id"].as_str().unwrap());
@@ -5778,50 +5906,198 @@ fn ability_batch_interactions_replay_deterministically() {
 }
 
 #[test]
+fn critical_prevention_preserves_showdown_event_and_rng_order() {
+    let dex = champions_reg_mc().unwrap();
+    let source = set_with_moves(&dex, "medicham", "superluck", &["dragonclaw"]);
+    let target = set_with_moves(&dex, "snorlax", "battlearmor", &["recover"]);
+    let action = JointAction::Turn {
+        p1: opposing_targets_choice(),
+        p2: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Automatic),
+                use_move(0, ActionTarget::Automatic),
+            ],
+        },
+    };
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let (state, result) = (0..10_000)
+        .find_map(|seed| {
+            let state = selected_battle_for_sets(&dex, &source, &target, seed, true);
+            let result = step(&state, &action, &mechanics).unwrap();
+            result
+                .state
+                .rng()
+                .trace()
+                .unwrap()
+                .iter()
+                .any(|entry| {
+                    entry.reason == RngReason::CriticalHit
+                        && matches!(entry.operation, RngOperation::Chance { numerator, .. } if entry.result < numerator)
+                })
+                .then_some((state, result))
+        })
+        .expect("a deterministic seed should roll a critical hit");
+
+    let trace = result.state.rng().trace().unwrap();
+    let critical_rng = trace
+        .iter()
+        .position(|entry| entry.reason == RngReason::CriticalHit)
+        .unwrap();
+    let damage_rng = trace
+        .iter()
+        .position(|entry| entry.reason == RngReason::DamageRoll)
+        .unwrap();
+    assert!(critical_rng < damage_rng);
+
+    let source_ref = PokemonRef::new(SideId::P1, PokemonIndex::new(0));
+    let target_ref = PokemonRef::new(SideId::P2, PokemonIndex::new(0));
+    let turn = result.diagnostics.turn.as_ref().unwrap();
+    let event_position = |event| {
+        turn.events.iter().position(|dispatch| {
+            dispatch.event == event
+                && dispatch.context.source == Some(source_ref)
+                && dispatch.context.target == Some(target_ref)
+        })
+    };
+    let ratio = event_position(BattleEvent::ModifyCritRatio).unwrap();
+    let prevention = event_position(BattleEvent::CriticalHit).unwrap();
+    let power = event_position(BattleEvent::ModifyBasePower).unwrap();
+    let damage = event_position(BattleEvent::ModifyDamage).unwrap();
+    assert!(ratio < prevention && prevention < power && power < damage);
+    assert_eq!(turn.events[ratio].value, rotom_core::EventValue::Integer(2));
+    assert_eq!(
+        turn.events[prevention].value,
+        rotom_core::EventValue::Boolean(false)
+    );
+    assert_eq!(step(&state, &action, &mechanics).unwrap(), result);
+}
+
+use rotom_core::AbilitySuppression::{Breakable, Unbreakable};
+const EXPECTED_ABILITY_HANDLERS: &[(
+    &str,
+    rotom_core::AbilityBehavior,
+    rotom_core::AbilitySuppression,
+)] = &[
+    (
+        "hugepower",
+        rotom_core::AbilityBehavior::DoubleAttack,
+        Unbreakable,
+    ),
+    (
+        "purepower",
+        rotom_core::AbilityBehavior::DoubleAttack,
+        Unbreakable,
+    ),
+    (
+        "guts",
+        rotom_core::AbilityBehavior::StatusedAttack,
+        Unbreakable,
+    ),
+    (
+        "furcoat",
+        rotom_core::AbilityBehavior::DoubleDefense,
+        Breakable,
+    ),
+    (
+        "marvelscale",
+        rotom_core::AbilityBehavior::StatusedDefense,
+        Breakable,
+    ),
+    (
+        "technician",
+        rotom_core::AbilityBehavior::LowPowerBoost,
+        Unbreakable,
+    ),
+    (
+        "multiscale",
+        rotom_core::AbilityBehavior::FullHpDamageReduction,
+        Breakable,
+    ),
+    (
+        "quickfeet",
+        rotom_core::AbilityBehavior::StatusedSpeed,
+        Unbreakable,
+    ),
+    (
+        "quickfeet",
+        rotom_core::AbilityBehavior::IgnoreParalysisSpeedPenalty,
+        Unbreakable,
+    ),
+    (
+        "superluck",
+        rotom_core::AbilityBehavior::IncreaseCriticalRatio,
+        Unbreakable,
+    ),
+    (
+        "battlearmor",
+        rotom_core::AbilityBehavior::PreventCriticalHit,
+        Breakable,
+    ),
+    (
+        "shellarmor",
+        rotom_core::AbilityBehavior::PreventCriticalHit,
+        Breakable,
+    ),
+    (
+        "sniper",
+        rotom_core::AbilityBehavior::BoostCriticalDamage,
+        Unbreakable,
+    ),
+    (
+        "moldbreaker",
+        rotom_core::AbilityBehavior::BreaksTargetAbilities,
+        Unbreakable,
+    ),
+    (
+        "chlorophyll",
+        rotom_core::AbilityBehavior::SunSpeed,
+        Unbreakable,
+    ),
+    (
+        "swiftswim",
+        rotom_core::AbilityBehavior::RainSpeed,
+        Unbreakable,
+    ),
+    (
+        "slushrush",
+        rotom_core::AbilityBehavior::SnowSpeed,
+        Unbreakable,
+    ),
+    (
+        "surgesurfer",
+        rotom_core::AbilityBehavior::ElectricTerrainSpeed,
+        Unbreakable,
+    ),
+    (
+        "bulletproof",
+        rotom_core::AbilityBehavior::BulletImmunity,
+        Breakable,
+    ),
+    (
+        "soundproof",
+        rotom_core::AbilityBehavior::SoundImmunity,
+        Breakable,
+    ),
+    (
+        "telepathy",
+        rotom_core::AbilityBehavior::AllyDamageImmunity,
+        Breakable,
+    ),
+];
+
+#[test]
 fn ability_handler_registration_is_declarative_and_leaves_other_abilities_unsupported() {
     let dex = champions_reg_mc().unwrap();
     let handlers = dex.ability_handlers();
-    assert_eq!(handlers.len(), 14);
+    assert_eq!(handlers.len(), EXPECTED_ABILITY_HANDLERS.len());
 
-    for (id, expected) in [
-        ("hugepower", rotom_core::AbilityBehavior::DoubleAttack),
-        ("purepower", rotom_core::AbilityBehavior::DoubleAttack),
-        ("guts", rotom_core::AbilityBehavior::StatusedAttack),
-        ("furcoat", rotom_core::AbilityBehavior::DoubleDefense),
-        ("marvelscale", rotom_core::AbilityBehavior::StatusedDefense),
-        ("technician", rotom_core::AbilityBehavior::LowPowerBoost),
-        (
-            "multiscale",
-            rotom_core::AbilityBehavior::FullHpDamageReduction,
-        ),
-        ("quickfeet", rotom_core::AbilityBehavior::StatusedSpeed),
-        (
-            "quickfeet",
-            rotom_core::AbilityBehavior::IgnoreParalysisSpeedPenalty,
-        ),
-        (
-            "superluck",
-            rotom_core::AbilityBehavior::IncreaseCriticalRatio,
-        ),
-        (
-            "battlearmor",
-            rotom_core::AbilityBehavior::PreventCriticalHit,
-        ),
-        (
-            "shellarmor",
-            rotom_core::AbilityBehavior::PreventCriticalHit,
-        ),
-        ("sniper", rotom_core::AbilityBehavior::BoostCriticalDamage),
-        (
-            "moldbreaker",
-            rotom_core::AbilityBehavior::BreaksTargetAbilities,
-        ),
-    ] {
+    for &(id, expected, suppression) in EXPECTED_ABILITY_HANDLERS {
         let ability = dex.resolve_ability(id).unwrap().0;
         assert!(dex.ability_has_behavior(ability, expected));
         assert!(handlers
             .iter()
-            .any(|handler| handler == &rotom_core::AbilityHandler::new(ability, expected)));
+            .any(|handler| handler
+                == &rotom_core::AbilityHandler::new(ability, expected, suppression)));
     }
 
     let unsupported = dex.resolve_ability("pressure").unwrap().0;

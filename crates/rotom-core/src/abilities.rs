@@ -1,6 +1,7 @@
 use crate::{
     AbilityId, BattleError, BattleEvent, EffectInvocation, EffectOrder, EffectOwner,
-    EffectRegistry, EffectSource, EffectState, EventContext, EventDispatch, EventValue, PokemonRef,
+    EffectRegistry, EffectSource, EffectState, EventContext, EventDispatch, EventValue,
+    MoveCategory, PokemonRef, TerrainEnvironment, WeatherEnvironment,
 };
 
 /// A reusable implementation family for an ability resolved by static data.
@@ -22,6 +23,20 @@ pub enum AbilityBehavior {
     PreventCriticalHit,
     BoostCriticalDamage,
     BreaksTargetAbilities,
+    SunSpeed,
+    RainSpeed,
+    SnowSpeed,
+    ElectricTerrainSpeed,
+    BulletImmunity,
+    SoundImmunity,
+    AllyDamageImmunity,
+}
+
+/// Whether Mold Breaker-style move suppression can omit this handler.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum AbilitySuppression {
+    Breakable,
+    Unbreakable,
 }
 
 /// Joins a stable Dex ability identity to one native behavior family.
@@ -29,12 +44,21 @@ pub enum AbilityBehavior {
 pub struct AbilityHandler {
     pub ability: AbilityId,
     pub behavior: AbilityBehavior,
+    pub suppression: AbilitySuppression,
 }
 
 impl AbilityHandler {
     #[must_use]
-    pub const fn new(ability: AbilityId, behavior: AbilityBehavior) -> Self {
-        Self { ability, behavior }
+    pub const fn new(
+        ability: AbilityId,
+        behavior: AbilityBehavior,
+        suppression: AbilitySuppression,
+    ) -> Self {
+        Self {
+            ability,
+            behavior,
+            suppression,
+        }
     }
 }
 
@@ -48,86 +72,183 @@ pub(crate) fn register(
 }
 
 fn register_handler(registry: &mut EffectRegistry, handler: AbilityHandler) {
-    let source = EffectSource::Ability(handler.ability);
-    match handler.behavior {
-        AbilityBehavior::DoubleAttack => registry.register(
-            BattleEvent::ModifyAttack,
-            source,
-            EffectOrder::new(0, 5, 0),
-            double_source_stat,
-        ),
-        AbilityBehavior::StatusedAttack => registry.register(
-            BattleEvent::ModifyAttack,
-            source,
-            EffectOrder::new(0, 5, 0),
-            guts_attack,
-        ),
-        AbilityBehavior::DoubleDefense => register_defense_handlers(
-            registry,
-            source,
-            EffectOrder::new(0, 6, 0),
-            double_holder_defense,
-        ),
-        AbilityBehavior::StatusedDefense => register_defense_handlers(
-            registry,
-            source,
-            EffectOrder::new(0, 6, 0),
-            marvel_scale_defense,
-        ),
-        AbilityBehavior::LowPowerBoost => registry.register(
-            BattleEvent::ModifyBasePower,
-            source,
-            EffectOrder::new(0, 30, 0),
-            technician_base_power,
-        ),
-        AbilityBehavior::FullHpDamageReduction => registry.register_suppressible(
-            BattleEvent::ModifyDamage,
-            source,
-            EffectOrder::default(),
-            full_hp_damage_reduction,
-        ),
-        AbilityBehavior::StatusedSpeed => registry.register(
-            BattleEvent::ModifySpeed,
-            source,
-            EffectOrder::default(),
-            statused_speed,
-        ),
-        AbilityBehavior::IgnoreParalysisSpeedPenalty => registry.register(
-            BattleEvent::ModifySpeed,
-            source,
-            EffectOrder::new(0, -100, 0),
-            compensate_paralysis_speed,
-        ),
-        AbilityBehavior::IncreaseCriticalRatio => registry.register(
-            BattleEvent::ModifyCritRatio,
-            source,
-            EffectOrder::default(),
-            increase_critical_ratio,
-        ),
-        AbilityBehavior::PreventCriticalHit => registry.register_suppressible(
-            BattleEvent::CriticalHit,
-            source,
-            EffectOrder::default(),
-            prevent_critical_hit,
-        ),
-        AbilityBehavior::BoostCriticalDamage => registry.register(
-            BattleEvent::ModifyDamage,
-            source,
-            EffectOrder::default(),
-            boost_critical_damage,
-        ),
-        AbilityBehavior::BreaksTargetAbilities => {}
+    for registration in BEHAVIOR_REGISTRATIONS
+        .iter()
+        .filter(|registration| registration.behavior == handler.behavior)
+    {
+        register_callback(registry, handler, *registration);
     }
 }
 
-fn register_defense_handlers(
-    registry: &mut EffectRegistry,
-    source: EffectSource,
+#[derive(Clone, Copy)]
+struct BehaviorRegistration {
+    behavior: AbilityBehavior,
+    event: BattleEvent,
     order: EffectOrder,
     callback: crate::EffectCallback,
+}
+
+impl BehaviorRegistration {
+    const fn new(
+        behavior: AbilityBehavior,
+        event: BattleEvent,
+        order: EffectOrder,
+        callback: crate::EffectCallback,
+    ) -> Self {
+        Self {
+            behavior,
+            event,
+            order,
+            callback,
+        }
+    }
+}
+
+const DEFAULT_ORDER: EffectOrder = EffectOrder::new(0, 0, 0);
+const BEHAVIOR_REGISTRATIONS: &[BehaviorRegistration] = &[
+    BehaviorRegistration::new(
+        AbilityBehavior::DoubleAttack,
+        BattleEvent::ModifyAttack,
+        EffectOrder::new(0, 5, 0),
+        double_source_stat,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::StatusedAttack,
+        BattleEvent::ModifyAttack,
+        EffectOrder::new(0, 5, 0),
+        guts_attack,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::DoubleDefense,
+        BattleEvent::ModifyDefense,
+        EffectOrder::new(0, 6, 0),
+        double_holder_defense,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::DoubleDefense,
+        BattleEvent::ModifySourceDefense,
+        EffectOrder::new(0, 6, 0),
+        double_holder_defense,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::StatusedDefense,
+        BattleEvent::ModifyDefense,
+        EffectOrder::new(0, 6, 0),
+        marvel_scale_defense,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::StatusedDefense,
+        BattleEvent::ModifySourceDefense,
+        EffectOrder::new(0, 6, 0),
+        marvel_scale_defense,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::LowPowerBoost,
+        BattleEvent::ModifyBasePower,
+        EffectOrder::new(0, 30, 0),
+        technician_base_power,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::FullHpDamageReduction,
+        BattleEvent::ModifyDamage,
+        DEFAULT_ORDER,
+        full_hp_damage_reduction,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::StatusedSpeed,
+        BattleEvent::ModifySpeed,
+        DEFAULT_ORDER,
+        statused_speed,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::IgnoreParalysisSpeedPenalty,
+        BattleEvent::ModifySpeed,
+        EffectOrder::new(0, -100, 0),
+        compensate_paralysis_speed,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::IncreaseCriticalRatio,
+        BattleEvent::ModifyCritRatio,
+        DEFAULT_ORDER,
+        increase_critical_ratio,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::PreventCriticalHit,
+        BattleEvent::CriticalHit,
+        DEFAULT_ORDER,
+        prevent_critical_hit,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::BoostCriticalDamage,
+        BattleEvent::ModifyDamage,
+        DEFAULT_ORDER,
+        boost_critical_damage,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::SunSpeed,
+        BattleEvent::ModifySpeed,
+        DEFAULT_ORDER,
+        sun_speed,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::RainSpeed,
+        BattleEvent::ModifySpeed,
+        DEFAULT_ORDER,
+        rain_speed,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::SnowSpeed,
+        BattleEvent::ModifySpeed,
+        DEFAULT_ORDER,
+        snow_speed,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::ElectricTerrainSpeed,
+        BattleEvent::ModifySpeed,
+        DEFAULT_ORDER,
+        electric_terrain_speed,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::BulletImmunity,
+        BattleEvent::TryHit,
+        DEFAULT_ORDER,
+        bullet_immunity,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::SoundImmunity,
+        BattleEvent::TryHit,
+        DEFAULT_ORDER,
+        sound_immunity,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::AllyDamageImmunity,
+        BattleEvent::TryHit,
+        DEFAULT_ORDER,
+        ally_damage_immunity,
+    ),
+];
+
+fn register_callback(
+    registry: &mut EffectRegistry,
+    handler: AbilityHandler,
+    registration: BehaviorRegistration,
 ) {
-    for event in [BattleEvent::ModifyDefense, BattleEvent::ModifySourceDefense] {
-        registry.register_suppressible(event, source, order, callback);
+    let source = EffectSource::Ability(handler.ability);
+    match handler.suppression {
+        AbilitySuppression::Breakable => {
+            registry.register_suppressible(
+                registration.event,
+                source,
+                registration.order,
+                registration.callback,
+            );
+        }
+        AbilitySuppression::Unbreakable => registry.register(
+            registration.event,
+            source,
+            registration.order,
+            registration.callback,
+        ),
     }
 }
 
@@ -228,6 +349,74 @@ fn statused_speed(
     Ok(())
 }
 
+fn sun_speed(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    environment_speed(
+        invocation,
+        context,
+        dispatch,
+        context.weather == Some(WeatherEnvironment::Sun),
+    )
+}
+
+fn rain_speed(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    environment_speed(
+        invocation,
+        context,
+        dispatch,
+        context.weather == Some(WeatherEnvironment::Rain),
+    )
+}
+
+fn snow_speed(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    environment_speed(
+        invocation,
+        context,
+        dispatch,
+        context.weather == Some(WeatherEnvironment::Snow),
+    )
+}
+
+fn electric_terrain_speed(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    environment_speed(
+        invocation,
+        context,
+        dispatch,
+        context.terrain == Some(TerrainEnvironment::Electric),
+    )
+}
+
+fn environment_speed(
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+    environment_matches: bool,
+) -> Result<(), BattleError> {
+    if environment_matches && matching_source(invocation, context).is_some() {
+        modify_integer(dispatch, 2, 1)?;
+    }
+    Ok(())
+}
+
 fn compensate_paralysis_speed(
     state: &mut EffectState<'_>,
     invocation: &EffectInvocation,
@@ -276,6 +465,53 @@ fn boost_critical_damage(
 ) -> Result<(), BattleError> {
     if context.critical && matching_source(invocation, context).is_some() {
         modify_integer(dispatch, 3, 2)?;
+    }
+    Ok(())
+}
+
+fn bullet_immunity(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    prevent_move_hit(invocation, context, dispatch, context.move_flags.bullet)
+}
+
+fn sound_immunity(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    prevent_move_hit(invocation, context, dispatch, context.move_flags.sound)
+}
+
+fn ally_damage_immunity(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let is_ally_damage = context
+        .source
+        .zip(context.target)
+        .is_some_and(|(source, target)| source != target && source.side == target.side)
+        && context.move_category != Some(MoveCategory::Status);
+    prevent_move_hit(invocation, context, dispatch, is_ally_damage)
+}
+
+fn prevent_move_hit(
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+    blocked: bool,
+) -> Result<(), BattleError> {
+    let external_target = context.source != context.target;
+    if blocked && external_target && matching_target(invocation, context).is_some() {
+        boolean(dispatch)?;
+        dispatch.value = EventValue::Boolean(false);
+        dispatch.mark_immune();
     }
     Ok(())
 }
@@ -416,6 +652,14 @@ mod tests {
         }
     }
 
+    const fn unbreakable(ability: AbilityId, behavior: AbilityBehavior) -> AbilityHandler {
+        AbilityHandler::new(ability, behavior, AbilitySuppression::Unbreakable)
+    }
+
+    const fn breakable(ability: AbilityId, behavior: AbilityBehavior) -> AbilityHandler {
+        AbilityHandler::new(ability, behavior, AbilitySuppression::Breakable)
+    }
+
     fn dispatch_integer(
         registry: &EffectRegistry,
         battle: &mut BattleState,
@@ -436,9 +680,9 @@ mod tests {
         let registry = crate::conditions::composed_registry(
             &EffectRegistry::new(),
             [
-                AbilityHandler::new(huge_power, AbilityBehavior::DoubleAttack),
-                AbilityHandler::new(pure_power, AbilityBehavior::DoubleAttack),
-                AbilityHandler::new(technician, AbilityBehavior::LowPowerBoost),
+                unbreakable(huge_power, AbilityBehavior::DoubleAttack),
+                unbreakable(pure_power, AbilityBehavior::DoubleAttack),
+                unbreakable(technician, AbilityBehavior::LowPowerBoost),
             ],
         );
         let mut huge_power_battle = battle(huge_power, AbilityId::new(1));
@@ -495,10 +739,10 @@ mod tests {
         let registry = crate::conditions::composed_registry(
             &EffectRegistry::new(),
             [
-                AbilityHandler::new(guts, AbilityBehavior::StatusedAttack),
-                AbilityHandler::new(marvel_scale, AbilityBehavior::StatusedDefense),
-                AbilityHandler::new(multiscale, AbilityBehavior::FullHpDamageReduction),
-                AbilityHandler::new(fur_coat, AbilityBehavior::DoubleDefense),
+                unbreakable(guts, AbilityBehavior::StatusedAttack),
+                breakable(marvel_scale, AbilityBehavior::StatusedDefense),
+                breakable(multiscale, AbilityBehavior::FullHpDamageReduction),
+                breakable(fur_coat, AbilityBehavior::DoubleDefense),
             ],
         );
 
@@ -592,11 +836,11 @@ mod tests {
         let registry = crate::conditions::composed_registry(
             &EffectRegistry::new(),
             [
-                AbilityHandler::new(quick_feet, AbilityBehavior::StatusedSpeed),
-                AbilityHandler::new(quick_feet, AbilityBehavior::IgnoreParalysisSpeedPenalty),
-                AbilityHandler::new(super_luck, AbilityBehavior::IncreaseCriticalRatio),
-                AbilityHandler::new(battle_armor, AbilityBehavior::PreventCriticalHit),
-                AbilityHandler::new(sniper, AbilityBehavior::BoostCriticalDamage),
+                unbreakable(quick_feet, AbilityBehavior::StatusedSpeed),
+                unbreakable(quick_feet, AbilityBehavior::IgnoreParalysisSpeedPenalty),
+                unbreakable(super_luck, AbilityBehavior::IncreaseCriticalRatio),
+                breakable(battle_armor, AbilityBehavior::PreventCriticalHit),
+                unbreakable(sniper, AbilityBehavior::BoostCriticalDamage),
             ],
         );
 
@@ -664,5 +908,92 @@ mod tests {
             )
             .unwrap();
         assert_eq!(boosted.value, EventValue::Integer(150));
+    }
+
+    #[test]
+    fn environment_immunity_and_suppression_metadata_compose() {
+        let chlorophyll = AbilityId::new(40);
+        let bulletproof = AbilityId::new(41);
+        let source_combo = AbilityId::new(42);
+        let multiscale = AbilityId::new(43);
+        let registry = crate::conditions::composed_registry(
+            &EffectRegistry::new(),
+            [
+                unbreakable(chlorophyll, AbilityBehavior::SunSpeed),
+                breakable(bulletproof, AbilityBehavior::BulletImmunity),
+                unbreakable(source_combo, AbilityBehavior::BreaksTargetAbilities),
+                unbreakable(source_combo, AbilityBehavior::BoostCriticalDamage),
+                breakable(multiscale, AbilityBehavior::FullHpDamageReduction),
+            ],
+        );
+
+        let mut speed_battle = battle(chlorophyll, AbilityId::new(1));
+        let speed = registry
+            .dispatch(
+                &mut speed_battle,
+                BattleEvent::ModifySpeed,
+                EventContext {
+                    weather: Some(WeatherEnvironment::Sun),
+                    ..context()
+                },
+                EventValue::Integer(100),
+            )
+            .unwrap();
+        assert_eq!(speed.value, EventValue::Integer(200));
+
+        let mut immunity_battle = battle(AbilityId::new(1), bulletproof);
+        let bullet_context = EventContext {
+            move_flags: crate::MoveInteractionFlags {
+                bullet: true,
+                sound: false,
+            },
+            ..context()
+        };
+        let blocked = registry
+            .dispatch(
+                &mut immunity_battle,
+                BattleEvent::TryHit,
+                bullet_context,
+                EventValue::Boolean(true),
+            )
+            .unwrap();
+        assert_eq!(blocked.value, EventValue::Boolean(false));
+        let bypassed = registry
+            .dispatch(
+                &mut immunity_battle,
+                BattleEvent::TryHit,
+                EventContext {
+                    suppress_target_ability: true,
+                    ..bullet_context
+                },
+                EventValue::Boolean(true),
+            )
+            .unwrap();
+        assert_eq!(bypassed.value, EventValue::Boolean(true));
+
+        let mut source_battle = battle(source_combo, multiscale);
+        let source_preserved = registry
+            .dispatch(
+                &mut source_battle,
+                BattleEvent::ModifyDamage,
+                EventContext {
+                    suppress_target_ability: true,
+                    critical: true,
+                    ..context()
+                },
+                EventValue::Integer(100),
+            )
+            .unwrap();
+        assert_eq!(source_preserved.value, EventValue::Integer(150));
+        assert!(source_preserved
+            .invocations
+            .iter()
+            .any(|invocation| invocation.source == EffectSource::Ability(source_combo)));
+        assert!(!source_preserved.invocations.iter().any(|invocation| {
+            invocation.owner
+                == EffectOwner::Pokemon {
+                    pokemon: context().target.unwrap(),
+                }
+        }));
     }
 }

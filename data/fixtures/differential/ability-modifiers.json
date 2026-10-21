@@ -2,7 +2,7 @@
   "showdown_commit": "b79ce06d06b8f0dc8de8bb348bc9cab5d931553f",
   "format": "gen9championsvgc2026regmc",
   "methodology": {
-    "source": "pinned Battle.actions.getDamage, Pokemon.getStat, and ModifyCritRatio with resolved Champions data",
+    "source": "pinned Battle.actions.getDamage, Pokemon.getStat, ModifyCritRatio, and TryHit with resolved Champions data",
     "damage_roll_percent": 100,
     "critical_hit": "per_case",
     "full_transition_comparison": false
@@ -117,6 +117,18 @@
       "damage": 78
     },
     {
+      "id": "sniper-critical-blocked-by-battle-armor",
+      "ability": "sniper",
+      "operation": "damage",
+      "source_ability": "sniper",
+      "target_ability": "battlearmor",
+      "move": "dragonclaw",
+      "critical": true,
+      "source_status": null,
+      "target_status": null,
+      "damage": 35
+    },
+    {
       "id": "battle-armor-critical-prevention",
       "ability": "battlearmor",
       "operation": "damage",
@@ -153,17 +165,119 @@
       "damage": 52
     },
     {
+      "id": "mold-breaker-bypasses-fur-coat",
+      "ability": "moldbreaker",
+      "operation": "damage",
+      "source_ability": "moldbreaker",
+      "target_ability": "furcoat",
+      "move": "dragonclaw",
+      "critical": false,
+      "source_status": null,
+      "target_status": null,
+      "damage": 35
+    },
+    {
+      "id": "mold-breaker-bypasses-multiscale",
+      "ability": "moldbreaker",
+      "operation": "damage",
+      "source_ability": "moldbreaker",
+      "target_ability": "multiscale",
+      "move": "dragonclaw",
+      "critical": false,
+      "source_status": null,
+      "target_status": null,
+      "damage": 35
+    },
+    {
       "id": "quick-feet-paralysis",
       "ability": "quickfeet",
       "operation": "speed",
       "status": "par",
+      "weather": null,
+      "terrain": null,
       "speed": 150
+    },
+    {
+      "id": "chlorophyll-sun",
+      "ability": "chlorophyll",
+      "operation": "speed",
+      "status": null,
+      "weather": "sunnyday",
+      "terrain": null,
+      "speed": 200
+    },
+    {
+      "id": "swift-swim-rain",
+      "ability": "swiftswim",
+      "operation": "speed",
+      "status": null,
+      "weather": "raindance",
+      "terrain": null,
+      "speed": 200
+    },
+    {
+      "id": "slush-rush-snow",
+      "ability": "slushrush",
+      "operation": "speed",
+      "status": null,
+      "weather": "snowscape",
+      "terrain": null,
+      "speed": 200
+    },
+    {
+      "id": "surge-surfer-electric-terrain",
+      "ability": "surgesurfer",
+      "operation": "speed",
+      "status": null,
+      "weather": null,
+      "terrain": "electricterrain",
+      "speed": 200
     },
     {
       "id": "super-luck-critical-ratio",
       "ability": "superluck",
       "operation": "critical_ratio",
       "critical_ratio": 2
+    },
+    {
+      "id": "bulletproof-blocks-aura-sphere",
+      "ability": "bulletproof",
+      "operation": "try_hit",
+      "source_ability": "telepathy",
+      "target_ability": "bulletproof",
+      "move": "aurasphere",
+      "ally_target": false,
+      "allowed": false
+    },
+    {
+      "id": "soundproof-blocks-hyper-voice",
+      "ability": "soundproof",
+      "operation": "try_hit",
+      "source_ability": "telepathy",
+      "target_ability": "soundproof",
+      "move": "hypervoice",
+      "ally_target": false,
+      "allowed": false
+    },
+    {
+      "id": "telepathy-blocks-ally-surf",
+      "ability": "telepathy",
+      "operation": "try_hit",
+      "source_ability": "telepathy",
+      "target_ability": "telepathy",
+      "move": "surf",
+      "ally_target": true,
+      "allowed": false
+    },
+    {
+      "id": "mold-breaker-bypasses-bulletproof",
+      "ability": "moldbreaker",
+      "operation": "try_hit",
+      "source_ability": "moldbreaker",
+      "target_ability": "bulletproof",
+      "move": "aurasphere",
+      "ally_target": false,
+      "allowed": true
     }
   ]
 }

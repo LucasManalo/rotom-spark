@@ -4,6 +4,24 @@ use crate::{
 };
 use serde::{Deserialize, Serialize};
 
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum WeatherEnvironment {
+    Rain,
+    Sun,
+    Sandstorm,
+    Snow,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum TerrainEnvironment {
+    Electric,
+    Grassy,
+    Psychic,
+    Misty,
+}
+
 /// Static identities used to attach field mechanics to compact condition IDs.
 ///
 /// The IDs live in immutable mechanics configuration rather than mutable
@@ -50,6 +68,30 @@ pub struct FieldEffectIds {
 }
 
 impl FieldEffectIds {
+    pub(crate) fn weather_environment(&self, battle: &BattleState) -> Option<WeatherEnvironment> {
+        let weather = battle.field.weather?.id;
+        [
+            (self.rain, WeatherEnvironment::Rain),
+            (self.sun, WeatherEnvironment::Sun),
+            (self.sandstorm, WeatherEnvironment::Sandstorm),
+            (self.snow, WeatherEnvironment::Snow),
+        ]
+        .into_iter()
+        .find_map(|(id, environment)| (id == Some(weather)).then_some(environment))
+    }
+
+    pub(crate) fn terrain_environment(&self, battle: &BattleState) -> Option<TerrainEnvironment> {
+        let terrain = battle.field.terrain?.id;
+        [
+            (self.electric_terrain, TerrainEnvironment::Electric),
+            (self.grassy_terrain, TerrainEnvironment::Grassy),
+            (self.psychic_terrain, TerrainEnvironment::Psychic),
+            (self.misty_terrain, TerrainEnvironment::Misty),
+        ]
+        .into_iter()
+        .find_map(|(id, environment)| (id == Some(terrain)).then_some(environment))
+    }
+
     pub(crate) fn field_has(&self, battle: &BattleState, id: Option<ConditionId>) -> bool {
         if let Some(id) = id {
             debug_assert!(self.contains_condition(id));

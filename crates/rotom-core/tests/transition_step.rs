@@ -49,6 +49,7 @@ impl CombatData for TestData {
             defensive_stat: None,
             ignore_negative_offensive: false,
             ignore_positive_defensive: false,
+            interaction_flags: rotom_core::MoveInteractionFlags::default(),
         })
     }
 

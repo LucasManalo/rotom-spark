@@ -19,7 +19,7 @@ mod state;
 mod team;
 mod transition;
 
-pub use abilities::{AbilityBehavior, AbilityHandler};
+pub use abilities::{AbilityBehavior, AbilityHandler, AbilitySuppression};
 pub use action::{
     ActionTarget, LegalActions, MoveSlotIndex, MoveTarget, PokemonAction, SlotLegalActions,
     TurnChoice,
@@ -27,9 +27,10 @@ pub use action::{
 pub use combat::{
     calculate_damage, calculate_move_damage, CombatData, CombatMove, DamageResult, EffectFraction,
     ExpiredCondition, ExpiredVolatile, FieldHpChange, HitSequence, Modifier, MoveAccuracy,
-    MoveCapabilities, MoveCapability, MoveCategory, MoveIntrinsic, MoveOperation, PokemonType,
-    PokemonTypes, PrimaryMoveEffect, PriorMoveEffect, ResidualDamage, ResolvedAction,
-    SecondaryMoveEffect, SelfMoveEffect, TargetOutcome, TargetResult, TurnResolution,
+    MoveCapabilities, MoveCapability, MoveCategory, MoveInteractionFlags, MoveIntrinsic,
+    MoveOperation, PokemonType, PokemonTypes, PrimaryMoveEffect, PriorMoveEffect, ResidualDamage,
+    ResolvedAction, SecondaryMoveEffect, SelfMoveEffect, TargetOutcome, TargetResult,
+    TurnResolution,
 };
 pub use error::BattleError;
 pub use event::{
@@ -37,7 +38,7 @@ pub use event::{
     EffectSource, EffectState, EventContext, EventContract, EventDispatch, EventRelay, EventValue,
     PokemonRef,
 };
-pub use field_effects::FieldEffectIds;
+pub use field_effects::{FieldEffectIds, TerrainEnvironment, WeatherEnvironment};
 pub use id::{AbilityId, ConditionId, FormId, ItemId, MoveId, NatureId, SpeciesId};
 pub use rng::{BattleRng, RngOperation, RngReason, RngTraceEntry};
 pub use side::SideId;

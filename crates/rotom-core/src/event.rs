@@ -1,7 +1,8 @@
 use crate::{
     kernel::StateKernel, AbilityId, BattleError, BattleRng, BattleStat, BattleState, ConditionId,
-    ConditionState, ItemId, MajorStatus, MoveId, PokemonIndex, PokemonPosition, RngReason, SideId,
-    StatStageChange, StatusState,
+    ConditionState, ItemId, MajorStatus, MoveCategory, MoveId, MoveInteractionFlags, PokemonIndex,
+    PokemonPosition, RngReason, SideId, StatStageChange, StatusState, TerrainEnvironment,
+    WeatherEnvironment,
 };
 use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
@@ -207,6 +208,14 @@ pub struct EventContext {
     /// Whether the current hit was confirmed as critical.
     #[serde(default, skip_serializing_if = "is_false")]
     pub critical: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub move_category: Option<MoveCategory>,
+    #[serde(default, skip_serializing_if = "MoveInteractionFlags::is_empty")]
+    pub move_flags: MoveInteractionFlags,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub weather: Option<WeatherEnvironment>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub terrain: Option<TerrainEnvironment>,
 }
 
 #[allow(clippy::trivially_copy_pass_by_ref)] // Serde's skip predicate receives `&T`.
@@ -242,6 +251,9 @@ pub struct EventDispatch {
     pub context: EventContext,
     pub value: EventValue,
     pub cancelled: bool,
+    /// Whether a `TryHit` handler rejected the move as an immunity.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub immune: bool,
     pub invocations: Vec<EffectInvocation>,
 }
 
@@ -253,6 +265,7 @@ impl EventDispatch {
             context,
             value,
             cancelled: false,
+            immune: false,
             invocations: Vec::new(),
         }
     }
@@ -260,6 +273,11 @@ impl EventDispatch {
     /// Stops the current event after the active handler returns.
     pub fn cancel(&mut self) {
         self.cancelled = true;
+    }
+
+    /// Marks a rejected `TryHit` as an immunity for the move executor.
+    pub fn mark_immune(&mut self) {
+        self.immune = true;
     }
 }
 
@@ -619,6 +637,13 @@ impl EffectRegistry {
             if dispatch.cancelled && !contract.cancellable {
                 return Err(BattleError::InvalidState(format!(
                     "{event:?} is not a cancellable event"
+                )));
+            }
+            if dispatch.immune
+                && (event != BattleEvent::TryHit || dispatch.value != EventValue::Boolean(false))
+            {
+                return Err(BattleError::InvalidState(format!(
+                    "{event:?} handlers produced an invalid hit immunity"
                 )));
             }
             if dispatch.cancelled {

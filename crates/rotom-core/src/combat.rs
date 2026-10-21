@@ -311,6 +311,20 @@ impl MoveCapabilities {
     }
 }
 
+#[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct MoveInteractionFlags {
+    pub bullet: bool,
+    pub sound: bool,
+}
+
+impl MoveInteractionFlags {
+    #[must_use]
+    pub const fn is_empty(&self) -> bool {
+        !self.bullet && !self.sound
+    }
+}
+
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct CombatMove {
@@ -333,6 +347,7 @@ pub struct CombatMove {
     pub defensive_stat: Option<BattleStat>,
     pub ignore_negative_offensive: bool,
     pub ignore_positive_defensive: bool,
+    pub interaction_flags: MoveInteractionFlags,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -753,6 +768,7 @@ impl BattleState {
             move_id: Some(move_context.move_id),
             suppress_target_ability: move_context.suppress_target_ability,
             critical: false,
+            ..EventContext::default()
         };
         let before_move =
             effects.dispatch(self, BattleEvent::BeforeMove, context, EventValue::None)?;
@@ -911,6 +927,9 @@ impl BattleState {
                 move_id: Some(move_context.move_id),
                 suppress_target_ability: move_context.suppress_target_ability,
                 critical: false,
+                move_category: Some(move_context.move_data.category),
+                move_flags: move_context.move_data.interaction_flags,
+                ..EventContext::default()
             };
             let mut target_hit = false;
             for hit_index in 0..hit_count {
@@ -1047,6 +1066,7 @@ impl BattleState {
             move_id: Some(move_context.move_id),
             suppress_target_ability: move_context.suppress_target_ability,
             critical: false,
+            ..EventContext::default()
         };
         resolution.events.push(effects.dispatch(
             self,
@@ -1144,6 +1164,7 @@ impl BattleState {
             move_id: Some(context.move_id),
             suppress_target_ability: context.suppress_target_ability,
             critical: false,
+            ..EventContext::default()
         };
         let _ = self.apply_damage(
             effects,
@@ -1274,6 +1295,7 @@ impl BattleState {
                 move_id: Some(context.move_id),
                 suppress_target_ability: context.suppress_target_ability,
                 critical: false,
+                ..EventContext::default()
             };
             resolution.events.push(effects.dispatch(
                 self,
@@ -1371,6 +1393,7 @@ impl BattleState {
                 move_id: Some(context.move_id),
                 suppress_target_ability: context.suppress_target_ability,
                 critical: false,
+                ..EventContext::default()
             },
             EventValue::None,
         )?);
@@ -1400,6 +1423,9 @@ impl BattleState {
                 move_id: Some(move_context.move_id),
                 suppress_target_ability: move_context.suppress_target_ability,
                 critical: false,
+                move_category: Some(move_context.move_data.category),
+                move_flags: move_context.move_data.interaction_flags,
+                ..EventContext::default()
             };
             let try_hit = effects.dispatch(
                 self,
@@ -1408,6 +1434,7 @@ impl BattleState {
                 EventValue::Boolean(true),
             )?;
             let cancelled = try_hit.cancelled || try_hit.value == EventValue::Boolean(false);
+            let ability_immune = try_hit.immune;
             resolution.events.push(try_hit);
             // Pinned Showdown resolves Psychic Terrain's priority-4 TryHit
             // guard before Protect's priority-3 TryHit handler, per target.
@@ -1422,7 +1449,9 @@ impl BattleState {
                 outcomes[index] = Some(Self::empty_target_outcome(
                     move_context,
                     target_context,
-                    if priority_blocked {
+                    if ability_immune {
+                        TargetResult::Immune
+                    } else if priority_blocked {
                         TargetResult::PriorityBlocked
                     } else if protected {
                         TargetResult::Protected
@@ -1532,6 +1561,7 @@ impl BattleState {
             move_id: Some(move_context.move_id),
             suppress_target_ability: move_context.suppress_target_ability,
             critical: false,
+            ..EventContext::default()
         };
         let applied = match data.move_intrinsic(move_context.move_id) {
             MoveIntrinsic::Protect => {
@@ -1700,6 +1730,7 @@ impl BattleState {
                 move_id: Some(move_context.move_id),
                 suppress_target_ability: move_context.suppress_target_ability,
                 critical: false,
+                ..EventContext::default()
             };
             let mut applied = false;
             for effect in &move_context.primary_effects {
@@ -1758,6 +1789,7 @@ impl BattleState {
                 move_id: Some(move_context.move_id),
                 suppress_target_ability: move_context.suppress_target_ability,
                 critical: false,
+                ..EventContext::default()
             },
             EventValue::None,
         )?);
@@ -1803,6 +1835,7 @@ impl BattleState {
                         move_id: Some(context.move_id),
                         suppress_target_ability: context.suppress_target_ability,
                         critical: false,
+                        ..EventContext::default()
                     },
                     EventValue::Boolean(true),
                 )?;
@@ -2296,6 +2329,7 @@ impl BattleState {
             move_id: Some(move_id),
             suppress_target_ability: move_context.suppress_target_ability,
             critical: false,
+            ..EventContext::default()
         };
         let crit_ratio_event = effects.dispatch(
             self,
@@ -3571,6 +3605,7 @@ mod tests {
             defensive_stat: None,
             ignore_negative_offensive: false,
             ignore_positive_defensive: false,
+            interaction_flags: MoveInteractionFlags::default(),
         }
     }
 

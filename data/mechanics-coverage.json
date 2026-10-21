@@ -351,6 +351,36 @@
         "file:crates/rotom-core/src/abilities.rs",
         "unit:crates/rotom-core/src/abilities.rs#multiple_descriptors_and_critical_handlers_compose_without_identity_branches",
         "differential:data/fixtures/differential/ability-modifiers.json#battle-armor-critical-prevention",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#critical_prevention_preserves_showdown_event_and_rng_order"
+      ]
+    },
+    {
+      "id": "bulletproof",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": [
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "file:crates/rotom-core/src/abilities.rs",
+        "unit:crates/rotom-core/src/abilities.rs#environment_immunity_and_suppression_metadata_compose",
+        "differential:data/fixtures/differential/ability-modifiers.json#bulletproof-blocks-aura-sphere",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"
+      ]
+    },
+    {
+      "id": "chlorophyll",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": [
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "file:crates/rotom-core/src/abilities.rs",
+        "unit:crates/rotom-core/src/abilities.rs#environment_immunity_and_suppression_metadata_compose",
+        "differential:data/fixtures/differential/ability-modifiers.json#chlorophyll-sun",
         "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"
       ]
     },
@@ -441,6 +471,10 @@
         "file:crates/rotom-core/src/event.rs",
         "unit:crates/rotom-core/src/abilities.rs#multiple_descriptors_and_critical_handlers_compose_without_identity_branches",
         "differential:data/fixtures/differential/ability-modifiers.json#mold-breaker-bypasses-battle-armor",
+        "differential:data/fixtures/differential/ability-modifiers.json#mold-breaker-bypasses-bulletproof",
+        "differential:data/fixtures/differential/ability-modifiers.json#mold-breaker-bypasses-fur-coat",
+        "differential:data/fixtures/differential/ability-modifiers.json#mold-breaker-bypasses-multiscale",
+        "interaction_unit:crates/rotom-core/src/abilities.rs#environment_immunity_and_suppression_metadata_compose",
         "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"
       ]
     },
@@ -501,6 +535,37 @@
         "file:crates/rotom-core/src/abilities.rs",
         "unit:crates/rotom-core/src/abilities.rs#multiple_descriptors_and_critical_handlers_compose_without_identity_branches",
         "differential:data/fixtures/differential/ability-modifiers.json#sniper-critical",
+        "differential:data/fixtures/differential/ability-modifiers.json#sniper-critical-blocked-by-battle-armor",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"
+      ]
+    },
+    {
+      "id": "slushrush",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": [
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "file:crates/rotom-core/src/abilities.rs",
+        "unit:crates/rotom-core/src/abilities.rs#environment_immunity_and_suppression_metadata_compose",
+        "differential:data/fixtures/differential/ability-modifiers.json#slush-rush-snow",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"
+      ]
+    },
+    {
+      "id": "soundproof",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": [
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "file:crates/rotom-core/src/abilities.rs",
+        "unit:crates/rotom-core/src/abilities.rs#environment_immunity_and_suppression_metadata_compose",
+        "differential:data/fixtures/differential/ability-modifiers.json#soundproof-blocks-hyper-voice",
         "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"
       ]
     },
@@ -520,6 +585,36 @@
       ]
     },
     {
+      "id": "surgesurfer",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": [
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "file:crates/rotom-core/src/abilities.rs",
+        "unit:crates/rotom-core/src/abilities.rs#environment_immunity_and_suppression_metadata_compose",
+        "differential:data/fixtures/differential/ability-modifiers.json#surge-surfer-electric-terrain",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"
+      ]
+    },
+    {
+      "id": "swiftswim",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": [
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "file:crates/rotom-core/src/abilities.rs",
+        "unit:crates/rotom-core/src/abilities.rs#environment_immunity_and_suppression_metadata_compose",
+        "differential:data/fixtures/differential/ability-modifiers.json#swift-swim-rain",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"
+      ]
+    },
+    {
       "id": "technician",
       "kind": "ability",
       "implementation": "implemented",
@@ -531,6 +626,21 @@
         "file:crates/rotom-core/src/abilities.rs",
         "unit:crates/rotom-core/src/abilities.rs#source_stat_and_base_power_handlers_are_scoped_to_the_holder",
         "differential:data/fixtures/differential/ability-modifiers.json#technician-threshold",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"
+      ]
+    },
+    {
+      "id": "telepathy",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": [
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "file:crates/rotom-core/src/abilities.rs",
+        "unit:crates/rotom-core/src/abilities.rs#environment_immunity_and_suppression_metadata_compose",
+        "differential:data/fixtures/differential/ability-modifiers.json#telepathy-blocks-ally-surf",
         "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"
       ]
     }

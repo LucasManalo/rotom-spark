@@ -37,6 +37,21 @@ The next cohesive batch extends those relays to Speed and critical-hit rules:
 - `data/abilities.ts::moldbreaker` sets `move.ignoreAbility` during
   `onModifyMove`, suppressing breakable target ability callbacks for that move.
 
+The third batch adds field-dependent Speed and non-mutating hit immunities:
+
+- `chlorophyll`, `swiftswim`, and `slushrush` double Speed in sun, rain, and
+  snow respectively; `surgesurfer` doubles Speed in Electric Terrain.
+- `bulletproof` rejects moves carrying Showdown's `bullet` flag.
+- `soundproof` rejects moves carrying Showdown's `sound` flag.
+- `telepathy` rejects non-status moves from an ally.
+- Bulletproof, Soundproof, and Telepathy are `breakable`; the four Speed
+  handlers are not. Mold Breaker therefore bypasses the hit immunities without
+  suppressing unrelated source-owned callbacks.
+
+Sand Rush remains deferred because its sandstorm residual-damage immunity must
+ship with its Speed modifier. Prankster remains deferred because its Dark-type
+hit immunity must ship with its priority modifier.
+
 Showdown's modifier application uses its fixed-point `chainModify`/`modify`
 rounding. Rotom Spark applies the same 4096-denominator rounding to each typed
 integer relay.
@@ -57,6 +72,11 @@ descriptors. Registration enumerates the table without identity-specific
 branches, so Quick Feet's status multiplier and paralysis exception compose
 through the same path used by single-handler abilities.
 
+Every descriptor now requires an explicit `AbilitySuppression` classification.
+The common registration helper derives suppressible registry entries from that
+classification, so adding a callback without choosing breakable or unbreakable
+behavior is a compile-time error.
+
 `EffectRegistry` indexes registrations by event and concrete source identity.
 Dispatch selects one event bucket, visits each active holder once, performs
 direct ability/item/status lookups, then applies the existing deterministic
@@ -71,6 +91,10 @@ non-breakable callbacks retain their ordinary ordering and semantics. This is
 not a global ability-activation model and does not claim support for Neutralizing
 Gas, Gastro Acid, ability copying, or replacement.
 
+Queue events carry typed weather/terrain context, and move `TryHit` events carry
+typed category and compact bullet/sound flags. Ability callbacks consume those
+shared facts rather than adding ability identity checks to `combat.rs`.
+
 Physical and special calculations now dispatch distinct Attack/Special Attack
 and Defense/Special Defense events. Stat-override moves select the hook for the
 actual effective stat, allowing Defense-based offense to reuse Defense
@@ -79,26 +103,26 @@ ability handlers rather than inventing a move-specific path.
 ## Verification boundary
 
 The pinned `ability-modifiers.json` cases exercise isolated Showdown damage,
-Speed, and critical-ratio calculations. They support each ability's
+Speed, critical-ratio, and `TryHit` calculations. They support each ability's
 `verification: differential_verified` claim, but they are not full
 cross-mechanic transition comparisons. The current end-to-end Rotom tests
-provide interaction-level unit evidence only, so all thirteen entries use
+provide interaction-level unit evidence only, so all twenty entries use
 `interaction_verification: unit_tested`. A future
 `interaction_verification: differential_verified` claim requires a normalized
 fixture that actually executes and compares the relevant ability interaction.
 
 ## Deferred PR 13.5 families
 
-These thirteen abilities are incremental PR 13.5 batches, not completion of
-the milestone. The other 202 reachable Regulation M-C abilities remain
+These twenty abilities are incremental PR 13.5 batches, not completion of
+the milestone. The other 195 reachable Regulation M-C abilities remain
 explicitly unsupported. The remaining families and prerequisites are:
 
 | Family | Required event/mechanics capability |
 | --- | --- |
 | Switch-in/out | complete switch lifecycle, ordered field/side changes, stat and form consequences |
-| Priority and remaining Speed | move-priority hooks, weather/terrain/side-condition context, suppression and tie-order coverage |
+| Priority and remaining Speed | complete compound behaviors such as Prankster's Dark immunity, Sand Rush's weather immunity, side-condition context, suppression and tie-order coverage |
 | Attack type and damage | typed move/source context, immunity ordering, shared damage modifiers |
-| Immunity and absorption | pre-hit eligibility, cancellation/result contracts, kernel-backed healing or boosts |
+| Remaining immunity and absorption | type/grounded eligibility, cancellation/result contracts, kernel-backed healing, boosts, and persistent activation state |
 | Status prevention | shared `TrySetStatus` reasons, source/target context and cure/prevention ordering |
 | Weather and terrain | switch-in setters, duration/override rules and field-condition ordering |
 | Contact and on-hit reactions | contact metadata, actual applied damage, per-hit callbacks and faint settlement |

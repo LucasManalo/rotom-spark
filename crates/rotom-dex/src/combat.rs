@@ -1,11 +1,11 @@
 use crate::{Accuracy, DexData, MoveBehaviorKind, MoveData, SpeciesData, Stats};
 use rotom_core::{
-    AbilityBehavior, AbilityHandler, AbilityId, BattleError, BattleStat, BattleStats, CombatData,
-    CombatMove, ConditionId, EffectFraction, FieldEffectIds, HitSequence, MajorStatus,
-    MoveAccuracy, MoveCapabilities, MoveCapability, MoveCategory, MoveId, MoveIntrinsic,
-    MoveOperation, MoveSlot, MoveTarget, PokemonPosition, PokemonSet, PokemonState, PokemonType,
-    PokemonTypes, PrimaryMoveEffect, PriorMoveEffect, SecondaryMoveEffect, SelfMoveEffect,
-    StatAllocation, StatStages, StatusState,
+    AbilityBehavior, AbilityHandler, AbilityId, AbilitySuppression, BattleError, BattleStat,
+    BattleStats, CombatData, CombatMove, ConditionId, EffectFraction, FieldEffectIds, HitSequence,
+    MajorStatus, MoveAccuracy, MoveCapabilities, MoveCapability, MoveCategory, MoveId,
+    MoveIntrinsic, MoveOperation, MoveSlot, MoveTarget, PokemonPosition, PokemonSet, PokemonState,
+    PokemonType, PokemonTypes, PrimaryMoveEffect, PriorMoveEffect, SecondaryMoveEffect,
+    SelfMoveEffect, StatAllocation, StatStages, StatusState,
 };
 
 impl CombatData for DexData {
@@ -60,6 +60,10 @@ impl CombatData for DexData {
             defensive_stat: data.override_defensive_stat.as_deref().and_then(parse_stat),
             ignore_negative_offensive: data.ignore_negative_offensive,
             ignore_positive_defensive: data.ignore_positive_defensive,
+            interaction_flags: rotom_core::MoveInteractionFlags {
+                bullet: data.flags.iter().any(|flag| flag == "bullet"),
+                sound: data.flags.iter().any(|flag| flag == "sound"),
+            },
         })
     }
 
@@ -315,9 +319,9 @@ impl CombatData for DexData {
     fn ability_handlers(&self) -> Vec<AbilityHandler> {
         IMPLEMENTED_ABILITY_BEHAVIORS
             .iter()
-            .filter_map(|(key, behavior)| {
+            .filter_map(|(key, behavior, suppression)| {
                 let ability = self.resolve_ability(key).map(|(ability, _)| ability)?;
-                Some(AbilityHandler::new(ability, *behavior))
+                Some(AbilityHandler::new(ability, *behavior, *suppression))
             })
             .collect()
     }
@@ -326,27 +330,118 @@ impl CombatData for DexData {
 /// Declarative identity-to-behavior join for the implemented PR 13.5 batch.
 /// Ability metadata and numeric identity remain owned by the generated Dex;
 /// callbacks remain owned by `rotom-core`.
-const IMPLEMENTED_ABILITY_BEHAVIORS: &[(&str, AbilityBehavior)] = &[
-    ("hugepower", AbilityBehavior::DoubleAttack),
-    ("purepower", AbilityBehavior::DoubleAttack),
-    ("guts", AbilityBehavior::StatusedAttack),
-    ("furcoat", AbilityBehavior::DoubleDefense),
-    ("marvelscale", AbilityBehavior::StatusedDefense),
-    ("technician", AbilityBehavior::LowPowerBoost),
-    ("multiscale", AbilityBehavior::FullHpDamageReduction),
-    ("quickfeet", AbilityBehavior::StatusedSpeed),
-    ("quickfeet", AbilityBehavior::IgnoreParalysisSpeedPenalty),
-    ("superluck", AbilityBehavior::IncreaseCriticalRatio),
-    ("battlearmor", AbilityBehavior::PreventCriticalHit),
-    ("shellarmor", AbilityBehavior::PreventCriticalHit),
-    ("sniper", AbilityBehavior::BoostCriticalDamage),
-    ("moldbreaker", AbilityBehavior::BreaksTargetAbilities),
+const IMPLEMENTED_ABILITY_BEHAVIORS: &[(&str, AbilityBehavior, AbilitySuppression)] = &[
+    (
+        "hugepower",
+        AbilityBehavior::DoubleAttack,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "purepower",
+        AbilityBehavior::DoubleAttack,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "guts",
+        AbilityBehavior::StatusedAttack,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "furcoat",
+        AbilityBehavior::DoubleDefense,
+        AbilitySuppression::Breakable,
+    ),
+    (
+        "marvelscale",
+        AbilityBehavior::StatusedDefense,
+        AbilitySuppression::Breakable,
+    ),
+    (
+        "technician",
+        AbilityBehavior::LowPowerBoost,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "multiscale",
+        AbilityBehavior::FullHpDamageReduction,
+        AbilitySuppression::Breakable,
+    ),
+    (
+        "quickfeet",
+        AbilityBehavior::StatusedSpeed,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "quickfeet",
+        AbilityBehavior::IgnoreParalysisSpeedPenalty,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "superluck",
+        AbilityBehavior::IncreaseCriticalRatio,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "battlearmor",
+        AbilityBehavior::PreventCriticalHit,
+        AbilitySuppression::Breakable,
+    ),
+    (
+        "shellarmor",
+        AbilityBehavior::PreventCriticalHit,
+        AbilitySuppression::Breakable,
+    ),
+    (
+        "sniper",
+        AbilityBehavior::BoostCriticalDamage,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "moldbreaker",
+        AbilityBehavior::BreaksTargetAbilities,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "chlorophyll",
+        AbilityBehavior::SunSpeed,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "swiftswim",
+        AbilityBehavior::RainSpeed,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "slushrush",
+        AbilityBehavior::SnowSpeed,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "surgesurfer",
+        AbilityBehavior::ElectricTerrainSpeed,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "bulletproof",
+        AbilityBehavior::BulletImmunity,
+        AbilitySuppression::Breakable,
+    ),
+    (
+        "soundproof",
+        AbilityBehavior::SoundImmunity,
+        AbilitySuppression::Breakable,
+    ),
+    (
+        "telepathy",
+        AbilityBehavior::AllyDamageImmunity,
+        AbilitySuppression::Breakable,
+    ),
 ];
 
 fn implemented_ability_behaviors(id: &str) -> impl Iterator<Item = AbilityBehavior> + '_ {
     IMPLEMENTED_ABILITY_BEHAVIORS
         .iter()
-        .filter_map(move |(key, behavior)| (*key == id).then_some(*behavior))
+        .filter_map(move |(key, behavior, _)| (*key == id).then_some(*behavior))
 }
 
 fn move_execution_requirements(data: &MoveData) -> (MoveOperation, MoveCapabilities) {

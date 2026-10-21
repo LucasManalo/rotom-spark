@@ -148,6 +148,8 @@ impl BattleState {
                 source: Some(PokemonRef::new(side, pokemon)),
                 target: action_target(self, side, slot, action),
                 move_id,
+                weather: field_effects.weather_environment(self),
+                terrain: field_effects.terrain_environment(self),
                 ..EventContext::default()
             };
             let priority = if order == ActionOrder::Move {
