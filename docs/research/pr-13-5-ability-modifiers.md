@@ -48,9 +48,21 @@ The third batch adds field-dependent Speed and non-mutating hit immunities:
   handlers are not. Mold Breaker therefore bypasses the hit immunities without
   suppressing unrelated source-owned callbacks.
 
-Sand Rush remains deferred because its sandstorm residual-damage immunity must
-ship with its Speed modifier. Prankster remains deferred because its Dark-type
-hit immunity must ship with its priority modifier.
+The fourth batch implements the two deferred compound abilities:
+
+- `data/abilities.ts::sandrush` doubles Speed in sandstorm and returns false
+  from `onImmunity('sandstorm')`. Rotom registers one declarative behavior for
+  both `ModifySpeed` and the typed `WeatherImmunity` hook used before residual
+  weather damage.
+- `data/abilities.ts::prankster` adds one priority to status moves and marks
+  the active move as Prankster-boosted. `sim/battle-actions.ts::hitStepTryImmunity`
+  then rejects opposing Dark-type targets after Protect and type immunity but
+  before accuracy. Rotom carries that queue-time provenance into a typed
+  `TryImmunity` event and resolves it independently for every target.
+- Showdown's `TryHit` ordering places Psychic Terrain at priority 4, Protect at
+  priority 3, and ordinary Bulletproof/Soundproof/Telepathy handlers later.
+  Rotom's shared hit lifecycle now preserves that order, so a protected holder
+  reports `Protected` rather than exposing its ability immunity.
 
 Showdown's modifier application uses its fixed-point `chainModify`/`modify`
 rounding. Rotom Spark applies the same 4096-denominator rounding to each typed
@@ -94,6 +106,9 @@ Gas, Gastro Acid, ability copying, or replacement.
 Queue events carry typed weather/terrain context, and move `TryHit` events carry
 typed category and compact bullet/sound flags. Ability callbacks consume those
 shared facts rather than adding ability identity checks to `combat.rs`.
+Prankster additionally carries a derived queue-time marker into `TryImmunity`,
+and target typing is supplied only at that typed immunity stage. Sandstorm
+residuals use `WeatherImmunity` before requesting kernel-backed HP damage.
 
 Physical and special calculations now dispatch distinct Attack/Special Attack
 and Defense/Special Defense events. Stat-override moves select the hook for the
@@ -103,24 +118,24 @@ ability handlers rather than inventing a move-specific path.
 ## Verification boundary
 
 The pinned `ability-modifiers.json` cases exercise isolated Showdown damage,
-Speed, critical-ratio, and `TryHit` calculations. They support each ability's
+Speed, priority, critical-ratio, immunity, and `TryHit` calculations. They support each ability's
 `verification: differential_verified` claim, but they are not full
 cross-mechanic transition comparisons. The current end-to-end Rotom tests
-provide interaction-level unit evidence only, so all twenty entries use
+provide interaction-level unit evidence only, so all twenty-two entries use
 `interaction_verification: unit_tested`. A future
 `interaction_verification: differential_verified` claim requires a normalized
 fixture that actually executes and compares the relevant ability interaction.
 
 ## Deferred PR 13.5 families
 
-These twenty abilities are incremental PR 13.5 batches, not completion of
-the milestone. The other 195 reachable Regulation M-C abilities remain
+These twenty-two abilities are incremental PR 13.5 batches, not completion of
+the milestone. The other 193 reachable Regulation M-C abilities remain
 explicitly unsupported. The remaining families and prerequisites are:
 
 | Family | Required event/mechanics capability |
 | --- | --- |
 | Switch-in/out | complete switch lifecycle, ordered field/side changes, stat and form consequences |
-| Priority and remaining Speed | complete compound behaviors such as Prankster's Dark immunity, Sand Rush's weather immunity, side-condition context, suppression and tie-order coverage |
+| Priority and remaining Speed | side-condition context, item-dependent Speed, probabilistic priority, suppression and tie-order coverage |
 | Attack type and damage | typed move/source context, immunity ordering, shared damage modifiers |
 | Remaining immunity and absorption | type/grounded eligibility, cancellation/result contracts, kernel-backed healing, boosts, and persistent activation state |
 | Status prevention | shared `TrySetStatus` reasons, source/target context and cure/prevention ordering |

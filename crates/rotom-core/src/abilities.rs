@@ -27,6 +27,8 @@ pub enum AbilityBehavior {
     RainSpeed,
     SnowSpeed,
     ElectricTerrainSpeed,
+    SandRush,
+    Prankster,
     BulletImmunity,
     SoundImmunity,
     AllyDamageImmunity,
@@ -207,6 +209,30 @@ const BEHAVIOR_REGISTRATIONS: &[BehaviorRegistration] = &[
         BattleEvent::ModifySpeed,
         DEFAULT_ORDER,
         electric_terrain_speed,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::SandRush,
+        BattleEvent::ModifySpeed,
+        DEFAULT_ORDER,
+        sand_rush_speed,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::SandRush,
+        BattleEvent::WeatherImmunity,
+        DEFAULT_ORDER,
+        sandstorm_immunity,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::Prankster,
+        BattleEvent::ModifyPriority,
+        DEFAULT_ORDER,
+        prankster_priority,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::Prankster,
+        BattleEvent::TryImmunity,
+        DEFAULT_ORDER,
+        prankster_dark_immunity,
     ),
     BehaviorRegistration::new(
         AbilityBehavior::BulletImmunity,
@@ -403,6 +429,76 @@ fn electric_terrain_speed(
         dispatch,
         context.terrain == Some(TerrainEnvironment::Electric),
     )
+}
+
+fn sand_rush_speed(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    environment_speed(
+        invocation,
+        context,
+        dispatch,
+        context.weather == Some(WeatherEnvironment::Sandstorm),
+    )
+}
+
+fn sandstorm_immunity(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if context.weather == Some(WeatherEnvironment::Sandstorm)
+        && matching_target(invocation, context).is_some()
+    {
+        boolean(dispatch)?;
+        dispatch.value = EventValue::Boolean(false);
+    }
+    Ok(())
+}
+
+fn prankster_priority(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if context.move_category == Some(MoveCategory::Status)
+        && matching_source(invocation, context).is_some()
+    {
+        dispatch.value = EventValue::Integer(integer(dispatch)?.saturating_add(1));
+        dispatch.mark_prankster_boosted();
+    }
+    Ok(())
+}
+
+fn prankster_dark_immunity(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let opposing_dark_target = context
+        .source
+        .zip(context.target)
+        .zip(context.target_types)
+        .is_some_and(|((source, target), types)| {
+            source.side != target.side
+                && (types.primary == crate::PokemonType::Dark
+                    || types.secondary == Some(crate::PokemonType::Dark))
+        });
+    if context.prankster_boosted
+        && opposing_dark_target
+        && matching_source(invocation, context).is_some()
+    {
+        boolean(dispatch)?;
+        dispatch.value = EventValue::Boolean(false);
+        dispatch.mark_immune();
+    }
+    Ok(())
 }
 
 fn environment_speed(
@@ -995,5 +1091,105 @@ mod tests {
                     pokemon: context().target.unwrap(),
                 }
         }));
+    }
+
+    #[test]
+    fn compound_sand_rush_and_prankster_handlers_share_one_descriptor_each() {
+        let sand_rush = AbilityId::new(44);
+        let prankster = AbilityId::new(45);
+        let registry = crate::conditions::composed_registry(
+            &EffectRegistry::new(),
+            [
+                unbreakable(sand_rush, AbilityBehavior::SandRush),
+                unbreakable(prankster, AbilityBehavior::Prankster),
+            ],
+        );
+
+        let mut sand_battle = battle(sand_rush, AbilityId::new(1));
+        let sand_speed = registry
+            .dispatch(
+                &mut sand_battle,
+                BattleEvent::ModifySpeed,
+                EventContext {
+                    weather: Some(WeatherEnvironment::Sandstorm),
+                    ..context()
+                },
+                EventValue::Integer(100),
+            )
+            .unwrap();
+        assert_eq!(sand_speed.value, EventValue::Integer(200));
+        let sand_immunity = registry
+            .dispatch(
+                &mut sand_battle,
+                BattleEvent::WeatherImmunity,
+                EventContext {
+                    source: None,
+                    target: context().source,
+                    weather: Some(WeatherEnvironment::Sandstorm),
+                    ..EventContext::default()
+                },
+                EventValue::Boolean(true),
+            )
+            .unwrap();
+        assert_eq!(sand_immunity.value, EventValue::Boolean(false));
+
+        let mut prankster_battle = battle(prankster, AbilityId::new(1));
+        let priority = registry
+            .dispatch(
+                &mut prankster_battle,
+                BattleEvent::ModifyPriority,
+                EventContext {
+                    move_category: Some(MoveCategory::Status),
+                    ..context()
+                },
+                EventValue::Integer(0),
+            )
+            .unwrap();
+        assert_eq!(priority.value, EventValue::Integer(1));
+        assert!(priority.prankster_boosted);
+        let damaging_priority = registry
+            .dispatch(
+                &mut prankster_battle,
+                BattleEvent::ModifyPriority,
+                EventContext {
+                    move_category: Some(MoveCategory::Physical),
+                    ..context()
+                },
+                EventValue::Integer(0),
+            )
+            .unwrap();
+        assert_eq!(damaging_priority.value, EventValue::Integer(0));
+        assert!(!damaging_priority.prankster_boosted);
+
+        let dark_context = EventContext {
+            prankster_boosted: true,
+            target_types: Some(crate::PokemonTypes {
+                primary: crate::PokemonType::Dark,
+                secondary: None,
+            }),
+            ..context()
+        };
+        let dark_immunity = registry
+            .dispatch(
+                &mut prankster_battle,
+                BattleEvent::TryImmunity,
+                dark_context,
+                EventValue::Boolean(true),
+            )
+            .unwrap();
+        assert_eq!(dark_immunity.value, EventValue::Boolean(false));
+        assert!(dark_immunity.immune);
+        let ally_dark = registry
+            .dispatch(
+                &mut prankster_battle,
+                BattleEvent::TryImmunity,
+                EventContext {
+                    target: dark_context.source,
+                    ..dark_context
+                },
+                EventValue::Boolean(true),
+            )
+            .unwrap();
+        assert_eq!(ally_dark.value, EventValue::Boolean(true));
     }
 }

@@ -1062,6 +1062,8 @@ fn every_event_contract_accepts_its_declared_initial_relay() {
         BattleEvent::ModifyBasePower,
         BattleEvent::ModifyDamage,
         BattleEvent::TryHit,
+        BattleEvent::TryImmunity,
+        BattleEvent::WeatherImmunity,
         BattleEvent::Hit,
         BattleEvent::AfterDamage,
         BattleEvent::AfterMove,

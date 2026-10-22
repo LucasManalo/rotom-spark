@@ -12,10 +12,13 @@ const version = Object.fromEntries(fs.readFileSync(path.join(repositoryRoot, 'SH
 	.trim().split(/\r?\n/u).map(line => line.split('=', 2)));
 const filler = {species: 'Magikarp', ability: 'swiftswim', moves: ['splash'], level: 50};
 
-function battleFor(sourceAbility, move, targetAbility, allyAbility = 'swiftswim') {
+function battleFor(
+	sourceAbility, move, targetAbility, allyAbility = 'swiftswim',
+	sourceSpecies = 'Medicham', targetSpecies = 'Snorlax'
+) {
 	const set = (species, ability, moves) => ({species, ability, moves, level: 50, nature: 'Serious', evs: {}});
-	const p1Team = [set('Medicham', sourceAbility, [move]), set('Magikarp', allyAbility, ['splash']), filler, filler];
-	const p2Team = [set('Snorlax', targetAbility, ['recover']), filler, filler, filler];
+	const p1Team = [set(sourceSpecies, sourceAbility, [move]), set('Magikarp', allyAbility, ['splash']), filler, filler];
+	const p2Team = [set(targetSpecies, targetAbility, ['recover']), filler, filler, filler];
 	const battle = new Battle({
 		format: Dex.formats.get(version.format, true),
 		seed: 'gen5,0000000000000001',
@@ -100,6 +103,37 @@ function criticalRatio({id, ability}) {
 	};
 }
 
+function priority({id, ability, move, targetSpecies = 'Snorlax'}) {
+	const battle = battleFor(ability, move, 'immunity', 'swiftswim', 'Medicham', targetSpecies);
+	const source = battle.p1.active[0];
+	const target = battle.p2.active[0];
+	const activeMove = battle.dex.getActiveMove(move);
+	const value = battle.runEvent('ModifyPriority', source, target, activeMove, activeMove.priority);
+	return {
+		id,
+		ability,
+		operation: 'priority',
+		move,
+		target_species: targetSpecies.toLowerCase(),
+		priority: value,
+		prankster_boosted: !!activeMove.pranksterBoosted,
+		dark_immune: !target.runStatusImmunity('prankster'),
+	};
+}
+
+function weatherImmunity({id, ability, weather}) {
+	const battle = battleFor(ability, 'tackle', 'immunity');
+	const source = battle.p1.active[0];
+	battle.field.setWeather(weather, source);
+	return {
+		id,
+		ability,
+		operation: 'weather_immunity',
+		weather,
+		immune: !source.runStatusImmunity('sandstorm'),
+	};
+}
+
 const cases = [
 	{id: 'huge-power-physical', sourceAbility: 'hugepower', move: 'dragonclaw', targetAbility: 'immunity'},
 	{id: 'huge-power-special-unaffected', sourceAbility: 'hugepower', move: 'dragonpulse', targetAbility: 'immunity'},
@@ -124,6 +158,9 @@ cases.push(
 	speed({id: 'swift-swim-rain', ability: 'swiftswim', weather: 'raindance'}),
 	speed({id: 'slush-rush-snow', ability: 'slushrush', weather: 'snowscape'}),
 	speed({id: 'surge-surfer-electric-terrain', ability: 'surgesurfer', terrain: 'electricterrain'}),
+	speed({id: 'sand-rush-sandstorm', ability: 'sandrush', weather: 'sandstorm'}),
+	weatherImmunity({id: 'sand-rush-weather-immunity', ability: 'sandrush', weather: 'sandstorm'}),
+	priority({id: 'prankster-status-priority-dark-immunity', ability: 'prankster', move: 'thunderwave', targetSpecies: 'Umbreon'}),
 	criticalRatio({id: 'super-luck-critical-ratio', ability: 'superluck'}),
 	tryHit({id: 'bulletproof-blocks-aura-sphere', targetAbility: 'bulletproof', move: 'aurasphere'}),
 	tryHit({id: 'soundproof-blocks-hyper-voice', targetAbility: 'soundproof', move: 'hypervoice'}),
@@ -135,7 +172,7 @@ const contents = `${JSON.stringify({
 	showdown_commit: version.commit,
 	format: version.format,
 	methodology: {
-		source: 'pinned Battle.actions.getDamage, Pokemon.getStat, ModifyCritRatio, and TryHit with resolved Champions data',
+		source: 'pinned Battle.actions.getDamage, Pokemon.getStat/runImmunity, ModifyPriority/ModifyCritRatio, and TryHit with resolved Champions data',
 		damage_roll_percent: 100,
 		critical_hit: 'per_case',
 		full_transition_comparison: false,

@@ -5504,6 +5504,7 @@ fn ability_test_speed(
             "sunnyday" => ids.sun,
             "raindance" => ids.rain,
             "snowscape" => ids.snow,
+            "sandstorm" => ids.sandstorm,
             other => panic!("unsupported fixture weather {other}"),
         }
         .unwrap();
@@ -5678,6 +5679,82 @@ fn ability_test_critical_ratio(dex: &rotom_dex::DexData, ability: &str) -> i64 {
         .unwrap()
 }
 
+fn ability_test_priority(
+    dex: &rotom_dex::DexData,
+    ability: &str,
+    move_name: &str,
+    target_species: &str,
+) -> serde_json::Value {
+    let source = set_with_moves(dex, "medicham", ability, &[move_name]);
+    let target = set_with_moves(dex, target_species, "immunity", &["recover"]);
+    let battle = selected_battle_for_sets(dex, &source, &target, 0, false);
+    let p1 = opposing_targets_choice();
+    let p2 = TurnChoice {
+        actions: [
+            use_move(0, ActionTarget::Automatic),
+            use_move(0, ActionTarget::Automatic),
+        ],
+    };
+    let mechanics = Mechanics::new(dex, &EffectRegistry::new());
+    let queue = battle.inspect_turn_queue(p1, p2, &mechanics).unwrap();
+    let queued = queue
+        .actions
+        .iter()
+        .find(|action| action.side == SideId::P1 && action.slot == ActiveSlot::Left)
+        .unwrap();
+    let result = step(&battle, &JointAction::Turn { p1, p2 }, &mechanics).unwrap();
+    let dark_immune = result
+        .diagnostics
+        .turn
+        .unwrap()
+        .target_outcomes
+        .iter()
+        .any(|outcome| {
+            outcome.source == PokemonRef::new(SideId::P1, PokemonIndex::new(0))
+                && outcome.target == PokemonRef::new(SideId::P2, PokemonIndex::new(0))
+                && outcome.result == TargetResult::Immune
+        });
+    serde_json::json!({
+        "priority": queued.priority,
+        "prankster_boosted": queued.prankster_boosted,
+        "dark_immune": dark_immune,
+    })
+}
+
+fn ability_test_weather_immunity(dex: &rotom_dex::DexData, ability: &str, weather: &str) -> bool {
+    let source = set_with_moves(dex, "medicham", ability, &["tackle"]);
+    let target = set_with_moves(dex, "snorlax", "immunity", &["recover"]);
+    let battle = selected_battle_for_sets(dex, &source, &target, 0, false);
+    let mut builder = BattleStateBuilder::from_state(battle).unwrap();
+    let condition = match weather {
+        "sandstorm" => dex.field_effect_ids().sandstorm,
+        other => panic!("unsupported fixture weather immunity {other}"),
+    }
+    .unwrap();
+    builder.edit_field(|field| {
+        field.weather = Some(ConditionState::new(condition, Some(2)));
+    });
+    let result = step(
+        &builder.build().unwrap(),
+        &JointAction::Turn {
+            p1: opposing_targets_choice(),
+            p2: TurnChoice {
+                actions: [
+                    use_move(0, ActionTarget::Automatic),
+                    use_move(0, ActionTarget::Automatic),
+                ],
+            },
+        },
+        &Mechanics::new(dex, &EffectRegistry::new()),
+    )
+    .unwrap();
+    result.diagnostics.turn.unwrap().events.iter().any(|event| {
+        event.event == BattleEvent::WeatherImmunity
+            && event.context.target == Some(PokemonRef::new(SideId::P1, PokemonIndex::new(0)))
+            && event.value == rotom_core::EventValue::Boolean(false)
+    })
+}
+
 #[test]
 fn built_in_ability_modifiers_compose_with_the_unified_executor() {
     let dex = champions_reg_mc().unwrap();
@@ -5824,6 +5901,17 @@ fn ability_modifier_damage_matches_pinned_showdown_fixture() {
                 case["move"].as_str().unwrap(),
                 case["ally_target"].as_bool().unwrap(),
             )),
+            "priority" => ability_test_priority(
+                &dex,
+                case["ability"].as_str().unwrap(),
+                case["move"].as_str().unwrap(),
+                case["target_species"].as_str().unwrap(),
+            ),
+            "weather_immunity" => serde_json::json!(ability_test_weather_immunity(
+                &dex,
+                case["ability"].as_str().unwrap(),
+                case["weather"].as_str().unwrap(),
+            )),
             operation => panic!("unsupported ability fixture operation {operation}"),
         };
         let expected = match case["operation"].as_str().unwrap() {
@@ -5831,6 +5919,12 @@ fn ability_modifier_damage_matches_pinned_showdown_fixture() {
             "speed" => case["speed"].clone(),
             "critical_ratio" => case["critical_ratio"].clone(),
             "try_hit" => case["allowed"].clone(),
+            "priority" => serde_json::json!({
+                "priority": case["priority"].clone(),
+                "prankster_boosted": case["prankster_boosted"].clone(),
+                "dark_immune": case["dark_immune"].clone(),
+            }),
+            "weather_immunity" => case["immune"].clone(),
             _ => unreachable!(),
         };
         assert_eq!(actual, expected, "{}", case["id"].as_str().unwrap());
@@ -5903,6 +5997,240 @@ fn ability_batch_interactions_replay_deterministically() {
         .unwrap();
     assert_eq!(quick_feet_speed.value, rotom_core::EventValue::Integer(150));
     assert_eq!(step(&state, &action, &mechanics).unwrap(), first);
+}
+
+#[test]
+fn sand_rush_tracks_weather_changes_and_prevents_residual_damage() {
+    let dex = champions_reg_mc().unwrap();
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+
+    let sand_source = set_with_moves(&dex, "houndstone", "sandrush", &["tackle"]);
+    let sand_target = set_with_moves(&dex, "snorlax", "immunity", &["recover"]);
+    let clear = selected_battle_for_sets(&dex, &sand_source, &sand_target, 7, true);
+    let choices = (
+        opposing_targets_choice(),
+        TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Automatic),
+                use_move(0, ActionTarget::Automatic),
+            ],
+        },
+    );
+    let clear_speed = clear
+        .inspect_turn_queue(choices.0, choices.1, &mechanics)
+        .unwrap()
+        .actions
+        .into_iter()
+        .find(|action| action.side == SideId::P1 && action.slot == ActiveSlot::Left)
+        .unwrap()
+        .speed;
+    let mut builder = BattleStateBuilder::from_state(clear).unwrap();
+    builder.edit_field(|field| {
+        field.weather = Some(ConditionState::new(
+            dex.field_effect_ids().sandstorm.unwrap(),
+            Some(1),
+        ));
+    });
+    let sand = builder.build().unwrap();
+    let sand_queue = sand
+        .inspect_turn_queue(choices.0, choices.1, &mechanics)
+        .unwrap();
+    let sand_action = sand_queue
+        .actions
+        .iter()
+        .find(|action| action.side == SideId::P1 && action.slot == ActiveSlot::Left)
+        .unwrap();
+    assert_eq!(sand_action.speed, clear_speed.saturating_mul(2));
+    let sand_result = step(
+        &sand,
+        &JointAction::Turn {
+            p1: choices.0,
+            p2: choices.1,
+        },
+        &mechanics,
+    )
+    .unwrap();
+    assert_eq!(
+        step(
+            &sand,
+            &JointAction::Turn {
+                p1: choices.0,
+                p2: choices.1,
+            },
+            &mechanics,
+        )
+        .unwrap(),
+        sand_result
+    );
+    let sand_turn = sand_result.diagnostics.turn.as_ref().unwrap();
+    assert!(sand_turn
+        .events
+        .iter()
+        .any(|event| event.event == BattleEvent::WeatherImmunity
+            && event.context.target == Some(PokemonRef::new(SideId::P1, PokemonIndex::new(0)))
+            && event.value == rotom_core::EventValue::Boolean(false)));
+    assert!(!sand_turn
+        .field_hp_changes
+        .iter()
+        .any(|change| change.pokemon.side == SideId::P1));
+    assert!(sand_result.state.field().weather.is_none());
+    let expired_speed = sand_result
+        .state
+        .inspect_turn_queue(choices.0, choices.1, &mechanics)
+        .unwrap()
+        .actions
+        .into_iter()
+        .find(|action| action.side == SideId::P1 && action.slot == ActiveSlot::Left)
+        .unwrap()
+        .speed;
+    assert_eq!(expired_speed, clear_speed);
+}
+
+#[test]
+fn prankster_priority_and_dark_immunity_are_per_target_and_replayable() {
+    let dex = champions_reg_mc().unwrap();
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let p1 = four_member_team(
+        set_with_moves(&dex, "medicham", "prankster", &["stringshot"]),
+        set_with_moves(&dex, "snorlax", "immunity", &["recover"]),
+    );
+    let p2 = four_member_team(
+        set_with_moves(&dex, "umbreon", "immunity", &["recover"]),
+        set_with_moves(&dex, "snorlax", "immunity", &["recover"]),
+    );
+    let prankster = selected_battle_for_teams(&dex, &p1, &p2, 19);
+    let p1_choice = TurnChoice {
+        actions: [
+            use_move(0, ActionTarget::Automatic),
+            use_move(0, ActionTarget::Automatic),
+        ],
+    };
+    let p2_choice = TurnChoice {
+        actions: [
+            use_move(0, ActionTarget::Automatic),
+            use_move(0, ActionTarget::Automatic),
+        ],
+    };
+    let prankster_action = JointAction::Turn {
+        p1: p1_choice,
+        p2: p2_choice,
+    };
+    let queue = prankster
+        .inspect_turn_queue(p1_choice, p2_choice, &mechanics)
+        .unwrap();
+    let queued = queue
+        .actions
+        .iter()
+        .find(|action| action.side == SideId::P1 && action.slot == ActiveSlot::Left)
+        .unwrap();
+    assert_eq!(queued.priority, 1);
+    assert!(queued.prankster_boosted);
+
+    let result = step(&prankster, &prankster_action, &mechanics).unwrap();
+    assert_eq!(
+        step(&prankster, &prankster_action, &mechanics).unwrap(),
+        result
+    );
+    let turn = result.diagnostics.turn.as_ref().unwrap();
+    let source = PokemonRef::new(SideId::P1, PokemonIndex::new(0));
+    let outcomes = turn
+        .target_outcomes
+        .iter()
+        .filter(|outcome| outcome.source == source)
+        .map(|outcome| (outcome.target, outcome.result))
+        .collect::<Vec<_>>();
+    assert!(outcomes.contains(&(
+        PokemonRef::new(SideId::P2, PokemonIndex::new(0)),
+        TargetResult::Immune
+    )));
+    assert!(outcomes.contains(&(
+        PokemonRef::new(SideId::P2, PokemonIndex::new(1)),
+        TargetResult::Hit
+    )));
+    assert_eq!(
+        result
+            .state
+            .rng()
+            .trace()
+            .unwrap()
+            .iter()
+            .filter(|entry| entry.reason == RngReason::Accuracy)
+            .count(),
+        1
+    );
+
+    let protected_p2 = four_member_team(
+        set_with_moves(&dex, "umbreon", "immunity", &["protect"]),
+        set_with_moves(&dex, "snorlax", "immunity", &["recover"]),
+    );
+    let protected = step(
+        &selected_battle_for_teams(&dex, &p1, &protected_p2, 29),
+        &prankster_action,
+        &mechanics,
+    )
+    .unwrap();
+    let protected_turn = protected.diagnostics.turn.as_ref().unwrap();
+    assert!(protected_turn.target_outcomes.iter().any(|outcome| {
+        outcome.source == source
+            && outcome.target == PokemonRef::new(SideId::P2, PokemonIndex::new(0))
+            && outcome.result == TargetResult::Protected
+    }));
+    assert!(!protected_turn.events.iter().any(|event| {
+        event.event == BattleEvent::TryImmunity
+            && event.context.target == Some(PokemonRef::new(SideId::P2, PokemonIndex::new(0)))
+    }));
+}
+
+#[test]
+fn protection_precedes_ability_immunity_per_target() {
+    let dex = champions_reg_mc().unwrap();
+    let p1 = four_member_team(
+        set_with_moves(&dex, "medicham", "telepathy", &["hypervoice"]),
+        set_with_moves(&dex, "snorlax", "immunity", &["recover"]),
+    );
+    let p2 = four_member_team(
+        set_with_moves(&dex, "snorlax", "soundproof", &["protect"]),
+        set_with_moves(&dex, "snorlax", "soundproof", &["recover"]),
+    );
+    let battle = selected_battle_for_teams(&dex, &p1, &p2, 23);
+    let result = step(
+        &battle,
+        &JointAction::Turn {
+            p1: TurnChoice {
+                actions: [
+                    use_move(0, ActionTarget::Automatic),
+                    use_move(0, ActionTarget::Automatic),
+                ],
+            },
+            p2: TurnChoice {
+                actions: [
+                    use_move(0, ActionTarget::Automatic),
+                    use_move(0, ActionTarget::Automatic),
+                ],
+            },
+        },
+        &Mechanics::new(&dex, &EffectRegistry::new()),
+    )
+    .unwrap();
+    let source = PokemonRef::new(SideId::P1, PokemonIndex::new(0));
+    let outcomes = result
+        .diagnostics
+        .turn
+        .as_ref()
+        .unwrap()
+        .target_outcomes
+        .iter()
+        .filter(|outcome| outcome.source == source)
+        .map(|outcome| (outcome.target, outcome.result))
+        .collect::<Vec<_>>();
+    assert!(outcomes.contains(&(
+        PokemonRef::new(SideId::P2, PokemonIndex::new(0)),
+        TargetResult::Protected
+    )));
+    assert!(outcomes.contains(&(
+        PokemonRef::new(SideId::P2, PokemonIndex::new(1)),
+        TargetResult::Immune
+    )));
 }
 
 #[test]
@@ -6066,6 +6394,16 @@ const EXPECTED_ABILITY_HANDLERS: &[(
     (
         "surgesurfer",
         rotom_core::AbilityBehavior::ElectricTerrainSpeed,
+        Unbreakable,
+    ),
+    (
+        "sandrush",
+        rotom_core::AbilityBehavior::SandRush,
+        Unbreakable,
+    ),
+    (
+        "prankster",
+        rotom_core::AbilityBehavior::Prankster,
         Unbreakable,
     ),
     (

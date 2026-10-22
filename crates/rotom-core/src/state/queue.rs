@@ -1,8 +1,7 @@
 use super::{ActiveSlot, BattlePhase, BattleState, PokemonIndex, PokemonPosition};
 use crate::{
-    ActionTarget, BattleError, BattleEvent, CombatData, EffectRegistry, EventContext,
-    EventDispatch, EventValue, Mechanics, PokemonAction, PokemonRef, PokemonState, RngReason,
-    SideId, TurnChoice,
+    ActionTarget, BattleError, BattleEvent, CombatData, EventContext, EventDispatch, EventValue,
+    Mechanics, PokemonAction, PokemonRef, PokemonState, RngReason, SideId, TurnChoice,
 };
 use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
@@ -27,6 +26,9 @@ pub struct QueuedAction {
     pub order: ActionOrder,
     pub priority: i8,
     pub speed: u16,
+    /// Derived queue-time provenance used by the later Dark-type immunity check.
+    #[serde(default)]
+    pub prankster_boosted: bool,
 }
 
 /// The inspectable execution order for one submitted doubles turn.
@@ -64,16 +66,15 @@ impl BattleState {
     ) -> Result<ActionQueue, BattleError> {
         self.validate_stable_state()?;
         let mut next = self.clone();
-        next.queue_turn_inner(p1, p2, mechanics.effects(), mechanics.field_effects())?;
+        next.queue_turn_inner(p1, p2, mechanics)?;
         Ok(next.queue)
     }
 
-    pub(crate) fn queue_turn_inner(
+    pub(crate) fn queue_turn_inner<D: CombatData>(
         &mut self,
         p1: TurnChoice,
         p2: TurnChoice,
-        effects: &EffectRegistry,
-        field_effects: &crate::FieldEffectIds,
+        mechanics: &Mechanics<'_, D>,
     ) -> Result<(), BattleError> {
         if self.phase != BattlePhase::TurnSelection {
             return Err(BattleError::IllegalChoice(format!(
@@ -86,22 +87,8 @@ impl BattleState {
 
         let mut actions = Vec::with_capacity(4);
         let mut events = Vec::new();
-        self.expand_choice(
-            SideId::P1,
-            p1,
-            effects,
-            field_effects,
-            &mut actions,
-            &mut events,
-        )?;
-        self.expand_choice(
-            SideId::P2,
-            p2,
-            effects,
-            field_effects,
-            &mut actions,
-            &mut events,
-        )?;
+        self.expand_choice(SideId::P1, p1, mechanics, &mut actions, &mut events)?;
+        self.expand_choice(SideId::P2, p2, mechanics, &mut actions, &mut events)?;
         actions.sort_by(compare_actions);
         self.shuffle_speed_ties(&mut actions)?;
 
@@ -110,12 +97,11 @@ impl BattleState {
         Ok(())
     }
 
-    fn expand_choice(
+    fn expand_choice<D: CombatData>(
         &mut self,
         side: SideId,
         choice: TurnChoice,
-        effects: &EffectRegistry,
-        field_effects: &crate::FieldEffectIds,
+        mechanics: &Mechanics<'_, D>,
         output: &mut Vec<QueuedAction>,
         events: &mut Vec<EventDispatch>,
     ) -> Result<(), BattleError> {
@@ -148,30 +134,34 @@ impl BattleState {
                 source: Some(PokemonRef::new(side, pokemon)),
                 target: action_target(self, side, slot, action),
                 move_id,
-                weather: field_effects.weather_environment(self),
-                terrain: field_effects.terrain_environment(self),
+                move_category: move_id
+                    .and_then(|move_id| mechanics.data().move_data(move_id))
+                    .map(|move_data| move_data.category),
+                weather: mechanics.field_effects().weather_environment(self),
+                terrain: mechanics.field_effects().terrain_environment(self),
                 ..EventContext::default()
             };
-            let priority = if order == ActionOrder::Move {
-                let priority_event = effects.dispatch(
+            let (priority, prankster_boosted) = if order == ActionOrder::Move {
+                let priority_event = mechanics.effects().dispatch(
                     self,
                     BattleEvent::ModifyPriority,
                     context,
                     EventValue::Integer(i64::from(priority)),
                 )?;
                 let priority = event_i8(&priority_event, BattleEvent::ModifyPriority)?;
+                let prankster_boosted = priority_event.prankster_boosted;
                 events.push(priority_event);
-                priority
+                (priority, prankster_boosted)
             } else {
-                priority
+                (priority, false)
             };
-            let speed_event = effects.dispatch(
+            let speed_event = mechanics.effects().dispatch(
                 self,
                 BattleEvent::ModifySpeed,
                 context,
                 EventValue::Integer(i64::from(speed)),
             )?;
-            let speed = field_effects.action_speed(
+            let speed = mechanics.field_effects().action_speed(
                 self,
                 side,
                 event_u16(&speed_event, BattleEvent::ModifySpeed)?,
@@ -185,6 +175,7 @@ impl BattleState {
                 order,
                 priority,
                 speed,
+                prankster_boosted,
             });
         }
         Ok(())

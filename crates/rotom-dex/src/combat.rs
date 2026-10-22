@@ -422,6 +422,16 @@ const IMPLEMENTED_ABILITY_BEHAVIORS: &[(&str, AbilityBehavior, AbilitySuppressio
         AbilitySuppression::Unbreakable,
     ),
     (
+        "sandrush",
+        AbilityBehavior::SandRush,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "prankster",
+        AbilityBehavior::Prankster,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
         "bulletproof",
         AbilityBehavior::BulletImmunity,
         AbilitySuppression::Breakable,

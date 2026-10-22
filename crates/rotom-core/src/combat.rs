@@ -3,7 +3,7 @@ use crate::{
     BattlePhase, BattleStat, BattleState, ConditionId, ConditionState, EffectRegistry,
     EventContext, EventDispatch, EventValue, FaintTarget, FieldEffectIds, FormId, MajorStatus,
     MoveId, MoveSlotIndex, MoveTarget, PokemonAction, PokemonIndex, PokemonRef, PokemonState,
-    RngReason, SideId, SpeciesId,
+    RngReason, SideId, SpeciesId, WeatherEnvironment,
 };
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
@@ -577,6 +577,7 @@ struct QueuedMoveAction {
     slot: ActiveSlot,
     move_slot: MoveSlotIndex,
     target: ActionTarget,
+    prankster_boosted: bool,
 }
 
 #[derive(Clone)]
@@ -686,6 +687,7 @@ impl BattleState {
                             slot: action.slot,
                             move_slot,
                             target,
+                            prankster_boosted: action.prankster_boosted,
                         },
                         effects,
                         field_effects,
@@ -730,7 +732,7 @@ impl BattleState {
         resolution: &mut TurnResolution,
     ) -> Result<(), BattleError> {
         self.tick_volatile_durations(resolution)?;
-        self.process_weather_residuals(data, field_effects, resolution)?;
+        self.process_weather_residuals(data, effects, field_effects, resolution)?;
         self.tick_weather_duration(resolution);
         self.process_terrain_residuals(data, field_effects, resolution)?;
         let before = self.active_status_hp()?;
@@ -1425,8 +1427,27 @@ impl BattleState {
                 critical: false,
                 move_category: Some(move_context.move_data.category),
                 move_flags: move_context.move_data.interaction_flags,
+                prankster_boosted: move_context.queued.prankster_boosted,
                 ..EventContext::default()
             };
+            // Psychic Terrain resolves at priority 4 and Protect at priority 3
+            // in Showdown's TryHit event, before ordinary ability handlers.
+            let priority_blocked =
+                self.priority_move_blocked_target(data, field_effects, move_context, target)?;
+            let protected = !priority_blocked
+                && self.target_is_protected(data, field_effects, move_context, target);
+            if priority_blocked || protected {
+                outcomes[index] = Some(Self::empty_target_outcome(
+                    move_context,
+                    target_context,
+                    if priority_blocked {
+                        TargetResult::PriorityBlocked
+                    } else {
+                        TargetResult::Protected
+                    },
+                ));
+                continue;
+            }
             let try_hit = effects.dispatch(
                 self,
                 BattleEvent::TryHit,
@@ -1436,25 +1457,12 @@ impl BattleState {
             let cancelled = try_hit.cancelled || try_hit.value == EventValue::Boolean(false);
             let ability_immune = try_hit.immune;
             resolution.events.push(try_hit);
-            // Pinned Showdown resolves Psychic Terrain's priority-4 TryHit
-            // guard before Protect's priority-3 TryHit handler, per target.
-            let priority_blocked =
-                self.priority_move_blocked_target(data, field_effects, move_context, target)?;
-            let protected = if cancelled || priority_blocked {
-                false
-            } else {
-                self.target_is_protected(data, field_effects, move_context, target)
-            };
-            if cancelled || priority_blocked || protected {
+            if cancelled {
                 outcomes[index] = Some(Self::empty_target_outcome(
                     move_context,
                     target_context,
                     if ability_immune {
                         TargetResult::Immune
-                    } else if priority_blocked {
-                        TargetResult::PriorityBlocked
-                    } else if protected {
-                        TargetResult::Protected
                     } else {
                         TargetResult::Cancelled
                     },
@@ -1483,8 +1491,57 @@ impl BattleState {
             }
         }
 
-        let mut eligible = Vec::with_capacity(after_immunity.len());
+        let mut after_try_immunity = Vec::with_capacity(after_immunity.len());
         for (index, target_context) in after_immunity {
+            if !move_context.queued.prankster_boosted {
+                after_try_immunity.push((index, target_context));
+                continue;
+            }
+            let target = target_context.target;
+            let target_state = self
+                .side(target.side)
+                .pokemon(target.pokemon)
+                .ok_or_else(|| BattleError::InvalidState("move target is invalid".to_owned()))?;
+            let try_immunity = effects.dispatch(
+                self,
+                BattleEvent::TryImmunity,
+                EventContext {
+                    source: Some(move_context.source),
+                    target: Some(target),
+                    move_id: Some(move_context.move_id),
+                    suppress_target_ability: move_context.suppress_target_ability,
+                    move_category: Some(move_context.move_data.category),
+                    move_flags: move_context.move_data.interaction_flags,
+                    prankster_boosted: move_context.queued.prankster_boosted,
+                    target_types: Some(
+                        data.pokemon_types(target_state.species, target_state.form)
+                            .ok_or_else(|| {
+                                BattleError::DataMismatch(
+                                    "missing move target type data".to_owned(),
+                                )
+                            })?,
+                    ),
+                    ..EventContext::default()
+                },
+                EventValue::Boolean(true),
+            )?;
+            let immune = try_immunity.immune
+                || try_immunity.cancelled
+                || try_immunity.value == EventValue::Boolean(false);
+            resolution.events.push(try_immunity);
+            if immune {
+                outcomes[index] = Some(Self::empty_target_outcome(
+                    move_context,
+                    target_context,
+                    TargetResult::Immune,
+                ));
+            } else {
+                after_try_immunity.push((index, target_context));
+            }
+        }
+
+        let mut eligible = Vec::with_capacity(after_try_immunity.len());
+        for (index, target_context) in after_try_immunity {
             if self.check_accuracy(
                 move_context.move_data.accuracy,
                 move_context.move_id,
@@ -2680,6 +2737,7 @@ impl BattleState {
     fn process_weather_residuals<D: CombatData>(
         &mut self,
         data: &D,
+        effects: &EffectRegistry,
         field_effects: &FieldEffectIds,
         resolution: &mut TurnResolution,
     ) -> Result<(), BattleError> {
@@ -2713,7 +2771,24 @@ impl BattleState {
                     .into_iter()
                     .any(|kind| types.primary == kind || types.secondary == Some(kind));
                 if !immune {
-                    let requested = (pokemon.stats.hp / 16).max(1);
+                    let max_hp = pokemon.stats.hp;
+                    let weather_immunity = effects.dispatch(
+                        self,
+                        BattleEvent::WeatherImmunity,
+                        EventContext {
+                            target: Some(target),
+                            weather: Some(WeatherEnvironment::Sandstorm),
+                            ..EventContext::default()
+                        },
+                        EventValue::Boolean(true),
+                    )?;
+                    let ability_immune = weather_immunity.cancelled
+                        || weather_immunity.value == EventValue::Boolean(false);
+                    resolution.events.push(weather_immunity);
+                    if ability_immune {
+                        continue;
+                    }
+                    let requested = (max_hp / 16).max(1);
                     let applied = StateKernel::new(self).damage_hp(target, requested)?.applied;
                     resolution.field_hp_changes.push(FieldHpChange {
                         pokemon: target,

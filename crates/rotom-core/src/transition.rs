@@ -162,7 +162,7 @@ pub fn step<D: CombatData>(
             StepDiagnostics::default()
         }
         JointAction::Turn { p1, p2 } => {
-            next.queue_turn_inner(*p1, *p2, &mechanics.effects, &mechanics.field_effects)?;
+            next.queue_turn_inner(*p1, *p2, mechanics)?;
             let queue_events = next.queue.events.clone();
             let turn = next.resolve_turn_inner(
                 mechanics.data,
@@ -346,12 +346,7 @@ mod tests {
 
         let mut sequential = current.clone();
         sequential
-            .queue_turn_inner(
-                p1_choice,
-                p2_choice,
-                mechanics.effects(),
-                mechanics.field_effects(),
-            )
+            .queue_turn_inner(p1_choice, p2_choice, &mechanics)
             .unwrap();
         let queue_events = sequential.queue.events.clone();
         let turn = sequential

@@ -1,8 +1,8 @@
 use crate::{
     kernel::StateKernel, AbilityId, BattleError, BattleRng, BattleStat, BattleState, ConditionId,
     ConditionState, ItemId, MajorStatus, MoveCategory, MoveId, MoveInteractionFlags, PokemonIndex,
-    PokemonPosition, RngReason, SideId, StatStageChange, StatusState, TerrainEnvironment,
-    WeatherEnvironment,
+    PokemonPosition, PokemonTypes, RngReason, SideId, StatStageChange, StatusState,
+    TerrainEnvironment, WeatherEnvironment,
 };
 use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
@@ -36,6 +36,8 @@ pub enum BattleEvent {
     CriticalHit,
     ModifyDamage,
     TryHit,
+    /// Relays move-specific immunity checks after `TryHit` and type immunity.
+    TryImmunity,
     TrySetStatus,
     Hit,
     AfterDamage,
@@ -43,6 +45,8 @@ pub enum BattleEvent {
     SwitchIn,
     SwitchOut,
     Faint,
+    /// Relays whether the holder is affected by the active weather.
+    WeatherImmunity,
     Residual,
 }
 
@@ -52,7 +56,7 @@ impl BattleEvent {
     pub const fn contract(self) -> EventContract {
         match self {
             Self::BeforeMove | Self::SwitchOut => EventContract::new(EventRelay::None, true, false),
-            Self::TryHit | Self::TrySetStatus => {
+            Self::TryHit | Self::TryImmunity | Self::TrySetStatus | Self::WeatherImmunity => {
                 EventContract::new(EventRelay::Boolean, true, true)
             }
             Self::ModifyPriority
@@ -212,6 +216,12 @@ pub struct EventContext {
     pub move_category: Option<MoveCategory>,
     #[serde(default, skip_serializing_if = "MoveInteractionFlags::is_empty")]
     pub move_flags: MoveInteractionFlags,
+    /// Whether the queued move received Prankster's priority modifier.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub prankster_boosted: bool,
+    /// Resolved target typing for typed immunity callbacks.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub target_types: Option<PokemonTypes>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub weather: Option<WeatherEnvironment>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -254,6 +264,9 @@ pub struct EventDispatch {
     /// Whether a `TryHit` handler rejected the move as an immunity.
     #[serde(default, skip_serializing_if = "is_false")]
     pub immune: bool,
+    /// Whether `ModifyPriority` marked this move as Prankster-boosted.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub prankster_boosted: bool,
     pub invocations: Vec<EffectInvocation>,
 }
 
@@ -266,6 +279,7 @@ impl EventDispatch {
             value,
             cancelled: false,
             immune: false,
+            prankster_boosted: false,
             invocations: Vec::new(),
         }
     }
@@ -278,6 +292,11 @@ impl EventDispatch {
     /// Marks a rejected `TryHit` as an immunity for the move executor.
     pub fn mark_immune(&mut self) {
         self.immune = true;
+    }
+
+    /// Carries Prankster provenance from queue construction into hit resolution.
+    pub fn mark_prankster_boosted(&mut self) {
+        self.prankster_boosted = true;
     }
 }
 
@@ -640,10 +659,16 @@ impl EffectRegistry {
                 )));
             }
             if dispatch.immune
-                && (event != BattleEvent::TryHit || dispatch.value != EventValue::Boolean(false))
+                && (!matches!(event, BattleEvent::TryHit | BattleEvent::TryImmunity)
+                    || dispatch.value != EventValue::Boolean(false))
             {
                 return Err(BattleError::InvalidState(format!(
                     "{event:?} handlers produced an invalid hit immunity"
+                )));
+            }
+            if dispatch.prankster_boosted && event != BattleEvent::ModifyPriority {
+                return Err(BattleError::InvalidState(format!(
+                    "{event:?} handlers produced invalid Prankster provenance"
                 )));
             }
             if dispatch.cancelled {

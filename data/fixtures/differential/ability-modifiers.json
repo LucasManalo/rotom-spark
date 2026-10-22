@@ -2,7 +2,7 @@
   "showdown_commit": "b79ce06d06b8f0dc8de8bb348bc9cab5d931553f",
   "format": "gen9championsvgc2026regmc",
   "methodology": {
-    "source": "pinned Battle.actions.getDamage, Pokemon.getStat, ModifyCritRatio, and TryHit with resolved Champions data",
+    "source": "pinned Battle.actions.getDamage, Pokemon.getStat/runImmunity, ModifyPriority/ModifyCritRatio, and TryHit with resolved Champions data",
     "damage_roll_percent": 100,
     "critical_hit": "per_case",
     "full_transition_comparison": false
@@ -232,6 +232,32 @@
       "weather": null,
       "terrain": "electricterrain",
       "speed": 200
+    },
+    {
+      "id": "sand-rush-sandstorm",
+      "ability": "sandrush",
+      "operation": "speed",
+      "status": null,
+      "weather": "sandstorm",
+      "terrain": null,
+      "speed": 200
+    },
+    {
+      "id": "sand-rush-weather-immunity",
+      "ability": "sandrush",
+      "operation": "weather_immunity",
+      "weather": "sandstorm",
+      "immune": true
+    },
+    {
+      "id": "prankster-status-priority-dark-immunity",
+      "ability": "prankster",
+      "operation": "priority",
+      "move": "thunderwave",
+      "target_species": "umbreon",
+      "priority": 1,
+      "prankster_boosted": true,
+      "dark_immune": true
     },
     {
       "id": "super-luck-critical-ratio",

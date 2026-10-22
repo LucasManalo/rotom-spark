@@ -479,6 +479,20 @@
       ]
     },
     {
+      "id": "prankster",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": [
+        "file:crates/rotom-core/src/abilities.rs",
+        "unit:crates/rotom-dex/tests/combat.rs#prankster_priority_and_dark_immunity_are_per_target_and_replayable",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#prankster_priority_and_dark_immunity_are_per_target_and_replayable",
+        "differential:data/fixtures/differential/ability-modifiers.json#prankster-status-priority-dark-immunity"
+      ]
+    },
+    {
       "id": "purepower",
       "kind": "ability",
       "implementation": "implemented",
@@ -506,6 +520,21 @@
         "unit:crates/rotom-core/src/abilities.rs#multiple_descriptors_and_critical_handlers_compose_without_identity_branches",
         "differential:data/fixtures/differential/ability-modifiers.json#quick-feet-paralysis",
         "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_batch_interactions_replay_deterministically"
+      ]
+    },
+    {
+      "id": "sandrush",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": [
+        "file:crates/rotom-core/src/abilities.rs",
+        "unit:crates/rotom-dex/tests/combat.rs#sand_rush_tracks_weather_changes_and_prevents_residual_damage",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#sand_rush_tracks_weather_changes_and_prevents_residual_damage",
+        "differential:data/fixtures/differential/ability-modifiers.json#sand-rush-sandstorm",
+        "differential:data/fixtures/differential/ability-modifiers.json#sand-rush-weather-immunity"
       ]
     },
     {

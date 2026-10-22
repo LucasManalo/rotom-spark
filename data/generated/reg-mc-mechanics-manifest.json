@@ -2413,20 +2413,24 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/ability-modifiers.json#prankster-status-priority-dark-immunity",
+        "file:crates/rotom-core/src/abilities.rs",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#prankster_priority_and_dark_immunity_are_per_target_and_replayable",
         "species/grimmsnarl/ability-slot/0",
         "species/klefki/ability-slot/0",
         "species/liepard/ability-slot/H",
         "species/meowstic/ability-slot/H",
         "species/sableye/ability-slot/H",
-        "species/whimsicott/ability-slot/0"
+        "species/whimsicott/ability-slot/0",
+        "unit:crates/rotom-dex/tests/combat.rs#prankster_priority_and_dark_immunity_are_per_target_and_replayable"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "pressure",
@@ -2807,17 +2811,22 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/ability-modifiers.json#sand-rush-sandstorm",
+        "differential:data/fixtures/differential/ability-modifiers.json#sand-rush-weather-immunity",
+        "file:crates/rotom-core/src/abilities.rs",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#sand_rush_tracks_weather_changes_and_prevents_residual_damage",
         "species/excadrill/ability-slot/0",
         "species/houndstone/ability-slot/0",
-        "species/lycanroc/ability-slot/1"
+        "species/lycanroc/ability-slot/1",
+        "unit:crates/rotom-dex/tests/combat.rs#sand_rush_tracks_weather_changes_and_prevents_residual_damage"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "sandspit",
@@ -47434,18 +47443,18 @@
       "ability": {
         "total": 215,
         "implementation": {
-          "unsupported": 195,
+          "unsupported": 193,
           "partial": 0,
-          "implemented": 20
+          "implemented": 22
         },
         "verification": {
-          "not_tested": 195,
+          "not_tested": 193,
           "unit_tested": 0,
-          "differential_verified": 20
+          "differential_verified": 22
         },
         "interaction_verification": {
-          "not_tested": 195,
-          "unit_tested": 20,
+          "not_tested": 193,
+          "unit_tested": 22,
           "differential_verified": 0
         },
         "reachability": {
