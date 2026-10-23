@@ -1,7 +1,7 @@
 use crate::{
     AbilityId, BattleError, BattleEvent, EffectInvocation, EffectOrder, EffectOwner,
     EffectRegistry, EffectSource, EffectState, EventContext, EventDispatch, EventValue,
-    MoveCategory, PokemonRef, TerrainEnvironment, WeatherEnvironment,
+    MajorStatus, MoveCategory, PokemonRef, PokemonType, TerrainEnvironment, WeatherEnvironment,
 };
 
 /// A reusable implementation family for an ability resolved by static data.
@@ -16,6 +16,29 @@ pub enum AbilityBehavior {
     DoubleDefense,
     StatusedDefense,
     LowPowerBoost,
+    LowHpFireBoost,
+    LowHpGrassBoost,
+    LowHpWaterBoost,
+    LowHpBugBoost,
+    PunchBoost,
+    BiteBoost,
+    SlicingBoost,
+    ContactBoost,
+    RecoilBoost,
+    SoundPower,
+    SandForce,
+    AllySteelBoost,
+    SuperEffectiveReduction,
+    Fluffy,
+    ThickFat,
+    GrassyDefense,
+    GaleWings,
+    OpposingStatusImmunity,
+    PoisonImmunity,
+    SleepImmunity,
+    ParalysisImmunity,
+    FreezeImmunity,
+    AllySleepImmunity,
     FullHpDamageReduction,
     StatusedSpeed,
     IgnoreParalysisSpeedPenalty,
@@ -149,6 +172,258 @@ const BEHAVIOR_REGISTRATIONS: &[BehaviorRegistration] = &[
         BattleEvent::ModifyBasePower,
         EffectOrder::new(0, 30, 0),
         technician_base_power,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::LowHpFireBoost,
+        BattleEvent::ModifyAttack,
+        EffectOrder::new(0, 5, 0),
+        low_hp_fire_boost,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::LowHpFireBoost,
+        BattleEvent::ModifySpecialAttack,
+        EffectOrder::new(0, 5, 0),
+        low_hp_fire_boost,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::LowHpGrassBoost,
+        BattleEvent::ModifyAttack,
+        EffectOrder::new(0, 5, 0),
+        low_hp_grass_boost,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::LowHpGrassBoost,
+        BattleEvent::ModifySpecialAttack,
+        EffectOrder::new(0, 5, 0),
+        low_hp_grass_boost,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::LowHpWaterBoost,
+        BattleEvent::ModifyAttack,
+        EffectOrder::new(0, 5, 0),
+        low_hp_water_boost,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::LowHpWaterBoost,
+        BattleEvent::ModifySpecialAttack,
+        EffectOrder::new(0, 5, 0),
+        low_hp_water_boost,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::LowHpBugBoost,
+        BattleEvent::ModifyAttack,
+        EffectOrder::new(0, 5, 0),
+        low_hp_bug_boost,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::LowHpBugBoost,
+        BattleEvent::ModifySpecialAttack,
+        EffectOrder::new(0, 5, 0),
+        low_hp_bug_boost,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::PunchBoost,
+        BattleEvent::ModifyBasePower,
+        EffectOrder::new(0, 23, 0),
+        punch_boost,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::BiteBoost,
+        BattleEvent::ModifyBasePower,
+        EffectOrder::new(0, 19, 0),
+        bite_boost,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::SlicingBoost,
+        BattleEvent::ModifyBasePower,
+        EffectOrder::new(0, 19, 0),
+        slicing_boost,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::ContactBoost,
+        BattleEvent::ModifyBasePower,
+        EffectOrder::new(0, 21, 0),
+        contact_boost,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::RecoilBoost,
+        BattleEvent::ModifyBasePower,
+        EffectOrder::new(0, 23, 0),
+        recoil_boost,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::SoundPower,
+        BattleEvent::ModifyBasePower,
+        EffectOrder::new(0, 7, 0),
+        sound_power_boost,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::SoundPower,
+        BattleEvent::ModifyDamage,
+        DEFAULT_ORDER,
+        sound_damage_reduction,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::SandForce,
+        BattleEvent::ModifyBasePower,
+        EffectOrder::new(0, 21, 0),
+        sand_force_power,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::SandForce,
+        BattleEvent::WeatherImmunity,
+        DEFAULT_ORDER,
+        sandstorm_immunity,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::AllySteelBoost,
+        BattleEvent::ModifyBasePower,
+        EffectOrder::new(0, 22, 0),
+        ally_steel_boost,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::SuperEffectiveReduction,
+        BattleEvent::ModifyDamage,
+        DEFAULT_ORDER,
+        super_effective_reduction,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::Fluffy,
+        BattleEvent::ModifyDamage,
+        DEFAULT_ORDER,
+        fluffy_damage,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::ThickFat,
+        BattleEvent::ModifyAttack,
+        EffectOrder::new(0, 6, 0),
+        thick_fat_stat,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::ThickFat,
+        BattleEvent::ModifySpecialAttack,
+        EffectOrder::new(0, 5, 0),
+        thick_fat_stat,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::GrassyDefense,
+        BattleEvent::ModifyDefense,
+        EffectOrder::new(0, 6, 0),
+        grassy_defense,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::GaleWings,
+        BattleEvent::ModifyPriority,
+        DEFAULT_ORDER,
+        gale_wings_priority,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::OpposingStatusImmunity,
+        BattleEvent::TryHit,
+        DEFAULT_ORDER,
+        opposing_status_immunity,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::PoisonImmunity,
+        BattleEvent::TrySetStatus,
+        DEFAULT_ORDER,
+        poison_immunity,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::PoisonImmunity,
+        BattleEvent::BeforeTurn,
+        DEFAULT_ORDER,
+        cure_poison,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::PoisonImmunity,
+        BattleEvent::SwitchIn,
+        DEFAULT_ORDER,
+        cure_poison,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::PoisonImmunity,
+        BattleEvent::AfterSetStatus,
+        DEFAULT_ORDER,
+        cure_poison,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::SleepImmunity,
+        BattleEvent::TrySetStatus,
+        DEFAULT_ORDER,
+        sleep_immunity,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::SleepImmunity,
+        BattleEvent::BeforeTurn,
+        DEFAULT_ORDER,
+        cure_sleep,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::SleepImmunity,
+        BattleEvent::SwitchIn,
+        DEFAULT_ORDER,
+        cure_sleep,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::SleepImmunity,
+        BattleEvent::AfterSetStatus,
+        DEFAULT_ORDER,
+        cure_sleep,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::ParalysisImmunity,
+        BattleEvent::TrySetStatus,
+        DEFAULT_ORDER,
+        paralysis_immunity,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::ParalysisImmunity,
+        BattleEvent::BeforeTurn,
+        DEFAULT_ORDER,
+        cure_paralysis,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::ParalysisImmunity,
+        BattleEvent::SwitchIn,
+        DEFAULT_ORDER,
+        cure_paralysis,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::ParalysisImmunity,
+        BattleEvent::AfterSetStatus,
+        DEFAULT_ORDER,
+        cure_paralysis,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::FreezeImmunity,
+        BattleEvent::TrySetStatus,
+        DEFAULT_ORDER,
+        freeze_immunity,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::FreezeImmunity,
+        BattleEvent::BeforeTurn,
+        DEFAULT_ORDER,
+        cure_freeze,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::FreezeImmunity,
+        BattleEvent::SwitchIn,
+        DEFAULT_ORDER,
+        cure_freeze,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::FreezeImmunity,
+        BattleEvent::AfterSetStatus,
+        DEFAULT_ORDER,
+        cure_freeze,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::AllySleepImmunity,
+        BattleEvent::TrySetStatus,
+        DEFAULT_ORDER,
+        ally_sleep_immunity,
     ),
     BehaviorRegistration::new(
         AbilityBehavior::FullHpDamageReduction,
@@ -340,6 +615,466 @@ fn technician_base_power(
 ) -> Result<(), BattleError> {
     if owner_pokemon(invocation) == context.source && integer(dispatch)? <= 60 {
         modify_integer(dispatch, 3, 2)?;
+    }
+    Ok(())
+}
+
+fn low_hp_fire_boost(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    low_hp_type_boost(state, invocation, context, dispatch, PokemonType::Fire)
+}
+
+fn low_hp_grass_boost(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    low_hp_type_boost(state, invocation, context, dispatch, PokemonType::Grass)
+}
+
+fn low_hp_water_boost(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    low_hp_type_boost(state, invocation, context, dispatch, PokemonType::Water)
+}
+
+fn low_hp_bug_boost(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    low_hp_type_boost(state, invocation, context, dispatch, PokemonType::Bug)
+}
+
+fn low_hp_type_boost(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+    move_type: PokemonType,
+) -> Result<(), BattleError> {
+    let Some(owner) = matching_source(invocation, context) else {
+        return Ok(());
+    };
+    let holder = pokemon(state, owner)?;
+    if context.move_type == Some(move_type)
+        && u32::from(holder.current_hp).saturating_mul(3) <= u32::from(holder.stats.hp)
+    {
+        modify_integer(dispatch, 3, 2)?;
+    }
+    Ok(())
+}
+
+fn punch_boost(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    source_flag_boost(
+        invocation,
+        context,
+        dispatch,
+        context.move_flags.punch(),
+        4915,
+        4096,
+    )
+}
+
+fn bite_boost(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    source_flag_boost(
+        invocation,
+        context,
+        dispatch,
+        context.move_flags.bite(),
+        3,
+        2,
+    )
+}
+
+fn slicing_boost(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    source_flag_boost(
+        invocation,
+        context,
+        dispatch,
+        context.move_flags.slicing(),
+        3,
+        2,
+    )
+}
+
+fn contact_boost(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    source_flag_boost(
+        invocation,
+        context,
+        dispatch,
+        context.move_flags.contact(),
+        5325,
+        4096,
+    )
+}
+
+fn recoil_boost(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    source_flag_boost(
+        invocation,
+        context,
+        dispatch,
+        context.move_flags.recoil(),
+        4915,
+        4096,
+    )
+}
+
+fn sound_power_boost(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    source_flag_boost(
+        invocation,
+        context,
+        dispatch,
+        context.move_flags.sound(),
+        5325,
+        4096,
+    )
+}
+
+fn source_flag_boost(
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+    applies: bool,
+    numerator: i64,
+    denominator: i64,
+) -> Result<(), BattleError> {
+    if applies && matching_source(invocation, context).is_some() {
+        modify_integer(dispatch, numerator, denominator)?;
+    }
+    Ok(())
+}
+
+fn sound_damage_reduction(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if context.move_flags.sound() && matching_target(invocation, context).is_some() {
+        modify_integer(dispatch, 1, 2)?;
+    }
+    Ok(())
+}
+
+fn sand_force_power(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let boosted_type = matches!(
+        context.move_type,
+        Some(PokemonType::Rock | PokemonType::Ground | PokemonType::Steel)
+    );
+    if context.weather == Some(WeatherEnvironment::Sandstorm)
+        && boosted_type
+        && matching_source(invocation, context).is_some()
+    {
+        modify_integer(dispatch, 5325, 4096)?;
+    }
+    Ok(())
+}
+
+fn ally_steel_boost(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let applies = owner_pokemon(invocation)
+        .zip(context.source)
+        .is_some_and(|(owner, source)| owner.side == source.side)
+        && context.move_type == Some(PokemonType::Steel);
+    if applies {
+        modify_integer(dispatch, 3, 2)?;
+    }
+    Ok(())
+}
+
+fn super_effective_reduction(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if context.type_effectiveness.is_some_and(|value| value > 0)
+        && matching_target(invocation, context).is_some()
+    {
+        modify_integer(dispatch, 3, 4)?;
+    }
+    Ok(())
+}
+
+fn fluffy_damage(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if matching_target(invocation, context).is_none() {
+        return Ok(());
+    }
+    match (
+        context.move_type == Some(PokemonType::Fire),
+        context.move_flags.contact(),
+    ) {
+        (true, false) => modify_integer(dispatch, 2, 1)?,
+        (false, true) => modify_integer(dispatch, 1, 2)?,
+        (true, true) | (false, false) => {}
+    }
+    Ok(())
+}
+
+fn thick_fat_stat(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if matches!(
+        context.move_type,
+        Some(PokemonType::Fire | PokemonType::Ice)
+    ) && matching_target(invocation, context).is_some()
+    {
+        modify_integer(dispatch, 1, 2)?;
+    }
+    Ok(())
+}
+
+fn grassy_defense(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if context.terrain == Some(TerrainEnvironment::Grassy)
+        && matching_target(invocation, context).is_some()
+    {
+        modify_integer(dispatch, 3, 2)?;
+    }
+    Ok(())
+}
+
+fn gale_wings_priority(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = matching_source(invocation, context) else {
+        return Ok(());
+    };
+    let holder = pokemon(state, owner)?;
+    if context.move_type == Some(PokemonType::Flying) && holder.current_hp == holder.stats.hp {
+        dispatch.value = EventValue::Integer(integer(dispatch)?.saturating_add(1));
+    }
+    Ok(())
+}
+
+fn opposing_status_immunity(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if context.move_category == Some(MoveCategory::Status)
+        && context.source != context.target
+        && matching_target(invocation, context).is_some()
+    {
+        boolean(dispatch)?;
+        dispatch.value = EventValue::Boolean(false);
+        dispatch.mark_immune();
+    }
+    Ok(())
+}
+
+fn poison_immunity(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    prevent_status(
+        invocation,
+        context,
+        dispatch,
+        matches!(
+            context.requested_status,
+            Some(MajorStatus::Poison | MajorStatus::BadlyPoisoned)
+        ),
+        false,
+    )
+}
+
+fn sleep_immunity(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    prevent_status(
+        invocation,
+        context,
+        dispatch,
+        context.requested_status == Some(MajorStatus::Sleep),
+        false,
+    )
+}
+
+fn paralysis_immunity(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    prevent_status(
+        invocation,
+        context,
+        dispatch,
+        context.requested_status == Some(MajorStatus::Paralysis),
+        false,
+    )
+}
+
+fn freeze_immunity(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    prevent_status(
+        invocation,
+        context,
+        dispatch,
+        context.requested_status == Some(MajorStatus::Freeze),
+        false,
+    )
+}
+
+fn ally_sleep_immunity(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    prevent_status(
+        invocation,
+        context,
+        dispatch,
+        context.requested_status == Some(MajorStatus::Sleep),
+        true,
+    )
+}
+
+fn prevent_status(
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+    status_matches: bool,
+    protects_allies: bool,
+) -> Result<(), BattleError> {
+    let applies = if protects_allies {
+        owner_pokemon(invocation)
+            .zip(context.target)
+            .is_some_and(|(owner, target)| owner.side == target.side)
+    } else {
+        matching_target(invocation, context).is_some()
+    };
+    if status_matches && applies {
+        boolean(dispatch)?;
+        dispatch.value = EventValue::Boolean(false);
+    }
+    Ok(())
+}
+
+fn cure_poison(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    _: &EventContext,
+    _: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    cure_matching_status(state, invocation, |status| {
+        matches!(status, MajorStatus::Poison | MajorStatus::BadlyPoisoned)
+    })
+}
+
+fn cure_sleep(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    _: &EventContext,
+    _: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    cure_matching_status(state, invocation, |status| status == MajorStatus::Sleep)
+}
+
+fn cure_paralysis(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    _: &EventContext,
+    _: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    cure_matching_status(state, invocation, |status| status == MajorStatus::Paralysis)
+}
+
+fn cure_freeze(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    _: &EventContext,
+    _: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    cure_matching_status(state, invocation, |status| status == MajorStatus::Freeze)
+}
+
+fn cure_matching_status(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    blocked: impl FnOnce(MajorStatus) -> bool,
+) -> Result<(), BattleError> {
+    let Some(owner) = owner_pokemon(invocation) else {
+        return Ok(());
+    };
+    if pokemon(state, owner)?.status.is_some_and(blocked) {
+        state.cure_major_status(owner)?;
     }
     Ok(())
 }
@@ -571,7 +1306,7 @@ fn bullet_immunity(
     context: &EventContext,
     dispatch: &mut EventDispatch,
 ) -> Result<(), BattleError> {
-    prevent_move_hit(invocation, context, dispatch, context.move_flags.bullet)
+    prevent_move_hit(invocation, context, dispatch, context.move_flags.bullet())
 }
 
 fn sound_immunity(
@@ -580,7 +1315,7 @@ fn sound_immunity(
     context: &EventContext,
     dispatch: &mut EventDispatch,
 ) -> Result<(), BattleError> {
-    prevent_move_hit(invocation, context, dispatch, context.move_flags.sound)
+    prevent_move_hit(invocation, context, dispatch, context.move_flags.sound())
 }
 
 fn ally_damage_immunity(
@@ -1039,10 +1774,7 @@ mod tests {
 
         let mut immunity_battle = battle(AbilityId::new(1), bulletproof);
         let bullet_context = EventContext {
-            move_flags: crate::MoveInteractionFlags {
-                bullet: true,
-                sound: false,
-            },
+            move_flags: crate::MoveInteractionFlags::default().with_bullet(true),
             ..context()
         };
         let blocked = registry

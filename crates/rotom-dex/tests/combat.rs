@@ -5479,6 +5479,127 @@ fn ability_test_damage_case(
     panic!("no seed produced a 100% first damage roll")
 }
 
+fn fixture_status(value: &serde_json::Value) -> Option<MajorStatus> {
+    match value.as_str() {
+        Some("brn") => Some(MajorStatus::Burn),
+        Some("frz") => Some(MajorStatus::Freeze),
+        Some("par") => Some(MajorStatus::Paralysis),
+        Some("psn") => Some(MajorStatus::Poison),
+        Some("slp") => Some(MajorStatus::Sleep),
+        Some("tox") => Some(MajorStatus::BadlyPoisoned),
+        Some(other) => panic!("unsupported fixture status {other}"),
+        None => None,
+    }
+}
+
+#[allow(clippy::too_many_lines)]
+fn ability_fixture_damage_case(dex: &rotom_dex::DexData, case: &serde_json::Value) -> u16 {
+    let source_ability = case["source_ability"].as_str().unwrap();
+    let target_ability = case["target_ability"].as_str().unwrap();
+    let move_name = case["move"].as_str().unwrap();
+    let ally_ability = case["ally_ability"].as_str().unwrap_or("swiftswim");
+    let source = set_with_moves(dex, "medicham", source_ability, &[move_name]);
+    let ally = set_with_moves(dex, "magikarp", ally_ability, &["swordsdance"]);
+    let target = set_with_moves(dex, "snorlax", target_ability, &["recover"]);
+    let passive = set_with_moves(dex, "magikarp", "swiftswim", &["recover"]);
+    let p1 = four_member_team(source, ally);
+    let p2 = four_member_team(target, passive);
+    let action = JointAction::Turn {
+        p1: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Foe(ActiveSlot::Left)),
+                use_move(0, ActionTarget::Automatic),
+            ],
+        },
+        p2: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Automatic),
+                use_move(0, ActionTarget::Automatic),
+            ],
+        },
+    };
+    for seed in 0..10_000 {
+        let battle = selected_battle_for_teams(dex, &p1, &p2, seed);
+        let mut builder = BattleStateBuilder::from_state(battle).unwrap();
+        builder
+            .edit_pokemon(
+                PokemonRef::new(SideId::P1, PokemonIndex::new(0)),
+                |pokemon| {
+                    pokemon.status = fixture_status(&case["source_status"]);
+                    if let Some(hp) = case["source_hp"].as_u64() {
+                        pokemon.current_hp = u16::try_from(hp).unwrap();
+                    }
+                },
+            )
+            .unwrap();
+        builder
+            .edit_pokemon(
+                PokemonRef::new(SideId::P2, PokemonIndex::new(0)),
+                |pokemon| pokemon.status = fixture_status(&case["target_status"]),
+            )
+            .unwrap();
+        let ids = dex.field_effect_ids();
+        if let Some(weather) = case["weather"].as_str() {
+            let condition = match weather {
+                "sandstorm" => ids.sandstorm,
+                other => panic!("unsupported damage fixture weather {other}"),
+            }
+            .unwrap();
+            builder.edit_field(|field| {
+                field.weather = Some(ConditionState::new(condition, Some(5)));
+            });
+        }
+        if let Some(terrain) = case["terrain"].as_str() {
+            let condition = match terrain {
+                "grassyterrain" => ids.grassy_terrain,
+                other => panic!("unsupported damage fixture terrain {other}"),
+            }
+            .unwrap();
+            builder.edit_field(|field| {
+                field.terrain = Some(ConditionState::new(condition, Some(5)));
+            });
+        }
+        let battle = builder.build().unwrap();
+        let result = step(
+            &battle,
+            &action,
+            &Mechanics::new(dex, &EffectRegistry::new()),
+        )
+        .unwrap_or_else(|error| panic!("ability fixture {}: {error}", case["id"]));
+        let trace = result.state.rng().trace().unwrap();
+        let first_roll = trace
+            .iter()
+            .find(|entry| entry.reason == RngReason::DamageRoll)
+            .map(|entry| entry.result);
+        let first_critical = trace
+            .iter()
+            .find(|entry| entry.reason == RngReason::CriticalHit)
+            .map(|entry| match entry.operation {
+                RngOperation::Chance { numerator, .. } => entry.result < numerator,
+                _ => unreachable!("critical-hit traces use chance operations"),
+            });
+        if first_roll == Some(100) && first_critical == case["critical"].as_bool() {
+            return result
+                .diagnostics
+                .turn
+                .unwrap()
+                .actions
+                .into_iter()
+                .find_map(|action| match action {
+                    ResolvedAction::Damaged {
+                        side: SideId::P1,
+                        slot: ActiveSlot::Left,
+                        damage,
+                        ..
+                    } => Some(damage.final_damage),
+                    _ => None,
+                })
+                .expect("fixture source damage");
+        }
+    }
+    panic!("no seed produced the fixture's controlled damage outcomes")
+}
+
 fn ability_test_speed(
     dex: &rotom_dex::DexData,
     ability: &str,
@@ -5684,10 +5805,23 @@ fn ability_test_priority(
     ability: &str,
     move_name: &str,
     target_species: &str,
+    source_hp: Option<u16>,
 ) -> serde_json::Value {
     let source = set_with_moves(dex, "medicham", ability, &[move_name]);
     let target = set_with_moves(dex, target_species, "immunity", &["recover"]);
     let battle = selected_battle_for_sets(dex, &source, &target, 0, false);
+    let battle = if let Some(source_hp) = source_hp {
+        let mut builder = BattleStateBuilder::from_state(battle).unwrap();
+        builder
+            .edit_pokemon(
+                PokemonRef::new(SideId::P1, PokemonIndex::new(0)),
+                |pokemon| pokemon.current_hp = source_hp,
+            )
+            .unwrap();
+        builder.build().unwrap()
+    } else {
+        battle
+    };
     let p1 = opposing_targets_choice();
     let p2 = TurnChoice {
         actions: [
@@ -5753,6 +5887,80 @@ fn ability_test_weather_immunity(dex: &rotom_dex::DexData, ability: &str, weathe
             && event.context.target == Some(PokemonRef::new(SideId::P1, PokemonIndex::new(0)))
             && event.value == rotom_core::EventValue::Boolean(false)
     })
+}
+
+fn ability_test_status_immunity(
+    dex: &rotom_dex::DexData,
+    ability: &str,
+    move_name: &str,
+    status: MajorStatus,
+    ally: bool,
+) -> bool {
+    let source = set_with_moves(dex, "medicham", "telepathy", &[move_name]);
+    let source_ally = set_with_moves(dex, "magikarp", "swiftswim", &["swordsdance"]);
+    let target = set_with_moves(
+        dex,
+        "snorlax",
+        if ally { "immunity" } else { ability },
+        &["recover"],
+    );
+    let target_ally = set_with_moves(
+        dex,
+        "magikarp",
+        if ally { ability } else { "swiftswim" },
+        &["recover"],
+    );
+    let p1 = four_member_team(source, source_ally);
+    let p2 = four_member_team(target, target_ally);
+    let target_ref = PokemonRef::new(SideId::P2, PokemonIndex::new(0));
+    let action = JointAction::Turn {
+        p1: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Foe(ActiveSlot::Left)),
+                use_move(0, ActionTarget::Automatic),
+            ],
+        },
+        p2: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Automatic),
+                use_move(0, ActionTarget::Automatic),
+            ],
+        },
+    };
+    for seed in 0..10_000 {
+        let state = selected_battle_for_teams(dex, &p1, &p2, seed);
+        let result = step(
+            &state,
+            &action,
+            &Mechanics::new(dex, &EffectRegistry::new()),
+        )
+        .unwrap_or_else(|error| panic!("status immunity {ability}/{move_name}: {error}"));
+        if let Some(event) = result
+            .diagnostics
+            .turn
+            .as_ref()
+            .unwrap()
+            .events
+            .iter()
+            .find(|event| {
+                event.event == BattleEvent::TrySetStatus
+                    && event.context.target == Some(target_ref)
+                    && event.context.requested_status == Some(status)
+            })
+        {
+            assert_eq!(
+                result
+                    .state
+                    .side(SideId::P2)
+                    .pokemon(PokemonIndex::new(0))
+                    .unwrap()
+                    .status,
+                None
+            );
+            return event.value == rotom_core::EventValue::Boolean(true);
+        }
+    }
+    panic!("no deterministic seed reached status immunity {ability}/{move_name}")
 }
 
 #[test]
@@ -5865,28 +6073,12 @@ fn ability_modifier_damage_matches_pinned_showdown_fixture() {
     .unwrap();
     assert_eq!(fixture["showdown_commit"], SHOWDOWN_COMMIT);
     for case in fixture["cases"].as_array().unwrap() {
-        let status = |value: &serde_json::Value| match value.as_str() {
-            Some("brn") => Some(MajorStatus::Burn),
-            Some("par") => Some(MajorStatus::Paralysis),
-            Some("psn") => Some(MajorStatus::Poison),
-            Some(other) => panic!("unsupported fixture status {other}"),
-            None => None,
-        };
         let actual = match case["operation"].as_str().unwrap() {
-            "damage" => serde_json::json!(ability_test_damage_case(
-                &dex,
-                case["source_ability"].as_str().unwrap(),
-                case["move"].as_str().unwrap(),
-                case["target_ability"].as_str().unwrap(),
-                status(&case["source_status"]),
-                status(&case["target_status"]),
-                false,
-                case["critical"].as_bool(),
-            )),
+            "damage" => serde_json::json!(ability_fixture_damage_case(&dex, case)),
             "speed" => serde_json::json!(ability_test_speed(
                 &dex,
                 case["ability"].as_str().unwrap(),
-                status(&case["status"]),
+                fixture_status(&case["status"]),
                 case["weather"].as_str(),
                 case["terrain"].as_str(),
             )),
@@ -5906,11 +6098,21 @@ fn ability_modifier_damage_matches_pinned_showdown_fixture() {
                 case["ability"].as_str().unwrap(),
                 case["move"].as_str().unwrap(),
                 case["target_species"].as_str().unwrap(),
+                case["source_hp"]
+                    .as_u64()
+                    .map(|value| u16::try_from(value).unwrap()),
             ),
             "weather_immunity" => serde_json::json!(ability_test_weather_immunity(
                 &dex,
                 case["ability"].as_str().unwrap(),
                 case["weather"].as_str().unwrap(),
+            )),
+            "status_immunity" => serde_json::json!(ability_test_status_immunity(
+                &dex,
+                case["ability"].as_str().unwrap(),
+                case["move"].as_str().unwrap(),
+                fixture_status(&case["status"]).unwrap(),
+                case["ally"].as_bool().unwrap(),
             )),
             operation => panic!("unsupported ability fixture operation {operation}"),
         };
@@ -5918,7 +6120,7 @@ fn ability_modifier_damage_matches_pinned_showdown_fixture() {
             "damage" => case["damage"].clone(),
             "speed" => case["speed"].clone(),
             "critical_ratio" => case["critical_ratio"].clone(),
-            "try_hit" => case["allowed"].clone(),
+            "try_hit" | "status_immunity" => case["allowed"].clone(),
             "priority" => serde_json::json!({
                 "priority": case["priority"].clone(),
                 "prankster_boosted": case["prankster_boosted"].clone(),
@@ -6421,6 +6623,123 @@ const EXPECTED_ABILITY_HANDLERS: &[(
         rotom_core::AbilityBehavior::AllyDamageImmunity,
         Breakable,
     ),
+    (
+        "blaze",
+        rotom_core::AbilityBehavior::LowHpFireBoost,
+        Unbreakable,
+    ),
+    (
+        "overgrow",
+        rotom_core::AbilityBehavior::LowHpGrassBoost,
+        Unbreakable,
+    ),
+    (
+        "torrent",
+        rotom_core::AbilityBehavior::LowHpWaterBoost,
+        Unbreakable,
+    ),
+    (
+        "swarm",
+        rotom_core::AbilityBehavior::LowHpBugBoost,
+        Unbreakable,
+    ),
+    (
+        "ironfist",
+        rotom_core::AbilityBehavior::PunchBoost,
+        Unbreakable,
+    ),
+    (
+        "strongjaw",
+        rotom_core::AbilityBehavior::BiteBoost,
+        Unbreakable,
+    ),
+    (
+        "sharpness",
+        rotom_core::AbilityBehavior::SlicingBoost,
+        Unbreakable,
+    ),
+    (
+        "toughclaws",
+        rotom_core::AbilityBehavior::ContactBoost,
+        Unbreakable,
+    ),
+    (
+        "reckless",
+        rotom_core::AbilityBehavior::RecoilBoost,
+        Unbreakable,
+    ),
+    (
+        "punkrock",
+        rotom_core::AbilityBehavior::SoundPower,
+        Breakable,
+    ),
+    (
+        "sandforce",
+        rotom_core::AbilityBehavior::SandForce,
+        Unbreakable,
+    ),
+    (
+        "steelyspirit",
+        rotom_core::AbilityBehavior::AllySteelBoost,
+        Unbreakable,
+    ),
+    (
+        "filter",
+        rotom_core::AbilityBehavior::SuperEffectiveReduction,
+        Breakable,
+    ),
+    (
+        "solidrock",
+        rotom_core::AbilityBehavior::SuperEffectiveReduction,
+        Breakable,
+    ),
+    ("fluffy", rotom_core::AbilityBehavior::Fluffy, Breakable),
+    ("thickfat", rotom_core::AbilityBehavior::ThickFat, Breakable),
+    (
+        "grasspelt",
+        rotom_core::AbilityBehavior::GrassyDefense,
+        Breakable,
+    ),
+    (
+        "galewings",
+        rotom_core::AbilityBehavior::GaleWings,
+        Unbreakable,
+    ),
+    (
+        "goodasgold",
+        rotom_core::AbilityBehavior::OpposingStatusImmunity,
+        Breakable,
+    ),
+    (
+        "immunity",
+        rotom_core::AbilityBehavior::PoisonImmunity,
+        Breakable,
+    ),
+    (
+        "insomnia",
+        rotom_core::AbilityBehavior::SleepImmunity,
+        Breakable,
+    ),
+    (
+        "vitalspirit",
+        rotom_core::AbilityBehavior::SleepImmunity,
+        Breakable,
+    ),
+    (
+        "limber",
+        rotom_core::AbilityBehavior::ParalysisImmunity,
+        Breakable,
+    ),
+    (
+        "magmaarmor",
+        rotom_core::AbilityBehavior::FreezeImmunity,
+        Breakable,
+    ),
+    (
+        "sweetveil",
+        rotom_core::AbilityBehavior::AllySleepImmunity,
+        Breakable,
+    ),
 ];
 
 #[test]
@@ -6442,4 +6761,137 @@ fn ability_handler_registration_is_declarative_and_leaves_other_abilities_unsupp
     assert!(!handlers
         .iter()
         .any(|handler| handler.ability == unsupported));
+}
+
+#[test]
+fn multiple_steely_spirit_holders_stack_in_deterministic_registry_order() {
+    let dex = champions_reg_mc().unwrap();
+    let steel = set_with_moves(&dex, "medicham", "steelyspirit", &["flashcannon"]);
+    let passive = set_with_moves(&dex, "snorlax", "immunity", &["recover"]);
+    let state = selected_battle_for_teams(
+        &dex,
+        &four_member_team(steel.clone(), steel),
+        &four_member_team(passive.clone(), passive),
+        0x13_05_05,
+    );
+    let action = JointAction::Turn {
+        p1: opposing_targets_choice(),
+        p2: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Automatic),
+                use_move(0, ActionTarget::Automatic),
+            ],
+        },
+    };
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let result = step(&state, &action, &mechanics).unwrap();
+    let source = PokemonRef::new(SideId::P1, PokemonIndex::new(0));
+    let power = result
+        .diagnostics
+        .turn
+        .as_ref()
+        .unwrap()
+        .events
+        .iter()
+        .find(|event| {
+            event.event == BattleEvent::ModifyBasePower && event.context.source == Some(source)
+        })
+        .unwrap();
+    assert_eq!(power.value, rotom_core::EventValue::Integer(180));
+    assert_eq!(
+        power
+            .invocations
+            .iter()
+            .filter(|invocation| {
+                invocation.source
+                    == EffectSource::Ability(dex.resolve_ability("steelyspirit").unwrap().0)
+            })
+            .count(),
+        2
+    );
+    assert_eq!(step(&state, &action, &mechanics).unwrap(), result);
+}
+
+#[test]
+fn mold_breaker_bypasses_target_side_status_protection_without_suppressing_source_hooks() {
+    let dex = champions_reg_mc().unwrap();
+    let source = set_with_moves(&dex, "medicham", "moldbreaker", &["hypnosis"]);
+    let target = set_with_moves(&dex, "snorlax", "immunity", &["recover"]);
+    let veil = set_with_moves(&dex, "magikarp", "sweetveil", &["recover"]);
+    let p1 = four_member_team(
+        source,
+        set_with_moves(&dex, "magikarp", "swiftswim", &["swordsdance"]),
+    );
+    let p2 = four_member_team(target, veil);
+    let action = JointAction::Turn {
+        p1: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Foe(ActiveSlot::Left)),
+                use_move(0, ActionTarget::Automatic),
+            ],
+        },
+        p2: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Automatic),
+                use_move(0, ActionTarget::Automatic),
+            ],
+        },
+    };
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let (state, result) = (0..10_000)
+        .find_map(|seed| {
+            let state = selected_battle_for_teams(&dex, &p1, &p2, seed);
+            let result = step(&state, &action, &mechanics).unwrap();
+            (result
+                .state
+                .side(SideId::P2)
+                .pokemon(PokemonIndex::new(0))
+                .unwrap()
+                .status
+                == Some(MajorStatus::Sleep))
+            .then_some((state, result))
+        })
+        .expect("a deterministic seed should land Hypnosis through Sweet Veil");
+    let status_event = result
+        .diagnostics
+        .turn
+        .as_ref()
+        .unwrap()
+        .events
+        .iter()
+        .find(|event| event.event == BattleEvent::TrySetStatus)
+        .unwrap();
+    assert_eq!(status_event.value, rotom_core::EventValue::Boolean(true));
+    assert!(!status_event.invocations.iter().any(|invocation| {
+        invocation.source == EffectSource::Ability(dex.resolve_ability("sweetveil").unwrap().0)
+    }));
+    assert_eq!(step(&state, &action, &mechanics).unwrap(), result);
+
+    let insomnia_target = set_with_moves(&dex, "snorlax", "insomnia", &["recover"]);
+    let filler = set_with_moves(&dex, "magikarp", "swiftswim", &["recover"]);
+    let insomnia_p2 = four_member_team(insomnia_target, filler);
+    let immediate_cure = (0..10_000)
+        .find_map(|seed| {
+            let state = selected_battle_for_teams(&dex, &p1, &insomnia_p2, seed);
+            let result = step(&state, &action, &mechanics).unwrap();
+            result
+                .diagnostics
+                .turn
+                .as_ref()
+                .unwrap()
+                .events
+                .iter()
+                .any(|event| event.event == BattleEvent::AfterSetStatus)
+                .then_some(result)
+        })
+        .expect("a deterministic seed should apply then cure Mold Breaker sleep");
+    assert_eq!(
+        immediate_cure
+            .state
+            .side(SideId::P2)
+            .pokemon(PokemonIndex::new(0))
+            .unwrap()
+            .status,
+        None
+    );
 }

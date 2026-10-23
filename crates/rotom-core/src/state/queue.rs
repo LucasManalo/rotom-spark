@@ -137,6 +137,9 @@ impl BattleState {
                 move_category: move_id
                     .and_then(|move_id| mechanics.data().move_data(move_id))
                     .map(|move_data| move_data.category),
+                move_type: move_id
+                    .and_then(|move_id| mechanics.data().move_data(move_id))
+                    .map(|move_data| move_data.move_type),
                 weather: mechanics.field_effects().weather_environment(self),
                 terrain: mechanics.field_effects().terrain_environment(self),
                 ..EventContext::default()

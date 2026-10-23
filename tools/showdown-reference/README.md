@@ -69,8 +69,8 @@ node tools/showdown-reference/sequenced-effects.cjs
 node tools/showdown-reference/sequenced-effects.cjs --check
 ```
 
-Regenerate or verify the PR 13.5 stat, base-power, burn, and full-HP damage
-ability modifier fixture with:
+Regenerate or verify the PR 13.5 stat, base-power, damage, priority, hit-gate,
+weather-immunity, and major-status ability fixture with:
 
 ```text
 node tools/showdown-reference/ability-modifiers.cjs

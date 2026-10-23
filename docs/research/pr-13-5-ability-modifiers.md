@@ -64,6 +64,30 @@ The fourth batch implements the two deferred compound abilities:
   Rotom's shared hit lifecycle now preserves that order, so a protected holder
   reports `Protected` rather than exposing its ability immunity.
 
+The fifth batch adds twenty-five reachable abilities through the same typed
+relays and hit/status gates:
+
+- `blaze`, `overgrow`, `torrent`, and `swarm` multiply the appropriate
+  attacking stat by 1.5 at one-third HP or below for Fire, Grass, Water, and
+  Bug moves.
+- `ironfist`, `strongjaw`, `sharpness`, `toughclaws`, and `reckless` consume
+  pinned move metadata for punch, bite, slicing, contact, and recoil/crash
+  base-power modifiers. `punkrock` combines its sound base-power boost with
+  target-side sound damage reduction.
+- `sandforce` combines a sand-dependent Rock/Ground/Steel power boost with
+  sandstorm immunity. `steelyspirit` applies its Steel boost to the holder and
+  active allies; multiple holders stack through ordinary registry ordering.
+- `filter` and `solidrock` reduce only super-effective final damage. `fluffy`
+  combines contact resistance with Fire weakness, `thickfat` modifies the
+  attack stat for Fire/Ice moves, and `grasspelt` modifies Defense in Grassy
+  Terrain at the priorities declared by pinned Showdown.
+- `galewings` modifies Flying-move priority only at full HP. `goodasgold`
+  rejects opposing status moves at `TryHit`.
+- `immunity`, `insomnia`, `vitalspirit`, `limber`, and `magmaarmor` prevent
+  their corresponding major statuses and cure an already-present prohibited
+  status through kernel-backed update hooks. `sweetveil` prevents sleep for
+  the holder's active side.
+
 Showdown's modifier application uses its fixed-point `chainModify`/`modify`
 rounding. Rotom Spark applies the same 4096-denominator rounding to each typed
 integer relay.
@@ -97,15 +121,16 @@ ordering comparator. The handlers inspect authoritative battle state through
 gameplay-state writes.
 
 Move execution carries a narrow suppression flag derived from the source
-ability's declarative behavior. The registry omits only suppressible,
-target-owned ability callbacks; unrelated source abilities, conditions, and
-non-breakable callbacks retain their ordinary ordering and semantics. This is
+ability's declarative behavior. The registry omits suppressible defensive
+callbacks owned by the target's active side; unrelated source abilities,
+conditions, and non-breakable callbacks retain their ordinary ordering and semantics. This is
 not a global ability-activation model and does not claim support for Neutralizing
 Gas, Gastro Acid, ability copying, or replacement.
 
-Queue events carry typed weather/terrain context, and move `TryHit` events carry
-typed category and compact bullet/sound flags. Ability callbacks consume those
-shared facts rather than adding ability identity checks to `combat.rs`.
+Queue and calculation events carry typed weather/terrain, move type, combined
+type effectiveness, requested major status, and compact interaction flags.
+Ability callbacks consume those shared facts rather than adding ability
+identity checks to `combat.rs`.
 Prankster additionally carries a derived queue-time marker into `TryImmunity`,
 and target typing is supplied only at that typed immunity stage. Sandstorm
 residuals use `WeatherImmunity` before requesting kernel-backed HP damage.
@@ -121,15 +146,15 @@ The pinned `ability-modifiers.json` cases exercise isolated Showdown damage,
 Speed, priority, critical-ratio, immunity, and `TryHit` calculations. They support each ability's
 `verification: differential_verified` claim, but they are not full
 cross-mechanic transition comparisons. The current end-to-end Rotom tests
-provide interaction-level unit evidence only, so all twenty-two entries use
+provide interaction-level unit evidence only, so all forty-seven entries use
 `interaction_verification: unit_tested`. A future
 `interaction_verification: differential_verified` claim requires a normalized
 fixture that actually executes and compares the relevant ability interaction.
 
 ## Deferred PR 13.5 families
 
-These twenty-two abilities are incremental PR 13.5 batches, not completion of
-the milestone. The other 193 reachable Regulation M-C abilities remain
+These forty-seven abilities are incremental PR 13.5 batches, not completion of
+the milestone. The other 168 reachable Regulation M-C abilities remain
 explicitly unsupported. The remaining families and prerequisites are:
 
 | Family | Required event/mechanics capability |

@@ -60,10 +60,21 @@ impl CombatData for DexData {
             defensive_stat: data.override_defensive_stat.as_deref().and_then(parse_stat),
             ignore_negative_offensive: data.ignore_negative_offensive,
             ignore_positive_defensive: data.ignore_positive_defensive,
-            interaction_flags: rotom_core::MoveInteractionFlags {
-                bullet: data.flags.iter().any(|flag| flag == "bullet"),
-                sound: data.flags.iter().any(|flag| flag == "sound"),
-            },
+            interaction_flags: rotom_core::MoveInteractionFlags::default()
+                .with_bullet(data.flags.iter().any(|flag| flag == "bullet"))
+                .with_sound(data.flags.iter().any(|flag| flag == "sound"))
+                .with_contact(data.flags.iter().any(|flag| flag == "contact"))
+                .with_bite(data.flags.iter().any(|flag| flag == "bite"))
+                .with_punch(data.flags.iter().any(|flag| flag == "punch"))
+                .with_slicing(data.flags.iter().any(|flag| flag == "slicing"))
+                .with_recoil(
+                    data.recoil.is_some()
+                        || data
+                            .behavior
+                            .special_properties
+                            .iter()
+                            .any(|property| property == "hasCrashDamage"),
+                ),
         })
     }
 
@@ -444,6 +455,131 @@ const IMPLEMENTED_ABILITY_BEHAVIORS: &[(&str, AbilityBehavior, AbilitySuppressio
     (
         "telepathy",
         AbilityBehavior::AllyDamageImmunity,
+        AbilitySuppression::Breakable,
+    ),
+    (
+        "blaze",
+        AbilityBehavior::LowHpFireBoost,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "overgrow",
+        AbilityBehavior::LowHpGrassBoost,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "torrent",
+        AbilityBehavior::LowHpWaterBoost,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "swarm",
+        AbilityBehavior::LowHpBugBoost,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "ironfist",
+        AbilityBehavior::PunchBoost,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "strongjaw",
+        AbilityBehavior::BiteBoost,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "sharpness",
+        AbilityBehavior::SlicingBoost,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "toughclaws",
+        AbilityBehavior::ContactBoost,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "reckless",
+        AbilityBehavior::RecoilBoost,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "punkrock",
+        AbilityBehavior::SoundPower,
+        AbilitySuppression::Breakable,
+    ),
+    (
+        "sandforce",
+        AbilityBehavior::SandForce,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "steelyspirit",
+        AbilityBehavior::AllySteelBoost,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "filter",
+        AbilityBehavior::SuperEffectiveReduction,
+        AbilitySuppression::Breakable,
+    ),
+    (
+        "solidrock",
+        AbilityBehavior::SuperEffectiveReduction,
+        AbilitySuppression::Breakable,
+    ),
+    (
+        "fluffy",
+        AbilityBehavior::Fluffy,
+        AbilitySuppression::Breakable,
+    ),
+    (
+        "thickfat",
+        AbilityBehavior::ThickFat,
+        AbilitySuppression::Breakable,
+    ),
+    (
+        "grasspelt",
+        AbilityBehavior::GrassyDefense,
+        AbilitySuppression::Breakable,
+    ),
+    (
+        "galewings",
+        AbilityBehavior::GaleWings,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "goodasgold",
+        AbilityBehavior::OpposingStatusImmunity,
+        AbilitySuppression::Breakable,
+    ),
+    (
+        "immunity",
+        AbilityBehavior::PoisonImmunity,
+        AbilitySuppression::Breakable,
+    ),
+    (
+        "insomnia",
+        AbilityBehavior::SleepImmunity,
+        AbilitySuppression::Breakable,
+    ),
+    (
+        "vitalspirit",
+        AbilityBehavior::SleepImmunity,
+        AbilitySuppression::Breakable,
+    ),
+    (
+        "limber",
+        AbilityBehavior::ParalysisImmunity,
+        AbilitySuppression::Breakable,
+    ),
+    (
+        "magmaarmor",
+        AbilityBehavior::FreezeImmunity,
+        AbilitySuppression::Breakable,
+    ),
+    (
+        "sweetveil",
+        AbilityBehavior::AllySleepImmunity,
         AbilitySuppression::Breakable,
     ),
 ];

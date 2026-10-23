@@ -1,7 +1,7 @@
 use crate::{
     kernel::StateKernel, AbilityId, BattleError, BattleRng, BattleStat, BattleState, ConditionId,
     ConditionState, ItemId, MajorStatus, MoveCategory, MoveId, MoveInteractionFlags, PokemonIndex,
-    PokemonPosition, PokemonTypes, RngReason, SideId, StatStageChange, StatusState,
+    PokemonPosition, PokemonType, PokemonTypes, RngReason, SideId, StatStageChange, StatusState,
     TerrainEnvironment, WeatherEnvironment,
 };
 use serde::{Deserialize, Serialize};
@@ -39,6 +39,8 @@ pub enum BattleEvent {
     /// Relays move-specific immunity checks after `TryHit` and type immunity.
     TryImmunity,
     TrySetStatus,
+    /// Runs after a major status is installed and move-scoped suppression ends.
+    AfterSetStatus,
     Hit,
     AfterDamage,
     AfterMove,
@@ -74,6 +76,7 @@ impl BattleEvent {
             Self::AfterDamage => EventContract::new(EventRelay::Integer, false, false),
             Self::BeforeTurn
             | Self::Hit
+            | Self::AfterSetStatus
             | Self::AfterMove
             | Self::SwitchIn
             | Self::Faint
@@ -206,7 +209,7 @@ pub struct EventContext {
     pub source: Option<PokemonRef>,
     pub target: Option<PokemonRef>,
     pub move_id: Option<MoveId>,
-    /// Whether the current move ignores suppressible handlers owned by its target.
+    /// Whether the current move ignores suppressible defensive handlers on its target's side.
     #[serde(default, skip_serializing_if = "is_false")]
     pub suppress_target_ability: bool,
     /// Whether the current hit was confirmed as critical.
@@ -214,8 +217,16 @@ pub struct EventContext {
     pub critical: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub move_category: Option<MoveCategory>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub move_type: Option<PokemonType>,
     #[serde(default, skip_serializing_if = "MoveInteractionFlags::is_empty")]
     pub move_flags: MoveInteractionFlags,
+    /// Combined Showdown type modifier exponent: positive is weak, negative is resisted.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub type_effectiveness: Option<i8>,
+    /// Major status currently being offered to `TrySetStatus` handlers.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub requested_status: Option<MajorStatus>,
     /// Whether the queued move received Prankster's priority modifier.
     #[serde(default, skip_serializing_if = "is_false")]
     pub prankster_boosted: bool,
@@ -826,11 +837,14 @@ fn collect_ability_registrations(
     speed: u16,
     context: EventContext,
 ) {
-    let target_is_suppressed = context.suppress_target_ability
+    let target_side_is_suppressed = context.suppress_target_ability
         && context.target != context.source
-        && matches!(owner, EffectOwner::Pokemon { pokemon } if Some(pokemon) == context.target);
+        && matches!(
+            (owner, context.target),
+            (EffectOwner::Pokemon { pokemon }, Some(target)) if pokemon.side == target.side
+        );
     for registration in registrations {
-        if !(target_is_suppressed && registration.suppressible) {
+        if !(target_side_is_suppressed && registration.suppressible) {
             push_collected(output, *registration, owner, speed);
         }
     }

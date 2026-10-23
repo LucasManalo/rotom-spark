@@ -672,6 +672,231 @@
         "differential:data/fixtures/differential/ability-modifiers.json#telepathy-blocks-ally-surf",
         "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"
       ]
+    },
+    {
+      "id": "blaze",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#blaze-low-hp", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+    },
+    {
+      "id": "overgrow",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#overgrow-low-hp", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+    },
+    {
+      "id": "torrent",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#torrent-low-hp", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+    },
+    {
+      "id": "swarm",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#swarm-low-hp", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+    },
+    {
+      "id": "ironfist",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#iron-fist-punch", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+    },
+    {
+      "id": "strongjaw",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#strong-jaw-bite", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+    },
+    {
+      "id": "sharpness",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#sharpness-slicing", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+    },
+    {
+      "id": "toughclaws",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#tough-claws-contact", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+    },
+    {
+      "id": "reckless",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#reckless-recoil", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+    },
+    {
+      "id": "punkrock",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#punk-rock-offense", "differential:data/fixtures/differential/ability-modifiers.json#punk-rock-defense", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+    },
+    {
+      "id": "sandforce",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#sand-force-sand", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+    },
+    {
+      "id": "steelyspirit",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#steely-spirit-ally", "interaction_unit:crates/rotom-dex/tests/combat.rs#multiple_steely_spirit_holders_stack_in_deterministic_registry_order"]
+    },
+    {
+      "id": "filter",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#filter-super-effective", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+    },
+    {
+      "id": "solidrock",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#solid-rock-super-effective", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+    },
+    {
+      "id": "fluffy",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#fluffy-contact", "differential:data/fixtures/differential/ability-modifiers.json#fluffy-fire", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+    },
+    {
+      "id": "thickfat",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#thick-fat-fire", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+    },
+    {
+      "id": "grasspelt",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#grass-pelt-terrain", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+    },
+    {
+      "id": "galewings",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#gale-wings-full-hp", "differential:data/fixtures/differential/ability-modifiers.json#gale-wings-chipped", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+    },
+    {
+      "id": "goodasgold",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#good-as-gold-blocks-status-move", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+    },
+    {
+      "id": "immunity",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#immunity-blocks-poison", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+    },
+    {
+      "id": "insomnia",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#insomnia-blocks-sleep", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+    },
+    {
+      "id": "vitalspirit",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#vital-spirit-blocks-sleep", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+    },
+    {
+      "id": "limber",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#limber-blocks-paralysis", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+    },
+    {
+      "id": "magmaarmor",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#magma-armor-blocks-freeze", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+    },
+    {
+      "id": "sweetveil",
+      "kind": "ability",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#sweet-veil-blocks-ally-sleep", "interaction_unit:crates/rotom-dex/tests/combat.rs#mold_breaker_bypasses_target_side_status_protection_without_suppressing_source_hooks"]
     }
   ]
 }

@@ -72,10 +72,13 @@ test('coverage claims do not confuse implementation with verification', () => {
 
 test('ability batches keep isolated and interaction verification separate', () => {
 	for (const id of [
-		'battlearmor', 'bulletproof', 'chlorophyll', 'furcoat', 'guts', 'hugepower',
-		'marvelscale', 'moldbreaker', 'multiscale', 'prankster', 'purepower', 'quickfeet',
-		'sandrush', 'shellarmor', 'slushrush', 'sniper', 'soundproof', 'superluck', 'surgesurfer',
-		'swiftswim', 'technician', 'telepathy',
+		'battlearmor', 'blaze', 'bulletproof', 'chlorophyll', 'filter', 'fluffy', 'furcoat',
+		'galewings', 'goodasgold', 'grasspelt', 'guts', 'hugepower', 'immunity', 'insomnia',
+		'ironfist', 'limber', 'magmaarmor', 'marvelscale', 'moldbreaker', 'multiscale',
+		'overgrow', 'prankster', 'punkrock', 'purepower', 'quickfeet', 'reckless', 'sandforce',
+		'sandrush', 'sharpness', 'shellarmor', 'slushrush', 'sniper', 'solidrock', 'soundproof',
+		'steelyspirit', 'strongjaw', 'superluck', 'surgesurfer', 'swarm', 'sweetveil',
+		'swiftswim', 'technician', 'telepathy', 'thickfat', 'torrent', 'toughclaws', 'vitalspirit',
 	]) {
 		const ability = entry('ability', id);
 		assert.equal(ability.implementation, 'implemented');
@@ -88,7 +91,7 @@ test('ability batches keep isolated and interaction verification separate', () =
 	}
 	assert.deepEqual(
 		manifest.summary.by_kind.ability.interaction_verification,
-		{not_tested: 193, unit_tested: 22, differential_verified: 0}
+		{not_tested: 168, unit_tested: 47, differential_verified: 0}
 	);
 });
 

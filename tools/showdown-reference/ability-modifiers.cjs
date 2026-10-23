@@ -29,12 +29,18 @@ function battleFor(
 	return battle;
 }
 
-function damage({id, sourceAbility, move, targetAbility, sourceStatus = '', targetStatus = '', critical = false}) {
-	const battle = battleFor(sourceAbility, move, targetAbility);
+function damage({
+	id, sourceAbility, move, targetAbility, sourceStatus = '', targetStatus = '', critical = false,
+	sourceHp = null, weather = '', terrain = '', allyAbility = 'swiftswim',
+}) {
+	const battle = battleFor(sourceAbility, move, targetAbility, allyAbility);
 	const source = battle.p1.active[0];
 	const target = battle.p2.active[0];
 	if (sourceStatus) source.status = sourceStatus;
 	if (targetStatus) target.status = targetStatus;
+	if (sourceHp !== null) source.hp = sourceHp;
+	if (weather) battle.field.setWeather(weather, source);
+	if (terrain) battle.field.setTerrain(terrain, source);
 	battle.randomizer = value => value;
 	let activeMove = battle.dex.getActiveMove(move);
 	activeMove = battle.runEvent('ModifyMove', source, target, activeMove, activeMove);
@@ -42,7 +48,9 @@ function damage({id, sourceAbility, move, targetAbility, sourceStatus = '', targ
 	activeMove.willCrit = critical;
 	return {
 		id,
-		ability: sourceAbility !== 'telepathy' ? sourceAbility : targetAbility,
+		ability: allyAbility !== 'swiftswim'
+			? allyAbility
+			: (sourceAbility !== 'telepathy' ? sourceAbility : targetAbility),
 		operation: 'damage',
 		source_ability: sourceAbility,
 		target_ability: targetAbility,
@@ -50,6 +58,10 @@ function damage({id, sourceAbility, move, targetAbility, sourceStatus = '', targ
 		critical,
 		source_status: sourceStatus || null,
 		target_status: targetStatus || null,
+		source_hp: sourceHp,
+		weather: weather || null,
+		terrain: terrain || null,
+		ally_ability: allyAbility,
 		damage: battle.actions.getDamage(source, target, activeMove),
 	};
 }
@@ -103,10 +115,11 @@ function criticalRatio({id, ability}) {
 	};
 }
 
-function priority({id, ability, move, targetSpecies = 'Snorlax'}) {
+function priority({id, ability, move, targetSpecies = 'Snorlax', sourceHp = null}) {
 	const battle = battleFor(ability, move, 'immunity', 'swiftswim', 'Medicham', targetSpecies);
 	const source = battle.p1.active[0];
 	const target = battle.p2.active[0];
+	if (sourceHp !== null) source.hp = sourceHp;
 	const activeMove = battle.dex.getActiveMove(move);
 	const value = battle.runEvent('ModifyPriority', source, target, activeMove, activeMove.priority);
 	return {
@@ -115,9 +128,29 @@ function priority({id, ability, move, targetSpecies = 'Snorlax'}) {
 		operation: 'priority',
 		move,
 		target_species: targetSpecies.toLowerCase(),
+		source_hp: sourceHp,
 		priority: value,
 		prankster_boosted: !!activeMove.pranksterBoosted,
 		dark_immune: !target.runStatusImmunity('prankster'),
+	};
+}
+
+function statusImmunity({id, ability, status, move, ally = false}) {
+	const battle = ally
+		? battleFor('telepathy', move, 'immunity', ability)
+		: battleFor('telepathy', move, ability);
+	const source = ally ? battle.p2.active[0] : battle.p1.active[0];
+	const target = ally ? battle.p1.active[0] : battle.p2.active[0];
+	const activeMove = battle.dex.getActiveMove(move);
+	battle.setActiveMove(activeMove, source, target);
+	return {
+		id,
+		ability,
+		operation: 'status_immunity',
+		status,
+		move,
+		ally,
+		allowed: target.setStatus(status, source, activeMove) === true,
 	};
 }
 
@@ -152,6 +185,28 @@ const cases = [
 	{id: 'mold-breaker-bypasses-multiscale', sourceAbility: 'moldbreaker', move: 'dragonclaw', targetAbility: 'multiscale'},
 ].map(damage);
 
+cases.push(...[
+	{id: 'blaze-low-hp', sourceAbility: 'blaze', move: 'flamethrower', targetAbility: 'immunity', sourceHp: 1},
+	{id: 'overgrow-low-hp', sourceAbility: 'overgrow', move: 'energyball', targetAbility: 'immunity', sourceHp: 1},
+	{id: 'torrent-low-hp', sourceAbility: 'torrent', move: 'hydropump', targetAbility: 'immunity', sourceHp: 1},
+	{id: 'swarm-low-hp', sourceAbility: 'swarm', move: 'bugbuzz', targetAbility: 'immunity', sourceHp: 1},
+	{id: 'iron-fist-punch', sourceAbility: 'ironfist', move: 'drainpunch', targetAbility: 'immunity'},
+	{id: 'strong-jaw-bite', sourceAbility: 'strongjaw', move: 'crunch', targetAbility: 'immunity'},
+	{id: 'sharpness-slicing', sourceAbility: 'sharpness', move: 'nightslash', targetAbility: 'immunity'},
+	{id: 'tough-claws-contact', sourceAbility: 'toughclaws', move: 'dragonclaw', targetAbility: 'immunity'},
+	{id: 'reckless-recoil', sourceAbility: 'reckless', move: 'wildcharge', targetAbility: 'immunity'},
+	{id: 'punk-rock-offense', sourceAbility: 'punkrock', move: 'bugbuzz', targetAbility: 'immunity'},
+	{id: 'punk-rock-defense', sourceAbility: 'telepathy', move: 'bugbuzz', targetAbility: 'punkrock'},
+	{id: 'sand-force-sand', sourceAbility: 'sandforce', move: 'earthpower', targetAbility: 'immunity', weather: 'sandstorm'},
+	{id: 'steely-spirit-ally', sourceAbility: 'telepathy', move: 'flashcannon', targetAbility: 'immunity', allyAbility: 'steelyspirit'},
+	{id: 'filter-super-effective', sourceAbility: 'telepathy', move: 'drainpunch', targetAbility: 'filter'},
+	{id: 'solid-rock-super-effective', sourceAbility: 'telepathy', move: 'drainpunch', targetAbility: 'solidrock'},
+	{id: 'fluffy-contact', sourceAbility: 'telepathy', move: 'dragonclaw', targetAbility: 'fluffy'},
+	{id: 'fluffy-fire', sourceAbility: 'telepathy', move: 'flamethrower', targetAbility: 'fluffy'},
+	{id: 'thick-fat-fire', sourceAbility: 'telepathy', move: 'flamethrower', targetAbility: 'thickfat'},
+	{id: 'grass-pelt-terrain', sourceAbility: 'telepathy', move: 'dragonclaw', targetAbility: 'grasspelt', terrain: 'grassyterrain'},
+].map(damage));
+
 cases.push(
 	speed({id: 'quick-feet-paralysis', ability: 'quickfeet', status: 'par'}),
 	speed({id: 'chlorophyll-sun', ability: 'chlorophyll', weather: 'sunnyday'}),
@@ -161,11 +216,20 @@ cases.push(
 	speed({id: 'sand-rush-sandstorm', ability: 'sandrush', weather: 'sandstorm'}),
 	weatherImmunity({id: 'sand-rush-weather-immunity', ability: 'sandrush', weather: 'sandstorm'}),
 	priority({id: 'prankster-status-priority-dark-immunity', ability: 'prankster', move: 'thunderwave', targetSpecies: 'Umbreon'}),
+	priority({id: 'gale-wings-full-hp', ability: 'galewings', move: 'aerialace'}),
+	priority({id: 'gale-wings-chipped', ability: 'galewings', move: 'aerialace', sourceHp: 1}),
 	criticalRatio({id: 'super-luck-critical-ratio', ability: 'superluck'}),
 	tryHit({id: 'bulletproof-blocks-aura-sphere', targetAbility: 'bulletproof', move: 'aurasphere'}),
 	tryHit({id: 'soundproof-blocks-hyper-voice', targetAbility: 'soundproof', move: 'hypervoice'}),
 	tryHit({id: 'telepathy-blocks-ally-surf', allyAbility: 'telepathy', move: 'surf', allyTarget: true}),
 	tryHit({id: 'mold-breaker-bypasses-bulletproof', sourceAbility: 'moldbreaker', targetAbility: 'bulletproof', move: 'aurasphere'}),
+	tryHit({id: 'good-as-gold-blocks-status-move', targetAbility: 'goodasgold', move: 'thunderwave'}),
+	statusImmunity({id: 'immunity-blocks-poison', ability: 'immunity', status: 'psn', move: 'sludgebomb'}),
+	statusImmunity({id: 'insomnia-blocks-sleep', ability: 'insomnia', status: 'slp', move: 'hypnosis'}),
+	statusImmunity({id: 'vital-spirit-blocks-sleep', ability: 'vitalspirit', status: 'slp', move: 'hypnosis'}),
+	statusImmunity({id: 'limber-blocks-paralysis', ability: 'limber', status: 'par', move: 'thunderwave'}),
+	statusImmunity({id: 'magma-armor-blocks-freeze', ability: 'magmaarmor', status: 'frz', move: 'icebeam'}),
+	statusImmunity({id: 'sweet-veil-blocks-ally-sleep', ability: 'sweetveil', status: 'slp', move: 'hypnosis', ally: true}),
 );
 
 const contents = `${JSON.stringify({

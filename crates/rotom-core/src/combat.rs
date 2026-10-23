@@ -312,16 +312,103 @@ impl MoveCapabilities {
 }
 
 #[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(deny_unknown_fields)]
-pub struct MoveInteractionFlags {
-    pub bullet: bool,
-    pub sound: bool,
-}
+#[serde(transparent)]
+pub struct MoveInteractionFlags(u8);
 
 impl MoveInteractionFlags {
+    const BULLET: u8 = 1 << 0;
+    const SOUND: u8 = 1 << 1;
+    const CONTACT: u8 = 1 << 2;
+    const BITE: u8 = 1 << 3;
+    const PUNCH: u8 = 1 << 4;
+    const SLICING: u8 = 1 << 5;
+    const RECOIL: u8 = 1 << 6;
+
     #[must_use]
     pub const fn is_empty(&self) -> bool {
-        !self.bullet && !self.sound
+        self.0 == 0
+    }
+
+    #[must_use]
+    pub const fn with_bullet(self, enabled: bool) -> Self {
+        self.with(Self::BULLET, enabled)
+    }
+
+    #[must_use]
+    pub const fn with_sound(self, enabled: bool) -> Self {
+        self.with(Self::SOUND, enabled)
+    }
+
+    #[must_use]
+    pub const fn with_contact(self, enabled: bool) -> Self {
+        self.with(Self::CONTACT, enabled)
+    }
+
+    #[must_use]
+    pub const fn with_bite(self, enabled: bool) -> Self {
+        self.with(Self::BITE, enabled)
+    }
+
+    #[must_use]
+    pub const fn with_punch(self, enabled: bool) -> Self {
+        self.with(Self::PUNCH, enabled)
+    }
+
+    #[must_use]
+    pub const fn with_slicing(self, enabled: bool) -> Self {
+        self.with(Self::SLICING, enabled)
+    }
+
+    #[must_use]
+    pub const fn with_recoil(self, enabled: bool) -> Self {
+        self.with(Self::RECOIL, enabled)
+    }
+
+    #[must_use]
+    pub const fn bullet(self) -> bool {
+        self.contains(Self::BULLET)
+    }
+
+    #[must_use]
+    pub const fn sound(self) -> bool {
+        self.contains(Self::SOUND)
+    }
+
+    #[must_use]
+    pub const fn contact(self) -> bool {
+        self.contains(Self::CONTACT)
+    }
+
+    #[must_use]
+    pub const fn bite(self) -> bool {
+        self.contains(Self::BITE)
+    }
+
+    #[must_use]
+    pub const fn punch(self) -> bool {
+        self.contains(Self::PUNCH)
+    }
+
+    #[must_use]
+    pub const fn slicing(self) -> bool {
+        self.contains(Self::SLICING)
+    }
+
+    #[must_use]
+    pub const fn recoil(self) -> bool {
+        self.contains(Self::RECOIL)
+    }
+
+    const fn with(self, flag: u8, enabled: bool) -> Self {
+        if enabled {
+            Self(self.0 | flag)
+        } else {
+            Self(self.0 & !flag)
+        }
+    }
+
+    const fn contains(self, flag: u8) -> bool {
+        self.0 & flag != 0
     }
 }
 
@@ -930,7 +1017,15 @@ impl BattleState {
                 suppress_target_ability: move_context.suppress_target_ability,
                 critical: false,
                 move_category: Some(move_context.move_data.category),
+                move_type: Some(move_context.move_data.move_type),
                 move_flags: move_context.move_data.interaction_flags,
+                type_effectiveness: self.target_type_effectiveness(
+                    data,
+                    move_context.move_data,
+                    target,
+                )?,
+                weather: field_effects.weather_environment(self),
+                terrain: field_effects.terrain_environment(self),
                 ..EventContext::default()
             };
             let mut target_hit = false;
@@ -1426,8 +1521,11 @@ impl BattleState {
                 suppress_target_ability: move_context.suppress_target_ability,
                 critical: false,
                 move_category: Some(move_context.move_data.category),
+                move_type: Some(move_context.move_data.move_type),
                 move_flags: move_context.move_data.interaction_flags,
                 prankster_boosted: move_context.queued.prankster_boosted,
+                weather: field_effects.weather_environment(self),
+                terrain: field_effects.terrain_environment(self),
                 ..EventContext::default()
             };
             // Psychic Terrain resolves at priority 4 and Protect at priority 3
@@ -1511,6 +1609,7 @@ impl BattleState {
                     move_id: Some(move_context.move_id),
                     suppress_target_ability: move_context.suppress_target_ability,
                     move_category: Some(move_context.move_data.category),
+                    move_type: Some(move_context.move_data.move_type),
                     move_flags: move_context.move_data.interaction_flags,
                     prankster_boosted: move_context.queued.prankster_boosted,
                     target_types: Some(
@@ -1883,23 +1982,39 @@ impl BattleState {
                 )? {
                     return Ok(false);
                 }
+                let status_context = EventContext {
+                    source: Some(context.source),
+                    target: Some(target),
+                    move_id: Some(context.move_id),
+                    suppress_target_ability: context.suppress_target_ability,
+                    critical: false,
+                    move_category: Some(context.move_data.category),
+                    move_type: Some(context.move_data.move_type),
+                    move_flags: context.move_data.interaction_flags,
+                    requested_status: Some(status),
+                    weather: field_effects.weather_environment(self),
+                    terrain: field_effects.terrain_environment(self),
+                    ..EventContext::default()
+                };
                 let event = effects.dispatch(
                     self,
                     BattleEvent::TrySetStatus,
-                    EventContext {
-                        source: Some(context.source),
-                        target: Some(target),
-                        move_id: Some(context.move_id),
-                        suppress_target_ability: context.suppress_target_ability,
-                        critical: false,
-                        ..EventContext::default()
-                    },
+                    status_context,
                     EventValue::Boolean(true),
                 )?;
                 let allowed = !event.cancelled && event.value == EventValue::Boolean(true);
                 resolution.events.push(event);
                 if allowed {
                     self.apply_major_status(target, status)?;
+                    resolution.events.push(effects.dispatch(
+                        self,
+                        BattleEvent::AfterSetStatus,
+                        EventContext {
+                            suppress_target_ability: false,
+                            ..status_context
+                        },
+                        EventValue::None,
+                    )?);
                 }
                 Ok(allowed)
             }
@@ -2346,6 +2461,22 @@ impl BattleState {
         Ok(combined_type_modifier(data, move_data.move_type, types)?.is_none())
     }
 
+    fn target_type_effectiveness<D: CombatData>(
+        &self,
+        data: &D,
+        move_data: CombatMove,
+        target: PokemonRef,
+    ) -> Result<Option<i8>, BattleError> {
+        let target = self
+            .side(target.side)
+            .pokemon(target.pokemon)
+            .ok_or_else(|| BattleError::InvalidState("damage target is invalid".to_owned()))?;
+        let types = data
+            .pokemon_types(target.species, target.form)
+            .ok_or_else(|| BattleError::DataMismatch("missing damage target types".to_owned()))?;
+        combined_type_modifier(data, move_data.move_type, types)
+    }
+
     #[allow(clippy::too_many_arguments, clippy::too_many_lines)]
     fn calculate_standard_damage<D: CombatData>(
         &mut self,
@@ -2386,6 +2517,12 @@ impl BattleState {
             move_id: Some(move_id),
             suppress_target_ability: move_context.suppress_target_ability,
             critical: false,
+            move_category: Some(move_data.category),
+            move_type: Some(move_data.move_type),
+            move_flags: move_data.interaction_flags,
+            type_effectiveness: type_exponent,
+            weather: field_effects.weather_environment(self),
+            terrain: field_effects.terrain_environment(self),
             ..EventContext::default()
         };
         let crit_ratio_event = effects.dispatch(
