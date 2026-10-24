@@ -474,8 +474,15 @@
         "differential:data/fixtures/differential/ability-modifiers.json#mold-breaker-bypasses-bulletproof",
         "differential:data/fixtures/differential/ability-modifiers.json#mold-breaker-bypasses-fur-coat",
         "differential:data/fixtures/differential/ability-modifiers.json#mold-breaker-bypasses-multiscale",
+        "differential:data/fixtures/differential/ability-modifiers.json#mold-breaker-bypasses-filter",
+        "differential:data/fixtures/differential/ability-modifiers.json#mold-breaker-bypasses-solid-rock",
+        "differential:data/fixtures/differential/ability-modifiers.json#mold-breaker-bypasses-fluffy",
+        "differential:data/fixtures/differential/ability-modifiers.json#mold-breaker-bypasses-thick-fat",
+        "differential:data/fixtures/differential/ability-modifiers.json#mold-breaker-bypasses-grass-pelt",
+        "differential:data/fixtures/differential/ability-modifiers.json#mold-breaker-bypasses-punk-rock-defense",
         "interaction_unit:crates/rotom-core/src/abilities.rs#environment_immunity_and_suppression_metadata_compose",
-        "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mold_breaker_suppresses_only_breakable_target_side_callbacks"
       ]
     },
     {
@@ -716,7 +723,7 @@
       "verification": "differential_verified",
       "interaction_verification": "unit_tested",
       "owner_pr": "PR 13.5",
-      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#iron-fist-punch", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#iron-fist-punch", "differential:data/fixtures/differential/ability-modifiers.json#iron-fist-versus-filter", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
     },
     {
       "id": "strongjaw",
@@ -743,7 +750,7 @@
       "verification": "differential_verified",
       "interaction_verification": "unit_tested",
       "owner_pr": "PR 13.5",
-      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#tough-claws-contact", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#tough-claws-contact", "differential:data/fixtures/differential/ability-modifiers.json#tough-claws-versus-fluffy", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
     },
     {
       "id": "reckless",
@@ -779,7 +786,7 @@
       "verification": "differential_verified",
       "interaction_verification": "unit_tested",
       "owner_pr": "PR 13.5",
-      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#steely-spirit-ally", "interaction_unit:crates/rotom-dex/tests/combat.rs#multiple_steely_spirit_holders_stack_in_deterministic_registry_order"]
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#steely-spirit-ally", "differential:data/fixtures/differential/ability-modifiers.json#mold-breaker-keeps-source-side-steely-spirit", "interaction_unit:crates/rotom-dex/tests/combat.rs#multiple_steely_spirit_holders_stack_in_deterministic_registry_order", "interaction_unit:crates/rotom-dex/tests/combat.rs#mold_breaker_suppresses_only_breakable_target_side_callbacks"]
     },
     {
       "id": "filter",
@@ -788,7 +795,7 @@
       "verification": "differential_verified",
       "interaction_verification": "unit_tested",
       "owner_pr": "PR 13.5",
-      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#filter-super-effective", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#filter-super-effective", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture", "interaction_unit:crates/rotom-dex/tests/combat.rs#mold_breaker_suppresses_only_breakable_target_side_callbacks"]
     },
     {
       "id": "solidrock",
@@ -806,7 +813,7 @@
       "verification": "differential_verified",
       "interaction_verification": "unit_tested",
       "owner_pr": "PR 13.5",
-      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#fluffy-contact", "differential:data/fixtures/differential/ability-modifiers.json#fluffy-fire", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#fluffy-contact", "differential:data/fixtures/differential/ability-modifiers.json#fluffy-fire", "differential:data/fixtures/differential/ability-modifiers.json#fluffy-fire-contact-cancels", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
     },
     {
       "id": "thickfat",
@@ -851,7 +858,7 @@
       "verification": "differential_verified",
       "interaction_verification": "unit_tested",
       "owner_pr": "PR 13.5",
-      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#immunity-blocks-poison", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#immunity-blocks-poison", "interaction_unit:crates/rotom-dex/tests/combat.rs#status_curing_abilities_cure_on_switch_in_and_reset_status_counters", "interaction_unit:crates/rotom-dex/tests/combat.rs#before_turn_cures_multiple_preexisting_statuses_independent_of_their_source"]
     },
     {
       "id": "insomnia",
@@ -860,7 +867,7 @@
       "verification": "differential_verified",
       "interaction_verification": "unit_tested",
       "owner_pr": "PR 13.5",
-      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#insomnia-blocks-sleep", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#insomnia-blocks-sleep", "interaction_unit:crates/rotom-dex/tests/combat.rs#status_curing_abilities_cure_on_switch_in_and_reset_status_counters", "interaction_unit:crates/rotom-dex/tests/combat.rs#mold_breaker_bypasses_target_side_status_protection_without_suppressing_source_hooks"]
     },
     {
       "id": "vitalspirit",
@@ -869,7 +876,7 @@
       "verification": "differential_verified",
       "interaction_verification": "unit_tested",
       "owner_pr": "PR 13.5",
-      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#vital-spirit-blocks-sleep", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#vital-spirit-blocks-sleep", "interaction_unit:crates/rotom-dex/tests/combat.rs#status_curing_abilities_cure_on_switch_in_and_reset_status_counters"]
     },
     {
       "id": "limber",
@@ -878,7 +885,7 @@
       "verification": "differential_verified",
       "interaction_verification": "unit_tested",
       "owner_pr": "PR 13.5",
-      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#limber-blocks-paralysis", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#limber-blocks-paralysis", "interaction_unit:crates/rotom-dex/tests/combat.rs#status_curing_abilities_cure_on_switch_in_and_reset_status_counters"]
     },
     {
       "id": "magmaarmor",
@@ -887,7 +894,7 @@
       "verification": "differential_verified",
       "interaction_verification": "unit_tested",
       "owner_pr": "PR 13.5",
-      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#magma-armor-blocks-freeze", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#magma-armor-blocks-freeze", "interaction_unit:crates/rotom-dex/tests/combat.rs#status_curing_abilities_cure_on_switch_in_and_reset_status_counters", "interaction_unit:crates/rotom-dex/tests/combat.rs#before_turn_cures_multiple_preexisting_statuses_independent_of_their_source"]
     },
     {
       "id": "sweetveil",

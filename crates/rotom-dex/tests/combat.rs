@@ -6,7 +6,7 @@ use rotom_core::{
     MoveCapabilities, MoveCapability, MoveId, MoveOperation, MoveSlotIndex, MoveTarget,
     PokemonAction, PokemonIndex, PokemonPosition, PokemonRef, PokemonSet, PokemonTypes,
     ResolvedAction, RngOperation, RngReason, SideId, SideState, SpeciesId, StatAllocation,
-    StatStages, TargetResult, TeamState, TurnChoice,
+    StatStages, StatusState, TargetResult, TeamState, TurnChoice,
 };
 use rotom_dex::champions_reg_mc;
 use serde::Deserialize;
@@ -6894,4 +6894,233 @@ fn mold_breaker_bypasses_target_side_status_protection_without_suppressing_sourc
             .status,
         None
     );
+}
+
+fn fixture_status_state(status: MajorStatus) -> StatusState {
+    match status {
+        MajorStatus::Sleep => StatusState {
+            sleep_turns: 2,
+            ..StatusState::default()
+        },
+        MajorStatus::Freeze => StatusState {
+            freeze_turns: 2,
+            ..StatusState::default()
+        },
+        MajorStatus::BadlyPoisoned => StatusState {
+            toxic_counter: 3,
+            ..StatusState::default()
+        },
+        MajorStatus::Burn | MajorStatus::Paralysis | MajorStatus::Poison => StatusState::default(),
+    }
+}
+
+#[test]
+fn status_curing_abilities_cure_on_switch_in_and_reset_status_counters() {
+    let dex = champions_reg_mc().unwrap();
+    let passive = set_with_moves(&dex, "magikarp", "swiftswim", &["swordsdance"]);
+    let foe = set_with_moves(&dex, "snorlax", "telepathy", &["recover"]);
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+
+    for (ability, status) in [
+        ("immunity", MajorStatus::Poison),
+        ("immunity", MajorStatus::BadlyPoisoned),
+        ("insomnia", MajorStatus::Sleep),
+        ("vitalspirit", MajorStatus::Sleep),
+        ("limber", MajorStatus::Paralysis),
+        ("magmaarmor", MajorStatus::Freeze),
+    ] {
+        let incoming = set_with_moves(&dex, "medicham", ability, &["swordsdance"]);
+        let p1 = vec![passive.clone(), passive.clone(), incoming, passive.clone()];
+        let p2 = four_member_team(foe.clone(), foe.clone());
+        let state = selected_battle_for_teams(&dex, &p1, &p2, 0x13_05_06);
+        let incoming_ref = PokemonRef::new(SideId::P1, PokemonIndex::new(2));
+        let mut builder = BattleStateBuilder::from_state(state).unwrap();
+        builder
+            .set_major_status(incoming_ref, status, fixture_status_state(status))
+            .unwrap();
+        let state = builder.build().unwrap();
+        let action = JointAction::Turn {
+            p1: TurnChoice {
+                actions: [
+                    PokemonAction::Switch {
+                        pokemon: PokemonIndex::new(2),
+                    },
+                    use_move(0, ActionTarget::Automatic),
+                ],
+            },
+            p2: TurnChoice {
+                actions: [
+                    use_move(0, ActionTarget::Automatic),
+                    use_move(0, ActionTarget::Automatic),
+                ],
+            },
+        };
+        let result = step(&state, &action, &mechanics).unwrap();
+        let cured = result
+            .state
+            .side(SideId::P1)
+            .pokemon(PokemonIndex::new(2))
+            .unwrap();
+        assert_eq!(cured.status, None, "{ability} failed to cure {status:?}");
+        assert_eq!(cured.status_state, StatusState::default());
+        let ability_id = dex.resolve_ability(ability).unwrap().0;
+        assert!(result
+            .diagnostics
+            .turn
+            .as_ref()
+            .unwrap()
+            .events
+            .iter()
+            .any(|event| {
+                event.event == BattleEvent::SwitchIn
+                    && event.context.source == Some(incoming_ref)
+                    && event.invocations.iter().any(|invocation| {
+                        invocation.source == EffectSource::Ability(ability_id)
+                            && invocation.owner
+                                == rotom_core::EffectOwner::Pokemon {
+                                    pokemon: incoming_ref,
+                                }
+                    })
+            }));
+        assert_eq!(step(&state, &action, &mechanics).unwrap(), result);
+    }
+}
+
+#[test]
+fn before_turn_cures_multiple_preexisting_statuses_independent_of_their_source() {
+    let dex = champions_reg_mc().unwrap();
+    let immunity = set_with_moves(&dex, "medicham", "immunity", &["swordsdance"]);
+    let magma_armor = set_with_moves(&dex, "magikarp", "magmaarmor", &["swordsdance"]);
+    let foe = set_with_moves(&dex, "snorlax", "telepathy", &["recover"]);
+    let state = selected_battle_for_teams(
+        &dex,
+        &four_member_team(immunity, magma_armor),
+        &four_member_team(foe.clone(), foe),
+        0x13_05_06,
+    );
+    let poison = PokemonRef::new(SideId::P1, PokemonIndex::new(0));
+    let frozen = PokemonRef::new(SideId::P1, PokemonIndex::new(1));
+    let mut builder = BattleStateBuilder::from_state(state).unwrap();
+    builder
+        .set_major_status(
+            poison,
+            MajorStatus::BadlyPoisoned,
+            fixture_status_state(MajorStatus::BadlyPoisoned),
+        )
+        .unwrap()
+        .set_major_status(
+            frozen,
+            MajorStatus::Freeze,
+            fixture_status_state(MajorStatus::Freeze),
+        )
+        .unwrap();
+    let state = builder.build().unwrap();
+    let action = JointAction::Turn {
+        p1: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Automatic),
+                use_move(0, ActionTarget::Automatic),
+            ],
+        },
+        p2: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Automatic),
+                use_move(0, ActionTarget::Automatic),
+            ],
+        },
+    };
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let result = step(&state, &action, &mechanics).unwrap();
+    for pokemon in [poison, frozen] {
+        let cured = result
+            .state
+            .side(pokemon.side)
+            .pokemon(pokemon.pokemon)
+            .unwrap();
+        assert_eq!(cured.status, None);
+        assert_eq!(cured.status_state, StatusState::default());
+    }
+    let before_turn = result
+        .diagnostics
+        .turn
+        .as_ref()
+        .unwrap()
+        .events
+        .iter()
+        .find(|event| event.event == BattleEvent::BeforeTurn)
+        .unwrap();
+    assert!(before_turn.invocations.iter().any(|invocation| {
+        invocation.source == EffectSource::Ability(dex.resolve_ability("immunity").unwrap().0)
+    }));
+    assert!(before_turn.invocations.iter().any(|invocation| {
+        invocation.source == EffectSource::Ability(dex.resolve_ability("magmaarmor").unwrap().0)
+    }));
+    assert_eq!(step(&state, &action, &mechanics).unwrap(), result);
+}
+
+#[test]
+fn mold_breaker_suppresses_only_breakable_target_side_callbacks() {
+    let dex = champions_reg_mc().unwrap();
+    let source = set_with_moves(&dex, "medicham", "moldbreaker", &["flashcannon"]);
+    let ally = set_with_moves(&dex, "magikarp", "steelyspirit", &["swordsdance"]);
+    let target = set_with_moves(&dex, "snorlax", "filter", &["recover"]);
+    let foe_ally = set_with_moves(&dex, "magikarp", "sweetveil", &["recover"]);
+    let state = selected_battle_for_teams(
+        &dex,
+        &four_member_team(source, ally),
+        &four_member_team(target, foe_ally),
+        0x13_05_06,
+    );
+    let action = JointAction::Turn {
+        p1: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Foe(ActiveSlot::Left)),
+                use_move(0, ActionTarget::Automatic),
+            ],
+        },
+        p2: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Automatic),
+                use_move(0, ActionTarget::Automatic),
+            ],
+        },
+    };
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let result = step(&state, &action, &mechanics).unwrap();
+    let source_ref = PokemonRef::new(SideId::P1, PokemonIndex::new(0));
+    let target_ref = PokemonRef::new(SideId::P2, PokemonIndex::new(0));
+    let base_power = result
+        .diagnostics
+        .turn
+        .as_ref()
+        .unwrap()
+        .events
+        .iter()
+        .find(|event| {
+            event.event == BattleEvent::ModifyBasePower
+                && event.context.source == Some(source_ref)
+                && event.context.target == Some(target_ref)
+        })
+        .unwrap();
+    assert!(base_power.invocations.iter().any(|invocation| {
+        invocation.source == EffectSource::Ability(dex.resolve_ability("steelyspirit").unwrap().0)
+    }));
+
+    let damage = result
+        .diagnostics
+        .turn
+        .as_ref()
+        .unwrap()
+        .events
+        .iter()
+        .find(|event| {
+            event.event == BattleEvent::ModifyDamage
+                && event.context.source == Some(source_ref)
+                && event.context.target == Some(target_ref)
+        })
+        .unwrap();
+    assert!(!damage.invocations.iter().any(|invocation| {
+        invocation.source == EffectSource::Ability(dex.resolve_ability("filter").unwrap().0)
+    }));
+    assert_eq!(step(&state, &action, &mechanics).unwrap(), result);
 }

@@ -151,6 +151,40 @@ provide interaction-level unit evidence only, so all forty-seven entries use
 `interaction_verification: differential_verified` claim requires a normalized
 fixture that actually executes and compares the relevant ability interaction.
 
+### PR 13.5.6 interaction audit
+
+The follow-up audit keeps the fifth batch's coverage count unchanged and adds
+evidence at the boundaries identified during review:
+
+- Pinned calculation fixtures now cover Fire Punch against Fluffy (the Fire
+  weakness and contact resistance cancel), Iron Fist against Filter, Tough
+  Claws against Fluffy, and Mold Breaker against Filter, Solid Rock, Fluffy,
+  Thick Fat, Grass Pelt, and Punk Rock's defensive callback. A separate case
+  confirms that Mold Breaker leaves a source-side Steely Spirit callback
+  active. These remain calculation-level differentials, not full transition
+  comparisons.
+- End-to-end Rotom tests put poisoned, badly poisoned, sleeping, paralyzed, and
+  frozen holders onto the field through an ordinary switch and verify that the
+  `SwitchIn` dispatch cures the prohibited status and resets its associated
+  counters. A turn-boundary test starts two active holders with independently
+  installed statuses and verifies deterministic `BeforeTurn` curing. Because
+  status provenance is not authoritative battle state, this also exercises
+  curing independently of whether the original source was a move or another
+  mechanic.
+- A callback-scope test combines source-side Steely Spirit, target-side Filter,
+  and Mold Breaker. It verifies from the dispatch trace that the unbreakable
+  source-side base-power callback remains collected while the breakable
+  target-side damage callback is omitted. Punk Rock's offensive and defensive
+  callbacks share the same breakable descriptor, but suppression remains
+  owner-scoped: the source callback is not globally disabled.
+
+The pinned basis is `data/abilities.ts`: Filter and the other defensive
+modifiers use breakable `onSourceModify*` callbacks; Punk Rock combines
+`onBasePower` and `onSourceModifyDamage`; Immunity, Insomnia, Vital Spirit,
+Limber, and Magma Armor cure prohibited state through `onUpdate`. Rotom maps
+the update lifecycle onto typed `BeforeTurn`, `SwitchIn`, and `AfterSetStatus`
+events while retaining kernel-only status mutation.
+
 ## Deferred PR 13.5 families
 
 These forty-seven abilities are incremental PR 13.5 batches, not completion of

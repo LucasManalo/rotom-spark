@@ -203,8 +203,18 @@ cases.push(...[
 	{id: 'solid-rock-super-effective', sourceAbility: 'telepathy', move: 'drainpunch', targetAbility: 'solidrock'},
 	{id: 'fluffy-contact', sourceAbility: 'telepathy', move: 'dragonclaw', targetAbility: 'fluffy'},
 	{id: 'fluffy-fire', sourceAbility: 'telepathy', move: 'flamethrower', targetAbility: 'fluffy'},
+	{id: 'fluffy-fire-contact-cancels', sourceAbility: 'telepathy', move: 'firepunch', targetAbility: 'fluffy'},
 	{id: 'thick-fat-fire', sourceAbility: 'telepathy', move: 'flamethrower', targetAbility: 'thickfat'},
 	{id: 'grass-pelt-terrain', sourceAbility: 'telepathy', move: 'dragonclaw', targetAbility: 'grasspelt', terrain: 'grassyterrain'},
+	{id: 'iron-fist-versus-filter', sourceAbility: 'ironfist', move: 'drainpunch', targetAbility: 'filter'},
+	{id: 'tough-claws-versus-fluffy', sourceAbility: 'toughclaws', move: 'dragonclaw', targetAbility: 'fluffy'},
+	{id: 'mold-breaker-bypasses-filter', sourceAbility: 'moldbreaker', move: 'drainpunch', targetAbility: 'filter'},
+	{id: 'mold-breaker-bypasses-solid-rock', sourceAbility: 'moldbreaker', move: 'drainpunch', targetAbility: 'solidrock'},
+	{id: 'mold-breaker-bypasses-fluffy', sourceAbility: 'moldbreaker', move: 'firepunch', targetAbility: 'fluffy'},
+	{id: 'mold-breaker-bypasses-thick-fat', sourceAbility: 'moldbreaker', move: 'flamethrower', targetAbility: 'thickfat'},
+	{id: 'mold-breaker-bypasses-grass-pelt', sourceAbility: 'moldbreaker', move: 'dragonclaw', targetAbility: 'grasspelt', terrain: 'grassyterrain'},
+	{id: 'mold-breaker-bypasses-punk-rock-defense', sourceAbility: 'moldbreaker', move: 'bugbuzz', targetAbility: 'punkrock'},
+	{id: 'mold-breaker-keeps-source-side-steely-spirit', sourceAbility: 'moldbreaker', move: 'flashcannon', targetAbility: 'filter', allyAbility: 'steelyspirit'},
 ].map(damage));
 
 cases.push(
