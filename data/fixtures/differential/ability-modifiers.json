@@ -2,7 +2,7 @@
   "showdown_commit": "b79ce06d06b8f0dc8de8bb348bc9cab5d931553f",
   "format": "gen9championsvgc2026regmc",
   "methodology": {
-    "source": "pinned Battle.actions.getDamage, Pokemon.getStat/runImmunity, ModifyPriority/ModifyCritRatio, and TryHit with resolved Champions data",
+    "source": "pinned Battle.actions.getDamage, Pokemon.getStat/runImmunity, ModifyPriority/ModifyCritRatio/ModifyAccuracy, and TryHit with resolved Champions data",
     "damage_roll_percent": 100,
     "critical_hit": "per_case",
     "full_transition_comparison": false
@@ -713,6 +713,70 @@
       "damage": 34
     },
     {
+      "id": "water-bubble-water-offense",
+      "ability": "waterbubble",
+      "operation": "damage",
+      "source_ability": "waterbubble",
+      "target_ability": "immunity",
+      "move": "hydropump",
+      "critical": false,
+      "source_status": null,
+      "target_status": null,
+      "source_hp": null,
+      "weather": null,
+      "terrain": null,
+      "ally_ability": "swiftswim",
+      "damage": 61
+    },
+    {
+      "id": "water-bubble-fire-defense",
+      "ability": "waterbubble",
+      "operation": "damage",
+      "source_ability": "telepathy",
+      "target_ability": "waterbubble",
+      "move": "flamethrower",
+      "critical": false,
+      "source_status": null,
+      "target_status": null,
+      "source_hp": null,
+      "weather": null,
+      "terrain": null,
+      "ally_ability": "swiftswim",
+      "damage": 14
+    },
+    {
+      "id": "mega-launcher-pulse",
+      "ability": "megalauncher",
+      "operation": "damage",
+      "source_ability": "megalauncher",
+      "target_ability": "immunity",
+      "move": "dragonpulse",
+      "critical": false,
+      "source_status": null,
+      "target_status": null,
+      "source_hp": null,
+      "weather": null,
+      "terrain": null,
+      "ally_ability": "swiftswim",
+      "damage": 36
+    },
+    {
+      "id": "hustle-physical",
+      "ability": "hustle",
+      "operation": "damage",
+      "source_ability": "hustle",
+      "target_ability": "immunity",
+      "move": "dragonclaw",
+      "critical": false,
+      "source_status": null,
+      "target_status": null,
+      "source_hp": null,
+      "weather": null,
+      "terrain": null,
+      "ally_ability": "swiftswim",
+      "damage": 51
+    },
+    {
       "id": "quick-feet-paralysis",
       "ability": "quickfeet",
       "operation": "speed",
@@ -810,7 +874,31 @@
       "id": "super-luck-critical-ratio",
       "ability": "superluck",
       "operation": "critical_ratio",
+      "target_status": null,
       "critical_ratio": 2
+    },
+    {
+      "id": "merciless-poisoned-target",
+      "ability": "merciless",
+      "operation": "critical_ratio",
+      "target_status": "psn",
+      "critical_ratio": 5
+    },
+    {
+      "id": "compound-eyes-accuracy",
+      "ability": "compoundeyes",
+      "operation": "accuracy",
+      "move": "hypnosis",
+      "ally_ability": "swiftswim",
+      "accuracy": 78
+    },
+    {
+      "id": "hustle-physical-accuracy",
+      "ability": "hustle",
+      "operation": "accuracy",
+      "move": "tackle",
+      "ally_ability": "swiftswim",
+      "accuracy": 80
     },
     {
       "id": "bulletproof-blocks-aura-sphere",
@@ -859,6 +947,46 @@
       "source_ability": "telepathy",
       "target_ability": "goodasgold",
       "move": "thunderwave",
+      "ally_target": false,
+      "allowed": false
+    },
+    {
+      "id": "water-absorb-blocks-hydro-pump",
+      "ability": "waterabsorb",
+      "operation": "try_hit",
+      "source_ability": "telepathy",
+      "target_ability": "waterabsorb",
+      "move": "hydropump",
+      "ally_target": false,
+      "allowed": false
+    },
+    {
+      "id": "volt-absorb-blocks-thunderbolt",
+      "ability": "voltabsorb",
+      "operation": "try_hit",
+      "source_ability": "telepathy",
+      "target_ability": "voltabsorb",
+      "move": "thunderbolt",
+      "ally_target": false,
+      "allowed": false
+    },
+    {
+      "id": "earth-eater-blocks-earth-power",
+      "ability": "eartheater",
+      "operation": "try_hit",
+      "source_ability": "telepathy",
+      "target_ability": "eartheater",
+      "move": "earthpower",
+      "ally_target": false,
+      "allowed": false
+    },
+    {
+      "id": "motor-drive-blocks-thunderbolt",
+      "ability": "motordrive",
+      "operation": "try_hit",
+      "source_ability": "telepathy",
+      "target_ability": "motordrive",
+      "move": "thunderbolt",
       "ally_target": false,
       "allowed": false
     },
@@ -915,6 +1043,31 @@
       "move": "hypnosis",
       "ally": true,
       "allowed": false
+    },
+    {
+      "id": "water-bubble-blocks-burn",
+      "ability": "waterbubble",
+      "operation": "status_immunity",
+      "status": "brn",
+      "move": "willowisp",
+      "ally": false,
+      "allowed": false
+    },
+    {
+      "id": "thermal-exchange-blocks-burn",
+      "ability": "thermalexchange",
+      "operation": "status_immunity",
+      "status": "brn",
+      "move": "willowisp",
+      "ally": false,
+      "allowed": false
+    },
+    {
+      "id": "overcoat-weather-immunity",
+      "ability": "overcoat",
+      "operation": "weather_immunity",
+      "weather": "sandstorm",
+      "immune": true
     }
   ]
 }

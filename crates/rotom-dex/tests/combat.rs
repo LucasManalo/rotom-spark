@@ -3347,8 +3347,8 @@ fn follow_me_redirects_single_target_moves_and_repeat_protect_uses_the_battle_rn
 #[test]
 fn competing_redirectors_use_speed_then_active_entry_order_and_replay_deterministically() {
     let dex = champions_reg_mc().expect("generated Dex");
-    let attacker = set_with_moves(&dex, "goodra", "gooey", &["aquatail", "protect"]);
-    let redirector = set_with_moves(&dex, "clefairy", "friendguard", &["followme", "aquatail"]);
+    let attacker = set_with_moves(&dex, "goodra", "telepathy", &["aquatail", "protect"]);
+    let redirector = set_with_moves(&dex, "clefairy", "telepathy", &["followme", "aquatail"]);
     let ids = dex.field_effect_ids();
     let follow_me = ids.follow_me.expect("Follow Me condition");
     let base = selected_battle_for_sets(&dex, &attacker, &redirector, 0x136, true);
@@ -5758,9 +5758,22 @@ fn ability_test_try_hit(
     allowed
 }
 
-fn ability_test_critical_ratio(dex: &rotom_dex::DexData, ability: &str) -> i64 {
+fn ability_test_critical_ratio(
+    dex: &rotom_dex::DexData,
+    ability: &str,
+    target_status: Option<MajorStatus>,
+) -> i64 {
     let source = set_with_moves(dex, "medicham", ability, &["dragonclaw"]);
-    let target = set_with_moves(dex, "snorlax", "immunity", &["recover"]);
+    let target = set_with_moves(
+        dex,
+        "snorlax",
+        if target_status.is_some() {
+            "telepathy"
+        } else {
+            "immunity"
+        },
+        &["recover"],
+    );
     let action = JointAction::Turn {
         p1: TurnChoice {
             actions: [
@@ -5776,6 +5789,18 @@ fn ability_test_critical_ratio(dex: &rotom_dex::DexData, ability: &str) -> i64 {
         },
     };
     let battle = selected_battle_for_sets(dex, &source, &target, 0, false);
+    let battle = if let Some(status) = target_status {
+        let mut builder = BattleStateBuilder::from_state(battle).unwrap();
+        builder
+            .edit_pokemon(
+                PokemonRef::new(SideId::P2, PokemonIndex::new(0)),
+                |pokemon| pokemon.status = Some(status),
+            )
+            .unwrap();
+        builder.build().unwrap()
+    } else {
+        battle
+    };
     let result = step(
         &battle,
         &action,
@@ -5790,6 +5815,60 @@ fn ability_test_critical_ratio(dex: &rotom_dex::DexData, ability: &str) -> i64 {
         .into_iter()
         .find_map(|event| {
             (event.event == BattleEvent::ModifyCritRatio
+                && event.context.source == Some(PokemonRef::new(SideId::P1, PokemonIndex::new(0))))
+            .then_some(event.value)
+        })
+        .and_then(|value| match value {
+            rotom_core::EventValue::Integer(value) => Some(value),
+            _ => None,
+        })
+        .unwrap()
+}
+
+fn ability_test_accuracy(
+    dex: &rotom_dex::DexData,
+    ability: &str,
+    move_name: &str,
+    ally_ability: &str,
+) -> i64 {
+    let source = set_with_moves(dex, "medicham", ability, &[move_name]);
+    let ally = set_with_moves(dex, "magikarp", ally_ability, &["swordsdance"]);
+    let target = set_with_moves(dex, "snorlax", "immunity", &["recover"]);
+    let passive = set_with_moves(dex, "magikarp", "swiftswim", &["recover"]);
+    let state = selected_battle_for_teams(
+        dex,
+        &four_member_team(source, ally),
+        &four_member_team(target, passive),
+        0x13_05_07,
+    );
+    let action = JointAction::Turn {
+        p1: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Foe(ActiveSlot::Left)),
+                use_move(0, ActionTarget::Automatic),
+            ],
+        },
+        p2: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Automatic),
+                use_move(0, ActionTarget::Automatic),
+            ],
+        },
+    };
+    let result = step(
+        &state,
+        &action,
+        &Mechanics::new(dex, &EffectRegistry::new()),
+    )
+    .unwrap();
+    result
+        .diagnostics
+        .turn
+        .unwrap()
+        .events
+        .into_iter()
+        .find_map(|event| {
+            (event.event == BattleEvent::ModifyAccuracy
                 && event.context.source == Some(PokemonRef::new(SideId::P1, PokemonIndex::new(0))))
             .then_some(event.value)
         })
@@ -6085,6 +6164,13 @@ fn ability_modifier_damage_matches_pinned_showdown_fixture() {
             "critical_ratio" => serde_json::json!(ability_test_critical_ratio(
                 &dex,
                 case["ability"].as_str().unwrap(),
+                fixture_status(&case["target_status"]),
+            )),
+            "accuracy" => serde_json::json!(ability_test_accuracy(
+                &dex,
+                case["ability"].as_str().unwrap(),
+                case["move"].as_str().unwrap(),
+                case["ally_ability"].as_str().unwrap(),
             )),
             "try_hit" => serde_json::json!(ability_test_try_hit(
                 &dex,
@@ -6120,6 +6206,7 @@ fn ability_modifier_damage_matches_pinned_showdown_fixture() {
             "damage" => case["damage"].clone(),
             "speed" => case["speed"].clone(),
             "critical_ratio" => case["critical_ratio"].clone(),
+            "accuracy" => case["accuracy"].clone(),
             "try_hit" | "status_immunity" => case["allowed"].clone(),
             "priority" => serde_json::json!({
                 "priority": case["priority"].clone(),
@@ -6740,6 +6827,142 @@ const EXPECTED_ABILITY_HANDLERS: &[(
         rotom_core::AbilityBehavior::AllySleepImmunity,
         Breakable,
     ),
+    (
+        "waterabsorb",
+        rotom_core::AbilityBehavior::WaterAbsorb,
+        Breakable,
+    ),
+    (
+        "voltabsorb",
+        rotom_core::AbilityBehavior::VoltAbsorb,
+        Breakable,
+    ),
+    (
+        "eartheater",
+        rotom_core::AbilityBehavior::EarthEater,
+        Breakable,
+    ),
+    (
+        "motordrive",
+        rotom_core::AbilityBehavior::MotorDrive,
+        Breakable,
+    ),
+    (
+        "overcoat",
+        rotom_core::AbilityBehavior::PowderWeatherImmunity,
+        Breakable,
+    ),
+    (
+        "waterbubble",
+        rotom_core::AbilityBehavior::BurnImmunity,
+        Breakable,
+    ),
+    (
+        "waterbubble",
+        rotom_core::AbilityBehavior::WaterBubble,
+        Breakable,
+    ),
+    (
+        "thermalexchange",
+        rotom_core::AbilityBehavior::BurnImmunity,
+        Breakable,
+    ),
+    (
+        "thermalexchange",
+        rotom_core::AbilityBehavior::ThermalExchange,
+        Breakable,
+    ),
+    (
+        "naturalcure",
+        rotom_core::AbilityBehavior::NaturalCure,
+        Unbreakable,
+    ),
+    (
+        "regenerator",
+        rotom_core::AbilityBehavior::Regenerator,
+        Unbreakable,
+    ),
+    (
+        "hospitality",
+        rotom_core::AbilityBehavior::Hospitality,
+        Unbreakable,
+    ),
+    (
+        "hydration",
+        rotom_core::AbilityBehavior::Hydration,
+        Unbreakable,
+    ),
+    (
+        "shedskin",
+        rotom_core::AbilityBehavior::ShedSkin,
+        Unbreakable,
+    ),
+    ("healer", rotom_core::AbilityBehavior::Healer, Unbreakable),
+    ("stamina", rotom_core::AbilityBehavior::Stamina, Unbreakable),
+    (
+        "weakarmor",
+        rotom_core::AbilityBehavior::WeakArmor,
+        Unbreakable,
+    ),
+    (
+        "justified",
+        rotom_core::AbilityBehavior::Justified,
+        Unbreakable,
+    ),
+    (
+        "angerpoint",
+        rotom_core::AbilityBehavior::AngerPoint,
+        Unbreakable,
+    ),
+    (
+        "friendguard",
+        rotom_core::AbilityBehavior::FriendGuard,
+        Breakable,
+    ),
+    (
+        "megalauncher",
+        rotom_core::AbilityBehavior::MegaLauncher,
+        Unbreakable,
+    ),
+    (
+        "merciless",
+        rotom_core::AbilityBehavior::Merciless,
+        Unbreakable,
+    ),
+    (
+        "compoundeyes",
+        rotom_core::AbilityBehavior::CompoundEyes,
+        Unbreakable,
+    ),
+    ("hustle", rotom_core::AbilityBehavior::Hustle, Unbreakable),
+    ("icebody", rotom_core::AbilityBehavior::IceBody, Unbreakable),
+    (
+        "raindish",
+        rotom_core::AbilityBehavior::RainDish,
+        Unbreakable,
+    ),
+    ("moxie", rotom_core::AbilityBehavior::Moxie, Unbreakable),
+    ("gooey", rotom_core::AbilityBehavior::Gooey, Unbreakable),
+    (
+        "anticipation",
+        rotom_core::AbilityBehavior::NoAuthoritativeEffect,
+        Unbreakable,
+    ),
+    (
+        "forewarn",
+        rotom_core::AbilityBehavior::NoAuthoritativeEffect,
+        Unbreakable,
+    ),
+    (
+        "frisk",
+        rotom_core::AbilityBehavior::NoAuthoritativeEffect,
+        Unbreakable,
+    ),
+    (
+        "runaway",
+        rotom_core::AbilityBehavior::NoAuthoritativeEffect,
+        Unbreakable,
+    ),
 ];
 
 #[test]
@@ -7123,4 +7346,272 @@ fn mold_breaker_suppresses_only_breakable_target_side_callbacks() {
         invocation.source == EffectSource::Ability(dex.resolve_ability("filter").unwrap().0)
     }));
     assert_eq!(step(&state, &action, &mechanics).unwrap(), result);
+}
+
+#[test]
+#[allow(clippy::too_many_lines)]
+fn absorption_heals_before_accuracy_and_mold_breaker_bypasses_it() {
+    let dex = champions_reg_mc().unwrap();
+    let source = set_with_moves(&dex, "medicham", "telepathy", &["hydropump"]);
+    let ally = set_with_moves(&dex, "magikarp", "swiftswim", &["swordsdance"]);
+    let target = set_with_moves(&dex, "snorlax", "waterabsorb", &["swordsdance"]);
+    let passive = set_with_moves(&dex, "magikarp", "swiftswim", &["swordsdance"]);
+    let base = selected_battle_for_teams(
+        &dex,
+        &four_member_team(source, ally.clone()),
+        &four_member_team(target, passive.clone()),
+        0x13_05_07,
+    );
+    let target_ref = PokemonRef::new(SideId::P2, PokemonIndex::new(0));
+    let mut builder = BattleStateBuilder::from_state(base).unwrap();
+    let maximum = builder
+        .state()
+        .side(target_ref.side)
+        .pokemon(target_ref.pokemon)
+        .unwrap()
+        .stats
+        .hp;
+    builder
+        .edit_pokemon(target_ref, |pokemon| pokemon.current_hp = 40)
+        .unwrap()
+        .enable_rng_trace();
+    let state = builder.build().unwrap();
+    let action = JointAction::Turn {
+        p1: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Foe(ActiveSlot::Left)),
+                use_move(0, ActionTarget::Automatic),
+            ],
+        },
+        p2: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Automatic),
+                use_move(0, ActionTarget::Automatic),
+            ],
+        },
+    };
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let result = step(&state, &action, &mechanics).unwrap();
+    assert_eq!(
+        result
+            .state
+            .side(target_ref.side)
+            .pokemon(target_ref.pokemon)
+            .unwrap()
+            .current_hp,
+        40 + maximum / 4
+    );
+    let outcome = result
+        .diagnostics
+        .turn
+        .as_ref()
+        .unwrap()
+        .target_outcomes
+        .iter()
+        .find(|outcome| outcome.target == target_ref)
+        .unwrap();
+    assert_eq!(outcome.result, TargetResult::Immune);
+    assert!(!result
+        .state
+        .rng()
+        .trace()
+        .unwrap()
+        .iter()
+        .any(|entry| { matches!(entry.reason, RngReason::Accuracy | RngReason::DamageRoll) }));
+    assert_eq!(step(&state, &action, &mechanics).unwrap(), result);
+
+    let breaker = set_with_moves(&dex, "medicham", "moldbreaker", &["hydropump"]);
+    let p1 = four_member_team(breaker, ally);
+    let p2 = four_member_team(
+        set_with_moves(&dex, "snorlax", "waterabsorb", &["swordsdance"]),
+        passive,
+    );
+    let bypass = (0..10_000)
+        .find_map(|seed| {
+            let state = selected_battle_for_teams(&dex, &p1, &p2, seed);
+            let result = step(&state, &action, &mechanics).unwrap();
+            result
+                .diagnostics
+                .turn
+                .as_ref()
+                .unwrap()
+                .target_outcomes
+                .iter()
+                .any(|outcome| outcome.target == target_ref && outcome.result == TargetResult::Hit)
+                .then_some(result)
+        })
+        .expect("a deterministic seed should hit through Water Absorb");
+    let try_hit = bypass
+        .diagnostics
+        .turn
+        .as_ref()
+        .unwrap()
+        .events
+        .iter()
+        .find(|event| {
+            event.event == BattleEvent::TryHit && event.context.target == Some(target_ref)
+        })
+        .unwrap();
+    assert!(!try_hit.invocations.iter().any(|invocation| {
+        invocation.source == EffectSource::Ability(dex.resolve_ability("waterabsorb").unwrap().0)
+    }));
+}
+
+#[test]
+#[allow(clippy::too_many_lines)]
+fn switch_healing_curing_and_hydration_expiry_follow_lifecycle_order() {
+    let dex = champions_reg_mc().unwrap();
+    let passive = set_with_moves(&dex, "magikarp", "swiftswim", &["swordsdance"]);
+    let foe = set_with_moves(&dex, "snorlax", "telepathy", &["swordsdance"]);
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let switch_action = JointAction::Turn {
+        p1: TurnChoice {
+            actions: [
+                PokemonAction::Switch {
+                    pokemon: PokemonIndex::new(2),
+                },
+                use_move(0, ActionTarget::Automatic),
+            ],
+        },
+        p2: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Automatic),
+                use_move(0, ActionTarget::Automatic),
+            ],
+        },
+    };
+
+    let natural = set_with_moves(&dex, "medicham", "naturalcure", &["swordsdance"]);
+    let natural_team = vec![natural, passive.clone(), passive.clone(), passive.clone()];
+    let state = selected_battle_for_teams(
+        &dex,
+        &natural_team,
+        &four_member_team(foe.clone(), foe.clone()),
+        0x13_05_07,
+    );
+    let outgoing = PokemonRef::new(SideId::P1, PokemonIndex::new(0));
+    let mut builder = BattleStateBuilder::from_state(state).unwrap();
+    builder
+        .set_major_status(
+            outgoing,
+            MajorStatus::BadlyPoisoned,
+            fixture_status_state(MajorStatus::BadlyPoisoned),
+        )
+        .unwrap();
+    let result = step(&builder.build().unwrap(), &switch_action, &mechanics).unwrap();
+    let cured = result
+        .state
+        .side(outgoing.side)
+        .pokemon(outgoing.pokemon)
+        .unwrap();
+    assert_eq!(cured.status, None);
+    assert_eq!(cured.status_state, StatusState::default());
+
+    let regen = set_with_moves(&dex, "medicham", "regenerator", &["swordsdance"]);
+    let host = set_with_moves(&dex, "medicham", "hospitality", &["swordsdance"]);
+    let team = vec![regen, passive.clone(), host, passive.clone()];
+    let state = selected_battle_for_teams(
+        &dex,
+        &team,
+        &four_member_team(foe.clone(), foe.clone()),
+        0x13_05_07,
+    );
+    let ally = PokemonRef::new(SideId::P1, PokemonIndex::new(1));
+    let incoming = PokemonRef::new(SideId::P1, PokemonIndex::new(2));
+    let mut builder = BattleStateBuilder::from_state(state).unwrap();
+    let outgoing_max = builder
+        .state()
+        .side(outgoing.side)
+        .pokemon(outgoing.pokemon)
+        .unwrap()
+        .stats
+        .hp;
+    let ally_max = builder
+        .state()
+        .side(ally.side)
+        .pokemon(ally.pokemon)
+        .unwrap()
+        .stats
+        .hp;
+    builder
+        .edit_pokemon(outgoing, |pokemon| pokemon.current_hp = 40)
+        .unwrap()
+        .edit_pokemon(ally, |pokemon| pokemon.current_hp = 40)
+        .unwrap();
+    let state = builder.build().unwrap();
+    let result = step(&state, &switch_action, &mechanics).unwrap();
+    assert_eq!(
+        result
+            .state
+            .side(outgoing.side)
+            .pokemon(outgoing.pokemon)
+            .unwrap()
+            .current_hp,
+        40 + outgoing_max / 3
+    );
+    assert_eq!(
+        result
+            .state
+            .side(ally.side)
+            .pokemon(ally.pokemon)
+            .unwrap()
+            .current_hp,
+        40 + ally_max / 4
+    );
+    assert!(result
+        .diagnostics
+        .turn
+        .as_ref()
+        .unwrap()
+        .events
+        .iter()
+        .any(|event| {
+            event.event == BattleEvent::SwitchIn && event.context.source == Some(incoming)
+        }));
+    assert_eq!(step(&state, &switch_action, &mechanics).unwrap(), result);
+
+    let hydration = set_with_moves(&dex, "medicham", "hydration", &["swordsdance"]);
+    let state = selected_battle_for_teams(
+        &dex,
+        &four_member_team(hydration, passive),
+        &four_member_team(foe.clone(), foe),
+        0x13_05_07,
+    );
+    let mut builder = BattleStateBuilder::from_state(state).unwrap();
+    builder
+        .set_major_status(outgoing, MajorStatus::Poison, StatusState::default())
+        .unwrap();
+    let rain = dex.field_effect_ids().rain.unwrap();
+    builder.edit_field(|field| {
+        field.weather = Some(ConditionState::new(rain, Some(1)));
+    });
+    let result = step(
+        &builder.build().unwrap(),
+        &JointAction::Turn {
+            p1: TurnChoice {
+                actions: [
+                    use_move(0, ActionTarget::Automatic),
+                    use_move(0, ActionTarget::Automatic),
+                ],
+            },
+            p2: TurnChoice {
+                actions: [
+                    use_move(0, ActionTarget::Automatic),
+                    use_move(0, ActionTarget::Automatic),
+                ],
+            },
+        },
+        &mechanics,
+    )
+    .unwrap();
+    assert_eq!(result.state.field().weather, None);
+    assert_eq!(
+        result
+            .state
+            .side(outgoing.side)
+            .pokemon(outgoing.pokemon)
+            .unwrap()
+            .status,
+        None
+    );
 }

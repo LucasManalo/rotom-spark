@@ -88,6 +88,38 @@ relays and hit/status gates:
   status through kernel-backed update hooks. `sweetveil` prevents sleep for
   the holder's active side.
 
+The sixth batch adds thirty abilities around typed immunity, lifecycle,
+damaging-hit, and accuracy hooks:
+
+- `waterabsorb`, `voltabsorb`, and `eartheater` cancel matching external hits
+  and heal one quarter max HP; `motordrive` cancels Electric hits and raises
+  Speed. These target-side callbacks are breakable and therefore use the
+  existing per-move Mold Breaker suppression contract.
+- `overcoat` combines sandstorm immunity with powder-move immunity.
+  `waterbubble` and `thermalexchange` share burn prevention and
+  cure hooks. Water Bubble additionally doubles Water offense and halves the
+  attacking stat used by incoming Fire moves; Thermal Exchange raises Attack
+  after a damaging Fire hit.
+- `naturalcure` and `regenerator` run on `SwitchOut`; `hospitality` runs after
+  the incoming holder occupies its active slot. `hydration`, `shedskin`, and
+  `healer` run at pinned residual order 5/sub-order 3. Random ability
+  activations consume the battle-owned stream under `RngReason::Ability`.
+- `stamina`, `weakarmor`, `justified`, `thermalexchange`, `gooey`, and
+  `angerpoint` consume actual applied damage and typed hit metadata through
+  `AfterDamage`. They do not activate after a knockout. Anger Point consumes
+  the already-resolved critical result and clamps Attack through the kernel.
+- `friendguard`, `megalauncher`, `merciless`, `compoundeyes`, and `hustle` use
+  the shared damage, base-power, critical-ratio, Attack, and new final-accuracy
+  relays. Pulse and powder are compact move flags exported from the pinned
+  resolved Dex.
+- `icebody` and `raindish` heal at the weather residual boundary; `moxie`
+  consumes the existing source-aware `Faint` event and boosts once per foe
+  fainted by a move.
+- `anticipation`, `forewarn`, and `frisk` only reveal information in pinned
+  Showdown, while `runaway` has no trainer-battle state effect. Because
+  diagnostics are non-authoritative in Rotom, these identities deliberately
+  map to a no-authoritative-effect behavior with no registered callback.
+
 Showdown's modifier application uses its fixed-point `chainModify`/`modify`
 rounding. Rotom Spark applies the same 4096-denominator rounding to each typed
 integer relay.
@@ -143,11 +175,14 @@ ability handlers rather than inventing a move-specific path.
 ## Verification boundary
 
 The pinned `ability-modifiers.json` cases exercise isolated Showdown damage,
-Speed, priority, critical-ratio, immunity, and `TryHit` calculations. They support each ability's
-`verification: differential_verified` claim, but they are not full
-cross-mechanic transition comparisons. The current end-to-end Rotom tests
-provide interaction-level unit evidence only, so all forty-seven entries use
-`interaction_verification: unit_tested`. A future
+Speed, accuracy, priority, critical-ratio, immunity, and `TryHit` calculations.
+They are not full cross-mechanic transition comparisons. Coverage only uses
+`verification: differential_verified` when those fixtures exercise the whole
+claimed behavior; compound, lifecycle, random, and damaging-hit abilities
+remain `unit_tested` even when one component has pinned differential evidence.
+Interaction verification is likewise `unit_tested` only where a test combines
+the ability with another source, lifecycle boundary, suppression, or multiple
+holders; otherwise it remains `not_tested`. A future
 `interaction_verification: differential_verified` claim requires a normalized
 fixture that actually executes and compares the relevant ability interaction.
 
@@ -187,17 +222,17 @@ events while retaining kernel-only status mutation.
 
 ## Deferred PR 13.5 families
 
-These forty-seven abilities are incremental PR 13.5 batches, not completion of
-the milestone. The other 168 reachable Regulation M-C abilities remain
+These seventy-seven abilities are incremental PR 13.5 batches, not completion
+of the milestone. The other 138 reachable Regulation M-C abilities remain
 explicitly unsupported. The remaining families and prerequisites are:
 
 | Family | Required event/mechanics capability |
 | --- | --- |
-| Switch-in/out | complete switch lifecycle, ordered field/side changes, stat and form consequences |
+| Remaining switch-in/out | ordered weather/terrain/side changes, stat and form consequences |
 | Priority and remaining Speed | side-condition context, item-dependent Speed, probabilistic priority, suppression and tie-order coverage |
 | Attack type and damage | typed move/source context, immunity ordering, shared damage modifiers |
-| Remaining immunity and absorption | type/grounded eligibility, cancellation/result contracts, kernel-backed healing, boosts, and persistent activation state |
-| Status prevention | shared `TrySetStatus` reasons, source/target context and cure/prevention ordering |
+| Remaining immunity and absorption | grounded eligibility, redirection, persistent activation state, and item/form consequences |
+| Remaining status prevention | source/target context, volatile status gates, and cure/prevention ordering |
 | Weather and terrain | switch-in setters, duration/override rules and field-condition ordering |
 | Contact and on-hit reactions | contact metadata, actual applied damage, per-hit callbacks and faint settlement |
 | Global suppression/copy/override | authoritative activation state, ability replacement/copy rules and exception ordering beyond move-scoped Mold Breaker |

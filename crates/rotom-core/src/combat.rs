@@ -313,16 +313,18 @@ impl MoveCapabilities {
 
 #[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(transparent)]
-pub struct MoveInteractionFlags(u8);
+pub struct MoveInteractionFlags(u16);
 
 impl MoveInteractionFlags {
-    const BULLET: u8 = 1 << 0;
-    const SOUND: u8 = 1 << 1;
-    const CONTACT: u8 = 1 << 2;
-    const BITE: u8 = 1 << 3;
-    const PUNCH: u8 = 1 << 4;
-    const SLICING: u8 = 1 << 5;
-    const RECOIL: u8 = 1 << 6;
+    const BULLET: u16 = 1 << 0;
+    const SOUND: u16 = 1 << 1;
+    const CONTACT: u16 = 1 << 2;
+    const BITE: u16 = 1 << 3;
+    const PUNCH: u16 = 1 << 4;
+    const SLICING: u16 = 1 << 5;
+    const RECOIL: u16 = 1 << 6;
+    const PULSE: u16 = 1 << 7;
+    const POWDER: u16 = 1 << 8;
 
     #[must_use]
     pub const fn is_empty(&self) -> bool {
@@ -365,6 +367,16 @@ impl MoveInteractionFlags {
     }
 
     #[must_use]
+    pub const fn with_pulse(self, enabled: bool) -> Self {
+        self.with(Self::PULSE, enabled)
+    }
+
+    #[must_use]
+    pub const fn with_powder(self, enabled: bool) -> Self {
+        self.with(Self::POWDER, enabled)
+    }
+
+    #[must_use]
     pub const fn bullet(self) -> bool {
         self.contains(Self::BULLET)
     }
@@ -399,7 +411,17 @@ impl MoveInteractionFlags {
         self.contains(Self::RECOIL)
     }
 
-    const fn with(self, flag: u8, enabled: bool) -> Self {
+    #[must_use]
+    pub const fn pulse(self) -> bool {
+        self.contains(Self::PULSE)
+    }
+
+    #[must_use]
+    pub const fn powder(self) -> bool {
+        self.contains(Self::POWDER)
+    }
+
+    const fn with(self, flag: u16, enabled: bool) -> Self {
         if enabled {
             Self(self.0 | flag)
         } else {
@@ -407,7 +429,7 @@ impl MoveInteractionFlags {
         }
     }
 
-    const fn contains(self, flag: u8) -> bool {
+    const fn contains(self, flag: u16) -> bool {
         self.0 & flag != 0
     }
 }
@@ -818,6 +840,8 @@ impl BattleState {
         field_effects: &FieldEffectIds,
         resolution: &mut TurnResolution,
     ) -> Result<(), BattleError> {
+        let residual_weather = field_effects.weather_environment(self);
+        let residual_terrain = field_effects.terrain_environment(self);
         self.tick_volatile_durations(resolution)?;
         self.process_weather_residuals(data, effects, field_effects, resolution)?;
         self.tick_weather_duration(resolution);
@@ -826,7 +850,11 @@ impl BattleState {
         let residual = effects.dispatch(
             self,
             BattleEvent::Residual,
-            EventContext::default(),
+            EventContext {
+                weather: residual_weather,
+                terrain: residual_terrain,
+                ..EventContext::default()
+            },
             EventValue::None,
         )?;
         self.record_residual_damage(&before, &residual, resolution)?;
@@ -1040,11 +1068,11 @@ impl BattleState {
                 if hit_index > 0
                     && move_context.move_data.multi_accuracy
                     && !self.check_accuracy(
-                        move_context.move_data.accuracy,
-                        move_context.move_id,
+                        effects,
                         field_effects,
-                        move_context.source,
+                        move_context,
                         target,
+                        resolution,
                     )?
                 {
                     break;
@@ -1392,6 +1420,16 @@ impl BattleState {
                 move_id: Some(context.move_id),
                 suppress_target_ability: context.suppress_target_ability,
                 critical: false,
+                move_category: Some(context.move_data.category),
+                move_type: Some(context.move_data.move_type),
+                move_flags: context.move_data.interaction_flags,
+                type_effectiveness: self.target_type_effectiveness(
+                    data,
+                    context.move_data,
+                    target_context.target,
+                )?,
+                weather: field_effects.weather_environment(self),
+                terrain: field_effects.terrain_environment(self),
                 ..EventContext::default()
             };
             resolution.events.push(effects.dispatch(
@@ -1642,11 +1680,11 @@ impl BattleState {
         let mut eligible = Vec::with_capacity(after_try_immunity.len());
         for (index, target_context) in after_try_immunity {
             if self.check_accuracy(
-                move_context.move_data.accuracy,
-                move_context.move_id,
+                effects,
                 field_effects,
-                move_context.source,
+                move_context,
                 target_context.target,
+                resolution,
             )? {
                 eligible.push((index, target_context));
             } else {
@@ -2702,22 +2740,23 @@ impl BattleState {
 
     fn check_accuracy(
         &mut self,
-        accuracy: MoveAccuracy,
-        move_id: MoveId,
+        effects: &EffectRegistry,
         field_effects: &FieldEffectIds,
-        source: PokemonRef,
+        move_context: &MoveExecutionContext,
         target: PokemonRef,
+        resolution: &mut TurnResolution,
     ) -> Result<bool, BattleError> {
-        let MoveAccuracy::Percent { value } = accuracy else {
+        let MoveAccuracy::Percent { value } = move_context.move_data.accuracy else {
             return Ok(true);
         };
-        let value = match field_effects.weather_accuracy(self, move_id, u16::from(value)) {
-            crate::field_effects::WeatherAccuracy::Always => return Ok(true),
-            crate::field_effects::WeatherAccuracy::Percent(value) => value,
-        };
+        let value =
+            match field_effects.weather_accuracy(self, move_context.move_id, u16::from(value)) {
+                crate::field_effects::WeatherAccuracy::Always => return Ok(true),
+                crate::field_effects::WeatherAccuracy::Percent(value) => value,
+            };
         let source_stage = self
-            .side(source.side)
-            .pokemon(source.pokemon)
+            .side(move_context.source.side)
+            .pokemon(move_context.source.pokemon)
             .ok_or_else(|| BattleError::InvalidState("accuracy source is invalid".to_owned()))?
             .stat_stages
             .accuracy;
@@ -2734,6 +2773,25 @@ impl BattleState {
             std::cmp::Ordering::Equal => value,
         };
         let adjusted = field_effects.gravity_accuracy(self, adjusted);
+        let accuracy = effects.dispatch(
+            self,
+            BattleEvent::ModifyAccuracy,
+            EventContext {
+                source: Some(move_context.source),
+                target: Some(target),
+                move_id: Some(move_context.move_id),
+                suppress_target_ability: move_context.suppress_target_ability,
+                move_category: Some(move_context.move_data.category),
+                move_type: Some(move_context.move_data.move_type),
+                move_flags: move_context.move_data.interaction_flags,
+                weather: field_effects.weather_environment(self),
+                terrain: field_effects.terrain_environment(self),
+                ..EventContext::default()
+            },
+            EventValue::Integer(i64::from(adjusted)),
+        )?;
+        let adjusted = integer_relay_u16(&accuracy, "ModifyAccuracy")?;
+        resolution.events.push(accuracy);
         self.rng
             .chance(RngReason::Accuracy, u64::from(adjusted.min(100)), 100)
     }

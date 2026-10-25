@@ -19,6 +19,8 @@ pub enum RngReason {
     Protect,
     RandomTarget,
     RandomMove,
+    /// Random activation owned by an ability callback.
+    Ability,
     /// A temporary typed label for mechanics that do not have a dedicated
     /// variant yet. Stable mechanics should add a specific variant instead.
     Other(String),

@@ -30,6 +30,8 @@ pub enum BattleEvent {
     ModifySourceSpecialDefense,
     /// Relays base power after state-dependent move behavior.
     ModifyBasePower,
+    /// Relays final numeric accuracy after stage and field modifiers.
+    ModifyAccuracy,
     /// Relays the move's critical-hit stage before the RNG check.
     ModifyCritRatio,
     /// Confirms a rolled or forced critical hit against the target.
@@ -70,6 +72,7 @@ impl BattleEvent {
             | Self::ModifySpecialDefense
             | Self::ModifySourceSpecialDefense
             | Self::ModifyBasePower
+            | Self::ModifyAccuracy
             | Self::ModifyCritRatio
             | Self::ModifyDamage => EventContract::new(EventRelay::Integer, false, true),
             Self::CriticalHit => EventContract::new(EventRelay::Boolean, false, true),
@@ -353,6 +356,17 @@ impl EffectState<'_> {
     pub fn damage_hp(&mut self, target: PokemonRef, requested: u16) -> Result<u16, BattleError> {
         Ok(StateKernel::new(self.battle)
             .damage_hp(target, requested)?
+            .applied)
+    }
+
+    /// Applies clamped HP recovery and returns the actual recovery.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the target is invalid.
+    pub fn heal_hp(&mut self, target: PokemonRef, requested: u16) -> Result<u16, BattleError> {
+        Ok(StateKernel::new(self.battle)
+            .heal_hp(target, requested)?
             .applied)
     }
 

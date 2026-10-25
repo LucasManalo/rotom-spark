@@ -79,6 +79,7 @@ test('ability batches keep isolated and interaction verification separate', () =
 		'sandrush', 'sharpness', 'shellarmor', 'slushrush', 'sniper', 'solidrock', 'soundproof',
 		'steelyspirit', 'strongjaw', 'superluck', 'surgesurfer', 'swarm', 'sweetveil',
 		'swiftswim', 'technician', 'telepathy', 'thickfat', 'torrent', 'toughclaws', 'vitalspirit',
+		'compoundeyes', 'hustle', 'megalauncher', 'merciless',
 	]) {
 		const ability = entry('ability', id);
 		assert.equal(ability.implementation, 'implemented');
@@ -89,9 +90,27 @@ test('ability batches keep isolated and interaction verification separate', () =
 			false
 		);
 	}
+	for (const id of [
+		'eartheater', 'friendguard', 'hospitality', 'hydration', 'motordrive', 'naturalcure',
+		'overcoat', 'regenerator', 'thermalexchange', 'voltabsorb', 'waterabsorb', 'waterbubble',
+	]) {
+		const ability = entry('ability', id);
+		assert.equal(ability.implementation, 'implemented');
+		assert.equal(ability.verification, 'unit_tested');
+		assert.equal(ability.interaction_verification, 'unit_tested');
+	}
+	for (const id of [
+		'angerpoint', 'anticipation', 'forewarn', 'frisk', 'gooey', 'healer', 'icebody',
+		'justified', 'moxie', 'raindish', 'runaway', 'shedskin', 'stamina', 'weakarmor',
+	]) {
+		const ability = entry('ability', id);
+		assert.equal(ability.implementation, 'implemented');
+		assert.equal(ability.verification, 'unit_tested');
+		assert.equal(ability.interaction_verification, 'not_tested');
+	}
 	assert.deepEqual(
 		manifest.summary.by_kind.ability.interaction_verification,
-		{not_tested: 168, unit_tested: 47, differential_verified: 0}
+		{not_tested: 152, unit_tested: 63, differential_verified: 0}
 	);
 });
 

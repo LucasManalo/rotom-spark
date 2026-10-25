@@ -1,7 +1,8 @@
 use crate::{
-    AbilityId, BattleError, BattleEvent, EffectInvocation, EffectOrder, EffectOwner,
+    AbilityId, BattleError, BattleEvent, BattleStat, EffectInvocation, EffectOrder, EffectOwner,
     EffectRegistry, EffectSource, EffectState, EventContext, EventDispatch, EventValue,
-    MajorStatus, MoveCategory, PokemonRef, PokemonType, TerrainEnvironment, WeatherEnvironment,
+    MajorStatus, MoveCategory, PokemonRef, PokemonType, RngReason, TerrainEnvironment,
+    WeatherEnvironment,
 };
 
 /// A reusable implementation family for an ability resolved by static data.
@@ -55,6 +56,35 @@ pub enum AbilityBehavior {
     BulletImmunity,
     SoundImmunity,
     AllyDamageImmunity,
+    WaterAbsorb,
+    VoltAbsorb,
+    EarthEater,
+    MotorDrive,
+    PowderWeatherImmunity,
+    BurnImmunity,
+    WaterBubble,
+    NaturalCure,
+    Regenerator,
+    Hospitality,
+    Hydration,
+    ShedSkin,
+    Healer,
+    Stamina,
+    WeakArmor,
+    Justified,
+    ThermalExchange,
+    AngerPoint,
+    FriendGuard,
+    MegaLauncher,
+    Merciless,
+    CompoundEyes,
+    Hustle,
+    IceBody,
+    RainDish,
+    Moxie,
+    Gooey,
+    /// The pinned ability has no authoritative battle-state effect.
+    NoAuthoritativeEffect,
 }
 
 /// Whether Mold Breaker-style move suppression can omit this handler.
@@ -526,6 +556,204 @@ const BEHAVIOR_REGISTRATIONS: &[BehaviorRegistration] = &[
         BattleEvent::TryHit,
         DEFAULT_ORDER,
         ally_damage_immunity,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::WaterAbsorb,
+        BattleEvent::TryHit,
+        DEFAULT_ORDER,
+        water_absorb,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::VoltAbsorb,
+        BattleEvent::TryHit,
+        DEFAULT_ORDER,
+        volt_absorb,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::EarthEater,
+        BattleEvent::TryHit,
+        DEFAULT_ORDER,
+        earth_eater,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::MotorDrive,
+        BattleEvent::TryHit,
+        DEFAULT_ORDER,
+        motor_drive,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::PowderWeatherImmunity,
+        BattleEvent::TryHit,
+        EffectOrder::new(0, 1, 0),
+        powder_immunity,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::PowderWeatherImmunity,
+        BattleEvent::WeatherImmunity,
+        DEFAULT_ORDER,
+        sandstorm_immunity,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::BurnImmunity,
+        BattleEvent::TrySetStatus,
+        DEFAULT_ORDER,
+        burn_immunity,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::BurnImmunity,
+        BattleEvent::BeforeTurn,
+        DEFAULT_ORDER,
+        cure_burn,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::BurnImmunity,
+        BattleEvent::SwitchIn,
+        DEFAULT_ORDER,
+        cure_burn,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::BurnImmunity,
+        BattleEvent::AfterSetStatus,
+        DEFAULT_ORDER,
+        cure_burn,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::WaterBubble,
+        BattleEvent::ModifyAttack,
+        EffectOrder::new(0, 5, 0),
+        water_bubble_stat,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::WaterBubble,
+        BattleEvent::ModifySpecialAttack,
+        EffectOrder::new(0, 5, 0),
+        water_bubble_stat,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::NaturalCure,
+        BattleEvent::SwitchOut,
+        DEFAULT_ORDER,
+        cure_any_status,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::Regenerator,
+        BattleEvent::SwitchOut,
+        DEFAULT_ORDER,
+        regenerator,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::Hospitality,
+        BattleEvent::SwitchIn,
+        EffectOrder::new(0, -2, 0),
+        hospitality,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::Hydration,
+        BattleEvent::Residual,
+        EffectOrder::new(5, 0, 3),
+        hydration,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::ShedSkin,
+        BattleEvent::Residual,
+        EffectOrder::new(5, 0, 3),
+        shed_skin,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::Healer,
+        BattleEvent::Residual,
+        EffectOrder::new(5, 0, 3),
+        healer,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::Stamina,
+        BattleEvent::AfterDamage,
+        DEFAULT_ORDER,
+        stamina,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::WeakArmor,
+        BattleEvent::AfterDamage,
+        DEFAULT_ORDER,
+        weak_armor,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::Justified,
+        BattleEvent::AfterDamage,
+        DEFAULT_ORDER,
+        justified,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::ThermalExchange,
+        BattleEvent::AfterDamage,
+        DEFAULT_ORDER,
+        thermal_exchange,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::AngerPoint,
+        BattleEvent::AfterDamage,
+        DEFAULT_ORDER,
+        anger_point,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::FriendGuard,
+        BattleEvent::ModifyDamage,
+        DEFAULT_ORDER,
+        friend_guard,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::MegaLauncher,
+        BattleEvent::ModifyBasePower,
+        EffectOrder::new(0, 19, 0),
+        mega_launcher,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::Merciless,
+        BattleEvent::ModifyCritRatio,
+        DEFAULT_ORDER,
+        merciless,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::CompoundEyes,
+        BattleEvent::ModifyAccuracy,
+        EffectOrder::new(0, -1, 0),
+        compound_eyes,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::Hustle,
+        BattleEvent::ModifyAttack,
+        EffectOrder::new(0, 5, 0),
+        hustle_attack,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::Hustle,
+        BattleEvent::ModifyAccuracy,
+        EffectOrder::new(0, -1, 0),
+        hustle_accuracy,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::IceBody,
+        BattleEvent::Residual,
+        EffectOrder::new(1, 0, 0),
+        ice_body,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::RainDish,
+        BattleEvent::Residual,
+        EffectOrder::new(1, 0, 0),
+        rain_dish,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::Moxie,
+        BattleEvent::Faint,
+        DEFAULT_ORDER,
+        moxie,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::Gooey,
+        BattleEvent::AfterDamage,
+        DEFAULT_ORDER,
+        gooey,
     ),
 ];
 
@@ -1332,6 +1560,500 @@ fn ally_damage_immunity(
     prevent_move_hit(invocation, context, dispatch, is_ally_damage)
 }
 
+fn water_absorb(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    absorb_type(state, invocation, context, dispatch, PokemonType::Water)
+}
+
+fn volt_absorb(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    absorb_type(state, invocation, context, dispatch, PokemonType::Electric)
+}
+
+fn earth_eater(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    absorb_type(state, invocation, context, dispatch, PokemonType::Ground)
+}
+
+fn absorb_type(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+    move_type: PokemonType,
+) -> Result<(), BattleError> {
+    let Some(owner) = matching_target(invocation, context) else {
+        return Ok(());
+    };
+    if context.source == context.target || context.move_type != Some(move_type) {
+        return Ok(());
+    }
+    let healing = pokemon(state, owner)?.stats.hp / 4;
+    state.heal_hp(owner, healing)?;
+    boolean(dispatch)?;
+    dispatch.value = EventValue::Boolean(false);
+    dispatch.mark_immune();
+    Ok(())
+}
+
+fn motor_drive(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = matching_target(invocation, context) else {
+        return Ok(());
+    };
+    if context.source != context.target && context.move_type == Some(PokemonType::Electric) {
+        state.change_stat_stage(owner, BattleStat::Speed, 1)?;
+        boolean(dispatch)?;
+        dispatch.value = EventValue::Boolean(false);
+        dispatch.mark_immune();
+    }
+    Ok(())
+}
+
+fn powder_immunity(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    prevent_move_hit(invocation, context, dispatch, context.move_flags.powder())
+}
+
+fn burn_immunity(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    prevent_status(
+        invocation,
+        context,
+        dispatch,
+        context.requested_status == Some(MajorStatus::Burn),
+        false,
+    )
+}
+
+fn cure_burn(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    _: &EventContext,
+    _: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    cure_matching_status(state, invocation, |status| status == MajorStatus::Burn)
+}
+
+fn water_bubble_stat(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if context.move_type == Some(PokemonType::Water)
+        && matching_source(invocation, context).is_some()
+    {
+        modify_integer(dispatch, 2, 1)?;
+    } else if context.move_type == Some(PokemonType::Fire)
+        && matching_target(invocation, context).is_some()
+    {
+        modify_integer(dispatch, 1, 2)?;
+    }
+    Ok(())
+}
+
+fn cure_any_status(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    _: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if let Some(owner) = matching_source(invocation, context) {
+        state.cure_major_status(owner)?;
+    }
+    Ok(())
+}
+
+fn regenerator(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    _: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = matching_source(invocation, context) else {
+        return Ok(());
+    };
+    let healing = pokemon(state, owner)?.stats.hp / 3;
+    state.heal_hp(owner, healing)?;
+    Ok(())
+}
+
+fn hospitality(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    _: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = matching_source(invocation, context) else {
+        return Ok(());
+    };
+    let active = state.battle().side(owner.side).active;
+    for ally in active
+        .into_iter()
+        .flatten()
+        .map(|pokemon| PokemonRef::new(owner.side, pokemon))
+        .filter(|ally| *ally != owner)
+    {
+        let healing = pokemon(state, ally)?.stats.hp / 4;
+        state.heal_hp(ally, healing)?;
+    }
+    Ok(())
+}
+
+fn hydration(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    _: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = owner_pokemon(invocation) else {
+        return Ok(());
+    };
+    if context.weather == Some(WeatherEnvironment::Rain) && pokemon(state, owner)?.status.is_some()
+    {
+        state.cure_major_status(owner)?;
+    }
+    Ok(())
+}
+
+fn shed_skin(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    _: &EventContext,
+    _: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = owner_pokemon(invocation) else {
+        return Ok(());
+    };
+    let holder = pokemon(state, owner)?;
+    if holder.current_hp > 0
+        && holder.status.is_some()
+        && state.chance(RngReason::Ability, 33, 100)?
+    {
+        state.cure_major_status(owner)?;
+    }
+    Ok(())
+}
+
+fn healer(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    _: &EventContext,
+    _: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = owner_pokemon(invocation) else {
+        return Ok(());
+    };
+    let active = state.battle().side(owner.side).active;
+    for ally in active
+        .into_iter()
+        .flatten()
+        .map(|pokemon| PokemonRef::new(owner.side, pokemon))
+        .filter(|ally| *ally != owner)
+    {
+        if pokemon(state, ally)?.status.is_some() && state.chance(RngReason::Ability, 3, 10)? {
+            state.cure_major_status(ally)?;
+        }
+    }
+    Ok(())
+}
+
+fn stamina(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    boost_damaged_holder(
+        state,
+        invocation,
+        context,
+        dispatch,
+        BattleStat::Defense,
+        1,
+        true,
+    )
+}
+
+fn weak_armor(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if context.move_category == Some(MoveCategory::Physical) {
+        if let Some(owner) = damaged_holder(invocation, context, dispatch) {
+            if pokemon(state, owner)?.current_hp > 0 {
+                state.change_stat_stage(owner, BattleStat::Defense, -1)?;
+                state.change_stat_stage(owner, BattleStat::Speed, 2)?;
+            }
+        }
+    }
+    Ok(())
+}
+
+fn justified(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    boost_damaged_holder(
+        state,
+        invocation,
+        context,
+        dispatch,
+        BattleStat::Attack,
+        1,
+        context.move_type == Some(PokemonType::Dark),
+    )
+}
+
+fn thermal_exchange(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    boost_damaged_holder(
+        state,
+        invocation,
+        context,
+        dispatch,
+        BattleStat::Attack,
+        1,
+        context.move_type == Some(PokemonType::Fire),
+    )
+}
+
+fn anger_point(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = damaged_holder(invocation, context, dispatch) else {
+        return Ok(());
+    };
+    if context.critical && pokemon(state, owner)?.current_hp > 0 {
+        state.change_stat_stage(owner, BattleStat::Attack, 12)?;
+    }
+    Ok(())
+}
+
+fn damaged_holder(
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &EventDispatch,
+) -> Option<PokemonRef> {
+    let owner = matching_target(invocation, context)?;
+    (integer(dispatch).ok()? > 0).then_some(owner)
+}
+
+fn boost_damaged_holder(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &EventDispatch,
+    stat: BattleStat,
+    delta: i8,
+    condition: bool,
+) -> Result<(), BattleError> {
+    if condition {
+        if let Some(owner) = damaged_holder(invocation, context, dispatch) {
+            if pokemon(state, owner)?.current_hp > 0 {
+                state.change_stat_stage(owner, stat, delta)?;
+            }
+        }
+    }
+    Ok(())
+}
+
+fn friend_guard(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let protects_ally = owner_pokemon(invocation)
+        .zip(context.target)
+        .is_some_and(|(owner, target)| owner != target && owner.side == target.side);
+    if protects_ally {
+        modify_integer(dispatch, 3, 4)?;
+    }
+    Ok(())
+}
+
+fn mega_launcher(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    source_flag_boost(
+        invocation,
+        context,
+        dispatch,
+        context.move_flags.pulse(),
+        3,
+        2,
+    )
+}
+
+#[allow(clippy::unnecessary_wraps)]
+fn merciless(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if matching_source(invocation, context).is_some()
+        && context.target.is_some_and(|target| {
+            pokemon(state, target).is_ok_and(|target| {
+                matches!(
+                    target.status,
+                    Some(MajorStatus::Poison | MajorStatus::BadlyPoisoned)
+                )
+            })
+        })
+    {
+        dispatch.value = EventValue::Integer(5);
+    }
+    Ok(())
+}
+
+fn compound_eyes(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if matching_source(invocation, context).is_some() {
+        modify_integer(dispatch, 5325, 4096)?;
+    }
+    Ok(())
+}
+
+fn hustle_attack(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if matching_source(invocation, context).is_some() {
+        modify_integer(dispatch, 3, 2)?;
+    }
+    Ok(())
+}
+
+fn hustle_accuracy(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if context.move_category == Some(MoveCategory::Physical)
+        && matching_source(invocation, context).is_some()
+    {
+        modify_integer(dispatch, 3277, 4096)?;
+    }
+    Ok(())
+}
+
+fn ice_body(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    _: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = owner_pokemon(invocation) else {
+        return Ok(());
+    };
+    if context.weather == Some(WeatherEnvironment::Snow) && pokemon(state, owner)?.current_hp > 0 {
+        let healing = pokemon(state, owner)?.stats.hp / 16;
+        state.heal_hp(owner, healing)?;
+    }
+    Ok(())
+}
+
+fn rain_dish(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    _: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = owner_pokemon(invocation) else {
+        return Ok(());
+    };
+    if context.weather == Some(WeatherEnvironment::Rain) && pokemon(state, owner)?.current_hp > 0 {
+        let healing = pokemon(state, owner)?.stats.hp / 16;
+        state.heal_hp(owner, healing)?;
+    }
+    Ok(())
+}
+
+fn moxie(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    _: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = matching_source(invocation, context) else {
+        return Ok(());
+    };
+    if context.move_id.is_some()
+        && context
+            .target
+            .is_some_and(|target| target.side != owner.side)
+        && pokemon(state, owner)?.current_hp > 0
+    {
+        state.change_stat_stage(owner, BattleStat::Attack, 1)?;
+    }
+    Ok(())
+}
+
+fn gooey(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if context.move_flags.contact() && damaged_holder(invocation, context, dispatch).is_some() {
+        if let Some(source) = context.source {
+            if source != context.target.unwrap_or(source) && pokemon(state, source)?.current_hp > 0
+            {
+                state.change_stat_stage(source, BattleStat::Speed, -1)?;
+            }
+        }
+    }
+    Ok(())
+}
+
 fn prevent_move_hit(
     invocation: &EffectInvocation,
     context: &EventContext,
@@ -1923,5 +2645,666 @@ mod tests {
             )
             .unwrap();
         assert_eq!(ally_dark.value, EventValue::Boolean(true));
+    }
+
+    #[test]
+    #[allow(clippy::too_many_lines)]
+    fn absorption_powder_and_burn_immunities_mutate_through_typed_effect_state() {
+        for (behavior, move_type) in [
+            (AbilityBehavior::WaterAbsorb, PokemonType::Water),
+            (AbilityBehavior::VoltAbsorb, PokemonType::Electric),
+            (AbilityBehavior::EarthEater, PokemonType::Ground),
+        ] {
+            let ability = AbilityId::new(60);
+            let registry = crate::conditions::composed_registry(
+                &EffectRegistry::new(),
+                [breakable(ability, behavior)],
+            );
+            let mut state = battle(AbilityId::new(1), ability);
+            state
+                .side_mut(SideId::P2)
+                .pokemon_mut(PokemonIndex::new(0))
+                .unwrap()
+                .current_hp = 40;
+            let event = registry
+                .dispatch(
+                    &mut state,
+                    BattleEvent::TryHit,
+                    EventContext {
+                        move_type: Some(move_type),
+                        ..context()
+                    },
+                    EventValue::Boolean(true),
+                )
+                .unwrap();
+            assert_eq!(event.value, EventValue::Boolean(false));
+            assert!(event.immune);
+            assert_eq!(
+                state
+                    .side(SideId::P2)
+                    .pokemon(PokemonIndex::new(0))
+                    .unwrap()
+                    .current_hp,
+                65
+            );
+
+            let mut suppressed = battle(AbilityId::new(1), ability);
+            suppressed
+                .side_mut(SideId::P2)
+                .pokemon_mut(PokemonIndex::new(0))
+                .unwrap()
+                .current_hp = 40;
+            let event = registry
+                .dispatch(
+                    &mut suppressed,
+                    BattleEvent::TryHit,
+                    EventContext {
+                        move_type: Some(move_type),
+                        suppress_target_ability: true,
+                        ..context()
+                    },
+                    EventValue::Boolean(true),
+                )
+                .unwrap();
+            assert_eq!(event.value, EventValue::Boolean(true));
+            assert!(!event.immune);
+            assert_eq!(
+                suppressed
+                    .side(SideId::P2)
+                    .pokemon(PokemonIndex::new(0))
+                    .unwrap()
+                    .current_hp,
+                40
+            );
+        }
+
+        let motor_drive = AbilityId::new(61);
+        let overcoat = AbilityId::new(62);
+        let water_veil = AbilityId::new(63);
+        let registry = crate::conditions::composed_registry(
+            &EffectRegistry::new(),
+            [
+                breakable(motor_drive, AbilityBehavior::MotorDrive),
+                breakable(overcoat, AbilityBehavior::PowderWeatherImmunity),
+                breakable(water_veil, AbilityBehavior::BurnImmunity),
+            ],
+        );
+        let mut drive = battle(AbilityId::new(1), motor_drive);
+        let event = registry
+            .dispatch(
+                &mut drive,
+                BattleEvent::TryHit,
+                EventContext {
+                    move_type: Some(PokemonType::Electric),
+                    ..context()
+                },
+                EventValue::Boolean(true),
+            )
+            .unwrap();
+        assert_eq!(event.value, EventValue::Boolean(false));
+        assert_eq!(
+            drive
+                .side(SideId::P2)
+                .pokemon(PokemonIndex::new(0))
+                .unwrap()
+                .stat_stages
+                .spe,
+            1
+        );
+
+        let mut coat = battle(AbilityId::new(1), overcoat);
+        let powder = registry
+            .dispatch(
+                &mut coat,
+                BattleEvent::TryHit,
+                EventContext {
+                    move_flags: crate::MoveInteractionFlags::default().with_powder(true),
+                    ..context()
+                },
+                EventValue::Boolean(true),
+            )
+            .unwrap();
+        assert_eq!(powder.value, EventValue::Boolean(false));
+        assert!(powder.immune);
+
+        let mut veil = battle(AbilityId::new(1), water_veil);
+        let target = context().target.unwrap();
+        veil.side_mut(target.side)
+            .pokemon_mut(target.pokemon)
+            .unwrap()
+            .status = Some(MajorStatus::Burn);
+        registry
+            .dispatch(
+                &mut veil,
+                BattleEvent::AfterSetStatus,
+                EventContext {
+                    source: context().target,
+                    target: None,
+                    ..EventContext::default()
+                },
+                EventValue::None,
+            )
+            .unwrap();
+        assert_eq!(
+            veil.side(target.side)
+                .pokemon(target.pokemon)
+                .unwrap()
+                .status,
+            None
+        );
+    }
+
+    #[test]
+    fn offensive_defensive_and_accuracy_modifiers_compose_in_registry_order() {
+        let water_bubble = AbilityId::new(70);
+        let friend_guard = AbilityId::new(71);
+        let mega_launcher = AbilityId::new(72);
+        let merciless = AbilityId::new(73);
+        let compound_eyes = AbilityId::new(74);
+        let hustle = AbilityId::new(75);
+        let registry = crate::conditions::composed_registry(
+            &EffectRegistry::new(),
+            [
+                breakable(water_bubble, AbilityBehavior::WaterBubble),
+                breakable(friend_guard, AbilityBehavior::FriendGuard),
+                unbreakable(mega_launcher, AbilityBehavior::MegaLauncher),
+                unbreakable(merciless, AbilityBehavior::Merciless),
+                unbreakable(compound_eyes, AbilityBehavior::CompoundEyes),
+                unbreakable(hustle, AbilityBehavior::Hustle),
+            ],
+        );
+
+        let mut bubble_source = battle(water_bubble, AbilityId::new(1));
+        let water = EventContext {
+            move_type: Some(PokemonType::Water),
+            ..context()
+        };
+        assert_eq!(
+            registry
+                .dispatch(
+                    &mut bubble_source,
+                    BattleEvent::ModifySpecialAttack,
+                    water,
+                    EventValue::Integer(100),
+                )
+                .unwrap()
+                .value,
+            EventValue::Integer(200)
+        );
+        let mut bubble_target = battle(AbilityId::new(1), water_bubble);
+        assert_eq!(
+            registry
+                .dispatch(
+                    &mut bubble_target,
+                    BattleEvent::ModifyAttack,
+                    EventContext {
+                        move_type: Some(PokemonType::Fire),
+                        ..context()
+                    },
+                    EventValue::Integer(100),
+                )
+                .unwrap()
+                .value,
+            EventValue::Integer(50)
+        );
+
+        let mut guarded = battle(AbilityId::new(1), friend_guard);
+        assert_eq!(
+            dispatch_integer(&registry, &mut guarded, BattleEvent::ModifyDamage, 100,),
+            EventValue::Integer(75)
+        );
+
+        let mut launcher = battle(mega_launcher, AbilityId::new(1));
+        let pulse = registry
+            .dispatch(
+                &mut launcher,
+                BattleEvent::ModifyBasePower,
+                EventContext {
+                    move_flags: crate::MoveInteractionFlags::default().with_pulse(true),
+                    ..context()
+                },
+                EventValue::Integer(100),
+            )
+            .unwrap();
+        assert_eq!(pulse.value, EventValue::Integer(150));
+
+        let mut poisoned = battle(merciless, AbilityId::new(1));
+        poisoned
+            .side_mut(SideId::P2)
+            .pokemon_mut(PokemonIndex::new(0))
+            .unwrap()
+            .status = Some(MajorStatus::Poison);
+        assert_eq!(
+            dispatch_integer(&registry, &mut poisoned, BattleEvent::ModifyCritRatio, 0,),
+            EventValue::Integer(5)
+        );
+
+        let mut eyes = battle(compound_eyes, AbilityId::new(1));
+        assert_eq!(
+            dispatch_integer(&registry, &mut eyes, BattleEvent::ModifyAccuracy, 100,),
+            EventValue::Integer(130)
+        );
+        let mut hustler = battle(hustle, AbilityId::new(1));
+        assert_eq!(
+            dispatch_integer(&registry, &mut hustler, BattleEvent::ModifyAttack, 100),
+            EventValue::Integer(150)
+        );
+        let hustle_accuracy = registry
+            .dispatch(
+                &mut hustler,
+                BattleEvent::ModifyAccuracy,
+                EventContext {
+                    move_category: Some(MoveCategory::Physical),
+                    ..context()
+                },
+                EventValue::Integer(100),
+            )
+            .unwrap();
+        assert_eq!(hustle_accuracy.value, EventValue::Integer(80));
+    }
+
+    #[test]
+    #[allow(clippy::too_many_lines)]
+    fn damaging_hit_reactions_are_typed_survive_only_and_suppression_aware() {
+        let cases = [
+            (
+                AbilityBehavior::Stamina,
+                PokemonType::Normal,
+                MoveCategory::Special,
+                0,
+                1,
+                0,
+            ),
+            (
+                AbilityBehavior::WeakArmor,
+                PokemonType::Normal,
+                MoveCategory::Physical,
+                0,
+                -1,
+                2,
+            ),
+            (
+                AbilityBehavior::Justified,
+                PokemonType::Dark,
+                MoveCategory::Physical,
+                1,
+                0,
+                0,
+            ),
+            (
+                AbilityBehavior::ThermalExchange,
+                PokemonType::Fire,
+                MoveCategory::Special,
+                1,
+                0,
+                0,
+            ),
+        ];
+        for (behavior, move_type, category, attack, defense, speed) in cases {
+            let ability = AbilityId::new(80);
+            let suppression = if behavior == AbilityBehavior::ThermalExchange {
+                AbilitySuppression::Breakable
+            } else {
+                AbilitySuppression::Unbreakable
+            };
+            let registry = crate::conditions::composed_registry(
+                &EffectRegistry::new(),
+                [AbilityHandler::new(ability, behavior, suppression)],
+            );
+            let mut state = battle(AbilityId::new(1), ability);
+            registry
+                .dispatch(
+                    &mut state,
+                    BattleEvent::AfterDamage,
+                    EventContext {
+                        move_type: Some(move_type),
+                        move_category: Some(category),
+                        ..context()
+                    },
+                    EventValue::Integer(1),
+                )
+                .unwrap();
+            let stages = state
+                .side(SideId::P2)
+                .pokemon(PokemonIndex::new(0))
+                .unwrap()
+                .stat_stages;
+            assert_eq!(
+                (stages.atk, stages.def, stages.spe),
+                (attack, defense, speed)
+            );
+
+            if behavior == AbilityBehavior::ThermalExchange {
+                let mut suppressed = battle(AbilityId::new(1), ability);
+                registry
+                    .dispatch(
+                        &mut suppressed,
+                        BattleEvent::AfterDamage,
+                        EventContext {
+                            move_type: Some(move_type),
+                            move_category: Some(category),
+                            suppress_target_ability: true,
+                            ..context()
+                        },
+                        EventValue::Integer(1),
+                    )
+                    .unwrap();
+                assert_eq!(
+                    suppressed
+                        .side(SideId::P2)
+                        .pokemon(PokemonIndex::new(0))
+                        .unwrap()
+                        .stat_stages,
+                    StatStages::default()
+                );
+            }
+        }
+
+        let anger_point = AbilityId::new(81);
+        let registry = crate::conditions::composed_registry(
+            &EffectRegistry::new(),
+            [unbreakable(anger_point, AbilityBehavior::AngerPoint)],
+        );
+        let mut state = battle(AbilityId::new(1), anger_point);
+        registry
+            .dispatch(
+                &mut state,
+                BattleEvent::AfterDamage,
+                EventContext {
+                    critical: true,
+                    ..context()
+                },
+                EventValue::Integer(1),
+            )
+            .unwrap();
+        assert_eq!(
+            state
+                .side(SideId::P2)
+                .pokemon(PokemonIndex::new(0))
+                .unwrap()
+                .stat_stages
+                .atk,
+            6
+        );
+    }
+
+    #[test]
+    #[allow(clippy::too_many_lines)]
+    fn switch_and_residual_abilities_use_kernel_mutations_and_ability_rng() {
+        let natural_cure = AbilityId::new(90);
+        let regenerator = AbilityId::new(91);
+        let hospitality = AbilityId::new(92);
+        let hydration = AbilityId::new(93);
+        let shed_skin = AbilityId::new(94);
+        let healer = AbilityId::new(95);
+        let registry = crate::conditions::composed_registry(
+            &EffectRegistry::new(),
+            [
+                unbreakable(natural_cure, AbilityBehavior::NaturalCure),
+                unbreakable(regenerator, AbilityBehavior::Regenerator),
+                unbreakable(hospitality, AbilityBehavior::Hospitality),
+                unbreakable(hydration, AbilityBehavior::Hydration),
+                unbreakable(shed_skin, AbilityBehavior::ShedSkin),
+                unbreakable(healer, AbilityBehavior::Healer),
+            ],
+        );
+
+        let source = context().source.unwrap();
+        let mut cure = battle(natural_cure, AbilityId::new(1));
+        cure.side_mut(source.side)
+            .pokemon_mut(source.pokemon)
+            .unwrap()
+            .status = Some(MajorStatus::BadlyPoisoned);
+        registry
+            .dispatch(
+                &mut cure,
+                BattleEvent::SwitchOut,
+                context(),
+                EventValue::None,
+            )
+            .unwrap();
+        assert_eq!(
+            cure.side(source.side)
+                .pokemon(source.pokemon)
+                .unwrap()
+                .status,
+            None
+        );
+
+        let mut regen = battle(regenerator, AbilityId::new(1));
+        regen
+            .side_mut(source.side)
+            .pokemon_mut(source.pokemon)
+            .unwrap()
+            .current_hp = 40;
+        registry
+            .dispatch(
+                &mut regen,
+                BattleEvent::SwitchOut,
+                context(),
+                EventValue::None,
+            )
+            .unwrap();
+        assert_eq!(
+            regen
+                .side(source.side)
+                .pokemon(source.pokemon)
+                .unwrap()
+                .current_hp,
+            73
+        );
+
+        let ally = PokemonRef::new(SideId::P1, PokemonIndex::new(1));
+        let mut host = battle(hospitality, AbilityId::new(1));
+        host.side_mut(ally.side)
+            .pokemon_mut(ally.pokemon)
+            .unwrap()
+            .current_hp = 40;
+        registry
+            .dispatch(
+                &mut host,
+                BattleEvent::SwitchIn,
+                EventContext {
+                    source: Some(source),
+                    ..EventContext::default()
+                },
+                EventValue::None,
+            )
+            .unwrap();
+        assert_eq!(
+            host.side(ally.side)
+                .pokemon(ally.pokemon)
+                .unwrap()
+                .current_hp,
+            65
+        );
+
+        let mut rain = battle(hydration, AbilityId::new(1));
+        rain.side_mut(source.side)
+            .pokemon_mut(source.pokemon)
+            .unwrap()
+            .status = Some(MajorStatus::Paralysis);
+        registry
+            .dispatch(
+                &mut rain,
+                BattleEvent::Residual,
+                EventContext {
+                    weather: Some(WeatherEnvironment::Rain),
+                    ..EventContext::default()
+                },
+                EventValue::None,
+            )
+            .unwrap();
+        assert_eq!(
+            rain.side(source.side)
+                .pokemon(source.pokemon)
+                .unwrap()
+                .status,
+            None
+        );
+
+        let mut skin = battle(shed_skin, AbilityId::new(1));
+        skin.enable_rng_trace();
+        skin.side_mut(source.side)
+            .pokemon_mut(source.pokemon)
+            .unwrap()
+            .status = Some(MajorStatus::Poison);
+        let mut replay = skin.clone();
+        registry
+            .dispatch(
+                &mut skin,
+                BattleEvent::Residual,
+                EventContext::default(),
+                EventValue::None,
+            )
+            .unwrap();
+        registry
+            .dispatch(
+                &mut replay,
+                BattleEvent::Residual,
+                EventContext::default(),
+                EventValue::None,
+            )
+            .unwrap();
+        assert_eq!(skin, replay);
+        assert!(skin
+            .rng()
+            .trace()
+            .unwrap()
+            .iter()
+            .any(|entry| entry.reason == RngReason::Ability));
+
+        let mut healing = battle(healer, AbilityId::new(1));
+        healing.enable_rng_trace();
+        healing
+            .side_mut(ally.side)
+            .pokemon_mut(ally.pokemon)
+            .unwrap()
+            .status = Some(MajorStatus::Burn);
+        registry
+            .dispatch(
+                &mut healing,
+                BattleEvent::Residual,
+                EventContext::default(),
+                EventValue::None,
+            )
+            .unwrap();
+        assert!(healing
+            .rng()
+            .trace()
+            .unwrap()
+            .iter()
+            .any(|entry| entry.reason == RngReason::Ability));
+    }
+
+    #[test]
+    fn weather_healing_moxie_and_gooey_use_shared_lifecycle_events() {
+        let ice_body = AbilityId::new(96);
+        let rain_dish = AbilityId::new(97);
+        let moxie = AbilityId::new(98);
+        let gooey = AbilityId::new(99);
+        let registry = crate::conditions::composed_registry(
+            &EffectRegistry::new(),
+            [
+                unbreakable(ice_body, AbilityBehavior::IceBody),
+                unbreakable(rain_dish, AbilityBehavior::RainDish),
+                unbreakable(moxie, AbilityBehavior::Moxie),
+                unbreakable(gooey, AbilityBehavior::Gooey),
+            ],
+        );
+        let source = context().source.unwrap();
+        for (ability, weather) in [
+            (ice_body, WeatherEnvironment::Snow),
+            (rain_dish, WeatherEnvironment::Rain),
+        ] {
+            let mut state = battle(ability, AbilityId::new(1));
+            state
+                .side_mut(source.side)
+                .pokemon_mut(source.pokemon)
+                .unwrap()
+                .current_hp = 40;
+            registry
+                .dispatch(
+                    &mut state,
+                    BattleEvent::Residual,
+                    EventContext {
+                        weather: Some(weather),
+                        ..EventContext::default()
+                    },
+                    EventValue::None,
+                )
+                .unwrap();
+            assert_eq!(
+                state
+                    .side(source.side)
+                    .pokemon(source.pokemon)
+                    .unwrap()
+                    .current_hp,
+                46
+            );
+        }
+
+        let mut attacker = battle(moxie, AbilityId::new(1));
+        registry
+            .dispatch(
+                &mut attacker,
+                BattleEvent::Faint,
+                context(),
+                EventValue::None,
+            )
+            .unwrap();
+        assert_eq!(
+            attacker
+                .side(source.side)
+                .pokemon(source.pokemon)
+                .unwrap()
+                .stat_stages
+                .atk,
+            1
+        );
+
+        let mut sticky = battle(AbilityId::new(1), gooey);
+        registry
+            .dispatch(
+                &mut sticky,
+                BattleEvent::AfterDamage,
+                EventContext {
+                    move_flags: crate::MoveInteractionFlags::default().with_contact(true),
+                    ..context()
+                },
+                EventValue::Integer(1),
+            )
+            .unwrap();
+        assert_eq!(
+            sticky
+                .side(source.side)
+                .pokemon(source.pokemon)
+                .unwrap()
+                .stat_stages
+                .spe,
+            -1
+        );
+    }
+
+    #[test]
+    fn informational_only_abilities_register_no_authoritative_callback() {
+        let ability = AbilityId::new(100);
+        let registry = crate::conditions::composed_registry(
+            &EffectRegistry::new(),
+            [unbreakable(ability, AbilityBehavior::NoAuthoritativeEffect)],
+        );
+        let mut state = battle(ability, AbilityId::new(1));
+        let event = registry
+            .dispatch(
+                &mut state,
+                BattleEvent::SwitchIn,
+                EventContext {
+                    source: context().source,
+                    ..EventContext::default()
+                },
+                EventValue::None,
+            )
+            .unwrap();
+        assert_eq!(event.invocations.len(), 0);
     }
 }

@@ -904,6 +904,126 @@
       "interaction_verification": "unit_tested",
       "owner_pr": "PR 13.5",
       "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "file:crates/rotom-core/src/abilities.rs", "differential:data/fixtures/differential/ability-modifiers.json#sweet-veil-blocks-ally-sleep", "interaction_unit:crates/rotom-dex/tests/combat.rs#mold_breaker_bypasses_target_side_status_protection_without_suppressing_source_hooks"]
+    },
+    {
+      "id": "waterabsorb", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#absorption_powder_and_burn_immunities_mutate_through_typed_effect_state", "differential:data/fixtures/differential/ability-modifiers.json#water-absorb-blocks-hydro-pump", "interaction_unit:crates/rotom-dex/tests/combat.rs#absorption_heals_before_accuracy_and_mold_breaker_bypasses_it"]
+    },
+    {
+      "id": "voltabsorb", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#absorption_powder_and_burn_immunities_mutate_through_typed_effect_state", "differential:data/fixtures/differential/ability-modifiers.json#volt-absorb-blocks-thunderbolt", "interaction_unit:crates/rotom-core/src/abilities.rs#absorption_powder_and_burn_immunities_mutate_through_typed_effect_state"]
+    },
+    {
+      "id": "eartheater", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#absorption_powder_and_burn_immunities_mutate_through_typed_effect_state", "differential:data/fixtures/differential/ability-modifiers.json#earth-eater-blocks-earth-power", "interaction_unit:crates/rotom-core/src/abilities.rs#absorption_powder_and_burn_immunities_mutate_through_typed_effect_state"]
+    },
+    {
+      "id": "motordrive", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#absorption_powder_and_burn_immunities_mutate_through_typed_effect_state", "differential:data/fixtures/differential/ability-modifiers.json#motor-drive-blocks-thunderbolt", "interaction_unit:crates/rotom-core/src/abilities.rs#absorption_powder_and_burn_immunities_mutate_through_typed_effect_state"]
+    },
+    {
+      "id": "overcoat", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#absorption_powder_and_burn_immunities_mutate_through_typed_effect_state", "differential:data/fixtures/differential/ability-modifiers.json#overcoat-weather-immunity", "interaction_unit:crates/rotom-core/src/abilities.rs#absorption_powder_and_burn_immunities_mutate_through_typed_effect_state"]
+    },
+    {
+      "id": "icebody", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#weather_healing_moxie_and_gooey_use_shared_lifecycle_events"]
+    },
+    {
+      "id": "waterbubble", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#offensive_defensive_and_accuracy_modifiers_compose_in_registry_order", "differential:data/fixtures/differential/ability-modifiers.json#water-bubble-water-offense", "differential:data/fixtures/differential/ability-modifiers.json#water-bubble-fire-defense", "differential:data/fixtures/differential/ability-modifiers.json#water-bubble-blocks-burn", "interaction_unit:crates/rotom-core/src/abilities.rs#absorption_powder_and_burn_immunities_mutate_through_typed_effect_state"]
+    },
+    {
+      "id": "thermalexchange", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#damaging_hit_reactions_are_typed_survive_only_and_suppression_aware", "differential:data/fixtures/differential/ability-modifiers.json#thermal-exchange-blocks-burn", "interaction_unit:crates/rotom-core/src/abilities.rs#damaging_hit_reactions_are_typed_survive_only_and_suppression_aware"]
+    },
+    {
+      "id": "naturalcure", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#switch_and_residual_abilities_use_kernel_mutations_and_ability_rng", "interaction_unit:crates/rotom-dex/tests/combat.rs#switch_healing_curing_and_hydration_expiry_follow_lifecycle_order"]
+    },
+    {
+      "id": "regenerator", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#switch_and_residual_abilities_use_kernel_mutations_and_ability_rng", "interaction_unit:crates/rotom-dex/tests/combat.rs#switch_healing_curing_and_hydration_expiry_follow_lifecycle_order"]
+    },
+    {
+      "id": "hospitality", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#switch_and_residual_abilities_use_kernel_mutations_and_ability_rng", "interaction_unit:crates/rotom-dex/tests/combat.rs#switch_healing_curing_and_hydration_expiry_follow_lifecycle_order"]
+    },
+    {
+      "id": "hydration", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#switch_and_residual_abilities_use_kernel_mutations_and_ability_rng", "interaction_unit:crates/rotom-dex/tests/combat.rs#switch_healing_curing_and_hydration_expiry_follow_lifecycle_order"]
+    },
+    {
+      "id": "shedskin", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#switch_and_residual_abilities_use_kernel_mutations_and_ability_rng"]
+    },
+    {
+      "id": "healer", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#switch_and_residual_abilities_use_kernel_mutations_and_ability_rng"]
+    },
+    {
+      "id": "stamina", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#damaging_hit_reactions_are_typed_survive_only_and_suppression_aware"]
+    },
+    {
+      "id": "weakarmor", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#damaging_hit_reactions_are_typed_survive_only_and_suppression_aware"]
+    },
+    {
+      "id": "raindish", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#weather_healing_moxie_and_gooey_use_shared_lifecycle_events"]
+    },
+    {
+      "id": "moxie", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#weather_healing_moxie_and_gooey_use_shared_lifecycle_events"]
+    },
+    {
+      "id": "justified", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#damaging_hit_reactions_are_typed_survive_only_and_suppression_aware"]
+    },
+    {
+      "id": "angerpoint", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#damaging_hit_reactions_are_typed_survive_only_and_suppression_aware"]
+    },
+    {
+      "id": "friendguard", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#offensive_defensive_and_accuracy_modifiers_compose_in_registry_order", "interaction_unit:crates/rotom-core/src/abilities.rs#offensive_defensive_and_accuracy_modifiers_compose_in_registry_order"]
+    },
+    {
+      "id": "megalauncher", "kind": "ability", "implementation": "implemented", "verification": "differential_verified", "interaction_verification": "unit_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#offensive_defensive_and_accuracy_modifiers_compose_in_registry_order", "differential:data/fixtures/differential/ability-modifiers.json#mega-launcher-pulse", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+    },
+    {
+      "id": "merciless", "kind": "ability", "implementation": "implemented", "verification": "differential_verified", "interaction_verification": "unit_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#offensive_defensive_and_accuracy_modifiers_compose_in_registry_order", "differential:data/fixtures/differential/ability-modifiers.json#merciless-poisoned-target", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+    },
+    {
+      "id": "compoundeyes", "kind": "ability", "implementation": "implemented", "verification": "differential_verified", "interaction_verification": "unit_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#offensive_defensive_and_accuracy_modifiers_compose_in_registry_order", "differential:data/fixtures/differential/ability-modifiers.json#compound-eyes-accuracy", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+    },
+    {
+      "id": "hustle", "kind": "ability", "implementation": "implemented", "verification": "differential_verified", "interaction_verification": "unit_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#offensive_defensive_and_accuracy_modifiers_compose_in_registry_order", "differential:data/fixtures/differential/ability-modifiers.json#hustle-physical", "differential:data/fixtures/differential/ability-modifiers.json#hustle-physical-accuracy", "interaction_unit:crates/rotom-dex/tests/combat.rs#ability_modifier_damage_matches_pinned_showdown_fixture"]
+    },
+    {
+      "id": "gooey", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#weather_healing_moxie_and_gooey_use_shared_lifecycle_events"]
+    },
+    {
+      "id": "anticipation", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#informational_only_abilities_register_no_authoritative_callback"]
+    },
+    {
+      "id": "forewarn", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#informational_only_abilities_register_no_authoritative_callback"]
+    },
+    {
+      "id": "frisk", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#informational_only_abilities_register_no_authoritative_callback"]
+    },
+    {
+      "id": "runaway", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#informational_only_abilities_register_no_authoritative_callback"]
     }
   ]
 }

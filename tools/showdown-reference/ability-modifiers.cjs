@@ -102,16 +102,33 @@ function tryHit({id, sourceAbility = 'telepathy', targetAbility, allyAbility, mo
 	};
 }
 
-function criticalRatio({id, ability}) {
+function criticalRatio({id, ability, targetStatus = ''}) {
 	const battle = battleFor(ability, 'dragonclaw', 'immunity');
 	const source = battle.p1.active[0];
 	const target = battle.p2.active[0];
+	if (targetStatus) target.status = targetStatus;
 	const move = battle.dex.getActiveMove('dragonclaw');
 	return {
 		id,
 		ability,
 		operation: 'critical_ratio',
+		target_status: targetStatus || null,
 		critical_ratio: battle.runEvent('ModifyCritRatio', source, target, move, move.critRatio || 0),
+	};
+}
+
+function accuracy({id, ability, move, allyAbility = 'swiftswim'}) {
+	const battle = battleFor(ability, move, 'immunity', allyAbility);
+	const source = battle.p1.active[0];
+	const target = battle.p2.active[0];
+	const activeMove = battle.dex.getActiveMove(move);
+	return {
+		id,
+		ability: allyAbility !== 'swiftswim' ? allyAbility : ability,
+		operation: 'accuracy',
+		move,
+		ally_ability: allyAbility,
+		accuracy: battle.runEvent('ModifyAccuracy', target, source, activeMove, activeMove.accuracy),
 	};
 }
 
@@ -215,6 +232,10 @@ cases.push(...[
 	{id: 'mold-breaker-bypasses-grass-pelt', sourceAbility: 'moldbreaker', move: 'dragonclaw', targetAbility: 'grasspelt', terrain: 'grassyterrain'},
 	{id: 'mold-breaker-bypasses-punk-rock-defense', sourceAbility: 'moldbreaker', move: 'bugbuzz', targetAbility: 'punkrock'},
 	{id: 'mold-breaker-keeps-source-side-steely-spirit', sourceAbility: 'moldbreaker', move: 'flashcannon', targetAbility: 'filter', allyAbility: 'steelyspirit'},
+	{id: 'water-bubble-water-offense', sourceAbility: 'waterbubble', move: 'hydropump', targetAbility: 'immunity'},
+	{id: 'water-bubble-fire-defense', sourceAbility: 'telepathy', move: 'flamethrower', targetAbility: 'waterbubble'},
+	{id: 'mega-launcher-pulse', sourceAbility: 'megalauncher', move: 'dragonpulse', targetAbility: 'immunity'},
+	{id: 'hustle-physical', sourceAbility: 'hustle', move: 'dragonclaw', targetAbility: 'immunity'},
 ].map(damage));
 
 cases.push(
@@ -229,24 +250,34 @@ cases.push(
 	priority({id: 'gale-wings-full-hp', ability: 'galewings', move: 'aerialace'}),
 	priority({id: 'gale-wings-chipped', ability: 'galewings', move: 'aerialace', sourceHp: 1}),
 	criticalRatio({id: 'super-luck-critical-ratio', ability: 'superluck'}),
+	criticalRatio({id: 'merciless-poisoned-target', ability: 'merciless', targetStatus: 'psn'}),
+	accuracy({id: 'compound-eyes-accuracy', ability: 'compoundeyes', move: 'hypnosis'}),
+	accuracy({id: 'hustle-physical-accuracy', ability: 'hustle', move: 'tackle'}),
 	tryHit({id: 'bulletproof-blocks-aura-sphere', targetAbility: 'bulletproof', move: 'aurasphere'}),
 	tryHit({id: 'soundproof-blocks-hyper-voice', targetAbility: 'soundproof', move: 'hypervoice'}),
 	tryHit({id: 'telepathy-blocks-ally-surf', allyAbility: 'telepathy', move: 'surf', allyTarget: true}),
 	tryHit({id: 'mold-breaker-bypasses-bulletproof', sourceAbility: 'moldbreaker', targetAbility: 'bulletproof', move: 'aurasphere'}),
 	tryHit({id: 'good-as-gold-blocks-status-move', targetAbility: 'goodasgold', move: 'thunderwave'}),
+	tryHit({id: 'water-absorb-blocks-hydro-pump', targetAbility: 'waterabsorb', move: 'hydropump'}),
+	tryHit({id: 'volt-absorb-blocks-thunderbolt', targetAbility: 'voltabsorb', move: 'thunderbolt'}),
+	tryHit({id: 'earth-eater-blocks-earth-power', targetAbility: 'eartheater', move: 'earthpower'}),
+	tryHit({id: 'motor-drive-blocks-thunderbolt', targetAbility: 'motordrive', move: 'thunderbolt'}),
 	statusImmunity({id: 'immunity-blocks-poison', ability: 'immunity', status: 'psn', move: 'sludgebomb'}),
 	statusImmunity({id: 'insomnia-blocks-sleep', ability: 'insomnia', status: 'slp', move: 'hypnosis'}),
 	statusImmunity({id: 'vital-spirit-blocks-sleep', ability: 'vitalspirit', status: 'slp', move: 'hypnosis'}),
 	statusImmunity({id: 'limber-blocks-paralysis', ability: 'limber', status: 'par', move: 'thunderwave'}),
 	statusImmunity({id: 'magma-armor-blocks-freeze', ability: 'magmaarmor', status: 'frz', move: 'icebeam'}),
 	statusImmunity({id: 'sweet-veil-blocks-ally-sleep', ability: 'sweetveil', status: 'slp', move: 'hypnosis', ally: true}),
+	statusImmunity({id: 'water-bubble-blocks-burn', ability: 'waterbubble', status: 'brn', move: 'willowisp'}),
+	statusImmunity({id: 'thermal-exchange-blocks-burn', ability: 'thermalexchange', status: 'brn', move: 'willowisp'}),
+	weatherImmunity({id: 'overcoat-weather-immunity', ability: 'overcoat', weather: 'sandstorm'}),
 );
 
 const contents = `${JSON.stringify({
 	showdown_commit: version.commit,
 	format: version.format,
 	methodology: {
-		source: 'pinned Battle.actions.getDamage, Pokemon.getStat/runImmunity, ModifyPriority/ModifyCritRatio, and TryHit with resolved Champions data',
+		source: 'pinned Battle.actions.getDamage, Pokemon.getStat/runImmunity, ModifyPriority/ModifyCritRatio/ModifyAccuracy, and TryHit with resolved Champions data',
 		damage_roll_percent: 100,
 		critical_hit: 'per_case',
 		full_transition_comparison: false,
