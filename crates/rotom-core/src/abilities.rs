@@ -60,6 +60,10 @@ pub enum AbilityBehavior {
     VoltAbsorb,
     EarthEater,
     MotorDrive,
+    GrassImmunityAttackBoost,
+    GroundImmunity,
+    WeatherEvasion(WeatherEnvironment),
+    ContactDamageReduction,
     PowderWeatherImmunity,
     BurnImmunity,
     WaterBubble,
@@ -580,6 +584,48 @@ const BEHAVIOR_REGISTRATIONS: &[BehaviorRegistration] = &[
         BattleEvent::TryHit,
         DEFAULT_ORDER,
         motor_drive,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::GrassImmunityAttackBoost,
+        BattleEvent::TryHit,
+        EffectOrder::new(0, 1, 0),
+        sap_sipper,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::GroundImmunity,
+        BattleEvent::TryHit,
+        DEFAULT_ORDER,
+        ground_immunity,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::WeatherEvasion(WeatherEnvironment::Sandstorm),
+        BattleEvent::ModifyAccuracy,
+        EffectOrder::new(0, -1, 0),
+        sand_veil_accuracy,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::WeatherEvasion(WeatherEnvironment::Sandstorm),
+        BattleEvent::WeatherImmunity,
+        DEFAULT_ORDER,
+        sandstorm_immunity,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::WeatherEvasion(WeatherEnvironment::Snow),
+        BattleEvent::ModifyAccuracy,
+        EffectOrder::new(0, -1, 0),
+        snow_cloak_accuracy,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::WeatherEvasion(WeatherEnvironment::Snow),
+        BattleEvent::WeatherImmunity,
+        DEFAULT_ORDER,
+        snow_weather_immunity,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::ContactDamageReduction,
+        BattleEvent::ModifyDamage,
+        DEFAULT_ORDER,
+        contact_damage_reduction,
     ),
     BehaviorRegistration::new(
         AbilityBehavior::PowderWeatherImmunity,
@@ -1622,6 +1668,98 @@ fn motor_drive(
         boolean(dispatch)?;
         dispatch.value = EventValue::Boolean(false);
         dispatch.mark_immune();
+    }
+    Ok(())
+}
+
+fn sap_sipper(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = matching_target(invocation, context) else {
+        return Ok(());
+    };
+    if context.source != context.target && context.move_type == Some(PokemonType::Grass) {
+        state.change_stat_stage(owner, BattleStat::Attack, 1)?;
+        boolean(dispatch)?;
+        dispatch.value = EventValue::Boolean(false);
+        dispatch.mark_immune();
+    }
+    Ok(())
+}
+
+fn ground_immunity(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    prevent_move_hit(
+        invocation,
+        context,
+        dispatch,
+        context.move_type == Some(PokemonType::Ground) && context.target_grounded == Some(false),
+    )
+}
+
+fn sand_veil_accuracy(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    weather_evasion(invocation, context, dispatch, WeatherEnvironment::Sandstorm)
+}
+
+fn snow_cloak_accuracy(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    weather_evasion(invocation, context, dispatch, WeatherEnvironment::Snow)
+}
+
+fn weather_evasion(
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+    weather: WeatherEnvironment,
+) -> Result<(), BattleError> {
+    if context.weather == Some(weather) && matching_target(invocation, context).is_some() {
+        modify_integer(dispatch, 3277, 4096)?;
+    }
+    Ok(())
+}
+
+fn snow_weather_immunity(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if context.weather == Some(WeatherEnvironment::Snow)
+        && matching_target(invocation, context).is_some()
+    {
+        boolean(dispatch)?;
+        dispatch.value = EventValue::Boolean(false);
+    }
+    Ok(())
+}
+
+fn contact_damage_reduction(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if context.source != context.target
+        && context.move_flags.contact()
+        && matching_target(invocation, context).is_some()
+    {
+        modify_integer(dispatch, 1, 2)?;
     }
     Ok(())
 }
@@ -2792,6 +2930,166 @@ mod tests {
                 .status,
             None
         );
+    }
+
+    #[test]
+    #[allow(clippy::too_many_lines)]
+    fn grass_ground_weather_and_contact_defenses_are_typed_and_suppressible() {
+        let sap_sipper = AbilityId::new(64);
+        let levitate = AbilityId::new(65);
+        let sand_veil = AbilityId::new(66);
+        let snow_cloak = AbilityId::new(67);
+        let aura_guard = AbilityId::new(68);
+        let registry = crate::conditions::composed_registry(
+            &EffectRegistry::new(),
+            [
+                breakable(sap_sipper, AbilityBehavior::GrassImmunityAttackBoost),
+                breakable(levitate, AbilityBehavior::GroundImmunity),
+                breakable(
+                    sand_veil,
+                    AbilityBehavior::WeatherEvasion(WeatherEnvironment::Sandstorm),
+                ),
+                breakable(
+                    snow_cloak,
+                    AbilityBehavior::WeatherEvasion(WeatherEnvironment::Snow),
+                ),
+                breakable(aura_guard, AbilityBehavior::ContactDamageReduction),
+            ],
+        );
+
+        let mut sap = battle(AbilityId::new(1), sap_sipper);
+        let grass = registry
+            .dispatch(
+                &mut sap,
+                BattleEvent::TryHit,
+                EventContext {
+                    move_type: Some(PokemonType::Grass),
+                    ..context()
+                },
+                EventValue::Boolean(true),
+            )
+            .unwrap();
+        assert_eq!(grass.value, EventValue::Boolean(false));
+        assert!(grass.immune);
+        assert_eq!(
+            sap.side(SideId::P2)
+                .pokemon(PokemonIndex::new(0))
+                .unwrap()
+                .stat_stages
+                .atk,
+            1
+        );
+
+        let mut floating = battle(AbilityId::new(1), levitate);
+        let ground = registry
+            .dispatch(
+                &mut floating,
+                BattleEvent::TryHit,
+                EventContext {
+                    move_type: Some(PokemonType::Ground),
+                    target_grounded: Some(false),
+                    ..context()
+                },
+                EventValue::Boolean(true),
+            )
+            .unwrap();
+        assert_eq!(ground.value, EventValue::Boolean(false));
+        assert!(ground.immune);
+        let grounded = registry
+            .dispatch(
+                &mut floating,
+                BattleEvent::TryHit,
+                EventContext {
+                    move_type: Some(PokemonType::Ground),
+                    target_grounded: Some(true),
+                    ..context()
+                },
+                EventValue::Boolean(true),
+            )
+            .unwrap();
+        assert_eq!(grounded.value, EventValue::Boolean(true));
+
+        for (ability, weather) in [
+            (sand_veil, WeatherEnvironment::Sandstorm),
+            (snow_cloak, WeatherEnvironment::Snow),
+        ] {
+            let mut state = battle(AbilityId::new(1), ability);
+            let accuracy = registry
+                .dispatch(
+                    &mut state,
+                    BattleEvent::ModifyAccuracy,
+                    EventContext {
+                        weather: Some(weather),
+                        ..context()
+                    },
+                    EventValue::Integer(100),
+                )
+                .unwrap();
+            assert_eq!(accuracy.value, EventValue::Integer(80));
+        }
+
+        let mut guarded = battle(AbilityId::new(1), aura_guard);
+        let contact = registry
+            .dispatch(
+                &mut guarded,
+                BattleEvent::ModifyDamage,
+                EventContext {
+                    move_flags: crate::MoveInteractionFlags::default().with_contact(true),
+                    ..context()
+                },
+                EventValue::Integer(101),
+            )
+            .unwrap();
+        assert_eq!(contact.value, EventValue::Integer(50));
+
+        for (ability, event, event_context, value) in [
+            (
+                sap_sipper,
+                BattleEvent::TryHit,
+                EventContext {
+                    move_type: Some(PokemonType::Grass),
+                    suppress_target_ability: true,
+                    ..context()
+                },
+                EventValue::Boolean(true),
+            ),
+            (
+                levitate,
+                BattleEvent::TryHit,
+                EventContext {
+                    move_type: Some(PokemonType::Ground),
+                    target_grounded: Some(false),
+                    suppress_target_ability: true,
+                    ..context()
+                },
+                EventValue::Boolean(true),
+            ),
+            (
+                aura_guard,
+                BattleEvent::ModifyDamage,
+                EventContext {
+                    move_flags: crate::MoveInteractionFlags::default().with_contact(true),
+                    suppress_target_ability: true,
+                    ..context()
+                },
+                EventValue::Integer(101),
+            ),
+        ] {
+            let mut state = battle(AbilityId::new(1), ability);
+            let suppressed = registry
+                .dispatch(&mut state, event, event_context, value)
+                .unwrap();
+            assert_eq!(suppressed.value, value);
+            assert_eq!(suppressed.invocations.len(), 0);
+            assert_eq!(
+                state
+                    .side(SideId::P2)
+                    .pokemon(PokemonIndex::new(0))
+                    .unwrap()
+                    .stat_stages,
+                StatStages::default()
+            );
+        }
     }
 
     #[test]

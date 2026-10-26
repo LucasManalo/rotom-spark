@@ -6,7 +6,7 @@ use rotom_core::{
     MoveCapabilities, MoveCapability, MoveId, MoveOperation, MoveSlotIndex, MoveTarget,
     PokemonAction, PokemonIndex, PokemonPosition, PokemonRef, PokemonSet, PokemonTypes,
     ResolvedAction, RngOperation, RngReason, SideId, SideState, SpeciesId, StatAllocation,
-    StatStages, StatusState, TargetResult, TeamState, TurnChoice,
+    StatStages, StatusState, TargetResult, TeamState, TurnChoice, WeatherEnvironment,
 };
 use rotom_dex::champions_reg_mc;
 use serde::Deserialize;
@@ -6848,6 +6848,31 @@ const EXPECTED_ABILITY_HANDLERS: &[(
         Breakable,
     ),
     (
+        "sapsipper",
+        rotom_core::AbilityBehavior::GrassImmunityAttackBoost,
+        Breakable,
+    ),
+    (
+        "levitate",
+        rotom_core::AbilityBehavior::GroundImmunity,
+        Breakable,
+    ),
+    (
+        "sandveil",
+        rotom_core::AbilityBehavior::WeatherEvasion(WeatherEnvironment::Sandstorm),
+        Breakable,
+    ),
+    (
+        "snowcloak",
+        rotom_core::AbilityBehavior::WeatherEvasion(WeatherEnvironment::Snow),
+        Breakable,
+    ),
+    (
+        "auraguard",
+        rotom_core::AbilityBehavior::ContactDamageReduction,
+        Breakable,
+    ),
+    (
         "overcoat",
         rotom_core::AbilityBehavior::PowderWeatherImmunity,
         Breakable,
@@ -7455,6 +7480,70 @@ fn absorption_heals_before_accuracy_and_mold_breaker_bypasses_it() {
     assert!(!try_hit.invocations.iter().any(|invocation| {
         invocation.source == EffectSource::Ability(dex.resolve_ability("waterabsorb").unwrap().0)
     }));
+}
+
+#[test]
+fn grass_and_ground_immunities_execute_before_accuracy_in_canonical_step() {
+    let dex = champions_reg_mc().unwrap();
+    let passive = set_with_moves(&dex, "magikarp", "swiftswim", &["swordsdance"]);
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let target_ref = PokemonRef::new(SideId::P2, PokemonIndex::new(0));
+    let action = JointAction::Turn {
+        p1: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Foe(ActiveSlot::Left)),
+                use_move(0, ActionTarget::Automatic),
+            ],
+        },
+        p2: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Automatic),
+                use_move(0, ActionTarget::Automatic),
+            ],
+        },
+    };
+
+    for (ability, move_name, expected_attack) in [
+        ("sapsipper", "energyball", 1),
+        ("levitate", "highhorsepower", 0),
+    ] {
+        let source = set_with_moves(&dex, "medicham", "telepathy", &[move_name]);
+        let target = set_with_moves(&dex, "snorlax", ability, &["recover"]);
+        let mut builder = BattleStateBuilder::from_state(selected_battle_for_teams(
+            &dex,
+            &four_member_team(source, passive.clone()),
+            &four_member_team(target, passive.clone()),
+            0x13_05_08,
+        ))
+        .unwrap();
+        builder.enable_rng_trace();
+        let state = builder.build().unwrap();
+        let result = step(&state, &action, &mechanics).unwrap();
+        let target_state = result
+            .state
+            .side(target_ref.side)
+            .pokemon(target_ref.pokemon)
+            .unwrap();
+        assert_eq!(target_state.stat_stages.atk, expected_attack, "{ability}");
+        assert!(result
+            .diagnostics
+            .turn
+            .as_ref()
+            .unwrap()
+            .target_outcomes
+            .iter()
+            .any(|outcome| {
+                outcome.target == target_ref && outcome.result == TargetResult::Immune
+            }));
+        assert!(!result
+            .state
+            .rng()
+            .trace()
+            .unwrap()
+            .iter()
+            .any(|entry| { matches!(entry.reason, RngReason::Accuracy | RngReason::DamageRoll) }));
+        assert_eq!(step(&state, &action, &mechanics).unwrap(), result);
+    }
 }
 
 #[test]

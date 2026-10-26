@@ -93,6 +93,7 @@ test('ability batches keep isolated and interaction verification separate', () =
 	for (const id of [
 		'eartheater', 'friendguard', 'hospitality', 'hydration', 'motordrive', 'naturalcure',
 		'overcoat', 'regenerator', 'thermalexchange', 'voltabsorb', 'waterabsorb', 'waterbubble',
+		'levitate', 'sapsipper',
 	]) {
 		const ability = entry('ability', id);
 		assert.equal(ability.implementation, 'implemented');
@@ -102,6 +103,7 @@ test('ability batches keep isolated and interaction verification separate', () =
 	for (const id of [
 		'angerpoint', 'anticipation', 'forewarn', 'frisk', 'gooey', 'healer', 'icebody',
 		'justified', 'moxie', 'raindish', 'runaway', 'shedskin', 'stamina', 'weakarmor',
+		'auraguard', 'sandveil', 'snowcloak',
 	]) {
 		const ability = entry('ability', id);
 		assert.equal(ability.implementation, 'implemented');
@@ -110,7 +112,7 @@ test('ability batches keep isolated and interaction verification separate', () =
 	}
 	assert.deepEqual(
 		manifest.summary.by_kind.ability.interaction_verification,
-		{not_tested: 152, unit_tested: 63, differential_verified: 0}
+		{not_tested: 150, unit_tested: 65, differential_verified: 0}
 	);
 });
 

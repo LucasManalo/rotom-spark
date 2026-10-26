@@ -180,15 +180,17 @@
       "kind": "ability",
       "reachability": "battle_generated",
       "evidence": [
-        "form/lucariomegaz/ability-slot/0"
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "form/lucariomegaz/ability-slot/0",
+        "unit:crates/rotom-core/src/abilities.rs#grass_ground_weather_and_contact_defenses_are_typed_and_suppressible"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "battlearmor",
@@ -1735,6 +1737,8 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#grass_and_ground_immunities_execute_before_accuracy_in_canonical_step",
         "species/chimecho/ability-slot/0",
         "species/eelektross/ability-slot/0",
         "species/hydreigon/ability-slot/0",
@@ -1743,15 +1747,16 @@
         "species/rotomfrost/ability-slot/0",
         "species/rotomheat/ability-slot/0",
         "species/rotommow/ability-slot/0",
-        "species/rotomwash/ability-slot/0"
+        "species/rotomwash/ability-slot/0",
+        "unit:crates/rotom-core/src/abilities.rs#grass_ground_weather_and_contact_defenses_are_typed_and_suppressible"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "unit_tested",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "libero",
@@ -3009,20 +3014,22 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:docs/research/pr-13-5-ability-modifiers.md",
         "species/garchomp/ability-slot/0",
         "species/gliscor/ability-slot/1",
         "species/heliolisk/ability-slot/1",
         "species/orthworm/ability-slot/H",
         "species/sandaconda/ability-slot/H",
-        "species/stunfisk/ability-slot/H"
+        "species/stunfisk/ability-slot/H",
+        "unit:crates/rotom-core/src/abilities.rs#grass_ground_weather_and_contact_defenses_are_typed_and_suppressible"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "sapsipper",
@@ -3030,21 +3037,24 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:docs/research/pr-13-5-ability-modifiers.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#grass_and_ground_immunities_execute_before_accuracy_in_canonical_step",
         "species/azumarill/ability-slot/H",
         "species/drampa/ability-slot/1",
         "species/farigiraf/ability-slot/H",
         "species/gogoat/ability-slot/0",
         "species/goodra/ability-slot/0",
         "species/goodrahisui/ability-slot/0",
-        "species/wyrdeer/ability-slot/H"
+        "species/wyrdeer/ability-slot/H",
+        "unit:crates/rotom-core/src/abilities.rs#grass_ground_weather_and_contact_defenses_are_typed_and_suppressible"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "unit_tested",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "scrappy",
@@ -3307,19 +3317,21 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:docs/research/pr-13-5-ability-modifiers.md",
         "species/beartic/ability-slot/0",
         "species/froslass/ability-slot/0",
         "species/glaceon/ability-slot/0",
         "species/mamoswine/ability-slot/1",
-        "species/ninetalesalola/ability-slot/0"
+        "species/ninetalesalola/ability-slot/0",
+        "unit:crates/rotom-core/src/abilities.rs#grass_ground_weather_and_contact_defenses_are_typed_and_suppressible"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "snowwarning",
@@ -47652,18 +47664,18 @@
       "ability": {
         "total": 215,
         "implementation": {
-          "unsupported": 138,
+          "unsupported": 133,
           "partial": 0,
-          "implemented": 77
+          "implemented": 82
         },
         "verification": {
-          "not_tested": 138,
-          "unit_tested": 26,
+          "not_tested": 133,
+          "unit_tested": 31,
           "differential_verified": 51
         },
         "interaction_verification": {
-          "not_tested": 152,
-          "unit_tested": 63,
+          "not_tested": 150,
+          "unit_tested": 65,
           "differential_verified": 0
         },
         "reachability": {

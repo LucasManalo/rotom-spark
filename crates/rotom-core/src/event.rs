@@ -236,6 +236,9 @@ pub struct EventContext {
     /// Resolved target typing for typed immunity callbacks.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub target_types: Option<PokemonTypes>,
+    /// Whether the move target participates in grounded mechanics for this hit.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub target_grounded: Option<bool>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub weather: Option<WeatherEnvironment>,
     #[serde(default, skip_serializing_if = "Option::is_none")]

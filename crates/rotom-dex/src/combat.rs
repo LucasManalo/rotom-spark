@@ -5,7 +5,7 @@ use rotom_core::{
     MajorStatus, MoveAccuracy, MoveCapabilities, MoveCapability, MoveCategory, MoveId,
     MoveIntrinsic, MoveOperation, MoveSlot, MoveTarget, PokemonPosition, PokemonSet, PokemonState,
     PokemonType, PokemonTypes, PrimaryMoveEffect, PriorMoveEffect, SecondaryMoveEffect,
-    SelfMoveEffect, StatAllocation, StatStages, StatusState,
+    SelfMoveEffect, StatAllocation, StatStages, StatusState, WeatherEnvironment,
 };
 
 impl CombatData for DexData {
@@ -602,6 +602,31 @@ const IMPLEMENTED_ABILITY_BEHAVIORS: &[(&str, AbilityBehavior, AbilitySuppressio
     (
         "motordrive",
         AbilityBehavior::MotorDrive,
+        AbilitySuppression::Breakable,
+    ),
+    (
+        "sapsipper",
+        AbilityBehavior::GrassImmunityAttackBoost,
+        AbilitySuppression::Breakable,
+    ),
+    (
+        "levitate",
+        AbilityBehavior::GroundImmunity,
+        AbilitySuppression::Breakable,
+    ),
+    (
+        "sandveil",
+        AbilityBehavior::WeatherEvasion(WeatherEnvironment::Sandstorm),
+        AbilitySuppression::Breakable,
+    ),
+    (
+        "snowcloak",
+        AbilityBehavior::WeatherEvasion(WeatherEnvironment::Snow),
+        AbilitySuppression::Breakable,
+    ),
+    (
+        "auraguard",
+        AbilityBehavior::ContactDamageReduction,
         AbilitySuppression::Breakable,
     ),
     (

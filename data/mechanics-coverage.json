@@ -1010,6 +1010,26 @@
       "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#weather_healing_moxie_and_gooey_use_shared_lifecycle_events"]
     },
     {
+      "id": "sapsipper", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#grass_ground_weather_and_contact_defenses_are_typed_and_suppressible", "interaction_unit:crates/rotom-dex/tests/combat.rs#grass_and_ground_immunities_execute_before_accuracy_in_canonical_step"]
+    },
+    {
+      "id": "levitate", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#grass_ground_weather_and_contact_defenses_are_typed_and_suppressible", "interaction_unit:crates/rotom-dex/tests/combat.rs#grass_and_ground_immunities_execute_before_accuracy_in_canonical_step"]
+    },
+    {
+      "id": "sandveil", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#grass_ground_weather_and_contact_defenses_are_typed_and_suppressible"]
+    },
+    {
+      "id": "snowcloak", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#grass_ground_weather_and_contact_defenses_are_typed_and_suppressible"]
+    },
+    {
+      "id": "auraguard", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#grass_ground_weather_and_contact_defenses_are_typed_and_suppressible"]
+    },
+    {
       "id": "anticipation", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
       "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#informational_only_abilities_register_no_authoritative_callback"]
     },

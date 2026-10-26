@@ -120,6 +120,23 @@ damaging-hit, and accuracy hooks:
   diagnostics are non-authoritative in Rotom, these identities deliberately
   map to a no-authoritative-effect behavior with no registered callback.
 
+The seventh batch adds five defensive abilities using existing generic hooks:
+
+- `sapsipper` rejects external Grass hits aimed at the holder at `TryHit`
+  priority 1 and raises the holder's Attack through the mutation kernel.
+  `levitate` rejects Ground moves at the shared hit-immunity boundary; the
+  existing grounded query continues to own terrain and field interactions,
+  including Gravity and other effects that force the holder to the ground.
+  Showdown's additional Sap Sipper side-target hook has no reachable Grass
+  side-target move in the resolved Regulation M-C Dex, so it adds no supported
+  transition behavior in this batch.
+- `sandveil` and `snowcloak` share one typed weather-evasion behavior. Their
+  final-accuracy modifier is the pinned fixed-point `3277 / 4096`; Sand Veil
+  also uses the existing sandstorm immunity boundary.
+- Champions `auraguard` halves contact-move damage at `ModifyDamage`. All five
+  handlers are breakable and therefore follow the existing target-side Mold
+  Breaker suppression contract.
+
 Showdown's modifier application uses its fixed-point `chainModify`/`modify`
 rounding. Rotom Spark applies the same 4096-denominator rounding to each typed
 integer relay.

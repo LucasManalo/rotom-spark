@@ -1562,6 +1562,12 @@ impl BattleState {
                 move_type: Some(move_context.move_data.move_type),
                 move_flags: move_context.move_data.interaction_flags,
                 prankster_boosted: move_context.queued.prankster_boosted,
+                target_grounded: Some(crate::field_effects::grounded(
+                    self,
+                    data,
+                    field_effects,
+                    target,
+                )?),
                 weather: field_effects.weather_environment(self),
                 terrain: field_effects.terrain_environment(self),
                 ..EventContext::default()
