@@ -191,6 +191,32 @@ ability handlers rather than inventing a move-specific path.
 
 ## Verification boundary
 
+### PR 13.5.8 batch: move shaping and defensive gates
+
+This batch follows pinned `data/abilities.ts` callbacks and the Champions
+overrides in `data/mods/champions/abilities.ts`:
+
+- Big Pecks, Clear Body, Hyper Cutter, White Smoke, and Keen Eye intercept
+  opposing negative stage deltas through `onTryBoost`; Keen Eye also ignores a
+  target's positive evasion stage. Armor Tail and Queenly Majesty reject
+  opposing positive-priority moves aimed at either active ally.
+- Fire Mane, Adaptability, Dry Skin, Solar Power, Purifying Salt, and Sturdy
+  reuse damage/stat/status/residual seams. Dry Skin also reuses the typed Water
+  absorption family. Sturdy covers ordinary and fixed move damage at full HP.
+- Corrosion, Shield Dust, Skill Link, Long Reach, Infiltrator, Stalwart,
+  Scrappy, and Liquid Voice shape status eligibility, secondaries, hit count,
+  contact, screens, redirection, type immunity, or move type before their
+  existing shared mechanics run.
+- Unseen Fist and Champions' Piercing Drill share contact-based Protect bypass.
+  Mega Sol applies the holder's effective-sun Fire/Water damage modifier.
+- Early Bird performs the extra sleep-counter decrement through the kernel;
+  the ordinary sleep condition retains ownership of wake/cancel semantics.
+
+The batch deliberately does not claim unsupported adjacent mechanics: Sturdy's
+OHKO-move immunity, Purifying Salt's Yawn volatile immunity, Infiltrator's
+Substitute bypass, and Scrappy's Intimidate protection remain deferred until
+those mechanics exist. The pinned Showdown commit is unchanged.
+
 The pinned `ability-modifiers.json` cases exercise isolated Showdown damage,
 Speed, accuracy, priority, critical-ratio, immunity, and `TryHit` calculations.
 They are not full cross-mechanic transition comparisons. Coverage only uses
@@ -239,9 +265,10 @@ events while retaining kernel-only status mutation.
 
 ## Deferred PR 13.5 families
 
-These seventy-seven abilities are incremental PR 13.5 batches, not completion
-of the milestone. The other 138 reachable Regulation M-C abilities remain
-explicitly unsupported. The remaining families and prerequisites are:
+These 107 abilities are incremental PR 13.5 batches, not completion of the
+milestone: 103 are implemented and four are honestly marked partial. The other
+108 reachable Regulation M-C abilities remain explicitly unsupported. The
+remaining families and prerequisites are:
 
 | Family | Required event/mechanics capability |
 | --- | --- |

@@ -1030,6 +1030,106 @@
       "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#grass_ground_weather_and_contact_defenses_are_typed_and_suppressible"]
     },
     {
+      "id": "bigpecks", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:crates/rotom-core/src/abilities.rs", "unit:crates/rotom-core/src/abilities.rs#stat_drop_weather_status_and_survival_behaviors_use_typed_events", "interaction_unit:crates/rotom-dex/tests/combat.rs#stat_drop_and_priority_abilities_run_in_the_canonical_step"]
+    },
+    {
+      "id": "clearbody", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:crates/rotom-core/src/abilities.rs", "unit:crates/rotom-core/src/abilities.rs#stat_drop_weather_status_and_survival_behaviors_use_typed_events", "interaction_unit:crates/rotom-dex/tests/combat.rs#stat_drop_and_priority_abilities_run_in_the_canonical_step"]
+    },
+    {
+      "id": "hypercutter", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:crates/rotom-core/src/abilities.rs", "unit:crates/rotom-core/src/abilities.rs#stat_drop_weather_status_and_survival_behaviors_use_typed_events"]
+    },
+    {
+      "id": "whitesmoke", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:crates/rotom-core/src/abilities.rs", "unit:crates/rotom-core/src/abilities.rs#stat_drop_weather_status_and_survival_behaviors_use_typed_events"]
+    },
+    {
+      "id": "keeneye", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:crates/rotom-core/src/abilities.rs", "unit:crates/rotom-core/src/abilities.rs#stat_drop_weather_status_and_survival_behaviors_use_typed_events"]
+    },
+    {
+      "id": "armortail", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:crates/rotom-core/src/combat.rs", "unit:crates/rotom-dex/tests/combat.rs#ability_handler_registration_is_declarative_and_leaves_other_abilities_unsupported", "interaction_unit:crates/rotom-dex/tests/combat.rs#stat_drop_and_priority_abilities_run_in_the_canonical_step"]
+    },
+    {
+      "id": "queenlymajesty", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:crates/rotom-core/src/combat.rs", "unit:crates/rotom-dex/tests/combat.rs#ability_handler_registration_is_declarative_and_leaves_other_abilities_unsupported"]
+    },
+    {
+      "id": "firemane", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:crates/rotom-core/src/abilities.rs", "unit:crates/rotom-core/src/abilities.rs#stat_drop_weather_status_and_survival_behaviors_use_typed_events"]
+    },
+    {
+      "id": "adaptability", "kind": "ability", "implementation": "implemented", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:crates/rotom-core/src/combat.rs"]
+    },
+    {
+      "id": "dryskin", "kind": "ability", "implementation": "implemented", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:crates/rotom-core/src/abilities.rs"]
+    },
+    {
+      "id": "solarpower", "kind": "ability", "implementation": "implemented", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:crates/rotom-core/src/abilities.rs"]
+    },
+    {
+      "id": "purifyingsalt", "kind": "ability", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:crates/rotom-core/src/abilities.rs", "unit:crates/rotom-core/src/abilities.rs#stat_drop_weather_status_and_survival_behaviors_use_typed_events"]
+    },
+    {
+      "id": "earlybird", "kind": "ability", "implementation": "implemented", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:crates/rotom-core/src/abilities.rs"]
+    },
+    {
+      "id": "corrosion", "kind": "ability", "implementation": "implemented", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:crates/rotom-core/src/combat.rs"]
+    },
+    {
+      "id": "shielddust", "kind": "ability", "implementation": "implemented", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:crates/rotom-core/src/combat.rs"]
+    },
+    {
+      "id": "skilllink", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:crates/rotom-core/src/combat.rs", "unit:crates/rotom-dex/tests/combat.rs#ability_handler_registration_is_declarative_and_leaves_other_abilities_unsupported", "interaction_unit:crates/rotom-dex/tests/combat.rs#skill_link_long_reach_scrappy_and_liquid_voice_shape_moves_before_hit_resolution"]
+    },
+    {
+      "id": "longreach", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:crates/rotom-core/src/combat.rs", "unit:crates/rotom-dex/tests/combat.rs#ability_handler_registration_is_declarative_and_leaves_other_abilities_unsupported", "interaction_unit:crates/rotom-dex/tests/combat.rs#skill_link_long_reach_scrappy_and_liquid_voice_shape_moves_before_hit_resolution"]
+    },
+    {
+      "id": "infiltrator", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:crates/rotom-core/src/combat.rs"]
+    },
+    {
+      "id": "stalwart", "kind": "ability", "implementation": "implemented", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:crates/rotom-core/src/combat.rs"]
+    },
+    {
+      "id": "sturdy", "kind": "ability", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:crates/rotom-core/src/abilities.rs", "unit:crates/rotom-core/src/abilities.rs#stat_drop_weather_status_and_survival_behaviors_use_typed_events"]
+    },
+    {
+      "id": "unseenfist", "kind": "ability", "implementation": "implemented", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:crates/rotom-core/src/combat.rs"]
+    },
+    {
+      "id": "piercingdrill", "kind": "ability", "implementation": "implemented", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:crates/rotom-core/src/combat.rs"]
+    },
+    {
+      "id": "megasol", "kind": "ability", "implementation": "implemented", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:crates/rotom-core/src/combat.rs"]
+    },
+    {
+      "id": "scrappy", "kind": "ability", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:crates/rotom-core/src/combat.rs", "unit:crates/rotom-dex/tests/combat.rs#ability_handler_registration_is_declarative_and_leaves_other_abilities_unsupported", "interaction_unit:crates/rotom-dex/tests/combat.rs#skill_link_long_reach_scrappy_and_liquid_voice_shape_moves_before_hit_resolution"]
+    },
+    {
+      "id": "liquidvoice", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:crates/rotom-core/src/combat.rs", "unit:crates/rotom-dex/tests/combat.rs#ability_handler_registration_is_declarative_and_leaves_other_abilities_unsupported", "interaction_unit:crates/rotom-dex/tests/combat.rs#skill_link_long_reach_scrappy_and_liquid_voice_shape_moves_before_hit_resolution"]
+    },
+    {
       "id": "anticipation", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
       "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#informational_only_abilities_register_no_authoritative_callback"]
     },

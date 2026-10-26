@@ -6969,6 +6969,134 @@ const EXPECTED_ABILITY_HANDLERS: &[(
     ("moxie", rotom_core::AbilityBehavior::Moxie, Unbreakable),
     ("gooey", rotom_core::AbilityBehavior::Gooey, Unbreakable),
     (
+        "bigpecks",
+        rotom_core::AbilityBehavior::DefenseDropImmunity,
+        Breakable,
+    ),
+    (
+        "clearbody",
+        rotom_core::AbilityBehavior::AllStatDropImmunity,
+        Breakable,
+    ),
+    (
+        "hypercutter",
+        rotom_core::AbilityBehavior::AttackDropImmunity,
+        Breakable,
+    ),
+    (
+        "whitesmoke",
+        rotom_core::AbilityBehavior::AllStatDropImmunity,
+        Breakable,
+    ),
+    (
+        "keeneye",
+        rotom_core::AbilityBehavior::AccuracyDropImmunity,
+        Breakable,
+    ),
+    (
+        "keeneye",
+        rotom_core::AbilityBehavior::IgnoreTargetEvasion,
+        Breakable,
+    ),
+    (
+        "armortail",
+        rotom_core::AbilityBehavior::PriorityProtection,
+        Breakable,
+    ),
+    (
+        "queenlymajesty",
+        rotom_core::AbilityBehavior::PriorityProtection,
+        Breakable,
+    ),
+    (
+        "firemane",
+        rotom_core::AbilityBehavior::FirePower,
+        Unbreakable,
+    ),
+    (
+        "adaptability",
+        rotom_core::AbilityBehavior::Adaptability,
+        Unbreakable,
+    ),
+    (
+        "dryskin",
+        rotom_core::AbilityBehavior::WaterAbsorb,
+        Breakable,
+    ),
+    ("dryskin", rotom_core::AbilityBehavior::DrySkin, Breakable),
+    (
+        "solarpower",
+        rotom_core::AbilityBehavior::SolarPower,
+        Unbreakable,
+    ),
+    (
+        "purifyingsalt",
+        rotom_core::AbilityBehavior::MajorStatusImmunity,
+        Breakable,
+    ),
+    (
+        "purifyingsalt",
+        rotom_core::AbilityBehavior::GhostResistance,
+        Breakable,
+    ),
+    (
+        "earlybird",
+        rotom_core::AbilityBehavior::EarlyBird,
+        Unbreakable,
+    ),
+    (
+        "corrosion",
+        rotom_core::AbilityBehavior::Corrosion,
+        Unbreakable,
+    ),
+    (
+        "shielddust",
+        rotom_core::AbilityBehavior::ShieldDust,
+        Breakable,
+    ),
+    (
+        "skilllink",
+        rotom_core::AbilityBehavior::SkillLink,
+        Unbreakable,
+    ),
+    (
+        "longreach",
+        rotom_core::AbilityBehavior::LongReach,
+        Unbreakable,
+    ),
+    (
+        "infiltrator",
+        rotom_core::AbilityBehavior::Infiltrator,
+        Unbreakable,
+    ),
+    (
+        "stalwart",
+        rotom_core::AbilityBehavior::Stalwart,
+        Unbreakable,
+    ),
+    ("sturdy", rotom_core::AbilityBehavior::Sturdy, Breakable),
+    (
+        "unseenfist",
+        rotom_core::AbilityBehavior::ContactProtectBypass,
+        Unbreakable,
+    ),
+    (
+        "piercingdrill",
+        rotom_core::AbilityBehavior::ContactProtectBypass,
+        Unbreakable,
+    ),
+    (
+        "megasol",
+        rotom_core::AbilityBehavior::PersonalSun,
+        Unbreakable,
+    ),
+    ("scrappy", rotom_core::AbilityBehavior::Scrappy, Unbreakable),
+    (
+        "liquidvoice",
+        rotom_core::AbilityBehavior::LiquidVoice,
+        Unbreakable,
+    ),
+    (
         "anticipation",
         rotom_core::AbilityBehavior::NoAuthoritativeEffect,
         Unbreakable,
@@ -7703,4 +7831,139 @@ fn switch_healing_curing_and_hydration_expiry_follow_lifecycle_order() {
             .status,
         None
     );
+}
+
+#[test]
+fn stat_drop_and_priority_abilities_run_in_the_canonical_step() {
+    let dex = champions_reg_mc().unwrap();
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let target = PokemonRef::new(SideId::P2, PokemonIndex::new(0));
+
+    let growl = set_with_moves(&dex, "medicham", "telepathy", &["growl"]);
+    let clear = set_with_moves(&dex, "snorlax", "clearbody", &["recover"]);
+    let state = selected_primary_battle(&dex, &growl, &clear, 0x13_05_09);
+    let result = execute_single_move(&dex, &state, 0, ActionTarget::Automatic);
+    assert_eq!(
+        result
+            .state
+            .side(target.side)
+            .pokemon(target.pokemon)
+            .unwrap()
+            .stat_stages
+            .atk,
+        0
+    );
+    assert!(result
+        .diagnostics
+        .turn
+        .as_ref()
+        .unwrap()
+        .events
+        .iter()
+        .any(|event| {
+            event.event == BattleEvent::TryStatStageChange
+                && event.value == rotom_core::EventValue::Integer(0)
+        }));
+
+    let aqua_jet = set_with_moves(&dex, "medicham", "telepathy", &["aquajet"]);
+    let armor_tail = set_with_moves(&dex, "snorlax", "armortail", &["recover"]);
+    let state = selected_primary_battle(&dex, &aqua_jet, &armor_tail, 0x13_05_09);
+    let result = step(
+        &state,
+        &single_move_action(0, ActionTarget::Foe(ActiveSlot::Left)),
+        &mechanics,
+    )
+    .unwrap();
+    assert!(result
+        .diagnostics
+        .turn
+        .as_ref()
+        .unwrap()
+        .target_outcomes
+        .iter()
+        .any(|outcome| {
+            outcome.target == target && outcome.result == TargetResult::PriorityBlocked
+        }));
+}
+
+#[test]
+fn skill_link_long_reach_scrappy_and_liquid_voice_shape_moves_before_hit_resolution() {
+    let dex = champions_reg_mc().unwrap();
+    let target = PokemonRef::new(SideId::P2, PokemonIndex::new(0));
+
+    let skill_link = set_with_moves(&dex, "magikarp", "skilllink", &["scaleshot"]);
+    let bulky = set_with_moves(&dex, "snorlax", "pressure", &["recover"]);
+    let state = selected_primary_battle(&dex, &skill_link, &bulky, 0x13_05_09);
+    let mut builder = BattleStateBuilder::from_state(state).unwrap();
+    builder.enable_rng_trace();
+    let result = execute_single_move(
+        &dex,
+        &builder.build().unwrap(),
+        0,
+        ActionTarget::Foe(ActiveSlot::Left),
+    );
+    let hits = result
+        .diagnostics
+        .turn
+        .as_ref()
+        .unwrap()
+        .target_outcomes
+        .iter()
+        .filter(|outcome| {
+            outcome.source == PokemonRef::new(SideId::P1, PokemonIndex::new(0))
+                && outcome.target == target
+                && outcome.result == TargetResult::Hit
+        })
+        .count();
+    assert_eq!(hits, 5);
+    assert!(!result
+        .state
+        .rng()
+        .trace()
+        .unwrap()
+        .iter()
+        .any(|entry| entry.reason == RngReason::MultiHit));
+
+    let long_reach = set_with_moves(&dex, "medicham", "longreach", &["aquatail"]);
+    let gooey_target = set_with_moves(&dex, "snorlax", "gooey", &["recover"]);
+    let state = selected_primary_battle(&dex, &long_reach, &gooey_target, 0x13_05_09);
+    let result = execute_single_move(&dex, &state, 0, ActionTarget::Foe(ActiveSlot::Left));
+    assert_eq!(
+        result
+            .state
+            .side(SideId::P1)
+            .pokemon(PokemonIndex::new(0))
+            .unwrap()
+            .stat_stages
+            .spe,
+        0
+    );
+
+    let scrappy = set_with_moves(&dex, "medicham", "scrappy", &["closecombat"]);
+    let ghost = set_with_moves(&dex, "gengar", "pressure", &["protect"]);
+    let state = selected_primary_battle(&dex, &scrappy, &ghost, 0x13_05_09);
+    let result = execute_single_move(&dex, &state, 0, ActionTarget::Foe(ActiveSlot::Left));
+    assert!(result
+        .diagnostics
+        .turn
+        .as_ref()
+        .unwrap()
+        .target_outcomes
+        .iter()
+        .any(|outcome| { outcome.target == target && outcome.result == TargetResult::Hit }));
+
+    let liquid_voice = set_with_moves(&dex, "primarina", "liquidvoice", &["hypervoice"]);
+    let state = selected_primary_battle(&dex, &liquid_voice, &bulky, 0x13_05_09);
+    let result = execute_single_move(&dex, &state, 0, ActionTarget::Automatic);
+    assert!(result
+        .diagnostics
+        .turn
+        .as_ref()
+        .unwrap()
+        .events
+        .iter()
+        .any(|event| {
+            event.context.source == Some(PokemonRef::new(SideId::P1, PokemonIndex::new(0)))
+                && event.context.move_type == Some(rotom_core::PokemonType::Water)
+        }));
 }

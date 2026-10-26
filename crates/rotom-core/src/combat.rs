@@ -734,6 +734,7 @@ struct DamageEnvironment {
     defense_override: Option<u32>,
     spread: bool,
     ignore_burn: bool,
+    adaptability: bool,
 }
 
 impl BattleState {
@@ -939,9 +940,23 @@ impl BattleState {
             ));
         }
         let move_id = move_state.move_id;
-        let move_data = data.move_data(move_id).ok_or_else(|| {
+        let mut move_data = data.move_data(move_id).ok_or_else(|| {
             BattleError::DataMismatch(format!("missing combat data for move {move_id}"))
         })?;
+        if data.ability_has_behavior(source.ability, crate::AbilityBehavior::LiquidVoice)
+            && move_data.interaction_flags.sound()
+        {
+            move_data.move_type = PokemonType::Water;
+        }
+        if data.ability_has_behavior(source.ability, crate::AbilityBehavior::LongReach) {
+            move_data.interaction_flags = move_data.interaction_flags.with_contact(false);
+        }
+        if data.ability_has_behavior(source.ability, crate::AbilityBehavior::SkillLink) {
+            if let HitSequence::Range { max, .. } = move_data.hit_sequence {
+                move_data.hit_sequence = HitSequence::Fixed { hits: max };
+                move_data.multi_accuracy = false;
+            }
+        }
         let intrinsic = data.move_intrinsic(move_id);
         let primary_effects = data.primary_move_effects(move_id);
         let secondary_effects = data.secondary_move_effects(move_id);
@@ -1050,6 +1065,7 @@ impl BattleState {
                 type_effectiveness: self.target_type_effectiveness(
                     data,
                     move_context.move_data,
+                    move_context.source,
                     target,
                 )?,
                 weather: field_effects.weather_environment(self),
@@ -1068,6 +1084,7 @@ impl BattleState {
                 if hit_index > 0
                     && move_context.move_data.multi_accuracy
                     && !self.check_accuracy(
+                        data,
                         effects,
                         field_effects,
                         move_context,
@@ -1347,23 +1364,35 @@ impl BattleState {
         target: PokemonRef,
         resolution: &mut TurnResolution,
     ) -> Result<(), BattleError> {
+        let shield_dust = !context.suppress_target_ability
+            && self
+                .side(target.side)
+                .pokemon(target.pokemon)
+                .is_some_and(|pokemon| {
+                    data.ability_has_behavior(pokemon.ability, crate::AbilityBehavior::ShieldDust)
+                });
         for secondary in &context.secondary_effects {
+            if shield_dust && secondary.self_effects.is_empty() {
+                continue;
+            }
             // Showdown samples `random(100)` for every secondary, then compares
             // the sampled value with the declared chance.
             let roll = self.rng.range(RngReason::SecondaryEffect, 0..100)?;
             if roll >= u64::from(secondary.chance) {
                 continue;
             }
-            for operation in &secondary.effects {
-                let _ = self.apply_primary_effect(
-                    data,
-                    effects,
-                    field_effects,
-                    context,
-                    Some(target),
-                    *operation,
-                    resolution,
-                )?;
+            if !shield_dust {
+                for operation in &secondary.effects {
+                    let _ = self.apply_primary_effect(
+                        data,
+                        effects,
+                        field_effects,
+                        context,
+                        Some(target),
+                        *operation,
+                        resolution,
+                    )?;
+                }
             }
             for operation in &secondary.self_effects {
                 let _ = self.apply_primary_effect(
@@ -1414,6 +1443,21 @@ impl BattleState {
         let mut any_hit = false;
         let mut total_applied = 0_u32;
         for (index, target_context) in eligible {
+            let target_state = self
+                .side(target_context.target.side)
+                .pokemon(target_context.target.pokemon)
+                .ok_or_else(|| {
+                    BattleError::InvalidState("fixed-damage target is invalid".to_owned())
+                })?;
+            let sturdy = !context.suppress_target_ability
+                && data.ability_has_behavior(target_state.ability, crate::AbilityBehavior::Sturdy)
+                && target_state.current_hp == target_state.stats.hp
+                && requested >= target_state.current_hp;
+            let applied_request = if sturdy {
+                target_state.current_hp.saturating_sub(1)
+            } else {
+                requested
+            };
             let event_context = EventContext {
                 source: Some(context.source),
                 target: Some(target_context.target),
@@ -1426,6 +1470,7 @@ impl BattleState {
                 type_effectiveness: self.target_type_effectiveness(
                     data,
                     context.move_data,
+                    context.source,
                     target_context.target,
                 )?,
                 weather: field_effects.weather_environment(self),
@@ -1439,14 +1484,14 @@ impl BattleState {
                 EventValue::None,
             )?);
             let damage = DamageResult {
-                base_damage: u32::from(requested),
+                base_damage: u32::from(applied_request),
                 attack_stat: 0,
                 defense_stat: 0,
                 stab_modifier: Modifier::NEUTRAL,
                 type_modifier: Modifier::NEUTRAL,
                 critical_modifier: Modifier::NEUTRAL,
                 random_modifier: Modifier::NEUTRAL,
-                final_damage: requested,
+                final_damage: applied_request,
             };
             resolution.actions.push(ResolvedAction::Damaged {
                 side: context.queued.side,
@@ -1463,7 +1508,7 @@ impl BattleState {
                     side: target_context.target.side,
                     slot: target_context.slot,
                     pokemon: target_context.target.pokemon,
-                    damage: requested,
+                    damage: applied_request,
                 },
                 resolution,
             )?;
@@ -1474,7 +1519,7 @@ impl BattleState {
                 target: target_context.target,
                 redirected: target_context.redirected,
                 result: TargetResult::Hit,
-                calculated_damage: requested,
+                calculated_damage: applied_request,
                 applied_hp_loss,
                 fainted,
             });
@@ -1620,6 +1665,7 @@ impl BattleState {
                 && self.target_is_type_immune(
                     data,
                     move_context.move_data,
+                    move_context.source,
                     target_context.target,
                 )?
             {
@@ -1686,6 +1732,7 @@ impl BattleState {
         let mut eligible = Vec::with_capacity(after_try_immunity.len());
         for (index, target_context) in after_try_immunity {
             if self.check_accuracy(
+                data,
                 effects,
                 field_effects,
                 move_context,
@@ -2023,6 +2070,7 @@ impl BattleState {
                     target,
                     status,
                     context.move_data.move_type,
+                    context.source,
                 )? {
                     return Ok(false);
                 }
@@ -2072,6 +2120,28 @@ impl BattleState {
                 {
                     return Ok(false);
                 }
+                let event = effects.dispatch(
+                    self,
+                    BattleEvent::TryStatStageChange,
+                    EventContext {
+                        source: Some(context.source),
+                        target: Some(target),
+                        move_id: Some(context.move_id),
+                        suppress_target_ability: context.suppress_target_ability,
+                        requested_stat: Some(stat),
+                        ..EventContext::default()
+                    },
+                    EventValue::Integer(i64::from(delta)),
+                )?;
+                let EventValue::Integer(relayed_delta) = event.value else {
+                    return Err(BattleError::InvalidState(
+                        "TryStatStageChange returned a non-integer relay".to_owned(),
+                    ));
+                };
+                let delta = i8::try_from(relayed_delta).map_err(|_| {
+                    BattleError::InvalidState("stat-stage relay does not fit in i8".to_owned())
+                })?;
+                resolution.events.push(event);
                 Ok(StateKernel::new(self)
                     .change_stat_stage(target, stat, delta)?
                     .applied_delta
@@ -2224,6 +2294,7 @@ impl BattleState {
         target: PokemonRef,
         status: MajorStatus,
         move_type: PokemonType,
+        source: PokemonRef,
     ) -> Result<bool, BattleError> {
         let pokemon = self
             .side(target.side)
@@ -2248,6 +2319,19 @@ impl BattleState {
                     || (move_type == PokemonType::Electric
                         && (types.primary == PokemonType::Ground
                             || types.secondary == Some(PokemonType::Ground)))
+            }
+            MajorStatus::Poison | MajorStatus::BadlyPoisoned
+                if data.ability_has_behavior(
+                    self.side(source.side)
+                        .pokemon(source.pokemon)
+                        .ok_or_else(|| {
+                            BattleError::InvalidState("status source is invalid".to_owned())
+                        })?
+                        .ability,
+                    crate::AbilityBehavior::Corrosion,
+                ) =>
+            {
+                false
             }
             MajorStatus::Poison | MajorStatus::BadlyPoisoned => {
                 [types.primary, types.secondary.unwrap_or(types.primary)]
@@ -2374,7 +2458,13 @@ impl BattleState {
                 )));
             }
         };
-        if targets.len() == 1 && targets[0].target.side != source.side {
+        let ignores_redirection =
+            self.side(source.side)
+                .pokemon(source.pokemon)
+                .is_some_and(|pokemon| {
+                    data.ability_has_behavior(pokemon.ability, crate::AbilityBehavior::Stalwart)
+                });
+        if !ignores_redirection && targets.len() == 1 && targets[0].target.side != source.side {
             if let Some(redirected) = self.redirect_target(data, ids, source, move_target)? {
                 targets[0] = redirected;
             }
@@ -2470,6 +2560,19 @@ impl BattleState {
         if data.move_breaks_protect(context.move_id) {
             return false;
         }
+        let contact_bypass = context.move_data.interaction_flags.contact()
+            && self
+                .side(context.source.side)
+                .pokemon(context.source.pokemon)
+                .is_some_and(|pokemon| {
+                    data.ability_has_behavior(
+                        pokemon.ability,
+                        crate::AbilityBehavior::ContactProtectBypass,
+                    )
+                });
+        if contact_bypass {
+            return false;
+        }
         data.move_is_protectable(context.move_id)
     }
 
@@ -2493,6 +2596,7 @@ impl BattleState {
         &self,
         data: &D,
         move_data: CombatMove,
+        source: PokemonRef,
         target: PokemonRef,
     ) -> Result<bool, BattleError> {
         let target = self
@@ -2502,13 +2606,16 @@ impl BattleState {
         let types = data
             .pokemon_types(target.species, target.form)
             .ok_or_else(|| BattleError::DataMismatch("missing immunity target types".to_owned()))?;
-        Ok(combined_type_modifier(data, move_data.move_type, types)?.is_none())
+        Ok(self
+            .type_modifier_for_source(data, move_data.move_type, source, types)?
+            .is_none())
     }
 
     fn target_type_effectiveness<D: CombatData>(
         &self,
         data: &D,
         move_data: CombatMove,
+        source: PokemonRef,
         target: PokemonRef,
     ) -> Result<Option<i8>, BattleError> {
         let target = self
@@ -2518,7 +2625,23 @@ impl BattleState {
         let types = data
             .pokemon_types(target.species, target.form)
             .ok_or_else(|| BattleError::DataMismatch("missing damage target types".to_owned()))?;
-        combined_type_modifier(data, move_data.move_type, types)
+        self.type_modifier_for_source(data, move_data.move_type, source, types)
+    }
+
+    fn type_modifier_for_source<D: CombatData>(
+        &self,
+        data: &D,
+        attacking: PokemonType,
+        source: PokemonRef,
+        defending: PokemonTypes,
+    ) -> Result<Option<i8>, BattleError> {
+        let scrappy = self
+            .side(source.side)
+            .pokemon(source.pokemon)
+            .is_some_and(|pokemon| {
+                data.ability_has_behavior(pokemon.ability, crate::AbilityBehavior::Scrappy)
+            });
+        combined_type_modifier_with_scrappy(data, attacking, defending, scrappy)
     }
 
     #[allow(clippy::too_many_arguments, clippy::too_many_lines)]
@@ -2549,7 +2672,8 @@ impl BattleState {
         let target_types = data
             .pokemon_types(target_state.species, target_state.form)
             .ok_or_else(|| BattleError::DataMismatch("missing target type data".to_owned()))?;
-        let type_exponent = combined_type_modifier(data, move_data.move_type, target_types)?;
+        let type_exponent =
+            self.type_modifier_for_source(data, move_data.move_type, source, target_types)?;
         let source_state = self
             .side(source.side)
             .pokemon(source.pokemon)
@@ -2636,8 +2760,17 @@ impl BattleState {
         resolution.events.push(modify_defense);
         let random_percent = u8::try_from(self.rng.range(RngReason::DamageRoll, 85..101)?)
             .map_err(|_| BattleError::InvalidState("damage roll does not fit in u8".to_owned()))?;
-        let weather =
-            crate::field_effects::weather_damage_modifier(self, field_effects, move_data.move_type);
+        let personal_sun =
+            data.ability_has_behavior(source_state.ability, crate::AbilityBehavior::PersonalSun);
+        let weather = if personal_sun {
+            match move_data.move_type {
+                PokemonType::Fire => Some((3, 2)),
+                PokemonType::Water => Some((1, 2)),
+                _ => None,
+            }
+        } else {
+            crate::field_effects::weather_damage_modifier(self, field_effects, move_data.move_type)
+        };
         let mut damage = calculate_damage_inner(
             &source_state,
             &target_state,
@@ -2658,17 +2791,25 @@ impl BattleState {
                         source_state.ability,
                         crate::AbilityBehavior::StatusedAttack,
                     ),
+                adaptability: data.ability_has_behavior(
+                    source_state.ability,
+                    crate::AbilityBehavior::Adaptability,
+                ),
             },
         )?;
-        if let Some((numerator, denominator)) = crate::field_effects::screen_modifier(
-            self,
-            field_effects,
-            target.side,
-            move_data.category,
-            critical,
-        ) {
-            damage.final_damage =
-                apply_damage_modifier(damage.final_damage, numerator, denominator);
+        let infiltrates =
+            data.ability_has_behavior(source_state.ability, crate::AbilityBehavior::Infiltrator);
+        if !infiltrates {
+            if let Some((numerator, denominator)) = crate::field_effects::screen_modifier(
+                self,
+                field_effects,
+                target.side,
+                move_data.category,
+                critical,
+            ) {
+                damage.final_damage =
+                    apply_damage_modifier(damage.final_damage, numerator, denominator);
+            }
         }
         Ok(damage)
     }
@@ -2744,8 +2885,9 @@ impl BattleState {
         Ok((applied, fainted))
     }
 
-    fn check_accuracy(
+    fn check_accuracy<D: CombatData>(
         &mut self,
+        data: &D,
         effects: &EffectRegistry,
         field_effects: &FieldEffectIds,
         move_context: &MoveExecutionContext,
@@ -2766,12 +2908,24 @@ impl BattleState {
             .ok_or_else(|| BattleError::InvalidState("accuracy source is invalid".to_owned()))?
             .stat_stages
             .accuracy;
-        let target_stage = self
+        let mut target_stage = self
             .side(target.side)
             .pokemon(target.pokemon)
             .ok_or_else(|| BattleError::InvalidState("accuracy target is invalid".to_owned()))?
             .stat_stages
             .evasion;
+        let ignores_evasion = self
+            .side(move_context.source.side)
+            .pokemon(move_context.source.pokemon)
+            .is_some_and(|pokemon| {
+                data.ability_has_behavior(
+                    pokemon.ability,
+                    crate::AbilityBehavior::IgnoreTargetEvasion,
+                )
+            });
+        if ignores_evasion && target_stage > 0 {
+            target_stage = 0;
+        }
         let stage = (source_stage - target_stage).clamp(-6, 6);
         let adjusted = match stage.cmp(&0) {
             std::cmp::Ordering::Greater => value * u16::try_from(3 + stage).unwrap_or(9) / 3,
@@ -2809,9 +2963,7 @@ impl BattleState {
         context: &MoveExecutionContext,
         target: PokemonRef,
     ) -> Result<bool, BattleError> {
-        if !field_effects.field_has(self, field_effects.psychic_terrain)
-            || context.source.side == target.side
-        {
+        if context.source.side == target.side {
             return Ok(false);
         }
         let priority = self
@@ -2824,7 +2976,31 @@ impl BattleState {
             })
             .ok_or_else(|| BattleError::InvalidState("priority source became invalid".to_owned()))?
             .priority;
-        Ok(priority > 0 && crate::field_effects::grounded(self, data, field_effects, target)?)
+        let positive_priority = priority > 0 || context.queued.prankster_boosted;
+        if !positive_priority {
+            return Ok(false);
+        }
+        let ability_blocked = !context.suppress_target_ability
+            && self
+                .side(target.side)
+                .active
+                .into_iter()
+                .flatten()
+                .any(|index| {
+                    self.side(target.side)
+                        .pokemon(index)
+                        .is_some_and(|pokemon| {
+                            data.ability_has_behavior(
+                                pokemon.ability,
+                                crate::AbilityBehavior::PriorityProtection,
+                            )
+                        })
+                });
+        if ability_blocked {
+            return Ok(true);
+        }
+        Ok(field_effects.field_has(self, field_effects.psychic_terrain)
+            && crate::field_effects::grounded(self, data, field_effects, target)?)
     }
 
     fn apply_field_base_power<D: CombatData>(
@@ -3360,10 +3536,15 @@ fn calculate_damage_inner(
     let has_stab = source_types.primary == move_data.move_type
         || source_types.secondary == Some(move_data.move_type);
     let stab_modifier = if has_stab {
-        final_damage = showdown_modify(final_damage, 3, 2);
+        let (numerator, denominator) = if environment.adaptability {
+            (2, 1)
+        } else {
+            (3, 2)
+        };
+        final_damage = showdown_modify(final_damage, numerator, denominator);
         Modifier {
-            numerator: 3,
-            denominator: 2,
+            numerator: u16::try_from(numerator).unwrap_or(u16::MAX),
+            denominator: u16::try_from(denominator).unwrap_or(u16::MAX),
         }
     } else {
         Modifier::NEUTRAL
@@ -3794,11 +3975,26 @@ fn combined_type_modifier<D: CombatData>(
     attacking: PokemonType,
     defending: PokemonTypes,
 ) -> Result<Option<i8>, BattleError> {
+    combined_type_modifier_with_scrappy(data, attacking, defending, false)
+}
+
+fn combined_type_modifier_with_scrappy<D: CombatData>(
+    data: &D,
+    attacking: PokemonType,
+    defending: PokemonTypes,
+    scrappy: bool,
+) -> Result<Option<i8>, BattleError> {
     let mut modifier = 0_i8;
     for defending_type in [Some(defending.primary), defending.secondary]
         .into_iter()
         .flatten()
     {
+        if scrappy
+            && defending_type == PokemonType::Ghost
+            && matches!(attacking, PokemonType::Normal | PokemonType::Fighting)
+        {
+            continue;
+        }
         let Some(value) = data.type_modifier(attacking, defending_type) else {
             return Ok(None);
         };

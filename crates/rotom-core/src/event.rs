@@ -37,6 +37,8 @@ pub enum BattleEvent {
     /// Confirms a rolled or forced critical hit against the target.
     CriticalHit,
     ModifyDamage,
+    /// Relays a requested stat-stage delta before the kernel applies it.
+    TryStatStageChange,
     TryHit,
     /// Relays move-specific immunity checks after `TryHit` and type immunity.
     TryImmunity,
@@ -74,7 +76,8 @@ impl BattleEvent {
             | Self::ModifyBasePower
             | Self::ModifyAccuracy
             | Self::ModifyCritRatio
-            | Self::ModifyDamage => EventContract::new(EventRelay::Integer, false, true),
+            | Self::ModifyDamage
+            | Self::TryStatStageChange => EventContract::new(EventRelay::Integer, false, true),
             Self::CriticalHit => EventContract::new(EventRelay::Boolean, false, true),
             Self::AfterDamage => EventContract::new(EventRelay::Integer, false, false),
             Self::BeforeTurn
@@ -230,6 +233,9 @@ pub struct EventContext {
     /// Major status currently being offered to `TrySetStatus` handlers.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub requested_status: Option<MajorStatus>,
+    /// Stat whose stage delta is currently being offered to handlers.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub requested_stat: Option<BattleStat>,
     /// Whether the queued move received Prankster's priority modifier.
     #[serde(default, skip_serializing_if = "is_false")]
     pub prankster_boosted: bool,

@@ -64,6 +64,30 @@ pub enum AbilityBehavior {
     GroundImmunity,
     WeatherEvasion(WeatherEnvironment),
     ContactDamageReduction,
+    AllStatDropImmunity,
+    AttackDropImmunity,
+    DefenseDropImmunity,
+    AccuracyDropImmunity,
+    IgnoreTargetEvasion,
+    FirePower,
+    Adaptability,
+    DrySkin,
+    SolarPower,
+    MajorStatusImmunity,
+    GhostResistance,
+    EarlyBird,
+    Sturdy,
+    PriorityProtection,
+    Corrosion,
+    ShieldDust,
+    SkillLink,
+    LongReach,
+    Infiltrator,
+    Stalwart,
+    ContactProtectBypass,
+    PersonalSun,
+    Scrappy,
+    LiquidVoice,
     PowderWeatherImmunity,
     BurnImmunity,
     WaterBubble,
@@ -626,6 +650,96 @@ const BEHAVIOR_REGISTRATIONS: &[BehaviorRegistration] = &[
         BattleEvent::ModifyDamage,
         DEFAULT_ORDER,
         contact_damage_reduction,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::AllStatDropImmunity,
+        BattleEvent::TryStatStageChange,
+        DEFAULT_ORDER,
+        all_stat_drop_immunity,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::AttackDropImmunity,
+        BattleEvent::TryStatStageChange,
+        DEFAULT_ORDER,
+        attack_drop_immunity,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::DefenseDropImmunity,
+        BattleEvent::TryStatStageChange,
+        DEFAULT_ORDER,
+        defense_drop_immunity,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::AccuracyDropImmunity,
+        BattleEvent::TryStatStageChange,
+        DEFAULT_ORDER,
+        accuracy_drop_immunity,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::FirePower,
+        BattleEvent::ModifyAttack,
+        EffectOrder::new(0, 5, 0),
+        fire_power,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::FirePower,
+        BattleEvent::ModifySpecialAttack,
+        EffectOrder::new(0, 5, 0),
+        fire_power,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::DrySkin,
+        BattleEvent::ModifyBasePower,
+        EffectOrder::new(0, 17, 0),
+        dry_skin_fire_weakness,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::DrySkin,
+        BattleEvent::Residual,
+        EffectOrder::new(1, 0, 0),
+        dry_skin_residual,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::SolarPower,
+        BattleEvent::ModifySpecialAttack,
+        EffectOrder::new(0, 5, 0),
+        solar_power_attack,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::SolarPower,
+        BattleEvent::Residual,
+        EffectOrder::new(1, 0, 0),
+        solar_power_residual,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::MajorStatusImmunity,
+        BattleEvent::TrySetStatus,
+        DEFAULT_ORDER,
+        major_status_immunity,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::GhostResistance,
+        BattleEvent::ModifyAttack,
+        EffectOrder::new(0, 6, 0),
+        ghost_resistance,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::GhostResistance,
+        BattleEvent::ModifySpecialAttack,
+        EffectOrder::new(0, 5, 0),
+        ghost_resistance,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::EarlyBird,
+        BattleEvent::BeforeMove,
+        EffectOrder::new(0, 10, 0),
+        early_bird,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::Sturdy,
+        BattleEvent::ModifyDamage,
+        DEFAULT_ORDER,
+        sturdy,
     ),
     BehaviorRegistration::new(
         AbilityBehavior::PowderWeatherImmunity,
@@ -1889,10 +2003,7 @@ fn shed_skin(
         return Ok(());
     };
     let holder = pokemon(state, owner)?;
-    if holder.current_hp > 0
-        && holder.status.is_some()
-        && state.chance(RngReason::Ability, 33, 100)?
-    {
+    if holder.current_hp > 0 && holder.status.is_some() && state.chance(RngReason::Ability, 1, 3)? {
         state.cure_major_status(owner)?;
     }
     Ok(())
@@ -2188,6 +2299,222 @@ fn gooey(
                 state.change_stat_stage(source, BattleStat::Speed, -1)?;
             }
         }
+    }
+    Ok(())
+}
+
+fn all_stat_drop_immunity(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    prevent_stat_drop(invocation, context, dispatch, true)
+}
+
+fn attack_drop_immunity(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    prevent_stat_drop(
+        invocation,
+        context,
+        dispatch,
+        context.requested_stat == Some(BattleStat::Attack),
+    )
+}
+
+fn defense_drop_immunity(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    prevent_stat_drop(
+        invocation,
+        context,
+        dispatch,
+        context.requested_stat == Some(BattleStat::Defense),
+    )
+}
+
+fn accuracy_drop_immunity(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    prevent_stat_drop(
+        invocation,
+        context,
+        dispatch,
+        context.requested_stat == Some(BattleStat::Accuracy),
+    )
+}
+
+fn prevent_stat_drop(
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+    matches: bool,
+) -> Result<(), BattleError> {
+    let Some(owner) = matching_target(invocation, context) else {
+        return Ok(());
+    };
+    if matches
+        && context
+            .source
+            .is_some_and(|source| source.side != owner.side)
+        && integer(dispatch)? < 0
+    {
+        dispatch.value = EventValue::Integer(0);
+    }
+    Ok(())
+}
+
+fn fire_power(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if context.move_type == Some(PokemonType::Fire)
+        && matching_source(invocation, context).is_some()
+    {
+        modify_integer(dispatch, 3, 2)?;
+    }
+    Ok(())
+}
+
+fn dry_skin_fire_weakness(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if context.move_type == Some(PokemonType::Fire)
+        && matching_target(invocation, context).is_some()
+    {
+        modify_integer(dispatch, 5, 4)?;
+    }
+    Ok(())
+}
+
+fn dry_skin_residual(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    _: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = owner_pokemon(invocation) else {
+        return Ok(());
+    };
+    let holder = pokemon(state, owner)?;
+    if holder.current_hp == 0 {
+        return Ok(());
+    }
+    let amount = (holder.stats.hp / 8).max(1);
+    match context.weather {
+        Some(WeatherEnvironment::Rain) => {
+            state.heal_hp(owner, amount)?;
+        }
+        Some(WeatherEnvironment::Sun) => {
+            state.damage_hp(owner, amount)?;
+        }
+        _ => {}
+    }
+    Ok(())
+}
+
+fn solar_power_attack(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if context.weather == Some(WeatherEnvironment::Sun)
+        && matching_source(invocation, context).is_some()
+    {
+        modify_integer(dispatch, 3, 2)?;
+    }
+    Ok(())
+}
+
+fn solar_power_residual(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    _: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = owner_pokemon(invocation) else {
+        return Ok(());
+    };
+    let holder = pokemon(state, owner)?;
+    if context.weather == Some(WeatherEnvironment::Sun) && holder.current_hp > 0 {
+        state.damage_hp(owner, (holder.stats.hp / 8).max(1))?;
+    }
+    Ok(())
+}
+
+fn major_status_immunity(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if matching_target(invocation, context).is_some() && context.requested_status.is_some() {
+        boolean(dispatch)?;
+        dispatch.value = EventValue::Boolean(false);
+    }
+    Ok(())
+}
+
+fn ghost_resistance(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if context.move_type == Some(PokemonType::Ghost)
+        && matching_target(invocation, context).is_some()
+    {
+        modify_integer(dispatch, 1, 2)?;
+    }
+    Ok(())
+}
+
+fn early_bird(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    _: &EventContext,
+    _: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = owner_pokemon(invocation) else {
+        return Ok(());
+    };
+    if pokemon(state, owner)?.status == Some(MajorStatus::Sleep) {
+        state.decrement_sleep_turns(owner)?;
+    }
+    Ok(())
+}
+
+fn sturdy(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = matching_target(invocation, context) else {
+        return Ok(());
+    };
+    let holder = pokemon(state, owner)?;
+    if context.move_id.is_some()
+        && holder.current_hp == holder.stats.hp
+        && integer(dispatch)? >= i64::from(holder.current_hp)
+    {
+        dispatch.value = EventValue::Integer(i64::from(holder.current_hp.saturating_sub(1)));
     }
     Ok(())
 }
@@ -3604,5 +3931,88 @@ mod tests {
             )
             .unwrap();
         assert_eq!(event.invocations.len(), 0);
+    }
+
+    #[test]
+    fn stat_drop_weather_status_and_survival_behaviors_use_typed_events() {
+        let clear_body = AbilityId::new(110);
+        let fire_mane = AbilityId::new(111);
+        let purifying_salt = AbilityId::new(112);
+        let sturdy_ability = AbilityId::new(113);
+        let registry = crate::conditions::composed_registry(
+            &EffectRegistry::new(),
+            [
+                breakable(clear_body, AbilityBehavior::AllStatDropImmunity),
+                unbreakable(fire_mane, AbilityBehavior::FirePower),
+                breakable(purifying_salt, AbilityBehavior::MajorStatusImmunity),
+                breakable(purifying_salt, AbilityBehavior::GhostResistance),
+                breakable(sturdy_ability, AbilityBehavior::Sturdy),
+            ],
+        );
+
+        let mut clear = battle(AbilityId::new(1), clear_body);
+        let blocked = registry
+            .dispatch(
+                &mut clear,
+                BattleEvent::TryStatStageChange,
+                EventContext {
+                    requested_stat: Some(BattleStat::SpecialAttack),
+                    ..context()
+                },
+                EventValue::Integer(-2),
+            )
+            .unwrap();
+        assert_eq!(blocked.value, EventValue::Integer(0));
+
+        let mut fire = battle(fire_mane, AbilityId::new(1));
+        let boosted = registry
+            .dispatch(
+                &mut fire,
+                BattleEvent::ModifySpecialAttack,
+                EventContext {
+                    move_type: Some(PokemonType::Fire),
+                    ..context()
+                },
+                EventValue::Integer(100),
+            )
+            .unwrap();
+        assert_eq!(boosted.value, EventValue::Integer(150));
+
+        let mut salt = battle(AbilityId::new(1), purifying_salt);
+        let status = registry
+            .dispatch(
+                &mut salt,
+                BattleEvent::TrySetStatus,
+                EventContext {
+                    requested_status: Some(MajorStatus::Burn),
+                    ..context()
+                },
+                EventValue::Boolean(true),
+            )
+            .unwrap();
+        assert_eq!(status.value, EventValue::Boolean(false));
+        let ghost = registry
+            .dispatch(
+                &mut salt,
+                BattleEvent::ModifyAttack,
+                EventContext {
+                    move_type: Some(PokemonType::Ghost),
+                    ..context()
+                },
+                EventValue::Integer(100),
+            )
+            .unwrap();
+        assert_eq!(ghost.value, EventValue::Integer(50));
+
+        let mut sturdy_state = battle(AbilityId::new(1), sturdy_ability);
+        let survived = registry
+            .dispatch(
+                &mut sturdy_state,
+                BattleEvent::ModifyDamage,
+                context(),
+                EventValue::Integer(100),
+            )
+            .unwrap();
+        assert_eq!(survived.value, EventValue::Integer(99));
     }
 }

@@ -30,6 +30,7 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
         "species/basculegion/ability-slot/1",
         "species/basculegionf/ability-slot/1",
         "species/dragalge/ability-slot/H"
@@ -37,10 +38,10 @@
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "aerilate",
@@ -140,15 +141,18 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/farigiraf/ability-slot/1"
+        "file:crates/rotom-core/src/combat.rs",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#stat_drop_and_priority_abilities_run_in_the_canonical_step",
+        "species/farigiraf/ability-slot/1",
+        "unit:crates/rotom-dex/tests/combat.rs#ability_handler_registration_is_declarative_and_leaves_other_abilities_unsupported"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "unit_tested",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "aromaveil",
@@ -236,15 +240,18 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/pidgeot/ability-slot/H"
+        "file:crates/rotom-core/src/abilities.rs",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#stat_drop_and_priority_abilities_run_in_the_canonical_step",
+        "species/pidgeot/ability-slot/H",
+        "unit:crates/rotom-core/src/abilities.rs#stat_drop_weather_status_and_survival_behaviors_use_typed_events"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "unit_tested",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "blaze",
@@ -349,17 +356,20 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/abilities.rs",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#stat_drop_and_priority_abilities_run_in_the_canonical_step",
         "species/dragapult/ability-slot/0",
         "species/garganacl/ability-slot/H",
-        "species/metagross/ability-slot/0"
+        "species/metagross/ability-slot/0",
+        "unit:crates/rotom-core/src/abilities.rs#stat_drop_weather_status_and_survival_behaviors_use_typed_events"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "unit_tested",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "cloudnine",
@@ -459,16 +469,17 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
         "species/glimmora/ability-slot/H",
         "species/salazzle/ability-slot/0"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "cudchew",
@@ -656,16 +667,17 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/abilities.rs",
         "species/heliolisk/ability-slot/0",
         "species/toxicroak/ability-slot/1"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "earlybird",
@@ -673,16 +685,17 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/abilities.rs",
         "species/houndoom/ability-slot/0",
         "species/kangaskhan/ability-slot/0"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "eartheater",
@@ -827,15 +840,17 @@
       "kind": "ability",
       "reachability": "battle_generated",
       "evidence": [
-        "form/pyroarmega/ability-slot/0"
+        "file:crates/rotom-core/src/abilities.rs",
+        "form/pyroarmega/ability-slot/0",
+        "unit:crates/rotom-core/src/abilities.rs#stat_drop_weather_status_and_survival_behaviors_use_typed_events"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "flamebody",
@@ -1384,18 +1399,20 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/abilities.rs",
         "species/crabominable/ability-slot/0",
         "species/gliscor/ability-slot/0",
         "species/mawile/ability-slot/0",
-        "species/pinsir/ability-slot/0"
+        "species/pinsir/ability-slot/0",
+        "unit:crates/rotom-core/src/abilities.rs#stat_drop_weather_status_and_survival_behaviors_use_typed_events"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "icebody",
@@ -1498,6 +1515,7 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
         "species/chandelure/ability-slot/H",
         "species/dragapult/ability-slot/1",
         "species/malamar/ability-slot/H",
@@ -1510,10 +1528,10 @@
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "innardsout",
@@ -1675,6 +1693,7 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/abilities.rs",
         "species/farfetchd/ability-slot/0",
         "species/lycanroc/ability-slot/0",
         "species/lycanrocmidnight/ability-slot/0",
@@ -1685,15 +1704,16 @@
         "species/sableye/ability-slot/0",
         "species/skarmory/ability-slot/0",
         "species/toucannon/ability-slot/0",
-        "species/watchog/ability-slot/1"
+        "species/watchog/ability-slot/1",
+        "unit:crates/rotom-core/src/abilities.rs#stat_drop_weather_status_and_survival_behaviors_use_typed_events"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "klutz",
@@ -1860,15 +1880,18 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/primarina/ability-slot/H"
+        "file:crates/rotom-core/src/combat.rs",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#skill_link_long_reach_scrappy_and_liquid_voice_shape_moves_before_hit_resolution",
+        "species/primarina/ability-slot/H",
+        "unit:crates/rotom-dex/tests/combat.rs#ability_handler_registration_is_declarative_and_leaves_other_abilities_unsupported"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "unit_tested",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "longreach",
@@ -1876,15 +1899,18 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/decidueye/ability-slot/H"
+        "file:crates/rotom-core/src/combat.rs",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#skill_link_long_reach_scrappy_and_liquid_voice_shape_moves_before_hit_resolution",
+        "species/decidueye/ability-slot/H",
+        "unit:crates/rotom-dex/tests/combat.rs#ability_handler_registration_is_declarative_and_leaves_other_abilities_unsupported"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "unit_tested",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "magicbounce",
@@ -2006,15 +2032,16 @@
       "kind": "ability",
       "reachability": "battle_generated",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
         "form/meganiummega/ability-slot/0"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "merciless",
@@ -2436,15 +2463,16 @@
       "kind": "ability",
       "reachability": "battle_generated",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
         "form/excadrillmega/ability-slot/0"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "pixilate",
@@ -2664,15 +2692,17 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/garganacl/ability-slot/0"
+        "file:crates/rotom-core/src/abilities.rs",
+        "species/garganacl/ability-slot/0",
+        "unit:crates/rotom-core/src/abilities.rs#stat_drop_weather_status_and_survival_behaviors_use_typed_events"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "queenlymajesty",
@@ -2680,15 +2710,17 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/tsareena/ability-slot/1"
+        "file:crates/rotom-core/src/combat.rs",
+        "species/tsareena/ability-slot/1",
+        "unit:crates/rotom-dex/tests/combat.rs#ability_handler_registration_is_declarative_and_leaves_other_abilities_unsupported"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "quickdraw",
@@ -3062,18 +3094,21 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#skill_link_long_reach_scrappy_and_liquid_voice_shape_moves_before_hit_resolution",
         "species/decidueyehisui/ability-slot/H",
         "species/kangaskhan/ability-slot/1",
         "species/pangoro/ability-slot/H",
-        "species/sirfetchd/ability-slot/H"
+        "species/sirfetchd/ability-slot/H",
+        "unit:crates/rotom-dex/tests/combat.rs#ability_handler_registration_is_declarative_and_leaves_other_abilities_unsupported"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "partial",
+      "verification": "unit_tested",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "screencleaner",
@@ -3220,6 +3255,7 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
         "species/vivillon/ability-slot/0",
         "species/vivillonarchipelago/ability-slot/0",
         "species/vivilloncontinental/ability-slot/0",
@@ -3244,10 +3280,10 @@
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "skilllink",
@@ -3255,15 +3291,18 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/toucannon/ability-slot/1"
+        "file:crates/rotom-core/src/combat.rs",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#skill_link_long_reach_scrappy_and_liquid_voice_shape_moves_before_hit_resolution",
+        "species/toucannon/ability-slot/1",
+        "unit:crates/rotom-dex/tests/combat.rs#ability_handler_registration_is_declarative_and_leaves_other_abilities_unsupported"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "unit_tested",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "slushrush",
@@ -3358,16 +3397,17 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/abilities.rs",
         "species/charizard/ability-slot/H",
         "species/heliolisk/ability-slot/H"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "solidrock",
@@ -3488,15 +3528,16 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
         "species/archaludon/ability-slot/H"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "stamina",
@@ -3657,6 +3698,7 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/abilities.rs",
         "species/aggron/ability-slot/0",
         "species/archaludon/ability-slot/1",
         "species/avalugg/ability-slot/H",
@@ -3665,15 +3707,16 @@
         "species/forretress/ability-slot/0",
         "species/garganacl/ability-slot/1",
         "species/skarmory/ability-slot/1",
-        "species/steelix/ability-slot/1"
+        "species/steelix/ability-slot/1",
+        "unit:crates/rotom-core/src/abilities.rs#stat_drop_weather_status_and_survival_behaviors_use_typed_events"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "suctioncups",
@@ -4151,15 +4194,16 @@
       "kind": "ability",
       "reachability": "battle_generated",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
         "form/golurkmega/ability-slot/0"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "implemented",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "vitalspirit",
@@ -4293,15 +4337,17 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/torkoal/ability-slot/0"
+        "file:crates/rotom-core/src/abilities.rs",
+        "species/torkoal/ability-slot/0",
+        "unit:crates/rotom-core/src/abilities.rs#stat_drop_weather_status_and_survival_behaviors_use_typed_events"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5"
     },
     {
       "id": "zerotohero",
@@ -47664,18 +47710,18 @@
       "ability": {
         "total": 215,
         "implementation": {
-          "unsupported": 133,
-          "partial": 0,
-          "implemented": 82
+          "unsupported": 108,
+          "partial": 4,
+          "implemented": 103
         },
         "verification": {
-          "not_tested": 133,
-          "unit_tested": 31,
+          "not_tested": 119,
+          "unit_tested": 45,
           "differential_verified": 51
         },
         "interaction_verification": {
-          "not_tested": 150,
-          "unit_tested": 65,
+          "not_tested": 143,
+          "unit_tested": 72,
           "differential_verified": 0
         },
         "reachability": {
