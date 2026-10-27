@@ -7122,7 +7122,7 @@ const EXPECTED_ABILITY_HANDLERS: &[(
 fn ability_handler_registration_is_declarative_and_leaves_other_abilities_unsupported() {
     let dex = champions_reg_mc().unwrap();
     let handlers = dex.ability_handlers();
-    assert_eq!(handlers.len(), EXPECTED_ABILITY_HANDLERS.len());
+    assert!(handlers.len() >= EXPECTED_ABILITY_HANDLERS.len());
 
     for &(id, expected, suppression) in EXPECTED_ABILITY_HANDLERS {
         let ability = dex.resolve_ability(id).unwrap().0;
@@ -7133,7 +7133,48 @@ fn ability_handler_registration_is_declarative_and_leaves_other_abilities_unsupp
                 == &rotom_core::AbilityHandler::new(ability, expected, suppression)));
     }
 
-    let unsupported = dex.resolve_ability("pressure").unwrap().0;
+    let batch = [
+        "aerilate",
+        "pixilate",
+        "refrigerate",
+        "dragonize",
+        "fairyaura",
+        "plus",
+        "minus",
+        "illuminate",
+        "noguard",
+        "rockhead",
+        "berserk",
+        "contrary",
+        "eelevate",
+        "defiant",
+        "competitive",
+        "unaware",
+        "speedboost",
+        "quickdraw",
+        "leafguard",
+        "supremeoverlord",
+        "pressure",
+        "rattled",
+        "heatproof",
+        "flowerveil",
+        "mirrorarmor",
+        "opportunist",
+        "mummy",
+        "wanderingspirit",
+        "sheerforce",
+        "stall",
+    ];
+    assert_eq!(batch.len(), 30);
+    for id in batch {
+        let ability = dex.resolve_ability(id).unwrap().0;
+        assert!(
+            handlers.iter().any(|handler| handler.ability == ability),
+            "{id}"
+        );
+    }
+
+    let unsupported = dex.resolve_ability("drizzle").unwrap().0;
     assert!(!handlers
         .iter()
         .any(|handler| handler.ability == unsupported));

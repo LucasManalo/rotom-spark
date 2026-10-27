@@ -1,8 +1,9 @@
 mod validation;
 
 use crate::{
-    ActiveSlot, BattleError, BattleStat, BattleState, ConditionId, ConditionState, ItemId,
-    MajorStatus, MoveSlotIndex, PokemonPosition, PokemonRef, SideId, StatStageChange, StatusState,
+    AbilityId, ActiveSlot, BattleError, BattleStat, BattleState, ConditionId, ConditionState,
+    ItemId, MajorStatus, MoveSlotIndex, PokemonPosition, PokemonRef, SideId, StatStageChange,
+    StatusState,
 };
 
 /// The actual bounded result of one HP mutation.
@@ -123,6 +124,15 @@ impl<'a> StateKernel<'a> {
     ) -> Result<Option<ItemId>, BattleError> {
         let pokemon = self.pokemon_mut(target)?;
         Ok(std::mem::replace(&mut pokemon.item, item))
+    }
+
+    pub(crate) fn set_ability(
+        &mut self,
+        target: PokemonRef,
+        ability: AbilityId,
+    ) -> Result<AbilityId, BattleError> {
+        let pokemon = self.pokemon_mut(target)?;
+        Ok(std::mem::replace(&mut pokemon.ability, ability))
     }
 
     pub(crate) fn change_stat_stage(

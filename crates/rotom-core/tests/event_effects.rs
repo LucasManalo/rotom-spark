@@ -682,9 +682,10 @@ fn queue_hooks_modify_priority_and_speed_before_sorting() {
     assert_eq!(queue.actions[0].pokemon, index(0));
     assert_eq!(queue.actions[0].priority, 1);
     assert_eq!(queue.actions[0].speed, 300);
-    assert_eq!(queue.events.len(), 8);
+    assert_eq!(queue.events.len(), 12);
     assert_eq!(queue.events[0].event, BattleEvent::ModifyPriority);
-    assert_eq!(queue.events[1].event, BattleEvent::ModifySpeed);
+    assert_eq!(queue.events[1].event, BattleEvent::ModifyFractionalPriority);
+    assert_eq!(queue.events[2].event, BattleEvent::ModifySpeed);
 }
 
 #[test]

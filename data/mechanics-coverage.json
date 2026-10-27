@@ -1144,6 +1144,101 @@
     {
       "id": "runaway", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
       "evidence": ["file:docs/research/pr-13-5-ability-modifiers.md", "unit:crates/rotom-core/src/abilities.rs#informational_only_abilities_register_no_authoritative_callback"]
+    },
+    {
+      "id": "aerilate", "kind": "ability", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-batch-30.md", "unit:crates/rotom-core/src/abilities.rs#conversion_aura_sheer_force_and_heatproof_use_ordered_modifiers"]
+    },
+    {
+      "id": "pixilate", "kind": "ability", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-batch-30.md", "unit:crates/rotom-core/src/abilities.rs#conversion_aura_sheer_force_and_heatproof_use_ordered_modifiers"]
+    },
+    {
+      "id": "refrigerate", "kind": "ability", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-batch-30.md", "unit:crates/rotom-core/src/abilities.rs#conversion_aura_sheer_force_and_heatproof_use_ordered_modifiers"]
+    },
+    {
+      "id": "dragonize", "kind": "ability", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-batch-30.md", "unit:crates/rotom-core/src/abilities.rs#conversion_aura_sheer_force_and_heatproof_use_ordered_modifiers"]
+    },
+    {
+      "id": "fairyaura", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5",
+      "evidence": ["file:docs/research/pr-13-5-ability-batch-30.md", "unit:crates/rotom-core/src/abilities.rs#conversion_aura_sheer_force_and_heatproof_use_ordered_modifiers"]
+    },
+    {
+      "id": "plus", "kind": "ability", "implementation": "implemented", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5", "evidence": ["file:docs/research/pr-13-5-ability-batch-30.md", "file:crates/rotom-core/src/abilities.rs"]
+    },
+    {
+      "id": "minus", "kind": "ability", "implementation": "implemented", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5", "evidence": ["file:docs/research/pr-13-5-ability-batch-30.md", "file:crates/rotom-core/src/abilities.rs"]
+    },
+    {
+      "id": "illuminate", "kind": "ability", "implementation": "implemented", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5", "evidence": ["file:docs/research/pr-13-5-ability-batch-30.md", "file:crates/rotom-core/src/abilities.rs"]
+    },
+    {
+      "id": "noguard", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5", "evidence": ["file:docs/research/pr-13-5-ability-batch-30.md", "file:crates/rotom-core/src/combat.rs"]
+    },
+    {
+      "id": "rockhead", "kind": "ability", "implementation": "implemented", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5", "evidence": ["file:docs/research/pr-13-5-ability-batch-30.md", "file:crates/rotom-core/src/combat.rs"]
+    },
+    {
+      "id": "berserk", "kind": "ability", "implementation": "implemented", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5", "evidence": ["file:docs/research/pr-13-5-ability-batch-30.md", "file:crates/rotom-core/src/abilities.rs"]
+    },
+    {
+      "id": "contrary", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5", "evidence": ["file:docs/research/pr-13-5-ability-batch-30.md", "unit:crates/rotom-core/src/abilities.rs#stat_transform_and_reaction_abilities_mutate_through_the_kernel"]
+    },
+    {
+      "id": "eelevate", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5", "evidence": ["file:docs/research/pr-13-5-ability-batch-30.md", "file:crates/rotom-core/src/abilities.rs"]
+    },
+    {
+      "id": "defiant", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5", "evidence": ["file:docs/research/pr-13-5-ability-batch-30.md", "unit:crates/rotom-core/src/abilities.rs#stat_transform_and_reaction_abilities_mutate_through_the_kernel"]
+    },
+    {
+      "id": "competitive", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5", "evidence": ["file:docs/research/pr-13-5-ability-batch-30.md", "unit:crates/rotom-core/src/abilities.rs#stat_transform_and_reaction_abilities_mutate_through_the_kernel"]
+    },
+    {
+      "id": "unaware", "kind": "ability", "implementation": "implemented", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5", "evidence": ["file:docs/research/pr-13-5-ability-batch-30.md", "file:crates/rotom-core/src/combat.rs"]
+    },
+    {
+      "id": "speedboost", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5", "evidence": ["file:docs/research/pr-13-5-ability-batch-30.md", "file:crates/rotom-core/src/abilities.rs"]
+    },
+    {
+      "id": "quickdraw", "kind": "ability", "implementation": "implemented", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5", "evidence": ["file:docs/research/pr-13-5-ability-batch-30.md", "file:crates/rotom-core/src/state/queue.rs"]
+    },
+    {
+      "id": "leafguard", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5", "evidence": ["file:docs/research/pr-13-5-ability-batch-30.md", "file:crates/rotom-core/src/abilities.rs"]
+    },
+    {
+      "id": "supremeoverlord", "kind": "ability", "implementation": "implemented", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5", "evidence": ["file:docs/research/pr-13-5-ability-batch-30.md", "file:crates/rotom-core/src/abilities.rs"]
+    },
+    {
+      "id": "pressure", "kind": "ability", "implementation": "implemented", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5", "evidence": ["file:docs/research/pr-13-5-ability-batch-30.md", "file:crates/rotom-core/src/combat.rs"]
+    },
+    {
+      "id": "rattled", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5", "evidence": ["file:docs/research/pr-13-5-ability-batch-30.md", "file:crates/rotom-core/src/abilities.rs"]
+    },
+    {
+      "id": "heatproof", "kind": "ability", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5", "evidence": ["file:docs/research/pr-13-5-ability-batch-30.md", "unit:crates/rotom-core/src/abilities.rs#conversion_aura_sheer_force_and_heatproof_use_ordered_modifiers"]
+    },
+    {
+      "id": "flowerveil", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5", "evidence": ["file:docs/research/pr-13-5-ability-batch-30.md", "file:crates/rotom-core/src/abilities.rs"]
+    },
+    {
+      "id": "mirrorarmor", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5", "evidence": ["file:docs/research/pr-13-5-ability-batch-30.md", "file:crates/rotom-core/src/abilities.rs"]
+    },
+    {
+      "id": "opportunist", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5", "evidence": ["file:docs/research/pr-13-5-ability-batch-30.md", "file:crates/rotom-core/src/abilities.rs"]
+    },
+    {
+      "id": "mummy", "kind": "ability", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5", "evidence": ["file:docs/research/pr-13-5-ability-batch-30.md", "unit:crates/rotom-core/src/abilities.rs#contact_ability_replacement_and_swap_are_authoritative_state_changes"]
+    },
+    {
+      "id": "wanderingspirit", "kind": "ability", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5", "evidence": ["file:docs/research/pr-13-5-ability-batch-30.md", "unit:crates/rotom-core/src/abilities.rs#contact_ability_replacement_and_swap_are_authoritative_state_changes"]
+    },
+    {
+      "id": "sheerforce", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5", "evidence": ["file:docs/research/pr-13-5-ability-batch-30.md", "unit:crates/rotom-core/src/abilities.rs#conversion_aura_sheer_force_and_heatproof_use_ordered_modifiers"]
+    },
+    {
+      "id": "stall", "kind": "ability", "implementation": "implemented", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5", "evidence": ["file:docs/research/pr-13-5-ability-batch-30.md", "file:crates/rotom-core/src/state/queue.rs"]
     }
   ]
 }

@@ -112,7 +112,7 @@ test('ability batches keep isolated and interaction verification separate', () =
 	}
 	assert.deepEqual(
 		manifest.summary.by_kind.ability.interaction_verification,
-		{not_tested: 150, unit_tested: 65, differential_verified: 0}
+		{not_tested: 143, unit_tested: 72, differential_verified: 0}
 	);
 });
 

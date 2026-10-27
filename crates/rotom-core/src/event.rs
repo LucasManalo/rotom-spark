@@ -15,6 +15,8 @@ pub enum BattleEvent {
     BeforeTurn,
     BeforeMove,
     ModifyPriority,
+    /// Relays sub-priority within one integer priority bracket.
+    ModifyFractionalPriority,
     ModifySpeed,
     /// Relays the effective offensive stat after move-specific selection.
     ModifyAttack,
@@ -39,6 +41,8 @@ pub enum BattleEvent {
     ModifyDamage,
     /// Relays a requested stat-stage delta before the kernel applies it.
     TryStatStageChange,
+    /// Reports the kernel's actual applied stat-stage delta.
+    AfterStatStageChange,
     TryHit,
     /// Relays move-specific immunity checks after `TryHit` and type immunity.
     TryImmunity,
@@ -66,6 +70,7 @@ impl BattleEvent {
                 EventContract::new(EventRelay::Boolean, true, true)
             }
             Self::ModifyPriority
+            | Self::ModifyFractionalPriority
             | Self::ModifySpeed
             | Self::ModifyAttack
             | Self::ModifySpecialAttack
@@ -79,7 +84,9 @@ impl BattleEvent {
             | Self::ModifyDamage
             | Self::TryStatStageChange => EventContract::new(EventRelay::Integer, false, true),
             Self::CriticalHit => EventContract::new(EventRelay::Boolean, false, true),
-            Self::AfterDamage => EventContract::new(EventRelay::Integer, false, false),
+            Self::AfterDamage | Self::AfterStatStageChange => {
+                EventContract::new(EventRelay::Integer, false, false)
+            }
             Self::BeforeTurn
             | Self::Hit
             | Self::AfterSetStatus
@@ -211,6 +218,7 @@ impl Default for EffectOrder {
 /// Actor, target, and move associated with one event dispatch.
 #[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
+#[allow(clippy::struct_excessive_bools)] // Independent event provenance flags are intentionally orthogonal.
 pub struct EventContext {
     pub source: Option<PokemonRef>,
     pub target: Option<PokemonRef>,
@@ -227,6 +235,15 @@ pub struct EventContext {
     pub move_type: Option<PokemonType>,
     #[serde(default, skip_serializing_if = "MoveInteractionFlags::is_empty")]
     pub move_flags: MoveInteractionFlags,
+    /// Whether the source ability converted this move from Normal type.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub move_type_converted: bool,
+    /// Whether Sheer Force removed this move's secondary effects.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub sheer_force_boosted: bool,
+    /// Whether an active ally supplies Plus/Minus's shared Special Attack boost.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub plus_minus_active: bool,
     /// Combined Showdown type modifier exponent: positive is weak, negative is resisted.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub type_effectiveness: Option<i8>,
@@ -483,6 +500,19 @@ impl EffectState<'_> {
         item: Option<ItemId>,
     ) -> Result<Option<ItemId>, BattleError> {
         StateKernel::new(self.battle).set_item(target, item)
+    }
+
+    /// Replaces an ability identity and returns the previous identity.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the target is invalid.
+    pub fn set_ability(
+        &mut self,
+        target: PokemonRef,
+        ability: AbilityId,
+    ) -> Result<AbilityId, BattleError> {
+        StateKernel::new(self.battle).set_ability(target, ability)
     }
 
     /// Adds one unique field condition.

@@ -25,6 +25,9 @@ pub struct QueuedAction {
     pub choice: PokemonAction,
     pub order: ActionOrder,
     pub priority: i8,
+    /// Integer representation of Showdown's fractional priority key.
+    #[serde(default)]
+    pub fractional_priority: i8,
     pub speed: u16,
     /// Derived queue-time provenance used by the later Dark-type immunity check.
     #[serde(default)]
@@ -158,6 +161,19 @@ impl BattleState {
             } else {
                 (priority, false)
             };
+            let fractional_priority = if order == ActionOrder::Move {
+                let event = mechanics.effects().dispatch(
+                    self,
+                    BattleEvent::ModifyFractionalPriority,
+                    context,
+                    EventValue::Integer(0),
+                )?;
+                let value = event_i8(&event, BattleEvent::ModifyFractionalPriority)?;
+                events.push(event);
+                value
+            } else {
+                0
+            };
             let speed_event = mechanics.effects().dispatch(
                 self,
                 BattleEvent::ModifySpeed,
@@ -177,6 +193,7 @@ impl BattleState {
                 choice: action,
                 order,
                 priority,
+                fractional_priority,
                 speed,
                 prankster_boosted,
             });
@@ -297,9 +314,13 @@ fn compare_actions(left: &QueuedAction, right: &QueuedAction) -> Ordering {
     left.order
         .cmp(&right.order)
         .then_with(|| right.priority.cmp(&left.priority))
+        .then_with(|| right.fractional_priority.cmp(&left.fractional_priority))
         .then_with(|| right.speed.cmp(&left.speed))
 }
 
 fn ordering_keys_match(left: QueuedAction, right: QueuedAction) -> bool {
-    left.order == right.order && left.priority == right.priority && left.speed == right.speed
+    left.order == right.order
+        && left.priority == right.priority
+        && left.fractional_priority == right.fractional_priority
+        && left.speed == right.speed
 }

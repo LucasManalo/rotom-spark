@@ -500,6 +500,11 @@ pub trait CombatData {
         false
     }
 
+    /// Whether this move is Struggle, whose recoil bypasses Rock Head.
+    fn move_is_struggle(&self, _move_id: MoveId) -> bool {
+        false
+    }
+
     /// Resolves format-specific identities for built-in field mechanics.
     /// Partial data providers may leave the default empty mapping.
     fn field_effect_ids(&self) -> crate::FieldEffectIds {
@@ -703,6 +708,8 @@ struct MoveExecutionContext {
     secondary_effects: Vec<SecondaryMoveEffect>,
     self_effect: Option<SelfMoveEffect>,
     suppress_target_ability: bool,
+    move_type_converted: bool,
+    sheer_force_boosted: bool,
 }
 
 #[derive(Clone, Copy)]
@@ -900,16 +907,30 @@ impl BattleState {
             return Ok(());
         }
 
+        let pressure = move_context
+            .targets
+            .iter()
+            .filter(|target| {
+                target.target.side != move_context.source.side
+                    && self
+                        .side(target.target.side)
+                        .pokemon(target.target.pokemon)
+                        .is_some_and(|pokemon| {
+                            data.ability_has_behavior(
+                                pokemon.ability,
+                                crate::AbilityBehavior::Pressure,
+                            )
+                        })
+            })
+            .count();
+        let pp_cost = u8::try_from(1_usize.saturating_add(pressure)).unwrap_or(u8::MAX);
         let remaining_pp = self
             .side(queued.side)
             .pokemon(source_index)
             .and_then(|source| source.moves.get(usize::from(queued.move_slot.get())))
             .ok_or_else(|| BattleError::InvalidState("move slot became invalid".to_owned()))?
             .pp
-            .checked_sub(1)
-            .ok_or_else(|| {
-                BattleError::InvalidState("queued move has no remaining PP".to_owned())
-            })?;
+            .saturating_sub(pp_cost);
         StateKernel::new(self).set_pp(move_context.source, queued.move_slot, remaining_pp)?;
 
         self.execute_primary_operation(data, &move_context, effects, field_effects, resolution)
@@ -943,7 +964,9 @@ impl BattleState {
         let mut move_data = data.move_data(move_id).ok_or_else(|| {
             BattleError::DataMismatch(format!("missing combat data for move {move_id}"))
         })?;
-        if data.ability_has_behavior(source.ability, crate::AbilityBehavior::LiquidVoice)
+        let source_ability = source.ability;
+        let move_type_converted = apply_type_conversion(data, source_ability, &mut move_data);
+        if data.ability_has_behavior(source_ability, crate::AbilityBehavior::LiquidVoice)
             && move_data.interaction_flags.sound()
         {
             move_data.move_type = PokemonType::Water;
@@ -959,8 +982,15 @@ impl BattleState {
         }
         let intrinsic = data.move_intrinsic(move_id);
         let primary_effects = data.primary_move_effects(move_id);
-        let secondary_effects = data.secondary_move_effects(move_id);
-        let self_effect = data.self_move_effect(move_id);
+        let mut secondary_effects = data.secondary_move_effects(move_id);
+        let mut self_effect = data.self_move_effect(move_id);
+        let sheer_force_boosted = data
+            .ability_has_behavior(source_ability, crate::AbilityBehavior::SheerForce)
+            && !secondary_effects.is_empty();
+        if sheer_force_boosted {
+            secondary_effects.clear();
+            self_effect = None;
+        }
         preflight_move(
             move_id,
             move_data,
@@ -993,6 +1023,8 @@ impl BattleState {
                 source.ability,
                 crate::AbilityBehavior::BreaksTargetAbilities,
             ),
+            move_type_converted,
+            sheer_force_boosted,
         })
     }
 
@@ -1062,6 +1094,8 @@ impl BattleState {
                 move_category: Some(move_context.move_data.category),
                 move_type: Some(move_context.move_data.move_type),
                 move_flags: move_context.move_data.interaction_flags,
+                move_type_converted: move_context.move_type_converted,
+                sheer_force_boosted: move_context.sheer_force_boosted,
                 type_effectiveness: self.target_type_effectiveness(
                     data,
                     move_context.move_data,
@@ -1195,7 +1229,13 @@ impl BattleState {
             .target_outcomes
             .extend(outcomes.into_iter().flatten());
         resolution.target_outcomes.extend(hit_outcomes);
-        self.apply_recoil(move_context, total_applied_damage, effects, resolution)?;
+        self.apply_recoil(
+            data,
+            move_context,
+            total_applied_damage,
+            effects,
+            resolution,
+        )?;
         if !any_hit {
             resolution.actions.push(ResolvedAction::Skipped {
                 side: move_context.queued.side,
@@ -1258,8 +1298,9 @@ impl BattleState {
         Ok(())
     }
 
-    fn apply_recoil(
+    fn apply_recoil<D: CombatData>(
         &mut self,
+        data: &D,
         context: &MoveExecutionContext,
         applied_damage: u32,
         effects: &EffectRegistry,
@@ -1281,6 +1322,16 @@ impl BattleState {
         let Some((fraction, basis)) = fraction_and_basis else {
             return Ok(());
         };
+        let source_ability = self
+            .side(context.source.side)
+            .pokemon(context.source.pokemon)
+            .ok_or_else(|| BattleError::InvalidState("recoil source is invalid".to_owned()))?
+            .ability;
+        if data.ability_has_behavior(source_ability, crate::AbilityBehavior::RockHead)
+            && !data.move_is_struggle(context.move_id)
+        {
+            return Ok(());
+        }
         if applied_damage == 0 {
             return Ok(());
         }
@@ -1551,7 +1602,7 @@ impl BattleState {
         resolution
             .target_outcomes
             .extend(outcomes.into_iter().flatten());
-        self.apply_recoil(context, total_applied, effects, resolution)?;
+        self.apply_recoil(data, context, total_applied, effects, resolution)?;
         resolution.actions.push(if any_hit {
             ResolvedAction::Used {
                 side: context.queued.side,
@@ -2084,6 +2135,17 @@ impl BattleState {
                     move_type: Some(context.move_data.move_type),
                     move_flags: context.move_data.interaction_flags,
                     requested_status: Some(status),
+                    target_types: data.pokemon_types(
+                        self.side(target.side)
+                            .pokemon(target.pokemon)
+                            .ok_or_else(|| {
+                                BattleError::InvalidState("status target is invalid".to_owned())
+                            })?
+                            .species,
+                        self.side(target.side)
+                            .pokemon(target.pokemon)
+                            .and_then(|pokemon| pokemon.form),
+                    ),
                     weather: field_effects.weather_environment(self),
                     terrain: field_effects.terrain_environment(self),
                     ..EventContext::default()
@@ -2120,17 +2182,29 @@ impl BattleState {
                 {
                     return Ok(false);
                 }
+                let stat_context = EventContext {
+                    source: Some(context.source),
+                    target: Some(target),
+                    move_id: Some(context.move_id),
+                    suppress_target_ability: context.suppress_target_ability,
+                    requested_stat: Some(stat),
+                    target_types: data.pokemon_types(
+                        self.side(target.side)
+                            .pokemon(target.pokemon)
+                            .ok_or_else(|| {
+                                BattleError::InvalidState("stat target is invalid".to_owned())
+                            })?
+                            .species,
+                        self.side(target.side)
+                            .pokemon(target.pokemon)
+                            .and_then(|pokemon| pokemon.form),
+                    ),
+                    ..EventContext::default()
+                };
                 let event = effects.dispatch(
                     self,
                     BattleEvent::TryStatStageChange,
-                    EventContext {
-                        source: Some(context.source),
-                        target: Some(target),
-                        move_id: Some(context.move_id),
-                        suppress_target_ability: context.suppress_target_ability,
-                        requested_stat: Some(stat),
-                        ..EventContext::default()
-                    },
+                    stat_context,
                     EventValue::Integer(i64::from(delta)),
                 )?;
                 let EventValue::Integer(relayed_delta) = event.value else {
@@ -2142,10 +2216,18 @@ impl BattleState {
                     BattleError::InvalidState("stat-stage relay does not fit in i8".to_owned())
                 })?;
                 resolution.events.push(event);
-                Ok(StateKernel::new(self)
+                let applied = StateKernel::new(self)
                     .change_stat_stage(target, stat, delta)?
-                    .applied_delta
-                    != 0)
+                    .applied_delta;
+                if applied != 0 {
+                    resolution.events.push(effects.dispatch(
+                        self,
+                        BattleEvent::AfterStatStageChange,
+                        stat_context,
+                        EventValue::Integer(i64::from(applied)),
+                    )?);
+                }
+                Ok(applied != 0)
             }
             PrimaryMoveEffect::Heal {
                 numerator,
@@ -2674,11 +2756,40 @@ impl BattleState {
             .ok_or_else(|| BattleError::DataMismatch("missing target type data".to_owned()))?;
         let type_exponent =
             self.type_modifier_for_source(data, move_data.move_type, source, target_types)?;
-        let source_state = self
+        let mut source_state = self
             .side(source.side)
             .pokemon(source.pokemon)
             .ok_or_else(|| BattleError::InvalidState("damage source is out of bounds".to_owned()))?
             .clone();
+        if data.ability_has_behavior(source_state.ability, crate::AbilityBehavior::Unaware) {
+            target_state.stat_stages.def = 0;
+            target_state.stat_stages.spd = 0;
+            target_state.stat_stages.evasion = 0;
+        }
+        if !move_context.suppress_target_ability
+            && data.ability_has_behavior(target_state.ability, crate::AbilityBehavior::Unaware)
+        {
+            source_state.stat_stages.atk = 0;
+            source_state.stat_stages.spa = 0;
+            source_state.stat_stages.accuracy = 0;
+        }
+        let plus_minus_active = data
+            .ability_has_behavior(source_state.ability, crate::AbilityBehavior::PlusMinus)
+            && self
+                .side(source.side)
+                .active
+                .iter()
+                .flatten()
+                .copied()
+                .any(|index| {
+                    index != source.pokemon
+                        && self.side(source.side).pokemon(index).is_some_and(|ally| {
+                            data.ability_has_behavior(
+                                ally.ability,
+                                crate::AbilityBehavior::PlusMinus,
+                            )
+                        })
+                });
         let mut event_context = EventContext {
             source: Some(source),
             target: Some(target),
@@ -2688,6 +2799,9 @@ impl BattleState {
             move_category: Some(move_data.category),
             move_type: Some(move_data.move_type),
             move_flags: move_data.interaction_flags,
+            move_type_converted: move_context.move_type_converted,
+            sheer_force_boosted: move_context.sheer_force_boosted,
+            plus_minus_active,
             type_effectiveness: type_exponent,
             weather: field_effects.weather_environment(self),
             terrain: field_effects.terrain_environment(self),
@@ -2897,12 +3011,28 @@ impl BattleState {
         let MoveAccuracy::Percent { value } = move_context.move_data.accuracy else {
             return Ok(true);
         };
+        let source_ability = self
+            .side(move_context.source.side)
+            .pokemon(move_context.source.pokemon)
+            .ok_or_else(|| BattleError::InvalidState("accuracy source is invalid".to_owned()))?
+            .ability;
+        let target_ability = self
+            .side(target.side)
+            .pokemon(target.pokemon)
+            .ok_or_else(|| BattleError::InvalidState("accuracy target is invalid".to_owned()))?
+            .ability;
+        if data.ability_has_behavior(source_ability, crate::AbilityBehavior::NoGuard)
+            || (!move_context.suppress_target_ability
+                && data.ability_has_behavior(target_ability, crate::AbilityBehavior::NoGuard))
+        {
+            return Ok(true);
+        }
         let value =
             match field_effects.weather_accuracy(self, move_context.move_id, u16::from(value)) {
                 crate::field_effects::WeatherAccuracy::Always => return Ok(true),
                 crate::field_effects::WeatherAccuracy::Percent(value) => value,
             };
-        let source_stage = self
+        let mut source_stage = self
             .side(move_context.source.side)
             .pokemon(move_context.source.pokemon)
             .ok_or_else(|| BattleError::InvalidState("accuracy source is invalid".to_owned()))?
@@ -2914,6 +3044,14 @@ impl BattleState {
             .ok_or_else(|| BattleError::InvalidState("accuracy target is invalid".to_owned()))?
             .stat_stages
             .evasion;
+        if data.ability_has_behavior(source_ability, crate::AbilityBehavior::Unaware) {
+            target_stage = 0;
+        }
+        if !move_context.suppress_target_ability
+            && data.ability_has_behavior(target_ability, crate::AbilityBehavior::Unaware)
+        {
+            source_stage = 0;
+        }
         let ignores_evasion = self
             .side(move_context.source.side)
             .pokemon(move_context.source.pokemon)
@@ -3838,6 +3976,32 @@ fn rounded_fraction(value: u32, fraction: EffectFraction) -> Result<u32, BattleE
 }
 
 #[allow(clippy::too_many_lines)]
+fn apply_type_conversion<D: CombatData>(
+    data: &D,
+    ability: AbilityId,
+    move_data: &mut CombatMove,
+) -> bool {
+    if move_data.move_type != PokemonType::Normal {
+        return false;
+    }
+    for converted_type in [
+        PokemonType::Flying,
+        PokemonType::Fairy,
+        PokemonType::Ice,
+        PokemonType::Dragon,
+    ] {
+        if data.ability_has_behavior(
+            ability,
+            crate::AbilityBehavior::TypeConversion(converted_type),
+        ) {
+            move_data.move_type = converted_type;
+            return true;
+        }
+    }
+    false
+}
+
+#[allow(clippy::too_many_lines)] // Capability validation is one cohesive, linear boundary check.
 fn preflight_move(
     move_id: MoveId,
     move_data: CombatMove,

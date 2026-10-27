@@ -111,6 +111,30 @@ pub enum AbilityBehavior {
     RainDish,
     Moxie,
     Gooey,
+    TypeConversion(PokemonType),
+    FairyAura,
+    PlusMinus,
+    NoGuard,
+    RockHead,
+    Berserk,
+    Contrary,
+    Defiant,
+    Competitive,
+    Unaware,
+    SpeedBoost,
+    QuickDraw,
+    LeafGuard,
+    SupremeOverlord,
+    Pressure,
+    Rattled,
+    Heatproof,
+    FlowerVeil,
+    MirrorArmor,
+    Opportunist,
+    Mummy,
+    WanderingSpirit,
+    SheerForce,
+    Stall,
     /// The pinned ability has no authoritative battle-state effect.
     NoAuthoritativeEffect,
 }
@@ -914,6 +938,156 @@ const BEHAVIOR_REGISTRATIONS: &[BehaviorRegistration] = &[
         BattleEvent::AfterDamage,
         DEFAULT_ORDER,
         gooey,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::TypeConversion(PokemonType::Flying),
+        BattleEvent::ModifyBasePower,
+        EffectOrder::new(0, 23, 0),
+        type_conversion_power,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::TypeConversion(PokemonType::Fairy),
+        BattleEvent::ModifyBasePower,
+        EffectOrder::new(0, 23, 0),
+        type_conversion_power,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::TypeConversion(PokemonType::Ice),
+        BattleEvent::ModifyBasePower,
+        EffectOrder::new(0, 23, 0),
+        type_conversion_power,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::TypeConversion(PokemonType::Dragon),
+        BattleEvent::ModifyBasePower,
+        EffectOrder::new(0, 23, 0),
+        type_conversion_power,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::FairyAura,
+        BattleEvent::ModifyBasePower,
+        EffectOrder::new(0, 20, 0),
+        fairy_aura,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::PlusMinus,
+        BattleEvent::ModifySpecialAttack,
+        EffectOrder::new(0, 5, 0),
+        plus_minus,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::Berserk,
+        BattleEvent::AfterDamage,
+        DEFAULT_ORDER,
+        berserk,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::Contrary,
+        BattleEvent::TryStatStageChange,
+        DEFAULT_ORDER,
+        contrary,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::Defiant,
+        BattleEvent::AfterStatStageChange,
+        DEFAULT_ORDER,
+        defiant,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::Competitive,
+        BattleEvent::AfterStatStageChange,
+        DEFAULT_ORDER,
+        competitive,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::SpeedBoost,
+        BattleEvent::Residual,
+        EffectOrder::new(28, 0, 2),
+        speed_boost,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::QuickDraw,
+        BattleEvent::ModifyFractionalPriority,
+        EffectOrder::new(0, -1, 0),
+        quick_draw,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::LeafGuard,
+        BattleEvent::TrySetStatus,
+        DEFAULT_ORDER,
+        leaf_guard,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::SupremeOverlord,
+        BattleEvent::ModifyBasePower,
+        EffectOrder::new(0, 21, 0),
+        supreme_overlord,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::Rattled,
+        BattleEvent::AfterDamage,
+        DEFAULT_ORDER,
+        rattled,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::Heatproof,
+        BattleEvent::ModifyAttack,
+        EffectOrder::new(0, 6, 0),
+        heatproof,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::Heatproof,
+        BattleEvent::ModifySpecialAttack,
+        EffectOrder::new(0, 5, 0),
+        heatproof,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::FlowerVeil,
+        BattleEvent::TryStatStageChange,
+        DEFAULT_ORDER,
+        flower_veil_stat,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::FlowerVeil,
+        BattleEvent::TrySetStatus,
+        DEFAULT_ORDER,
+        flower_veil_status,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::MirrorArmor,
+        BattleEvent::TryStatStageChange,
+        DEFAULT_ORDER,
+        mirror_armor,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::Opportunist,
+        BattleEvent::AfterStatStageChange,
+        DEFAULT_ORDER,
+        opportunist,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::Mummy,
+        BattleEvent::AfterDamage,
+        DEFAULT_ORDER,
+        mummy,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::WanderingSpirit,
+        BattleEvent::AfterDamage,
+        DEFAULT_ORDER,
+        wandering_spirit,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::SheerForce,
+        BattleEvent::ModifyBasePower,
+        EffectOrder::new(0, 21, 0),
+        sheer_force,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::Stall,
+        BattleEvent::ModifyFractionalPriority,
+        DEFAULT_ORDER,
+        stall,
     ),
 ];
 
@@ -2299,6 +2473,403 @@ fn gooey(
                 state.change_stat_stage(source, BattleStat::Speed, -1)?;
             }
         }
+    }
+    Ok(())
+}
+
+fn type_conversion_power(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if context.move_type_converted && matching_source(invocation, context).is_some() {
+        modify_integer(dispatch, 4915, 4096)?;
+    }
+    Ok(())
+}
+
+fn fairy_aura(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if context.move_type != Some(PokemonType::Fairy)
+        || context.move_category == Some(MoveCategory::Status)
+    {
+        return Ok(());
+    }
+    let EffectSource::Ability(ability) = invocation.source else {
+        return Ok(());
+    };
+    let Some(owner) = owner_pokemon(invocation) else {
+        return Ok(());
+    };
+    let first = [crate::SideId::P1, crate::SideId::P2]
+        .into_iter()
+        .flat_map(|side| {
+            state
+                .battle()
+                .side(side)
+                .active
+                .iter()
+                .flatten()
+                .copied()
+                .map(move |pokemon| PokemonRef::new(side, pokemon))
+        })
+        .filter(|pokemon_ref| {
+            pokemon(state, *pokemon_ref).is_ok_and(|holder| holder.ability == ability)
+        })
+        .min();
+    if first == Some(owner) {
+        modify_integer(dispatch, 5448, 4096)?;
+    }
+    Ok(())
+}
+
+fn plus_minus(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if context.plus_minus_active && matching_source(invocation, context).is_some() {
+        modify_integer(dispatch, 3, 2)?;
+    }
+    Ok(())
+}
+
+fn berserk(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = damaged_holder(invocation, context, dispatch) else {
+        return Ok(());
+    };
+    let holder = pokemon(state, owner)?;
+    let damage = u16::try_from(integer(dispatch)?).unwrap_or(u16::MAX);
+    if holder.current_hp > 0
+        && u32::from(holder.current_hp) * 2 <= u32::from(holder.stats.hp)
+        && u32::from(holder.current_hp) + u32::from(damage) > u32::from(holder.stats.hp) / 2
+    {
+        state.change_stat_stage(owner, BattleStat::SpecialAttack, 1)?;
+    }
+    Ok(())
+}
+
+fn contrary(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if matching_target(invocation, context).is_some() {
+        dispatch.value = EventValue::Integer(integer(dispatch)?.saturating_neg());
+    }
+    Ok(())
+}
+
+fn defiant(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    reactive_stat_drop_boost(state, invocation, context, dispatch, BattleStat::Attack)
+}
+
+fn competitive(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    reactive_stat_drop_boost(
+        state,
+        invocation,
+        context,
+        dispatch,
+        BattleStat::SpecialAttack,
+    )
+}
+
+fn reactive_stat_drop_boost(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &EventDispatch,
+    stat: BattleStat,
+) -> Result<(), BattleError> {
+    let Some(owner) = matching_target(invocation, context) else {
+        return Ok(());
+    };
+    if integer(dispatch)? < 0
+        && context
+            .source
+            .is_some_and(|source| source.side != owner.side)
+    {
+        state.change_stat_stage(owner, stat, 2)?;
+    }
+    Ok(())
+}
+
+fn speed_boost(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    _: &EventContext,
+    _: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if let Some(owner) = owner_pokemon(invocation) {
+        if pokemon(state, owner)?.current_hp > 0 {
+            state.change_stat_stage(owner, BattleStat::Speed, 1)?;
+        }
+    }
+    Ok(())
+}
+
+fn quick_draw(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if context.move_category != Some(MoveCategory::Status)
+        && matching_source(invocation, context).is_some()
+        && state.chance(RngReason::Ability, 3, 10)?
+    {
+        dispatch.value = EventValue::Integer(integer(dispatch)?.saturating_add(1));
+    }
+    Ok(())
+}
+
+fn stall(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if matching_source(invocation, context).is_some() {
+        dispatch.value = EventValue::Integer(integer(dispatch)?.saturating_sub(1));
+    }
+    Ok(())
+}
+
+fn leaf_guard(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    prevent_status(
+        invocation,
+        context,
+        dispatch,
+        context.weather == Some(WeatherEnvironment::Sun) && context.requested_status.is_some(),
+        false,
+    )
+}
+
+fn supreme_overlord(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = matching_source(invocation, context) else {
+        return Ok(());
+    };
+    let fainted = state
+        .battle()
+        .side(owner.side)
+        .selected_team
+        .iter()
+        .filter(|index| {
+            state
+                .battle()
+                .side(owner.side)
+                .pokemon(**index)
+                .is_some_and(crate::PokemonState::is_fainted)
+        })
+        .count()
+        .min(5);
+    let numerator = [4096, 4506, 4915, 5325, 5734, 6144][fainted];
+    modify_integer(dispatch, numerator, 4096)
+}
+
+fn rattled(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    boost_damaged_holder(
+        state,
+        invocation,
+        context,
+        dispatch,
+        BattleStat::Speed,
+        1,
+        matches!(
+            context.move_type,
+            Some(PokemonType::Bug | PokemonType::Dark | PokemonType::Ghost)
+        ),
+    )
+}
+
+fn heatproof(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if context.move_type == Some(PokemonType::Fire)
+        && matching_target(invocation, context).is_some()
+    {
+        modify_integer(dispatch, 1, 2)?;
+    }
+    Ok(())
+}
+
+fn flower_veil_stat(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let protects = owner_pokemon(invocation)
+        .zip(context.target)
+        .is_some_and(|(owner, target)| owner.side == target.side)
+        && context.target_types.is_some_and(|types| {
+            types.primary == PokemonType::Grass || types.secondary == Some(PokemonType::Grass)
+        });
+    if protects
+        && context.source.is_some_and(|source| {
+            context
+                .target
+                .is_some_and(|target| source.side != target.side)
+        })
+        && integer(dispatch)? < 0
+    {
+        dispatch.value = EventValue::Integer(0);
+    }
+    Ok(())
+}
+
+fn flower_veil_status(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let protects = owner_pokemon(invocation)
+        .zip(context.target)
+        .is_some_and(|(owner, target)| owner.side == target.side)
+        && context.target_types.is_some_and(|types| {
+            types.primary == PokemonType::Grass || types.secondary == Some(PokemonType::Grass)
+        });
+    prevent_status(
+        invocation,
+        context,
+        dispatch,
+        context.requested_status.is_some() && protects,
+        true,
+    )
+}
+
+fn mirror_armor(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = matching_target(invocation, context) else {
+        return Ok(());
+    };
+    let delta = integer(dispatch)?;
+    if delta < 0
+        && context
+            .source
+            .is_some_and(|source| source.side != owner.side)
+    {
+        if let (Some(source), Some(stat)) = (context.source, context.requested_stat) {
+            state.change_stat_stage(source, stat, i8::try_from(delta).unwrap_or(i8::MIN))?;
+            dispatch.value = EventValue::Integer(0);
+        }
+    }
+    Ok(())
+}
+
+fn opportunist(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = owner_pokemon(invocation) else {
+        return Ok(());
+    };
+    let delta = integer(dispatch)?;
+    if delta > 0
+        && context
+            .target
+            .is_some_and(|target| target.side != owner.side)
+    {
+        if let Some(stat) = context.requested_stat {
+            state.change_stat_stage(owner, stat, i8::try_from(delta).unwrap_or(i8::MAX))?;
+        }
+    }
+    Ok(())
+}
+
+fn mummy(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if context.move_flags.contact() && damaged_holder(invocation, context, dispatch).is_some() {
+        if let (Some(source), EffectSource::Ability(ability)) = (context.source, invocation.source)
+        {
+            if Some(source) != context.target {
+                state.set_ability(source, ability)?;
+            }
+        }
+    }
+    Ok(())
+}
+
+fn wandering_spirit(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = damaged_holder(invocation, context, dispatch) else {
+        return Ok(());
+    };
+    let Some(source) = context.source.filter(|source| *source != owner) else {
+        return Ok(());
+    };
+    if context.move_flags.contact() {
+        let owner_ability = pokemon(state, owner)?.ability;
+        let source_ability = pokemon(state, source)?.ability;
+        state.set_ability(owner, source_ability)?;
+        state.set_ability(source, owner_ability)?;
+    }
+    Ok(())
+}
+
+fn sheer_force(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if context.sheer_force_boosted && matching_source(invocation, context).is_some() {
+        modify_integer(dispatch, 5325, 4096)?;
     }
     Ok(())
 }
@@ -4014,5 +4585,201 @@ mod tests {
             )
             .unwrap();
         assert_eq!(survived.value, EventValue::Integer(99));
+    }
+
+    #[test]
+    fn conversion_aura_sheer_force_and_heatproof_use_ordered_modifiers() {
+        let converter = AbilityId::new(120);
+        let aura = AbilityId::new(121);
+        let sheer_force_ability = AbilityId::new(122);
+        let heatproof_ability = AbilityId::new(123);
+        let registry = crate::conditions::composed_registry(
+            &EffectRegistry::new(),
+            [
+                unbreakable(
+                    converter,
+                    AbilityBehavior::TypeConversion(PokemonType::Flying),
+                ),
+                unbreakable(aura, AbilityBehavior::FairyAura),
+                unbreakable(sheer_force_ability, AbilityBehavior::SheerForce),
+                breakable(heatproof_ability, AbilityBehavior::Heatproof),
+            ],
+        );
+
+        let mut converted_battle = battle(converter, AbilityId::new(1));
+        let event = registry
+            .dispatch(
+                &mut converted_battle,
+                BattleEvent::ModifyBasePower,
+                EventContext {
+                    move_type_converted: true,
+                    ..context()
+                },
+                EventValue::Integer(100),
+            )
+            .unwrap();
+        assert_eq!(event.value, EventValue::Integer(120));
+
+        let mut aura_battle = battle(aura, AbilityId::new(1));
+        let event = registry
+            .dispatch(
+                &mut aura_battle,
+                BattleEvent::ModifyBasePower,
+                EventContext {
+                    move_type: Some(PokemonType::Fairy),
+                    move_category: Some(MoveCategory::Special),
+                    ..context()
+                },
+                EventValue::Integer(100),
+            )
+            .unwrap();
+        assert_eq!(event.value, EventValue::Integer(133));
+
+        let mut sheer = battle(sheer_force_ability, AbilityId::new(1));
+        let event = registry
+            .dispatch(
+                &mut sheer,
+                BattleEvent::ModifyBasePower,
+                EventContext {
+                    sheer_force_boosted: true,
+                    ..context()
+                },
+                EventValue::Integer(100),
+            )
+            .unwrap();
+        assert_eq!(event.value, EventValue::Integer(130));
+
+        let mut heatproof_battle = battle(AbilityId::new(1), heatproof_ability);
+        let event = registry
+            .dispatch(
+                &mut heatproof_battle,
+                BattleEvent::ModifySpecialAttack,
+                EventContext {
+                    move_type: Some(PokemonType::Fire),
+                    ..context()
+                },
+                EventValue::Integer(100),
+            )
+            .unwrap();
+        assert_eq!(event.value, EventValue::Integer(50));
+    }
+
+    #[test]
+    fn stat_transform_and_reaction_abilities_mutate_through_the_kernel() {
+        let contrary_ability = AbilityId::new(124);
+        let defiant_ability = AbilityId::new(126);
+        let competitive_ability = AbilityId::new(127);
+        let registry = crate::conditions::composed_registry(
+            &EffectRegistry::new(),
+            [
+                breakable(contrary_ability, AbilityBehavior::Contrary),
+                unbreakable(defiant_ability, AbilityBehavior::Defiant),
+                unbreakable(competitive_ability, AbilityBehavior::Competitive),
+            ],
+        );
+        let stat_context = EventContext {
+            requested_stat: Some(BattleStat::Defense),
+            ..context()
+        };
+
+        let mut contrary_battle = battle(AbilityId::new(1), contrary_ability);
+        assert_eq!(
+            registry
+                .dispatch(
+                    &mut contrary_battle,
+                    BattleEvent::TryStatStageChange,
+                    stat_context,
+                    EventValue::Integer(-1)
+                )
+                .unwrap()
+                .value,
+            EventValue::Integer(1)
+        );
+
+        for (ability, stat) in [
+            (defiant_ability, BattleStat::Attack),
+            (competitive_ability, BattleStat::SpecialAttack),
+        ] {
+            let mut state = battle(AbilityId::new(1), ability);
+            registry
+                .dispatch(
+                    &mut state,
+                    BattleEvent::AfterStatStageChange,
+                    stat_context,
+                    EventValue::Integer(-1),
+                )
+                .unwrap();
+            assert_eq!(
+                state
+                    .side(SideId::P2)
+                    .pokemon(PokemonIndex::new(0))
+                    .unwrap()
+                    .stat_stages
+                    .get(stat),
+                2
+            );
+        }
+    }
+
+    #[test]
+    fn contact_ability_replacement_and_swap_are_authoritative_state_changes() {
+        let mummy_ability = AbilityId::new(128);
+        let wandering = AbilityId::new(129);
+        let attacker = AbilityId::new(130);
+        let registry = crate::conditions::composed_registry(
+            &EffectRegistry::new(),
+            [
+                unbreakable(mummy_ability, AbilityBehavior::Mummy),
+                unbreakable(wandering, AbilityBehavior::WanderingSpirit),
+            ],
+        );
+        let hit = EventContext {
+            move_flags: crate::MoveInteractionFlags::default().with_contact(true),
+            ..context()
+        };
+
+        let mut mummy_battle = battle(attacker, mummy_ability);
+        registry
+            .dispatch(
+                &mut mummy_battle,
+                BattleEvent::AfterDamage,
+                hit,
+                EventValue::Integer(10),
+            )
+            .unwrap();
+        assert_eq!(
+            mummy_battle
+                .side(SideId::P1)
+                .pokemon(PokemonIndex::new(0))
+                .unwrap()
+                .ability,
+            mummy_ability
+        );
+
+        let mut wandering_battle = battle(attacker, wandering);
+        registry
+            .dispatch(
+                &mut wandering_battle,
+                BattleEvent::AfterDamage,
+                hit,
+                EventValue::Integer(10),
+            )
+            .unwrap();
+        assert_eq!(
+            wandering_battle
+                .side(SideId::P1)
+                .pokemon(PokemonIndex::new(0))
+                .unwrap()
+                .ability,
+            wandering
+        );
+        assert_eq!(
+            wandering_battle
+                .side(SideId::P2)
+                .pokemon(PokemonIndex::new(0))
+                .unwrap()
+                .ability,
+            attacker
+        );
     }
 }

@@ -268,6 +268,11 @@ impl CombatData for DexData {
         })
     }
 
+    fn move_is_struggle(&self, move_id: MoveId) -> bool {
+        self.move_data(move_id)
+            .is_some_and(|data| data.id == "struggle")
+    }
+
     fn field_effect_ids(&self) -> FieldEffectIds {
         let condition = |id: &str| {
             self.resolve_move(id)
@@ -887,6 +892,161 @@ const IMPLEMENTED_ABILITY_BEHAVIORS: &[(&str, AbilityBehavior, AbilitySuppressio
     (
         "gooey",
         AbilityBehavior::Gooey,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "aerilate",
+        AbilityBehavior::TypeConversion(PokemonType::Flying),
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "pixilate",
+        AbilityBehavior::TypeConversion(PokemonType::Fairy),
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "refrigerate",
+        AbilityBehavior::TypeConversion(PokemonType::Ice),
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "dragonize",
+        AbilityBehavior::TypeConversion(PokemonType::Dragon),
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "fairyaura",
+        AbilityBehavior::FairyAura,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "plus",
+        AbilityBehavior::PlusMinus,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "minus",
+        AbilityBehavior::PlusMinus,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "illuminate",
+        AbilityBehavior::AccuracyDropImmunity,
+        AbilitySuppression::Breakable,
+    ),
+    (
+        "illuminate",
+        AbilityBehavior::IgnoreTargetEvasion,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "noguard",
+        AbilityBehavior::NoGuard,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "rockhead",
+        AbilityBehavior::RockHead,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "berserk",
+        AbilityBehavior::Berserk,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "contrary",
+        AbilityBehavior::Contrary,
+        AbilitySuppression::Breakable,
+    ),
+    (
+        "eelevate",
+        AbilityBehavior::GroundImmunity,
+        AbilitySuppression::Breakable,
+    ),
+    (
+        "defiant",
+        AbilityBehavior::Defiant,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "competitive",
+        AbilityBehavior::Competitive,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "unaware",
+        AbilityBehavior::Unaware,
+        AbilitySuppression::Breakable,
+    ),
+    (
+        "speedboost",
+        AbilityBehavior::SpeedBoost,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "quickdraw",
+        AbilityBehavior::QuickDraw,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "leafguard",
+        AbilityBehavior::LeafGuard,
+        AbilitySuppression::Breakable,
+    ),
+    (
+        "supremeoverlord",
+        AbilityBehavior::SupremeOverlord,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "pressure",
+        AbilityBehavior::Pressure,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "rattled",
+        AbilityBehavior::Rattled,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "heatproof",
+        AbilityBehavior::Heatproof,
+        AbilitySuppression::Breakable,
+    ),
+    (
+        "flowerveil",
+        AbilityBehavior::FlowerVeil,
+        AbilitySuppression::Breakable,
+    ),
+    (
+        "mirrorarmor",
+        AbilityBehavior::MirrorArmor,
+        AbilitySuppression::Breakable,
+    ),
+    (
+        "opportunist",
+        AbilityBehavior::Opportunist,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "mummy",
+        AbilityBehavior::Mummy,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "wanderingspirit",
+        AbilityBehavior::WanderingSpirit,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "sheerforce",
+        AbilityBehavior::SheerForce,
+        AbilitySuppression::Unbreakable,
+    ),
+    (
+        "stall",
+        AbilityBehavior::Stall,
         AbilitySuppression::Unbreakable,
     ),
     (
