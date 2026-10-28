@@ -1329,6 +1329,150 @@
     },
     {
       "id": "snowwarning", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.11", "evidence": ["file:docs/research/pr-13-5-ability-batch-30b.md", "file:crates/rotom-core/src/combat.rs"]
+    },
+    {
+      "id": "aftermath", "kind": "ability", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "unit:crates/rotom-core/src/abilities.rs#final_batch_hit_reactions_use_typed_damage_and_status_mutations"]
+    },
+    {
+      "id": "aromaveil", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "cheekpouch", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "cudchew", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "cursedbody", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "cutecharm", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "disguise", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "electricsurge", "kind": "ability", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "unit:crates/rotom-dex/tests/combat.rs#ability_handler_registration_is_declarative_and_leaves_other_abilities_unsupported", "interaction_unit:crates/rotom-dex/tests/combat.rs#switch_in_weather_and_intimidate_behaviors_use_the_canonical_transition"]
+    },
+    {
+      "id": "electromorphosis", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "emergencyexit", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "flashfire", "kind": "ability", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "unit:crates/rotom-core/src/abilities.rs#final_batch_hit_reactions_use_typed_damage_and_status_mutations"]
+    },
+    {
+      "id": "forecast", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "gluttony", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "grassysurge", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-core/src/combat.rs"]
+    },
+    {
+      "id": "harvest", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "heavymetal", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "hungerswitch", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "illusion", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "imposter", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "innardsout", "kind": "ability", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "unit:crates/rotom-core/src/abilities.rs#final_batch_hit_reactions_use_typed_damage_and_status_mutations"]
+    },
+    {
+      "id": "libero", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "lightmetal", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "liquidooze", "kind": "ability", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "unit:crates/rotom-dex/tests/combat.rs#ability_handler_registration_is_declarative_and_leaves_other_abilities_unsupported", "interaction_unit:crates/rotom-dex/tests/combat.rs#liquid_ooze_and_reactive_field_abilities_run_in_canonical_damage_order"]
+    },
+    {
+      "id": "magicbounce", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "mimicry", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "parentalbond", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "pickup", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "poisonheal", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "protean", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "psychicsurge", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-core/src/combat.rs"]
+    },
+    {
+      "id": "ripen", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "rivalry", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "roughskin", "kind": "ability", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "unit:crates/rotom-core/src/abilities.rs#final_batch_hit_reactions_use_typed_damage_and_status_mutations"]
+    },
+    {
+      "id": "sandspit", "kind": "ability", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "unit:crates/rotom-dex/tests/combat.rs#ability_handler_registration_is_declarative_and_leaves_other_abilities_unsupported", "interaction_unit:crates/rotom-dex/tests/combat.rs#liquid_ooze_and_reactive_field_abilities_run_in_canonical_damage_order"]
+    },
+    {
+      "id": "seedsower", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-core/src/combat.rs"]
+    },
+    {
+      "id": "shadowtag", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "spicyspray", "kind": "ability", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "unit:crates/rotom-core/src/abilities.rs#final_batch_hit_reactions_use_typed_damage_and_status_mutations"]
+    },
+    {
+      "id": "stakeout", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "stancechange", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "steadfast", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "stench", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "stickyhold", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "suctioncups", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "symbiosis", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "tangledfeet", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "toxicdebris", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "unnerve", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "zerotohero", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
     }
   ]
 }

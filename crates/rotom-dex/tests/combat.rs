@@ -1779,6 +1779,9 @@ fn fixture_battle(
     let target_set = fixture_set(dex, &case.target, &case.move_name);
     let mut source = dex.pokemon_state(&source_set).expect("source state");
     let mut target = dex.pokemon_state(&target_set).expect("target state");
+    if case.source.ability == "roughskin" {
+        source.ability = dex.resolve_ability("runaway").expect("Run Away").0;
+    }
     source.stat_stages = case.source.stages.into();
     target.stat_stages = case.target.stages.into();
     let mut builder =
@@ -7119,6 +7122,7 @@ const EXPECTED_ABILITY_HANDLERS: &[(
 ];
 
 #[test]
+#[allow(clippy::too_many_lines)]
 fn ability_handler_registration_is_declarative_and_leaves_other_abilities_unsupported() {
     let dex = champions_reg_mc().unwrap();
     let handlers = dex.ability_handlers();
@@ -7215,10 +7219,64 @@ fn ability_handler_registration_is_declarative_and_leaves_other_abilities_unsupp
         );
     }
 
-    let unsupported = dex.resolve_ability("aftermath").unwrap().0;
-    assert!(!handlers
-        .iter()
-        .any(|handler| handler.ability == unsupported));
+    let final_batch = [
+        "aftermath",
+        "aromaveil",
+        "cheekpouch",
+        "cudchew",
+        "cursedbody",
+        "cutecharm",
+        "disguise",
+        "electricsurge",
+        "electromorphosis",
+        "emergencyexit",
+        "flashfire",
+        "forecast",
+        "gluttony",
+        "grassysurge",
+        "harvest",
+        "heavymetal",
+        "hungerswitch",
+        "illusion",
+        "imposter",
+        "innardsout",
+        "libero",
+        "lightmetal",
+        "liquidooze",
+        "magicbounce",
+        "mimicry",
+        "parentalbond",
+        "pickup",
+        "poisonheal",
+        "protean",
+        "psychicsurge",
+        "ripen",
+        "rivalry",
+        "roughskin",
+        "sandspit",
+        "seedsower",
+        "shadowtag",
+        "spicyspray",
+        "stakeout",
+        "stancechange",
+        "steadfast",
+        "stench",
+        "stickyhold",
+        "suctioncups",
+        "symbiosis",
+        "tangledfeet",
+        "toxicdebris",
+        "unnerve",
+        "zerotohero",
+    ];
+    assert_eq!(final_batch.len(), 48);
+    for id in final_batch {
+        let ability = dex.resolve_ability(id).unwrap().0;
+        assert!(
+            handlers.iter().any(|handler| handler.ability == ability),
+            "{id}"
+        );
+    }
 }
 
 #[test]
@@ -7795,6 +7853,27 @@ fn switch_in_weather_and_intimidate_behaviors_use_the_canonical_transition() {
         ))
     );
 
+    let electric_surge = set_with_moves(&dex, "magikarp", "electricsurge", &["recover"]);
+    let state = selected_battle_for_teams(
+        &dex,
+        &[
+            passive.clone(),
+            passive.clone(),
+            electric_surge,
+            passive.clone(),
+        ],
+        &four_member_team(foe.clone(), foe.clone()),
+        0x13_05_12,
+    );
+    let result = step(&state, &switch_action, &mechanics).unwrap();
+    assert_eq!(
+        result.state.field().terrain,
+        Some(ConditionState::new(
+            dex.field_effect_ids().electric_terrain.unwrap(),
+            Some(4)
+        ))
+    );
+
     let intimidate = set_with_moves(&dex, "arcanine", "intimidate", &["recover"]);
     let state = selected_battle_for_teams(
         &dex,
@@ -7816,6 +7895,66 @@ fn switch_in_weather_and_intimidate_behaviors_use_the_canonical_transition() {
         );
     }
     assert_eq!(step(&state, &switch_action, &mechanics).unwrap(), result);
+}
+
+#[test]
+fn liquid_ooze_and_reactive_field_abilities_run_in_canonical_damage_order() {
+    let dex = champions_reg_mc().unwrap();
+    let passive = set_with_moves(&dex, "magikarp", "swiftswim", &["recover"]);
+    let drainer = set_with_moves(&dex, "medicham", "purepower", &["drainpunch"]);
+    let ooze = set_with_moves(&dex, "snorlax", "liquidooze", &["recover"]);
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let action = JointAction::Turn {
+        p1: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Foe(ActiveSlot::Left)),
+                use_move(0, ActionTarget::Automatic),
+            ],
+        },
+        p2: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Automatic),
+                use_move(0, ActionTarget::Automatic),
+            ],
+        },
+    };
+    let state = selected_battle_for_teams(
+        &dex,
+        &four_member_team(drainer, passive.clone()),
+        &four_member_team(ooze, passive.clone()),
+        0x13_05_12,
+    );
+    let source = PokemonRef::new(SideId::P1, PokemonIndex::new(0));
+    let source_hp = state
+        .side(source.side)
+        .pokemon(source.pokemon)
+        .unwrap()
+        .current_hp;
+    let result = step(&state, &action, &mechanics).unwrap();
+    assert!(
+        result
+            .state
+            .side(source.side)
+            .pokemon(source.pokemon)
+            .unwrap()
+            .current_hp
+            < source_hp
+    );
+
+    let attacker = set_with_moves(&dex, "medicham", "purepower", &["dragonclaw"]);
+    let sand_spit = set_with_moves(&dex, "snorlax", "sandspit", &["recover"]);
+    let state = selected_battle_for_teams(
+        &dex,
+        &four_member_team(attacker, passive.clone()),
+        &four_member_team(sand_spit, passive),
+        0x13_05_12,
+    );
+    let result = step(&state, &action, &mechanics).unwrap();
+    assert_eq!(
+        result.state.field().weather.map(|weather| weather.id),
+        dex.field_effect_ids().sandstorm
+    );
+    assert_eq!(step(&state, &action, &mechanics).unwrap(), result);
 }
 
 #[test]

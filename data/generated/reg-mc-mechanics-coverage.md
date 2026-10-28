@@ -8,7 +8,7 @@ This report is generated from `reg-mc-mechanics-manifest.json`. Presence means r
 
 | Kind | Reachable | Implemented | Partial | Unsupported | Differential | Unit tested | Not tested | Interaction verified |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| ability | 215 | 120 | 47 | 48 | 51 | 70 | 94 | 74 |
+| ability | 215 | 120 | 95 | 0 | 51 | 78 | 86 | 77 |
 | condition | 96 | 0 | 0 | 96 | 0 | 0 | 96 | 0 |
 | form | 153 | 0 | 0 | 153 | 0 | 0 | 153 | 0 |
 | item | 166 | 0 | 0 | 166 | 0 | 0 | 166 | 0 |
@@ -17,7 +17,6 @@ This report is generated from `reg-mc-mechanics-manifest.json`. Presence means r
 
 ## Next unsupported reachable mechanics
 
-- ability: `aftermath` — Aftermath (direct_legal_set)
 - condition: `allyswitch` — Ally Switch (battle_generated)
 - form: `abomasnowmega` — Abomasnow-Mega (battle_generated)
 - item: `abomasite` — Abomasite (direct_legal_set)

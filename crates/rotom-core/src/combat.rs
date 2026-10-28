@@ -3,7 +3,7 @@ use crate::{
     BattlePhase, BattleStat, BattleState, ConditionId, ConditionState, EffectRegistry,
     EventContext, EventDispatch, EventValue, FaintTarget, FieldEffectIds, FormId, MajorStatus,
     MoveId, MoveSlotIndex, MoveTarget, PokemonAction, PokemonIndex, PokemonRef, PokemonState,
-    QueuedAction, RngReason, SideId, SpeciesId, WeatherEnvironment,
+    QueuedAction, RngReason, SideId, SpeciesId, TerrainEnvironment, WeatherEnvironment,
 };
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
@@ -1193,6 +1193,7 @@ impl BattleState {
                     },
                     resolution,
                 )?;
+                self.apply_reactive_field_abilities(data, field_effects, target, applied_hp_loss)?;
                 total_applied_damage =
                     total_applied_damage.saturating_add(u32::from(applied_hp_loss));
                 let outcome = TargetOutcome {
@@ -1212,7 +1213,7 @@ impl BattleState {
                 }
                 target_hit = true;
                 any_hit = true;
-                self.apply_drain(move_context, applied_hp_loss)?;
+                self.apply_drain(data, move_context, target, applied_hp_loss)?;
                 if !self_effect_applied {
                     self.apply_self_move_effect(
                         data,
@@ -1304,9 +1305,11 @@ impl BattleState {
         }
     }
 
-    fn apply_drain(
+    fn apply_drain<D: CombatData>(
         &mut self,
+        data: &D,
         context: &MoveExecutionContext,
+        target: PokemonRef,
         applied_damage: u16,
     ) -> Result<(), BattleError> {
         let Some(fraction) = context.move_data.drain else {
@@ -1314,8 +1317,18 @@ impl BattleState {
         };
         let amount = rounded_fraction(u32::from(applied_damage), fraction)?;
         if amount > 0 {
-            StateKernel::new(self)
-                .heal_hp(context.source, u16::try_from(amount).unwrap_or(u16::MAX))?;
+            let target_has_liquid_ooze = self
+                .side(target.side)
+                .pokemon(target.pokemon)
+                .is_some_and(|pokemon| {
+                    data.ability_has_behavior(pokemon.ability, crate::AbilityBehavior::LiquidOoze)
+                });
+            let amount = u16::try_from(amount).unwrap_or(u16::MAX);
+            if target_has_liquid_ooze {
+                StateKernel::new(self).damage_hp(context.source, amount)?;
+            } else {
+                StateKernel::new(self).heal_hp(context.source, amount)?;
+            }
         }
         Ok(())
     }
@@ -1585,6 +1598,12 @@ impl BattleState {
                 },
                 resolution,
             )?;
+            self.apply_reactive_field_abilities(
+                data,
+                field_effects,
+                target_context.target,
+                applied_hp_loss,
+            )?;
             total_applied = total_applied.saturating_add(u32::from(applied_hp_loss));
             outcomes[index] = Some(TargetOutcome {
                 source: context.source,
@@ -1596,7 +1615,7 @@ impl BattleState {
                 applied_hp_loss,
                 fainted,
             });
-            self.apply_drain(context, applied_hp_loss)?;
+            self.apply_drain(data, context, target_context.target, applied_hp_loss)?;
             self.apply_self_move_effect(data, effects, field_effects, context, resolution)?;
             self.apply_secondary_effects(
                 data,
@@ -3304,6 +3323,7 @@ impl BattleState {
             .ok_or_else(|| BattleError::InvalidState("switch-in source is invalid".to_owned()))?
             .ability;
         self.apply_switch_in_weather(data, field_effects, ability)?;
+        self.apply_switch_in_terrain(data, field_effects, ability)?;
         if data.ability_has_behavior(ability, crate::AbilityBehavior::ScreenCleaner) {
             self.clear_screens(field_effects);
         }
@@ -3400,6 +3420,75 @@ impl BattleState {
                     )
                 })?;
                 StateKernel::new(self).set_weather(Some(ConditionState::new(condition, None)))?;
+            }
+        }
+        Ok(())
+    }
+
+    fn apply_reactive_field_abilities<D: CombatData>(
+        &mut self,
+        data: &D,
+        field_effects: &FieldEffectIds,
+        target: PokemonRef,
+        applied_damage: u16,
+    ) -> Result<(), BattleError> {
+        if applied_damage == 0 {
+            return Ok(());
+        }
+        let ability = self
+            .side(target.side)
+            .pokemon(target.pokemon)
+            .ok_or_else(|| BattleError::InvalidState("damage target is invalid".to_owned()))?
+            .ability;
+        if data.ability_has_behavior(
+            ability,
+            crate::AbilityBehavior::ReactiveWeather(WeatherEnvironment::Sandstorm),
+        ) {
+            let condition = field_effects.sandstorm.ok_or_else(|| {
+                BattleError::DataMismatch("Sand Spit has no weather identity".to_owned())
+            })?;
+            StateKernel::new(self).set_weather(Some(ConditionState::new(condition, Some(5))))?;
+        }
+        if data.ability_has_behavior(
+            ability,
+            crate::AbilityBehavior::ReactiveTerrain(TerrainEnvironment::Grassy),
+        ) {
+            let condition = field_effects.grassy_terrain.ok_or_else(|| {
+                BattleError::DataMismatch("Seed Sower has no terrain identity".to_owned())
+            })?;
+            StateKernel::new(self).set_terrain(Some(ConditionState::new(condition, Some(5))))?;
+        }
+        Ok(())
+    }
+
+    fn apply_switch_in_terrain<D: CombatData>(
+        &mut self,
+        data: &D,
+        field_effects: &FieldEffectIds,
+        ability: AbilityId,
+    ) -> Result<(), BattleError> {
+        for (behavior, condition) in [
+            (
+                crate::AbilityBehavior::TerrainSetter(TerrainEnvironment::Electric),
+                field_effects.electric_terrain,
+            ),
+            (
+                crate::AbilityBehavior::TerrainSetter(TerrainEnvironment::Grassy),
+                field_effects.grassy_terrain,
+            ),
+            (
+                crate::AbilityBehavior::TerrainSetter(TerrainEnvironment::Psychic),
+                field_effects.psychic_terrain,
+            ),
+        ] {
+            if data.ability_has_behavior(ability, behavior) {
+                let condition = condition.ok_or_else(|| {
+                    BattleError::DataMismatch(
+                        "terrain-setting ability has no condition identity".to_owned(),
+                    )
+                })?;
+                StateKernel::new(self)
+                    .set_terrain(Some(ConditionState::new(condition, Some(5))))?;
             }
         }
         Ok(())

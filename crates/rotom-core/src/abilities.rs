@@ -158,6 +158,28 @@ pub enum AbilityBehavior {
     Klutz,
     MagicGuard,
     WeatherSetter(WeatherEnvironment),
+    TerrainSetter(TerrainEnvironment),
+    Aftermath,
+    ContactRetaliation,
+    SourceStatusOnHit(MajorStatus),
+    FlashFire,
+    InnardsOut,
+    LiquidOoze,
+    ReactiveWeather(WeatherEnvironment),
+    ReactiveTerrain(TerrainEnvironment),
+    ToxicDebris,
+    DeferredItemInteraction,
+    DeferredFormInteraction,
+    DeferredVolatileInteraction,
+    DeferredTypeInteraction,
+    DeferredSwitchInteraction,
+    DeferredWeightInteraction,
+    DeferredGenderInteraction,
+    DeferredTurnTracking,
+    DeferredMultiHitInteraction,
+    DeferredStatusResidual,
+    DeferredReflection,
+    DeferredDamageShield,
     /// The pinned ability has no authoritative battle-state effect.
     NoAuthoritativeEffect,
 }
@@ -1219,6 +1241,36 @@ const BEHAVIOR_REGISTRATIONS: &[BehaviorRegistration] = &[
         BattleEvent::WeatherImmunity,
         DEFAULT_ORDER,
         magic_guard_weather,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::Aftermath,
+        BattleEvent::AfterDamage,
+        EffectOrder::new(1, 0, 0),
+        aftermath,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::ContactRetaliation,
+        BattleEvent::AfterDamage,
+        EffectOrder::new(1, 0, 0),
+        contact_retaliation,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::SourceStatusOnHit(MajorStatus::Burn),
+        BattleEvent::AfterDamage,
+        DEFAULT_ORDER,
+        source_burn_on_hit,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::FlashFire,
+        BattleEvent::TryHit,
+        DEFAULT_ORDER,
+        flash_fire,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::InnardsOut,
+        BattleEvent::AfterDamage,
+        DEFAULT_ORDER,
+        innards_out,
     ),
 ];
 
@@ -3369,6 +3421,113 @@ fn magic_guard_weather(
     if context.weather.is_some() && matching_target(invocation, context).is_some() {
         boolean(dispatch)?;
         dispatch.value = EventValue::Boolean(false);
+    }
+    Ok(())
+}
+
+fn aftermath(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = matching_target(invocation, context) else {
+        return Ok(());
+    };
+    let Some(source) = context.source.filter(|source| *source != owner) else {
+        return Ok(());
+    };
+    if integer(dispatch)? <= 0
+        || !context.move_flags.contact()
+        || pokemon(state, owner)?.current_hp != 0
+        || pokemon(state, source)?.current_hp == 0
+    {
+        return Ok(());
+    }
+    let damage = (pokemon(state, source)?.stats.hp / 4).max(1);
+    state.damage_hp(source, damage)?;
+    Ok(())
+}
+
+fn contact_retaliation(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = matching_target(invocation, context) else {
+        return Ok(());
+    };
+    let Some(source) = context.source.filter(|source| *source != owner) else {
+        return Ok(());
+    };
+    if integer(dispatch)? <= 0
+        || !context.move_flags.contact()
+        || pokemon(state, source)?.current_hp == 0
+    {
+        return Ok(());
+    }
+    let damage = (pokemon(state, source)?.stats.hp / 8).max(1);
+    state.damage_hp(source, damage)?;
+    Ok(())
+}
+
+fn source_burn_on_hit(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = matching_target(invocation, context) else {
+        return Ok(());
+    };
+    let Some(source) = context.source.filter(|source| *source != owner) else {
+        return Ok(());
+    };
+    if integer(dispatch)? > 0
+        && pokemon(state, source)?.current_hp > 0
+        && pokemon(state, source)?.status.is_none()
+    {
+        state.apply_major_status(source, MajorStatus::Burn)?;
+    }
+    Ok(())
+}
+
+fn flash_fire(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if context.move_type == Some(PokemonType::Fire)
+        && context.source != context.target
+        && matching_target(invocation, context).is_some()
+    {
+        boolean(dispatch)?;
+        dispatch.value = EventValue::Boolean(false);
+        dispatch.mark_immune();
+    }
+    Ok(())
+}
+
+fn innards_out(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = matching_target(invocation, context) else {
+        return Ok(());
+    };
+    let Some(source) = context.source.filter(|source| *source != owner) else {
+        return Ok(());
+    };
+    let damage = integer(dispatch)?;
+    if damage > 0
+        && pokemon(state, owner)?.current_hp == 0
+        && pokemon(state, source)?.current_hp > 0
+    {
+        state.damage_hp(source, u16::try_from(damage).unwrap_or(u16::MAX))?;
     }
     Ok(())
 }
@@ -5556,5 +5715,129 @@ mod tests {
         let trace = state.rng().trace().unwrap();
         assert_eq!(trace.len(), 2);
         assert!(trace.iter().all(|entry| entry.reason == RngReason::Ability));
+    }
+
+    #[test]
+    #[allow(clippy::too_many_lines)]
+    fn final_batch_hit_reactions_use_typed_damage_and_status_mutations() {
+        let aftermath_ability = AbilityId::new(160);
+        let rough_skin_ability = AbilityId::new(161);
+        let spicy_spray_ability = AbilityId::new(162);
+        let flash_fire_ability = AbilityId::new(163);
+        let innards_out_ability = AbilityId::new(164);
+        let registry = crate::conditions::composed_registry(
+            &EffectRegistry::new(),
+            [
+                unbreakable(aftermath_ability, AbilityBehavior::Aftermath),
+                unbreakable(rough_skin_ability, AbilityBehavior::ContactRetaliation),
+                unbreakable(
+                    spicy_spray_ability,
+                    AbilityBehavior::SourceStatusOnHit(MajorStatus::Burn),
+                ),
+                breakable(flash_fire_ability, AbilityBehavior::FlashFire),
+                unbreakable(innards_out_ability, AbilityBehavior::InnardsOut),
+            ],
+        );
+        let contact = EventContext {
+            move_flags: crate::MoveInteractionFlags::default().with_contact(true),
+            ..context()
+        };
+
+        let mut rough_skin = battle(AbilityId::new(1), rough_skin_ability);
+        registry
+            .dispatch(
+                &mut rough_skin,
+                BattleEvent::AfterDamage,
+                contact,
+                EventValue::Integer(20),
+            )
+            .unwrap();
+        assert_eq!(
+            rough_skin
+                .side(SideId::P1)
+                .pokemon(PokemonIndex::new(0))
+                .unwrap()
+                .current_hp,
+            88
+        );
+
+        let mut aftermath_state = battle(AbilityId::new(1), aftermath_ability);
+        aftermath_state
+            .side_mut(SideId::P2)
+            .pokemon_mut(PokemonIndex::new(0))
+            .unwrap()
+            .current_hp = 0;
+        registry
+            .dispatch(
+                &mut aftermath_state,
+                BattleEvent::AfterDamage,
+                contact,
+                EventValue::Integer(20),
+            )
+            .unwrap();
+        assert_eq!(
+            aftermath_state
+                .side(SideId::P1)
+                .pokemon(PokemonIndex::new(0))
+                .unwrap()
+                .current_hp,
+            75
+        );
+
+        let mut innards = battle(AbilityId::new(1), innards_out_ability);
+        innards
+            .side_mut(SideId::P2)
+            .pokemon_mut(PokemonIndex::new(0))
+            .unwrap()
+            .current_hp = 0;
+        registry
+            .dispatch(
+                &mut innards,
+                BattleEvent::AfterDamage,
+                context(),
+                EventValue::Integer(30),
+            )
+            .unwrap();
+        assert_eq!(
+            innards
+                .side(SideId::P1)
+                .pokemon(PokemonIndex::new(0))
+                .unwrap()
+                .current_hp,
+            70
+        );
+
+        let mut spicy = battle(AbilityId::new(1), spicy_spray_ability);
+        registry
+            .dispatch(
+                &mut spicy,
+                BattleEvent::AfterDamage,
+                context(),
+                EventValue::Integer(20),
+            )
+            .unwrap();
+        assert_eq!(
+            spicy
+                .side(SideId::P1)
+                .pokemon(PokemonIndex::new(0))
+                .unwrap()
+                .status,
+            Some(MajorStatus::Burn)
+        );
+
+        let mut flash_fire = battle(AbilityId::new(1), flash_fire_ability);
+        let immune = registry
+            .dispatch(
+                &mut flash_fire,
+                BattleEvent::TryHit,
+                EventContext {
+                    move_type: Some(PokemonType::Fire),
+                    ..context()
+                },
+                EventValue::Boolean(true),
+            )
+            .unwrap();
+        assert!(immune.immune);
+        assert_eq!(immune.value, EventValue::Boolean(false));
     }
 }

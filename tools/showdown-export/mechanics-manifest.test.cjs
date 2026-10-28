@@ -112,7 +112,7 @@ test('ability batches keep isolated and interaction verification separate', () =
 	}
 	assert.deepEqual(
 		manifest.summary.by_kind.ability.interaction_verification,
-		{not_tested: 141, unit_tested: 74, differential_verified: 0}
+		{not_tested: 138, unit_tested: 77, differential_verified: 0}
 	);
 });
 
@@ -211,6 +211,13 @@ test('two complete generations are byte-identical', {timeout: 120_000}, () => {
 	const second = generatedContents({verifyCheckout: false});
 	assert.equal(first.manifestContents, second.manifestContents);
 	assert.equal(first.reportContents, second.reportContents);
+	assert.equal(first.catalogContents, second.catalogContents);
+	for (const kind of ['ability', 'item', 'move']) {
+		const entries = first.manifest.entries.filter(candidate => candidate.kind === kind);
+		for (const candidate of entries) {
+			assert.ok(first.catalogContents.includes(`| ${candidate.name} | \`${candidate.id}\` |`));
+		}
+	}
 });
 
 test('coverage evidence requires real tests and move-specific fixture cases', () => {

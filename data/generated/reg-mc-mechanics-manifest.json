@@ -67,15 +67,17 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/garbodor/ability-slot/H"
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
+        "species/garbodor/ability-slot/H",
+        "unit:crates/rotom-core/src/abilities.rs#final_batch_hit_reactions_use_typed_damage_and_status_mutations"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "analytic",
@@ -164,6 +166,8 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/alcremie/ability-slot/H",
         "species/alcremiecaramelswirl/ability-slot/H",
         "species/alcremielemoncream/ability-slot/H",
@@ -177,10 +181,10 @@
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "auraguard",
@@ -317,6 +321,8 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/dedenne/ability-slot/0",
         "species/diggersby/ability-slot/1",
         "species/maushold/ability-slot/1",
@@ -325,10 +331,10 @@
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "chlorophyll",
@@ -499,6 +505,8 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/farigiraf/ability-slot/0",
         "species/taurospaldeaaqua/ability-slot/H",
         "species/taurospaldeablaze/ability-slot/H",
@@ -507,10 +515,10 @@
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "curiousmedicine",
@@ -536,6 +544,8 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/banette/ability-slot/H",
         "species/dragapult/ability-slot/H",
         "species/froslass/ability-slot/H",
@@ -546,10 +556,10 @@
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "cutecharm",
@@ -557,6 +567,8 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/clefable/ability-slot/0",
         "species/lopunny/ability-slot/0",
         "species/milotic/ability-slot/H",
@@ -566,10 +578,10 @@
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "damp",
@@ -619,15 +631,17 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/mimikyu/ability-slot/0"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "dragonize",
@@ -784,15 +798,18 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/pincurchin/ability-slot/H"
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#switch_in_weather_and_intimidate_behaviors_use_the_canonical_transition",
+        "species/pincurchin/ability-slot/H",
+        "unit:crates/rotom-dex/tests/combat.rs#ability_handler_registration_is_declarative_and_leaves_other_abilities_unsupported"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "partial",
+      "verification": "unit_tested",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "electromorphosis",
@@ -800,15 +817,17 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/bellibolt/ability-slot/0"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "emergencyexit",
@@ -816,15 +835,17 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/golisopod/ability-slot/0"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "fairyaura",
@@ -909,6 +930,7 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/arcanine/ability-slot/1",
         "species/arcaninehisui/ability-slot/1",
         "species/armarouge/ability-slot/0",
@@ -917,15 +939,16 @@
         "species/flareon/ability-slot/0",
         "species/houndoom/ability-slot/1",
         "species/ninetales/ability-slot/0",
-        "species/typhlosion/ability-slot/H"
+        "species/typhlosion/ability-slot/H",
+        "unit:crates/rotom-core/src/abilities.rs#final_batch_hit_reactions_use_typed_damage_and_status_mutations"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "flowerveil",
@@ -974,15 +997,17 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/castform/ability-slot/0"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "forewarn",
@@ -1120,6 +1145,8 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/appletun/ability-slot/1",
         "species/flapple/ability-slot/1",
         "species/simipour/ability-slot/0",
@@ -1132,10 +1159,10 @@
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "goodasgold",
@@ -1202,15 +1229,17 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/rillaboom/ability-slot/H"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "guarddog",
@@ -1263,16 +1292,18 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/arboliva/ability-slot/H",
         "species/trevenant/ability-slot/H"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "healer",
@@ -1319,15 +1350,17 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/aggron/ability-slot/H"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "hospitality",
@@ -1377,15 +1410,17 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/morpeko/ability-slot/0"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "hustle",
@@ -1502,16 +1537,18 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/zoroark/ability-slot/0",
         "species/zoroarkhisui/ability-slot/0"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "immunity",
@@ -1540,15 +1577,17 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/ditto/ability-slot/H"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "infiltrator",
@@ -1580,15 +1619,17 @@
       "kind": "ability",
       "reachability": "battle_generated",
       "evidence": [
-        "form/victreebelmega/ability-slot/0"
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
+        "form/victreebelmega/ability-slot/0",
+        "unit:crates/rotom-core/src/abilities.rs#final_batch_hit_reactions_use_typed_damage_and_status_mutations"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "innerfocus",
@@ -1834,15 +1875,17 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/cinderace/ability-slot/H"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "lightmetal",
@@ -1850,16 +1893,18 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/metagross/ability-slot/H",
         "species/scizor/ability-slot/H"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "lightningrod",
@@ -1916,15 +1961,18 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/swalot/ability-slot/0"
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#liquid_ooze_and_reactive_field_abilities_run_in_canonical_damage_order",
+        "species/swalot/ability-slot/0",
+        "unit:crates/rotom-dex/tests/combat.rs#ability_handler_registration_is_declarative_and_leaves_other_abilities_unsupported"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "partial",
+      "verification": "unit_tested",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "liquidvoice",
@@ -1970,16 +2018,18 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/espeon/ability-slot/H",
         "species/hatterene/ability-slot/H"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "magicguard",
@@ -2125,15 +2175,17 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/stunfiskgalar/ability-slot/0"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "minus",
@@ -2479,15 +2531,17 @@
       "kind": "ability",
       "reachability": "battle_generated",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "form/kangaskhanmega/ability-slot/0"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "pickpocket",
@@ -2516,6 +2570,8 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/dedenne/ability-slot/1",
         "species/diggersby/ability-slot/0",
         "species/gourgeist/ability-slot/0",
@@ -2526,10 +2582,10 @@
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "piercingdrill",
@@ -2592,15 +2648,17 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/gliscor/ability-slot/H"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "poisonpoint",
@@ -2699,16 +2757,18 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/greninja/ability-slot/H",
         "species/meowscarada/ability-slot/H"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "psychicsurge",
@@ -2716,16 +2776,18 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/indeedee/ability-slot/H",
         "species/indeedeef/ability-slot/H"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "punkrock",
@@ -2972,16 +3034,18 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/appletun/ability-slot/0",
         "species/flapple/ability-slot/0"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "rivalry",
@@ -2989,16 +3053,18 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/luxray/ability-slot/0",
         "species/pyroar/ability-slot/0"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "rockhead",
@@ -3028,16 +3094,18 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/garchomp/ability-slot/H",
-        "species/sharpedo/ability-slot/0"
+        "species/sharpedo/ability-slot/0",
+        "unit:crates/rotom-core/src/abilities.rs#final_batch_hit_reactions_use_typed_damage_and_status_mutations"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "runaway",
@@ -3107,15 +3175,18 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/sandaconda/ability-slot/0"
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#liquid_ooze_and_reactive_field_abilities_run_in_canonical_damage_order",
+        "species/sandaconda/ability-slot/0",
+        "unit:crates/rotom-dex/tests/combat.rs#ability_handler_registration_is_declarative_and_leaves_other_abilities_unsupported"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "partial",
+      "verification": "unit_tested",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "sandstream",
@@ -3230,15 +3301,17 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/arboliva/ability-slot/0"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "shadowtag",
@@ -3246,15 +3319,17 @@
       "kind": "ability",
       "reachability": "battle_generated",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "form/gengarmega/ability-slot/0"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "sharpness",
@@ -3583,15 +3658,17 @@
       "kind": "ability",
       "reachability": "battle_generated",
       "evidence": [
-        "form/scovillainmega/ability-slot/0"
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
+        "form/scovillainmega/ability-slot/0",
+        "unit:crates/rotom-core/src/abilities.rs#final_batch_hit_reactions_use_typed_damage_and_status_mutations"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "stakeout",
@@ -3599,16 +3676,18 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/mabosstiff/ability-slot/H",
         "species/thievul/ability-slot/H"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "stall",
@@ -3670,15 +3749,17 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/aegislash/ability-slot/0"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "static",
@@ -3710,6 +3791,8 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/gallade/ability-slot/0",
         "species/lucario/ability-slot/0",
         "species/lycanroc/ability-slot/H",
@@ -3719,10 +3802,10 @@
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "steelyspirit",
@@ -3752,15 +3835,17 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/garbodor/ability-slot/0"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "stickyhold",
@@ -3768,16 +3853,18 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/hydrapple/ability-slot/H",
         "species/swalot/ability-slot/1"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "strongjaw",
@@ -3832,15 +3919,17 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/malamar/ability-slot/1"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "superluck",
@@ -4006,6 +4095,8 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/floetteeternal/ability-slot/H",
         "species/florges/ability-slot/H",
         "species/oranguru/ability-slot/H"
@@ -4013,10 +4104,10 @@
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "synchronize",
@@ -4048,16 +4139,18 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/mrrime/ability-slot/0",
         "species/pidgeot/ability-slot/1"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "technician",
@@ -4216,15 +4309,17 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/glimmora/ability-slot/0"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "trace",
@@ -4292,6 +4387,8 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/aerodactyl/ability-slot/H",
         "species/arbok/ability-slot/H",
         "species/corviknight/ability-slot/1",
@@ -4303,10 +4400,10 @@
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "unseenfist",
@@ -4477,15 +4574,17 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-5-final-ability-coverage.md",
         "species/palafin/ability-slot/0"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.5.12"
     },
     {
       "id": "allyswitch",
@@ -47832,18 +47931,18 @@
       "ability": {
         "total": 215,
         "implementation": {
-          "unsupported": 48,
-          "partial": 47,
+          "unsupported": 0,
+          "partial": 95,
           "implemented": 120
         },
         "verification": {
-          "not_tested": 94,
-          "unit_tested": 70,
+          "not_tested": 86,
+          "unit_tested": 78,
           "differential_verified": 51
         },
         "interaction_verification": {
-          "not_tested": 141,
-          "unit_tested": 74,
+          "not_tested": 138,
+          "unit_tested": 77,
           "differential_verified": 0
         },
         "reachability": {
