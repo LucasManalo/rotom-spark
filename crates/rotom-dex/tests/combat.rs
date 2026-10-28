@@ -7174,7 +7174,48 @@ fn ability_handler_registration_is_declarative_and_leaves_other_abilities_unsupp
         );
     }
 
-    let unsupported = dex.resolve_ability("drizzle").unwrap().0;
+    let next_batch = [
+        "analytic",
+        "cloudnine",
+        "curiousmedicine",
+        "damp",
+        "effectspore",
+        "flamebody",
+        "guarddog",
+        "innerfocus",
+        "intimidate",
+        "lightningrod",
+        "magician",
+        "moody",
+        "oblivious",
+        "owntempo",
+        "pickpocket",
+        "poisonpoint",
+        "poisontouch",
+        "receiver",
+        "screencleaner",
+        "magicguard",
+        "static",
+        "supersweetsyrup",
+        "synchronize",
+        "trace",
+        "unburden",
+        "klutz",
+        "drizzle",
+        "drought",
+        "sandstream",
+        "snowwarning",
+    ];
+    assert_eq!(next_batch.len(), 30);
+    for id in next_batch {
+        let ability = dex.resolve_ability(id).unwrap().0;
+        assert!(
+            handlers.iter().any(|handler| handler.ability == ability),
+            "{id}"
+        );
+    }
+
+    let unsupported = dex.resolve_ability("aftermath").unwrap().0;
     assert!(!handlers
         .iter()
         .any(|handler| handler.ability == unsupported));
@@ -7713,6 +7754,68 @@ fn grass_and_ground_immunities_execute_before_accuracy_in_canonical_step() {
             .any(|entry| { matches!(entry.reason, RngReason::Accuracy | RngReason::DamageRoll) }));
         assert_eq!(step(&state, &action, &mechanics).unwrap(), result);
     }
+}
+
+#[test]
+fn switch_in_weather_and_intimidate_behaviors_use_the_canonical_transition() {
+    let dex = champions_reg_mc().unwrap();
+    let passive = set_with_moves(&dex, "magikarp", "swiftswim", &["recover"]);
+    let foe = set_with_moves(&dex, "snorlax", "telepathy", &["recover"]);
+    let switch_action = JointAction::Turn {
+        p1: TurnChoice {
+            actions: [
+                PokemonAction::Switch {
+                    pokemon: PokemonIndex::new(2),
+                },
+                use_move(0, ActionTarget::Automatic),
+            ],
+        },
+        p2: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Automatic),
+                use_move(0, ActionTarget::Automatic),
+            ],
+        },
+    };
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+
+    let drizzle = set_with_moves(&dex, "pelipper", "drizzle", &["recover"]);
+    let state = selected_battle_for_teams(
+        &dex,
+        &[passive.clone(), passive.clone(), drizzle, passive.clone()],
+        &four_member_team(foe.clone(), foe.clone()),
+        0x13_05_11,
+    );
+    let result = step(&state, &switch_action, &mechanics).unwrap();
+    assert_eq!(
+        result.state.field().weather,
+        Some(ConditionState::new(
+            dex.field_effect_ids().rain.unwrap(),
+            None
+        ))
+    );
+
+    let intimidate = set_with_moves(&dex, "arcanine", "intimidate", &["recover"]);
+    let state = selected_battle_for_teams(
+        &dex,
+        &[passive.clone(), passive.clone(), intimidate, passive],
+        &four_member_team(foe.clone(), foe),
+        0x13_05_11,
+    );
+    let result = step(&state, &switch_action, &mechanics).unwrap();
+    for index in [PokemonIndex::new(0), PokemonIndex::new(1)] {
+        assert_eq!(
+            result
+                .state
+                .side(SideId::P2)
+                .pokemon(index)
+                .unwrap()
+                .stat_stages
+                .atk,
+            -1
+        );
+    }
+    assert_eq!(step(&state, &switch_action, &mechanics).unwrap(), result);
 }
 
 #[test]

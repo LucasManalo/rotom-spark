@@ -80,6 +80,23 @@ impl FieldEffectIds {
         .find_map(|(id, environment)| (id == Some(weather)).then_some(environment))
     }
 
+    pub(crate) fn effective_weather_environment<D: CombatData>(
+        &self,
+        battle: &BattleState,
+        data: &D,
+    ) -> Option<WeatherEnvironment> {
+        let suppressed = [SideId::P1, SideId::P2].into_iter().any(|side| {
+            battle.side(side).active.into_iter().flatten().any(|index| {
+                battle.side(side).pokemon(index).is_some_and(|pokemon| {
+                    data.ability_has_behavior(pokemon.ability, crate::AbilityBehavior::CloudNine)
+                })
+            })
+        });
+        (!suppressed)
+            .then(|| self.weather_environment(battle))
+            .flatten()
+    }
+
     pub(crate) fn terrain_environment(&self, battle: &BattleState) -> Option<TerrainEnvironment> {
         let terrain = battle.field.terrain?.id;
         [
@@ -123,6 +140,21 @@ impl FieldEffectIds {
 
     pub(crate) fn item_is_active(&self, battle: &BattleState) -> bool {
         !self.field_has(battle, self.magic_room)
+    }
+
+    pub(crate) fn item_is_active_for<D: CombatData>(
+        &self,
+        battle: &BattleState,
+        data: &D,
+        target: PokemonRef,
+    ) -> bool {
+        self.item_is_active(battle)
+            && battle
+                .side(target.side)
+                .pokemon(target.pokemon)
+                .is_some_and(|pokemon| {
+                    !data.ability_has_behavior(pokemon.ability, crate::AbilityBehavior::Klutz)
+                })
     }
 
     pub(crate) fn action_speed(&self, battle: &BattleState, side: SideId, speed: u16) -> u16 {
@@ -251,7 +283,7 @@ pub(crate) fn grounded<D: CombatData>(
     if ids.field_has(battle, ids.gravity)
         || has_volatile(ids.ingrain)
         || has_volatile(ids.smack_down)
-        || (ids.item_is_active(battle)
+        || (ids.item_is_active_for(battle, data, target)
             && ids.iron_ball.is_some_and(|item| pokemon.item == Some(item)))
     {
         return Ok(true);
@@ -267,7 +299,7 @@ pub(crate) fn grounded<D: CombatData>(
         .is_some_and(|ability| pokemon.ability == ability)
         || has_volatile(ids.magnet_rise)
         || has_volatile(ids.telekinesis)
-        || (ids.item_is_active(battle)
+        || (ids.item_is_active_for(battle, data, target)
             && ids
                 .air_balloon
                 .is_some_and(|item| pokemon.item == Some(item)))

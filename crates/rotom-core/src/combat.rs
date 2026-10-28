@@ -3,7 +3,7 @@ use crate::{
     BattlePhase, BattleStat, BattleState, ConditionId, ConditionState, EffectRegistry,
     EventContext, EventDispatch, EventValue, FaintTarget, FieldEffectIds, FormId, MajorStatus,
     MoveId, MoveSlotIndex, MoveTarget, PokemonAction, PokemonIndex, PokemonRef, PokemonState,
-    RngReason, SideId, SpeciesId, WeatherEnvironment,
+    QueuedAction, RngReason, SideId, SpeciesId, WeatherEnvironment,
 };
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
@@ -325,6 +325,7 @@ impl MoveInteractionFlags {
     const RECOIL: u16 = 1 << 6;
     const PULSE: u16 = 1 << 7;
     const POWDER: u16 = 1 << 8;
+    const EXPLOSION: u16 = 1 << 9;
 
     #[must_use]
     pub const fn is_empty(&self) -> bool {
@@ -377,6 +378,11 @@ impl MoveInteractionFlags {
     }
 
     #[must_use]
+    pub const fn with_explosion(self, enabled: bool) -> Self {
+        self.with(Self::EXPLOSION, enabled)
+    }
+
+    #[must_use]
     pub const fn bullet(self) -> bool {
         self.contains(Self::BULLET)
     }
@@ -419,6 +425,11 @@ impl MoveInteractionFlags {
     #[must_use]
     pub const fn powder(self) -> bool {
         self.contains(Self::POWDER)
+    }
+
+    #[must_use]
+    pub const fn explosion(self) -> bool {
+        self.contains(Self::EXPLOSION)
     }
 
     const fn with(self, flag: u16, enabled: bool) -> Self {
@@ -710,6 +721,7 @@ struct MoveExecutionContext {
     suppress_target_ability: bool,
     move_type_converted: bool,
     sheer_force_boosted: bool,
+    later_actors: Vec<PokemonRef>,
 }
 
 #[derive(Clone, Copy)]
@@ -759,7 +771,7 @@ impl BattleState {
             EventContext::default(),
             EventValue::None,
         )?);
-        for action in queued {
+        for (action_index, action) in queued.iter().copied().enumerate() {
             if self.phase == BattlePhase::BattleEnd {
                 break;
             }
@@ -773,9 +785,10 @@ impl BattleState {
             match action.choice {
                 PokemonAction::Switch { pokemon } => {
                     let switched = self.resolve_queued_switch(
+                        data,
                         effects,
-                        action.side,
-                        action.slot,
+                        field_effects,
+                        action,
                         pokemon,
                         &mut resolution,
                     )?;
@@ -797,6 +810,10 @@ impl BattleState {
                     target,
                     mega: false,
                 } => {
+                    let later_actors = queued[action_index + 1..]
+                        .iter()
+                        .map(|later| PokemonRef::new(later.side, later.pokemon))
+                        .collect::<Vec<_>>();
                     self.execute_move(
                         data,
                         QueuedMoveAction {
@@ -806,6 +823,7 @@ impl BattleState {
                             target,
                             prankster_boosted: action.prankster_boosted,
                         },
+                        later_actors,
                         effects,
                         field_effects,
                         &mut resolution,
@@ -848,7 +866,7 @@ impl BattleState {
         field_effects: &FieldEffectIds,
         resolution: &mut TurnResolution,
     ) -> Result<(), BattleError> {
-        let residual_weather = field_effects.weather_environment(self);
+        let residual_weather = field_effects.effective_weather_environment(self, data);
         let residual_terrain = field_effects.terrain_environment(self);
         self.tick_volatile_durations(resolution)?;
         self.process_weather_residuals(data, effects, field_effects, resolution)?;
@@ -881,11 +899,13 @@ impl BattleState {
         &mut self,
         data: &D,
         queued: QueuedMoveAction,
+        later_actors: Vec<PokemonRef>,
         effects: &EffectRegistry,
         field_effects: &FieldEffectIds,
         resolution: &mut TurnResolution,
     ) -> Result<(), BattleError> {
-        let move_context = self.prepare_move_execution(data, queued, field_effects)?;
+        let move_context =
+            self.prepare_move_execution(data, queued, later_actors, field_effects)?;
         let source_index = move_context.source.pokemon;
         let context = EventContext {
             source: Some(move_context.source),
@@ -940,6 +960,7 @@ impl BattleState {
         &self,
         data: &D,
         queued: QueuedMoveAction,
+        later_actors: Vec<PokemonRef>,
         field_effects: &FieldEffectIds,
     ) -> Result<MoveExecutionContext, BattleError> {
         let source_index = self.side(queued.side).active[queued.slot.index()].ok_or_else(|| {
@@ -1025,6 +1046,7 @@ impl BattleState {
             ),
             move_type_converted,
             sheer_force_boosted,
+            later_actors,
         })
     }
 
@@ -1102,7 +1124,7 @@ impl BattleState {
                     move_context.source,
                     target,
                 )?,
-                weather: field_effects.weather_environment(self),
+                weather: field_effects.effective_weather_environment(self, data),
                 terrain: field_effects.terrain_environment(self),
                 ..EventContext::default()
             };
@@ -1524,7 +1546,7 @@ impl BattleState {
                     context.source,
                     target_context.target,
                 )?,
-                weather: field_effects.weather_environment(self),
+                weather: field_effects.effective_weather_environment(self, data),
                 terrain: field_effects.terrain_environment(self),
                 ..EventContext::default()
             };
@@ -1664,7 +1686,7 @@ impl BattleState {
                     field_effects,
                     target,
                 )?),
-                weather: field_effects.weather_environment(self),
+                weather: field_effects.effective_weather_environment(self, data),
                 terrain: field_effects.terrain_environment(self),
                 ..EventContext::default()
             };
@@ -2146,7 +2168,7 @@ impl BattleState {
                             .pokemon(target.pokemon)
                             .and_then(|pokemon| pokemon.form),
                     ),
-                    weather: field_effects.weather_environment(self),
+                    weather: field_effects.effective_weather_environment(self, data),
                     terrain: field_effects.terrain_environment(self),
                     ..EventContext::default()
                 };
@@ -2581,7 +2603,7 @@ impl BattleState {
             || ids
                 .overcoat
                 .is_some_and(|ability| source_state.ability == ability)
-            || (ids.item_is_active(self)
+            || (ids.item_is_active_for(self, data, source)
                 && ids
                     .safety_goggles
                     .is_some_and(|item| source_state.item == Some(item)));
@@ -2802,8 +2824,9 @@ impl BattleState {
             move_type_converted: move_context.move_type_converted,
             sheer_force_boosted: move_context.sheer_force_boosted,
             plus_minus_active,
+            analytic_active: move_context.later_actors.is_empty(),
             type_effectiveness: type_exponent,
-            weather: field_effects.weather_environment(self),
+            weather: field_effects.effective_weather_environment(self, data),
             terrain: field_effects.terrain_environment(self),
             ..EventContext::default()
         };
@@ -2882,8 +2905,10 @@ impl BattleState {
                 PokemonType::Water => Some((1, 2)),
                 _ => None,
             }
-        } else {
+        } else if event_context.weather.is_some() {
             crate::field_effects::weather_damage_modifier(self, field_effects, move_data.move_type)
+        } else {
+            None
         };
         let mut damage = calculate_damage_inner(
             &source_state,
@@ -3027,11 +3052,17 @@ impl BattleState {
         {
             return Ok(true);
         }
-        let value =
-            match field_effects.weather_accuracy(self, move_context.move_id, u16::from(value)) {
-                crate::field_effects::WeatherAccuracy::Always => return Ok(true),
-                crate::field_effects::WeatherAccuracy::Percent(value) => value,
-            };
+        let value = match if field_effects
+            .effective_weather_environment(self, data)
+            .is_some()
+        {
+            field_effects.weather_accuracy(self, move_context.move_id, u16::from(value))
+        } else {
+            crate::field_effects::WeatherAccuracy::Percent(u16::from(value))
+        } {
+            crate::field_effects::WeatherAccuracy::Always => return Ok(true),
+            crate::field_effects::WeatherAccuracy::Percent(value) => value,
+        };
         let mut source_stage = self
             .side(move_context.source.side)
             .pokemon(move_context.source.pokemon)
@@ -3082,7 +3113,7 @@ impl BattleState {
                 move_category: Some(move_context.move_data.category),
                 move_type: Some(move_context.move_data.move_type),
                 move_flags: move_context.move_data.interaction_flags,
-                weather: field_effects.weather_environment(self),
+                weather: field_effects.effective_weather_environment(self, data),
                 terrain: field_effects.terrain_environment(self),
                 ..EventContext::default()
             },
@@ -3210,14 +3241,17 @@ impl BattleState {
         Ok(None)
     }
 
-    fn resolve_queued_switch(
+    fn resolve_queued_switch<D: CombatData>(
         &mut self,
+        data: &D,
         effects: &EffectRegistry,
-        side: SideId,
-        slot: ActiveSlot,
+        field_effects: &FieldEffectIds,
+        action: QueuedAction,
         incoming: PokemonIndex,
         resolution: &mut TurnResolution,
     ) -> Result<bool, BattleError> {
+        let side = action.side;
+        let slot = action.slot;
         let outgoing = self.side(side).active[slot.index()].ok_or_else(|| {
             BattleError::InvalidState("queued switch has no outgoing Pokémon".to_owned())
         })?;
@@ -3235,6 +3269,13 @@ impl BattleState {
             return Ok(false);
         }
         StateKernel::new(self).switch_active_position(side, slot, incoming)?;
+        self.apply_direct_switch_in_abilities(
+            data,
+            effects,
+            field_effects,
+            PokemonRef::new(side, incoming),
+            resolution,
+        )?;
         resolution.events.push(effects.dispatch(
             self,
             BattleEvent::SwitchIn,
@@ -3249,6 +3290,168 @@ impl BattleState {
         Ok(true)
     }
 
+    fn apply_direct_switch_in_abilities<D: CombatData>(
+        &mut self,
+        data: &D,
+        effects: &EffectRegistry,
+        field_effects: &FieldEffectIds,
+        source: PokemonRef,
+        resolution: &mut TurnResolution,
+    ) -> Result<(), BattleError> {
+        let ability = self
+            .side(source.side)
+            .pokemon(source.pokemon)
+            .ok_or_else(|| BattleError::InvalidState("switch-in source is invalid".to_owned()))?
+            .ability;
+        self.apply_switch_in_weather(data, field_effects, ability)?;
+        if data.ability_has_behavior(ability, crate::AbilityBehavior::ScreenCleaner) {
+            self.clear_screens(field_effects);
+        }
+        if data.ability_has_behavior(ability, crate::AbilityBehavior::CuriousMedicine) {
+            self.clear_active_ally_stages(source)?;
+        }
+        if data.ability_has_behavior(ability, crate::AbilityBehavior::Intimidate) {
+            for target in self
+                .side(source.side.opponent())
+                .active
+                .into_iter()
+                .flatten()
+                .map(|pokemon| PokemonRef::new(source.side.opponent(), pokemon))
+                .collect::<Vec<_>>()
+            {
+                let context = EventContext {
+                    source: Some(source),
+                    target: Some(target),
+                    requested_stat: Some(BattleStat::Attack),
+                    intimidate: true,
+                    ..EventContext::default()
+                };
+                let event = effects.dispatch(
+                    self,
+                    BattleEvent::TryStatStageChange,
+                    context,
+                    EventValue::Integer(-1),
+                )?;
+                let EventValue::Integer(delta) = event.value else {
+                    return Err(BattleError::InvalidState(
+                        "Intimidate stage relay is not an integer".to_owned(),
+                    ));
+                };
+                resolution.events.push(event);
+                let delta = i8::try_from(delta).map_err(|_| {
+                    BattleError::InvalidState("Intimidate stage relay is out of range".to_owned())
+                })?;
+                let applied = StateKernel::new(self)
+                    .change_stat_stage(target, BattleStat::Attack, delta)?
+                    .applied_delta;
+                if applied != 0 {
+                    resolution.events.push(effects.dispatch(
+                        self,
+                        BattleEvent::AfterStatStageChange,
+                        context,
+                        EventValue::Integer(i64::from(applied)),
+                    )?);
+                }
+            }
+        }
+        if data.ability_has_behavior(ability, crate::AbilityBehavior::SupersweetSyrup) {
+            for target in self
+                .side(source.side.opponent())
+                .active
+                .into_iter()
+                .flatten()
+                .map(|pokemon| PokemonRef::new(source.side.opponent(), pokemon))
+                .collect::<Vec<_>>()
+            {
+                StateKernel::new(self).change_stat_stage(target, BattleStat::Evasion, -1)?;
+            }
+        }
+        Ok(())
+    }
+
+    fn apply_switch_in_weather<D: CombatData>(
+        &mut self,
+        data: &D,
+        field_effects: &FieldEffectIds,
+        ability: AbilityId,
+    ) -> Result<(), BattleError> {
+        for (behavior, condition) in [
+            (
+                crate::AbilityBehavior::WeatherSetter(WeatherEnvironment::Rain),
+                field_effects.rain,
+            ),
+            (
+                crate::AbilityBehavior::WeatherSetter(WeatherEnvironment::Sun),
+                field_effects.sun,
+            ),
+            (
+                crate::AbilityBehavior::WeatherSetter(WeatherEnvironment::Sandstorm),
+                field_effects.sandstorm,
+            ),
+            (
+                crate::AbilityBehavior::WeatherSetter(WeatherEnvironment::Snow),
+                field_effects.snow,
+            ),
+        ] {
+            if data.ability_has_behavior(ability, behavior) {
+                let condition = condition.ok_or_else(|| {
+                    BattleError::DataMismatch(
+                        "weather-setting ability has no condition identity".to_owned(),
+                    )
+                })?;
+                StateKernel::new(self).set_weather(Some(ConditionState::new(condition, None)))?;
+            }
+        }
+        Ok(())
+    }
+
+    fn clear_screens(&mut self, field_effects: &FieldEffectIds) {
+        for side in [SideId::P1, SideId::P2] {
+            for condition in [
+                field_effects.reflect,
+                field_effects.light_screen,
+                field_effects.aurora_veil,
+            ]
+            .into_iter()
+            .flatten()
+            {
+                StateKernel::new(self).remove_side_condition(side, condition);
+            }
+        }
+    }
+
+    fn clear_active_ally_stages(&mut self, source: PokemonRef) -> Result<(), BattleError> {
+        let allies = self
+            .side(source.side)
+            .active
+            .into_iter()
+            .flatten()
+            .filter(|ally| *ally != source.pokemon)
+            .collect::<Vec<_>>();
+        for ally in allies {
+            let ally = PokemonRef::new(source.side, ally);
+            let stages = self
+                .side(ally.side)
+                .pokemon(ally.pokemon)
+                .ok_or_else(|| {
+                    BattleError::InvalidState("Curious Medicine ally is invalid".to_owned())
+                })?
+                .stat_stages;
+            for stat in [
+                BattleStat::Attack,
+                BattleStat::Defense,
+                BattleStat::SpecialAttack,
+                BattleStat::SpecialDefense,
+                BattleStat::Speed,
+                BattleStat::Accuracy,
+                BattleStat::Evasion,
+            ] {
+                StateKernel::new(self).change_stat_stage(ally, stat, -stages.get(stat))?;
+            }
+        }
+        Ok(())
+    }
+
     fn process_weather_residuals<D: CombatData>(
         &mut self,
         data: &D,
@@ -3256,6 +3459,13 @@ impl BattleState {
         field_effects: &FieldEffectIds,
         resolution: &mut TurnResolution,
     ) -> Result<(), BattleError> {
+        if field_effects.weather_environment(self).is_some()
+            && field_effects
+                .effective_weather_environment(self, data)
+                .is_none()
+        {
+            return Ok(());
+        }
         let active = [SideId::P1, SideId::P2]
             .into_iter()
             .flat_map(|side| {

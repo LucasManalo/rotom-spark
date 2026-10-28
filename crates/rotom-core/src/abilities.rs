@@ -135,6 +135,29 @@ pub enum AbilityBehavior {
     WanderingSpirit,
     SheerForce,
     Stall,
+    Analytic,
+    CloudNine,
+    CuriousMedicine,
+    Damp,
+    ContactStatus(MajorStatus),
+    EffectSpore,
+    Intimidate,
+    IntimidateImmunity,
+    GuardDog,
+    LightningRod,
+    Magician,
+    Moody,
+    Pickpocket,
+    PoisonTouch,
+    Receiver,
+    ScreenCleaner,
+    SupersweetSyrup,
+    Synchronize,
+    Trace,
+    Unburden,
+    Klutz,
+    MagicGuard,
+    WeatherSetter(WeatherEnvironment),
     /// The pinned ability has no authoritative battle-state effect.
     NoAuthoritativeEffect,
 }
@@ -1088,6 +1111,114 @@ const BEHAVIOR_REGISTRATIONS: &[BehaviorRegistration] = &[
         BattleEvent::ModifyFractionalPriority,
         DEFAULT_ORDER,
         stall,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::Analytic,
+        BattleEvent::ModifyBasePower,
+        EffectOrder::new(0, 21, 0),
+        analytic,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::Damp,
+        BattleEvent::TryHit,
+        DEFAULT_ORDER,
+        damp,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::ContactStatus(MajorStatus::Burn),
+        BattleEvent::AfterDamage,
+        DEFAULT_ORDER,
+        flame_body,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::ContactStatus(MajorStatus::Poison),
+        BattleEvent::AfterDamage,
+        DEFAULT_ORDER,
+        poison_point,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::ContactStatus(MajorStatus::Paralysis),
+        BattleEvent::AfterDamage,
+        DEFAULT_ORDER,
+        static_contact,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::EffectSpore,
+        BattleEvent::AfterDamage,
+        DEFAULT_ORDER,
+        effect_spore,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::IntimidateImmunity,
+        BattleEvent::TryStatStageChange,
+        DEFAULT_ORDER,
+        intimidate_immunity,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::GuardDog,
+        BattleEvent::TryStatStageChange,
+        DEFAULT_ORDER,
+        guard_dog,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::LightningRod,
+        BattleEvent::TryHit,
+        DEFAULT_ORDER,
+        lightning_rod,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::Magician,
+        BattleEvent::AfterDamage,
+        DEFAULT_ORDER,
+        magician,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::Moody,
+        BattleEvent::Residual,
+        EffectOrder::new(28, 0, 0),
+        moody,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::Pickpocket,
+        BattleEvent::AfterDamage,
+        DEFAULT_ORDER,
+        pickpocket,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::PoisonTouch,
+        BattleEvent::AfterDamage,
+        DEFAULT_ORDER,
+        poison_touch,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::Receiver,
+        BattleEvent::Faint,
+        DEFAULT_ORDER,
+        receiver,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::Synchronize,
+        BattleEvent::AfterSetStatus,
+        DEFAULT_ORDER,
+        synchronize,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::Trace,
+        BattleEvent::SwitchIn,
+        DEFAULT_ORDER,
+        trace,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::Unburden,
+        BattleEvent::ModifySpeed,
+        DEFAULT_ORDER,
+        unburden,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::MagicGuard,
+        BattleEvent::WeatherImmunity,
+        DEFAULT_ORDER,
+        magic_guard_weather,
     ),
 ];
 
@@ -2874,6 +3005,374 @@ fn sheer_force(
     Ok(())
 }
 
+fn analytic(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if context.analytic_active && matching_source(invocation, context).is_some() {
+        modify_integer(dispatch, 5325, 4096)?;
+    }
+    Ok(())
+}
+
+fn damp(
+    _: &mut EffectState<'_>,
+    _: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if context.move_flags.explosion() {
+        boolean(dispatch)?;
+        dispatch.value = EventValue::Boolean(false);
+    }
+    Ok(())
+}
+
+fn flame_body(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    contact_status(state, invocation, context, dispatch, MajorStatus::Burn)
+}
+
+fn poison_point(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    contact_status(state, invocation, context, dispatch, MajorStatus::Poison)
+}
+
+fn static_contact(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    contact_status(state, invocation, context, dispatch, MajorStatus::Paralysis)
+}
+
+fn contact_status(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &EventDispatch,
+    status: MajorStatus,
+) -> Result<(), BattleError> {
+    if context.move_flags.contact() && damaged_holder(invocation, context, dispatch).is_some() {
+        if let Some(source) = context
+            .source
+            .filter(|source| Some(*source) != context.target)
+        {
+            if pokemon(state, source)?.status.is_none()
+                && pokemon(state, source)?.current_hp > 0
+                && state.chance(RngReason::Ability, 3, 10)?
+            {
+                state.apply_major_status(source, status)?;
+            }
+        }
+    }
+    Ok(())
+}
+
+fn effect_spore(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if !context.move_flags.contact() || damaged_holder(invocation, context, dispatch).is_none() {
+        return Ok(());
+    }
+    let Some(source) = context
+        .source
+        .filter(|source| Some(*source) != context.target)
+    else {
+        return Ok(());
+    };
+    if pokemon(state, source)?.status.is_some() || pokemon(state, source)?.current_hp == 0 {
+        return Ok(());
+    }
+    let roll = state.range(RngReason::Ability, 0..100)?;
+    let status = match roll {
+        0..=10 => Some(MajorStatus::Sleep),
+        11..=20 => Some(MajorStatus::Paralysis),
+        21..=29 => Some(MajorStatus::Poison),
+        _ => None,
+    };
+    if let Some(status) = status {
+        state.apply_major_status(source, status)?;
+    }
+    Ok(())
+}
+
+fn intimidate_immunity(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if context.intimidate && matching_target(invocation, context).is_some() {
+        integer(dispatch)?;
+        dispatch.value = EventValue::Integer(0);
+    }
+    Ok(())
+}
+
+fn guard_dog(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if context.intimidate {
+        if let Some(owner) = matching_target(invocation, context) {
+            dispatch.value = EventValue::Integer(0);
+            state.change_stat_stage(owner, BattleStat::Attack, 1)?;
+        }
+    }
+    Ok(())
+}
+
+fn lightning_rod(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = matching_target(invocation, context) else {
+        return Ok(());
+    };
+    if context.source != context.target && context.move_type == Some(PokemonType::Electric) {
+        state.change_stat_stage(owner, BattleStat::SpecialAttack, 1)?;
+        boolean(dispatch)?;
+        dispatch.value = EventValue::Boolean(false);
+        dispatch.mark_immune();
+    }
+    Ok(())
+}
+
+fn magician(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = matching_source(invocation, context) else {
+        return Ok(());
+    };
+    let Some(target) = context.target.filter(|target| *target != owner) else {
+        return Ok(());
+    };
+    if integer(dispatch)? > 0 && pokemon(state, owner)?.item.is_none() {
+        if let Some(item) = pokemon(state, target)?.item {
+            state.set_item(target, None)?;
+            state.set_item(owner, Some(item))?;
+        }
+    }
+    Ok(())
+}
+
+fn pickpocket(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = damaged_holder(invocation, context, dispatch) else {
+        return Ok(());
+    };
+    let Some(source) = context.source.filter(|source| *source != owner) else {
+        return Ok(());
+    };
+    if context.move_flags.contact() && pokemon(state, owner)?.item.is_none() {
+        if let Some(item) = pokemon(state, source)?.item {
+            state.set_item(source, None)?;
+            state.set_item(owner, Some(item))?;
+        }
+    }
+    Ok(())
+}
+
+fn moody(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    _: &EventContext,
+    _: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    const STATS: [BattleStat; 5] = [
+        BattleStat::Attack,
+        BattleStat::Defense,
+        BattleStat::SpecialAttack,
+        BattleStat::SpecialDefense,
+        BattleStat::Speed,
+    ];
+    let Some(owner) = owner_pokemon(invocation) else {
+        return Ok(());
+    };
+    if pokemon(state, owner)?.current_hp == 0 {
+        return Ok(());
+    }
+    let stages = pokemon(state, owner)?.stat_stages;
+    let boosts = STATS
+        .into_iter()
+        .filter(|stat| stages.get(*stat) < 6)
+        .collect::<Vec<_>>();
+    let boosted = if boosts.is_empty() {
+        None
+    } else {
+        Some(
+            boosts[usize::try_from(state.range(
+                RngReason::Ability,
+                0..u64::try_from(boosts.len()).unwrap_or(0),
+            )?)
+            .unwrap_or(0)],
+        )
+    };
+    if let Some(stat) = boosted {
+        state.change_stat_stage(owner, stat, 2)?;
+    }
+    let stages = pokemon(state, owner)?.stat_stages;
+    let drops = STATS
+        .into_iter()
+        .filter(|stat| Some(*stat) != boosted && stages.get(*stat) > -6)
+        .collect::<Vec<_>>();
+    if !drops.is_empty() {
+        let index = usize::try_from(state.range(
+            RngReason::Ability,
+            0..u64::try_from(drops.len()).unwrap_or(0),
+        )?)
+        .unwrap_or(0);
+        state.change_stat_stage(owner, drops[index], -1)?;
+    }
+    Ok(())
+}
+
+fn poison_touch(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = matching_source(invocation, context) else {
+        return Ok(());
+    };
+    let Some(target) = context.target.filter(|target| *target != owner) else {
+        return Ok(());
+    };
+    if context.move_flags.contact()
+        && integer(dispatch)? > 0
+        && pokemon(state, target)?.status.is_none()
+        && pokemon(state, target)?.current_hp > 0
+        && state.chance(RngReason::Ability, 3, 10)?
+    {
+        state.apply_major_status(target, MajorStatus::Poison)?;
+    }
+    Ok(())
+}
+
+fn receiver(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    _: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = owner_pokemon(invocation) else {
+        return Ok(());
+    };
+    let Some(fainted) = context
+        .target
+        .filter(|target| target.side == owner.side && *target != owner)
+    else {
+        return Ok(());
+    };
+    let ability = pokemon(state, fainted)?.ability;
+    state.set_ability(owner, ability)?;
+    Ok(())
+}
+
+fn synchronize(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    _: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = matching_target(invocation, context) else {
+        return Ok(());
+    };
+    let Some(source) = context.source.filter(|source| *source != owner) else {
+        return Ok(());
+    };
+    if let Some(status) = pokemon(state, owner)?.status {
+        if pokemon(state, source)?.status.is_none() && pokemon(state, source)?.current_hp > 0 {
+            state.apply_major_status(source, status)?;
+        }
+    }
+    Ok(())
+}
+
+fn trace(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    _: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = matching_source(invocation, context) else {
+        return Ok(());
+    };
+    let foes = state
+        .battle()
+        .side(owner.side.opponent())
+        .active
+        .into_iter()
+        .flatten()
+        .collect::<Vec<_>>();
+    if foes.is_empty() {
+        return Ok(());
+    }
+    let index = usize::try_from(state.range(
+        RngReason::Ability,
+        0..u64::try_from(foes.len()).unwrap_or(0),
+    )?)
+    .unwrap_or(0);
+    let ability = pokemon(state, PokemonRef::new(owner.side.opponent(), foes[index]))?.ability;
+    state.set_ability(owner, ability)?;
+    Ok(())
+}
+
+fn unburden(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = matching_source(invocation, context) else {
+        return Ok(());
+    };
+    if pokemon(state, owner)?.item.is_none() {
+        modify_integer(dispatch, 2, 1)?;
+    }
+    Ok(())
+}
+
+fn magic_guard_weather(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if context.weather.is_some() && matching_target(invocation, context).is_some() {
+        boolean(dispatch)?;
+        dispatch.value = EventValue::Boolean(false);
+    }
+    Ok(())
+}
+
 fn all_stat_drop_immunity(
     _: &mut EffectState<'_>,
     invocation: &EffectInvocation,
@@ -3183,7 +3682,7 @@ fn modify_integer(
 mod tests {
     use super::*;
     use crate::{
-        BattleState, BattleStats, MajorStatus, MoveId, MoveSlot, MoveTarget, PokemonIndex,
+        BattleState, BattleStats, ItemId, MajorStatus, MoveId, MoveSlot, MoveTarget, PokemonIndex,
         PokemonPosition, PokemonState, SideId, SideState, SpeciesId, StatStages, StatusState,
         TeamState,
     };
@@ -4781,5 +5280,281 @@ mod tests {
                 .ability,
             attacker
         );
+    }
+
+    #[test]
+    fn analytic_damp_lightning_rod_and_intimidate_guards_use_typed_relays() {
+        let analytic_ability = AbilityId::new(140);
+        let damp_ability = AbilityId::new(141);
+        let lightning_rod_ability = AbilityId::new(142);
+        let inner_focus = AbilityId::new(143);
+        let guard_dog_ability = AbilityId::new(144);
+        let registry = crate::conditions::composed_registry(
+            &EffectRegistry::new(),
+            [
+                unbreakable(analytic_ability, AbilityBehavior::Analytic),
+                breakable(damp_ability, AbilityBehavior::Damp),
+                breakable(lightning_rod_ability, AbilityBehavior::LightningRod),
+                unbreakable(inner_focus, AbilityBehavior::IntimidateImmunity),
+                breakable(guard_dog_ability, AbilityBehavior::GuardDog),
+            ],
+        );
+
+        let mut analytic_battle = battle(analytic_ability, AbilityId::new(1));
+        let power = registry
+            .dispatch(
+                &mut analytic_battle,
+                BattleEvent::ModifyBasePower,
+                EventContext {
+                    analytic_active: true,
+                    ..context()
+                },
+                EventValue::Integer(100),
+            )
+            .unwrap();
+        assert_eq!(power.value, EventValue::Integer(130));
+
+        let mut damp_battle = battle(AbilityId::new(1), damp_ability);
+        let blocked = registry
+            .dispatch(
+                &mut damp_battle,
+                BattleEvent::TryHit,
+                EventContext {
+                    move_flags: crate::MoveInteractionFlags::default().with_explosion(true),
+                    ..context()
+                },
+                EventValue::Boolean(true),
+            )
+            .unwrap();
+        assert_eq!(blocked.value, EventValue::Boolean(false));
+
+        let mut rod_battle = battle(AbilityId::new(1), lightning_rod_ability);
+        let immune = registry
+            .dispatch(
+                &mut rod_battle,
+                BattleEvent::TryHit,
+                EventContext {
+                    move_type: Some(PokemonType::Electric),
+                    ..context()
+                },
+                EventValue::Boolean(true),
+            )
+            .unwrap();
+        assert!(immune.immune);
+        assert_eq!(
+            rod_battle
+                .side(SideId::P2)
+                .pokemon(PokemonIndex::new(0))
+                .unwrap()
+                .stat_stages
+                .spa,
+            1
+        );
+
+        for (ability, expected_attack) in [(inner_focus, 0), (guard_dog_ability, 1)] {
+            let mut state = battle(AbilityId::new(1), ability);
+            let event = registry
+                .dispatch(
+                    &mut state,
+                    BattleEvent::TryStatStageChange,
+                    EventContext {
+                        requested_stat: Some(BattleStat::Attack),
+                        intimidate: true,
+                        ..context()
+                    },
+                    EventValue::Integer(-1),
+                )
+                .unwrap();
+            assert_eq!(event.value, EventValue::Integer(0));
+            assert_eq!(
+                state
+                    .side(SideId::P2)
+                    .pokemon(PokemonIndex::new(0))
+                    .unwrap()
+                    .stat_stages
+                    .atk,
+                expected_attack
+            );
+        }
+    }
+
+    #[test]
+    #[allow(clippy::too_many_lines)]
+    fn item_transfer_receiver_trace_and_unburden_mutate_authoritative_state() {
+        let magician_ability = AbilityId::new(145);
+        let pickpocket_ability = AbilityId::new(146);
+        let receiver_ability = AbilityId::new(147);
+        let trace_ability = AbilityId::new(148);
+        let unburden_ability = AbilityId::new(149);
+        let donor_ability = AbilityId::new(150);
+        let registry = crate::conditions::composed_registry(
+            &EffectRegistry::new(),
+            [
+                unbreakable(magician_ability, AbilityBehavior::Magician),
+                unbreakable(pickpocket_ability, AbilityBehavior::Pickpocket),
+                unbreakable(receiver_ability, AbilityBehavior::Receiver),
+                unbreakable(trace_ability, AbilityBehavior::Trace),
+                unbreakable(unburden_ability, AbilityBehavior::Unburden),
+            ],
+        );
+        let item = ItemId::new(9);
+        let mut magician_battle = battle(magician_ability, donor_ability);
+        magician_battle
+            .side_mut(SideId::P2)
+            .pokemon_mut(PokemonIndex::new(0))
+            .unwrap()
+            .item = Some(item);
+        registry
+            .dispatch(
+                &mut magician_battle,
+                BattleEvent::AfterDamage,
+                context(),
+                EventValue::Integer(10),
+            )
+            .unwrap();
+        assert_eq!(
+            magician_battle
+                .side(SideId::P1)
+                .pokemon(PokemonIndex::new(0))
+                .unwrap()
+                .item,
+            Some(item)
+        );
+        assert_eq!(
+            magician_battle
+                .side(SideId::P2)
+                .pokemon(PokemonIndex::new(0))
+                .unwrap()
+                .item,
+            None
+        );
+
+        let mut pickpocket_battle = battle(donor_ability, pickpocket_ability);
+        pickpocket_battle
+            .side_mut(SideId::P1)
+            .pokemon_mut(PokemonIndex::new(0))
+            .unwrap()
+            .item = Some(item);
+        registry
+            .dispatch(
+                &mut pickpocket_battle,
+                BattleEvent::AfterDamage,
+                EventContext {
+                    move_flags: crate::MoveInteractionFlags::default().with_contact(true),
+                    ..context()
+                },
+                EventValue::Integer(10),
+            )
+            .unwrap();
+        assert_eq!(
+            pickpocket_battle
+                .side(SideId::P2)
+                .pokemon(PokemonIndex::new(0))
+                .unwrap()
+                .item,
+            Some(item)
+        );
+
+        let mut trace_battle = battle(trace_ability, donor_ability);
+        registry
+            .dispatch(
+                &mut trace_battle,
+                BattleEvent::SwitchIn,
+                EventContext {
+                    target: None,
+                    ..context()
+                },
+                EventValue::None,
+            )
+            .unwrap();
+        assert_eq!(
+            trace_battle
+                .side(SideId::P1)
+                .pokemon(PokemonIndex::new(0))
+                .unwrap()
+                .ability,
+            donor_ability
+        );
+
+        let mut receiver_battle = battle(AbilityId::new(1), receiver_ability);
+        receiver_battle
+            .side_mut(SideId::P2)
+            .pokemon_mut(PokemonIndex::new(1))
+            .unwrap()
+            .ability = donor_ability;
+        registry
+            .dispatch(
+                &mut receiver_battle,
+                BattleEvent::Faint,
+                EventContext {
+                    source: Some(PokemonRef::new(SideId::P1, PokemonIndex::new(0))),
+                    target: Some(PokemonRef::new(SideId::P2, PokemonIndex::new(1))),
+                    ..EventContext::default()
+                },
+                EventValue::None,
+            )
+            .unwrap();
+        assert_eq!(
+            receiver_battle
+                .side(SideId::P2)
+                .pokemon(PokemonIndex::new(0))
+                .unwrap()
+                .ability,
+            donor_ability
+        );
+
+        let mut unburden_battle = battle(unburden_ability, AbilityId::new(1));
+        assert_eq!(
+            dispatch_integer(
+                &registry,
+                &mut unburden_battle,
+                BattleEvent::ModifySpeed,
+                100
+            ),
+            EventValue::Integer(200)
+        );
+    }
+
+    #[test]
+    fn moody_uses_two_ability_draws_and_excludes_accuracy_and_evasion() {
+        let moody_ability = AbilityId::new(151);
+        let registry = crate::conditions::composed_registry(
+            &EffectRegistry::new(),
+            [unbreakable(moody_ability, AbilityBehavior::Moody)],
+        );
+        let mut state = battle(moody_ability, AbilityId::new(1));
+        state
+            .side_mut(SideId::P1)
+            .pokemon_mut(PokemonIndex::new(1))
+            .unwrap()
+            .ability = AbilityId::new(1);
+        state.enable_rng_trace();
+
+        registry
+            .dispatch(
+                &mut state,
+                BattleEvent::Residual,
+                EventContext {
+                    source: Some(PokemonRef::new(SideId::P1, PokemonIndex::new(0))),
+                    ..EventContext::default()
+                },
+                EventValue::None,
+            )
+            .unwrap();
+
+        let stages = state
+            .side(SideId::P1)
+            .pokemon(PokemonIndex::new(0))
+            .unwrap()
+            .stat_stages;
+        assert_eq!(stages.accuracy, 0);
+        assert_eq!(stages.evasion, 0);
+        assert_eq!(
+            stages.atk + stages.def + stages.spa + stages.spd + stages.spe,
+            1
+        );
+        let trace = state.rng().trace().unwrap();
+        assert_eq!(trace.len(), 2);
+        assert!(trace.iter().all(|entry| entry.reason == RngReason::Ability));
     }
 }

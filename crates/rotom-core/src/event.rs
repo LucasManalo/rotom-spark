@@ -244,6 +244,12 @@ pub struct EventContext {
     /// Whether an active ally supplies Plus/Minus's shared Special Attack boost.
     #[serde(default, skip_serializing_if = "is_false")]
     pub plus_minus_active: bool,
+    /// Whether Analytic sees no later queued action for this target.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub analytic_active: bool,
+    /// Whether this stat-stage request was caused by Intimidate.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub intimidate: bool,
     /// Combined Showdown type modifier exponent: positive is weak, negative is resisted.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub type_effectiveness: Option<i8>,
@@ -372,6 +378,32 @@ impl EffectState<'_> {
         denominator: u64,
     ) -> Result<bool, BattleError> {
         self.battle.rng.chance(reason, numerator, denominator)
+    }
+
+    /// Draws one uniformly distributed mechanics-owned integer.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the range is empty or invalid.
+    pub fn range(
+        &mut self,
+        reason: RngReason,
+        range: std::ops::Range<u64>,
+    ) -> Result<u64, BattleError> {
+        self.battle.rng.range(reason, range)
+    }
+
+    /// Applies a coherent major status using the authoritative RNG stream.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the target is invalid or status initialization fails.
+    pub fn apply_major_status(
+        &mut self,
+        target: PokemonRef,
+        status: MajorStatus,
+    ) -> Result<(), BattleError> {
+        self.battle.apply_major_status(target, status)
     }
 
     /// Applies clamped HP loss and returns the actual loss.

@@ -1239,6 +1239,96 @@
     },
     {
       "id": "stall", "kind": "ability", "implementation": "implemented", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5", "evidence": ["file:docs/research/pr-13-5-ability-batch-30.md", "file:crates/rotom-core/src/state/queue.rs"]
+    },
+    {
+      "id": "analytic", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.11", "evidence": ["file:docs/research/pr-13-5-ability-batch-30b.md", "unit:crates/rotom-core/src/abilities.rs#analytic_damp_lightning_rod_and_intimidate_guards_use_typed_relays"]
+    },
+    {
+      "id": "cloudnine", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.11", "evidence": ["file:docs/research/pr-13-5-ability-batch-30b.md", "file:crates/rotom-core/src/field_effects.rs"]
+    },
+    {
+      "id": "curiousmedicine", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.11", "evidence": ["file:docs/research/pr-13-5-ability-batch-30b.md", "file:crates/rotom-core/src/combat.rs"]
+    },
+    {
+      "id": "damp", "kind": "ability", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.11", "evidence": ["file:docs/research/pr-13-5-ability-batch-30b.md", "unit:crates/rotom-core/src/abilities.rs#analytic_damp_lightning_rod_and_intimidate_guards_use_typed_relays"]
+    },
+    {
+      "id": "effectspore", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.11", "evidence": ["file:docs/research/pr-13-5-ability-batch-30b.md", "file:crates/rotom-core/src/abilities.rs"]
+    },
+    {
+      "id": "flamebody", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.11", "evidence": ["file:docs/research/pr-13-5-ability-batch-30b.md", "file:crates/rotom-core/src/abilities.rs"]
+    },
+    {
+      "id": "guarddog", "kind": "ability", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.11", "evidence": ["file:docs/research/pr-13-5-ability-batch-30b.md", "unit:crates/rotom-core/src/abilities.rs#analytic_damp_lightning_rod_and_intimidate_guards_use_typed_relays"]
+    },
+    {
+      "id": "innerfocus", "kind": "ability", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.11", "evidence": ["file:docs/research/pr-13-5-ability-batch-30b.md", "unit:crates/rotom-core/src/abilities.rs#analytic_damp_lightning_rod_and_intimidate_guards_use_typed_relays"]
+    },
+    {
+      "id": "intimidate", "kind": "ability", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 13.5.11", "evidence": ["file:docs/research/pr-13-5-ability-batch-30b.md", "unit:crates/rotom-dex/tests/combat.rs#ability_handler_registration_is_declarative_and_leaves_other_abilities_unsupported", "interaction_unit:crates/rotom-dex/tests/combat.rs#switch_in_weather_and_intimidate_behaviors_use_the_canonical_transition"]
+    },
+    {
+      "id": "lightningrod", "kind": "ability", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.11", "evidence": ["file:docs/research/pr-13-5-ability-batch-30b.md", "unit:crates/rotom-core/src/abilities.rs#analytic_damp_lightning_rod_and_intimidate_guards_use_typed_relays"]
+    },
+    {
+      "id": "magician", "kind": "ability", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.11", "evidence": ["file:docs/research/pr-13-5-ability-batch-30b.md", "unit:crates/rotom-core/src/abilities.rs#item_transfer_receiver_trace_and_unburden_mutate_authoritative_state"]
+    },
+    {
+      "id": "moody", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.11", "evidence": ["file:docs/research/pr-13-5-ability-batch-30b.md", "unit:crates/rotom-core/src/abilities.rs#moody_uses_two_ability_draws_and_excludes_accuracy_and_evasion"]
+    },
+    {
+      "id": "oblivious", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.11", "evidence": ["file:docs/research/pr-13-5-ability-batch-30b.md", "file:crates/rotom-core/src/abilities.rs"]
+    },
+    {
+      "id": "owntempo", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.11", "evidence": ["file:docs/research/pr-13-5-ability-batch-30b.md", "file:crates/rotom-core/src/abilities.rs"]
+    },
+    {
+      "id": "pickpocket", "kind": "ability", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.11", "evidence": ["file:docs/research/pr-13-5-ability-batch-30b.md", "unit:crates/rotom-core/src/abilities.rs#item_transfer_receiver_trace_and_unburden_mutate_authoritative_state"]
+    },
+    {
+      "id": "poisonpoint", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.11", "evidence": ["file:docs/research/pr-13-5-ability-batch-30b.md", "file:crates/rotom-core/src/abilities.rs"]
+    },
+    {
+      "id": "poisontouch", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.11", "evidence": ["file:docs/research/pr-13-5-ability-batch-30b.md", "file:crates/rotom-core/src/abilities.rs"]
+    },
+    {
+      "id": "receiver", "kind": "ability", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.11", "evidence": ["file:docs/research/pr-13-5-ability-batch-30b.md", "unit:crates/rotom-core/src/abilities.rs#item_transfer_receiver_trace_and_unburden_mutate_authoritative_state"]
+    },
+    {
+      "id": "screencleaner", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.11", "evidence": ["file:docs/research/pr-13-5-ability-batch-30b.md", "file:crates/rotom-core/src/combat.rs"]
+    },
+    {
+      "id": "magicguard", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.11", "evidence": ["file:docs/research/pr-13-5-ability-batch-30b.md", "file:crates/rotom-core/src/abilities.rs"]
+    },
+    {
+      "id": "static", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.11", "evidence": ["file:docs/research/pr-13-5-ability-batch-30b.md", "file:crates/rotom-core/src/abilities.rs"]
+    },
+    {
+      "id": "supersweetsyrup", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.11", "evidence": ["file:docs/research/pr-13-5-ability-batch-30b.md", "file:crates/rotom-core/src/combat.rs"]
+    },
+    {
+      "id": "synchronize", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.11", "evidence": ["file:docs/research/pr-13-5-ability-batch-30b.md", "file:crates/rotom-core/src/abilities.rs"]
+    },
+    {
+      "id": "trace", "kind": "ability", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.11", "evidence": ["file:docs/research/pr-13-5-ability-batch-30b.md", "unit:crates/rotom-core/src/abilities.rs#item_transfer_receiver_trace_and_unburden_mutate_authoritative_state"]
+    },
+    {
+      "id": "unburden", "kind": "ability", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.11", "evidence": ["file:docs/research/pr-13-5-ability-batch-30b.md", "unit:crates/rotom-core/src/abilities.rs#item_transfer_receiver_trace_and_unburden_mutate_authoritative_state"]
+    },
+    {
+      "id": "klutz", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.11", "evidence": ["file:docs/research/pr-13-5-ability-batch-30b.md", "file:crates/rotom-core/src/field_effects.rs"]
+    },
+    {
+      "id": "drizzle", "kind": "ability", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 13.5.11", "evidence": ["file:docs/research/pr-13-5-ability-batch-30b.md", "unit:crates/rotom-dex/tests/combat.rs#ability_handler_registration_is_declarative_and_leaves_other_abilities_unsupported", "interaction_unit:crates/rotom-dex/tests/combat.rs#switch_in_weather_and_intimidate_behaviors_use_the_canonical_transition"]
+    },
+    {
+      "id": "drought", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.11", "evidence": ["file:docs/research/pr-13-5-ability-batch-30b.md", "file:crates/rotom-core/src/combat.rs"]
+    },
+    {
+      "id": "sandstream", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.11", "evidence": ["file:docs/research/pr-13-5-ability-batch-30b.md", "file:crates/rotom-core/src/combat.rs"]
+    },
+    {
+      "id": "snowwarning", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.11", "evidence": ["file:docs/research/pr-13-5-ability-batch-30b.md", "file:crates/rotom-core/src/combat.rs"]
     }
   ]
 }

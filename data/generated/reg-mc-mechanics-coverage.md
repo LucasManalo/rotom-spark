@@ -8,7 +8,7 @@ This report is generated from `reg-mc-mechanics-manifest.json`. Presence means r
 
 | Kind | Reachable | Implemented | Partial | Unsupported | Differential | Unit tested | Not tested | Interaction verified |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| ability | 215 | 118 | 19 | 78 | 51 | 57 | 107 | 72 |
+| ability | 215 | 120 | 47 | 48 | 51 | 70 | 94 | 74 |
 | condition | 96 | 0 | 0 | 96 | 0 | 0 | 96 | 0 |
 | form | 153 | 0 | 0 | 153 | 0 | 0 | 153 | 0 |
 | item | 166 | 0 | 0 | 166 | 0 | 0 | 166 | 0 |
