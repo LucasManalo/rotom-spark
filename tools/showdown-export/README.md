@@ -32,6 +32,20 @@ node tools/showdown-export/generate-mechanics-manifest.cjs --next-research
 node --test tools/showdown-export/mechanics-manifest.test.cjs
 ```
 
+PR 15.0 derives a separate capability dependency graph from that manifest. It
+covers every partial ability/item and unsupported move, and deliberately keeps
+identity coverage separate from shared executable-capability coverage:
+
+```text
+node tools/showdown-export/generate-capability-report.cjs
+node tools/showdown-export/generate-capability-report.cjs --check
+node --test tools/showdown-export/capability-report.test.cjs
+```
+
+The generated JSON is the machine-readable blocker graph. The generated
+Markdown is its headline audit; neither file promotes an identity merely
+because one callback or metadata field is registered.
+
 `data/mechanics-coverage.json` contains reviewed implementation and verification
 claims. Move implementation status is derived from the complete operation and
 capability requirements exported from the resolved move. The current PR 13.4
