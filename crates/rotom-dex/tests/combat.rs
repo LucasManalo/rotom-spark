@@ -4117,7 +4117,7 @@ fn first_five_item_handlers_are_resolved_from_stable_dex_identities() {
         let item = dex.resolve_item(name).unwrap().0;
         assert!(handlers.contains(&rotom_core::ItemHandler::new(item, behavior)));
     }
-    assert_eq!(handlers.len(), 35);
+    assert_eq!(handlers.len(), 65);
 }
 
 #[test]
@@ -4175,6 +4175,189 @@ fn thirty_additional_items_resolve_to_complete_native_behavior_families() {
             "missing handler for {name}"
         );
     }
+}
+
+#[allow(clippy::too_many_lines)] // The table deliberately audits all 30 stable identity mappings.
+#[test]
+fn next_thirty_items_resolve_to_native_behavior_families() {
+    use rotom_core::{
+        BattleStat, ItemBehavior, MajorStatus, PokemonType, TerrainEnvironment, WeatherEnvironment,
+    };
+
+    let dex = champions_reg_mc().unwrap();
+    let handlers = dex.item_handlers();
+    let pikachu = dex.resolve_species("pikachu").unwrap().0;
+    let expected = [
+        ("chilanberry", ItemBehavior::NormalResistBerry),
+        ("tangaberry", ItemBehavior::ResistBerry(PokemonType::Bug)),
+        (
+            "wacanberry",
+            ItemBehavior::ResistBerry(PokemonType::Electric),
+        ),
+        ("yacheberry", ItemBehavior::ResistBerry(PokemonType::Ice)),
+        (
+            "aspearberry",
+            ItemBehavior::StatusCureBerry(Some(MajorStatus::Freeze)),
+        ),
+        (
+            "cheriberry",
+            ItemBehavior::StatusCureBerry(Some(MajorStatus::Paralysis)),
+        ),
+        (
+            "chestoberry",
+            ItemBehavior::StatusCureBerry(Some(MajorStatus::Sleep)),
+        ),
+        (
+            "pechaberry",
+            ItemBehavior::StatusCureBerry(Some(MajorStatus::Poison)),
+        ),
+        (
+            "rawstberry",
+            ItemBehavior::StatusCureBerry(Some(MajorStatus::Burn)),
+        ),
+        ("persimberry", ItemBehavior::ConfusionCureBerry),
+        ("lumberry", ItemBehavior::StatusCureBerry(None)),
+        ("leppaberry", ItemBehavior::PpRestoreBerry),
+        ("oranberry", ItemBehavior::HealBerryFixed(10)),
+        (
+            "sitrusberry",
+            ItemBehavior::HealBerryFraction {
+                numerator: 1,
+                denominator: 4,
+            },
+        ),
+        (
+            "damprock",
+            ItemBehavior::WeatherDuration(WeatherEnvironment::Rain),
+        ),
+        (
+            "heatrock",
+            ItemBehavior::WeatherDuration(WeatherEnvironment::Sun),
+        ),
+        (
+            "icyrock",
+            ItemBehavior::WeatherDuration(WeatherEnvironment::Snow),
+        ),
+        (
+            "smoothrock",
+            ItemBehavior::WeatherDuration(WeatherEnvironment::Sandstorm),
+        ),
+        ("terrainextender", ItemBehavior::TerrainDuration),
+        (
+            "electricseed",
+            ItemBehavior::TerrainSeed(TerrainEnvironment::Electric, BattleStat::Defense),
+        ),
+        (
+            "grassyseed",
+            ItemBehavior::TerrainSeed(TerrainEnvironment::Grassy, BattleStat::Defense),
+        ),
+        (
+            "mistyseed",
+            ItemBehavior::TerrainSeed(TerrainEnvironment::Misty, BattleStat::SpecialDefense),
+        ),
+        (
+            "psychicseed",
+            ItemBehavior::TerrainSeed(TerrainEnvironment::Psychic, BattleStat::SpecialDefense),
+        ),
+        ("leftovers", ItemBehavior::Leftovers),
+        ("brightpowder", ItemBehavior::TargetAccuracy),
+        ("widelens", ItemBehavior::SourceAccuracy),
+        (
+            "choicescarf",
+            ItemBehavior::SpeedMultiplier {
+                numerator: 3,
+                denominator: 2,
+            },
+        ),
+        (
+            "ironball",
+            ItemBehavior::SpeedMultiplier {
+                numerator: 1,
+                denominator: 2,
+            },
+        ),
+        ("lightball", ItemBehavior::DoubleOffenseFor(pikachu)),
+        ("focussash", ItemBehavior::FocusSash),
+    ];
+    assert_eq!(expected.len(), 30);
+    for (name, behavior) in expected {
+        let item = dex.resolve_item(name).unwrap().0;
+        assert!(
+            handlers.contains(&rotom_core::ItemHandler::new(item, behavior)),
+            "missing handler for {name}"
+        );
+        assert!(
+            dex.item_has_behavior(item, behavior),
+            "missing behavior query for {name}"
+        );
+    }
+}
+
+#[test]
+fn duration_seed_and_leftovers_items_apply_through_canonical_step() {
+    let dex = champions_reg_mc().unwrap();
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let foe = set_with_moves(&dex, "blastoise", "torrent", &["recover"]);
+    let source_ref = PokemonRef::new(SideId::P1, PokemonIndex::new(0));
+
+    let mut rain_user = set_with_moves(&dex, "goodra", "sapsipper", &["raindance"]);
+    rain_user.item = Some(dex.resolve_item("damprock").unwrap().0);
+    let rain_state = selected_primary_battle(&dex, &rain_user, &foe, 0x14_02_01);
+    let rain = step(
+        &rain_state,
+        &single_move_action(0, ActionTarget::Automatic),
+        &mechanics,
+    )
+    .unwrap();
+    assert_eq!(rain.state.field().weather.unwrap().turns_remaining, Some(7));
+
+    let mut terrain_user = set_with_moves(&dex, "goodra", "sapsipper", &["electricterrain"]);
+    terrain_user.item = Some(dex.resolve_item("electricseed").unwrap().0);
+    let terrain_state = selected_primary_battle(&dex, &terrain_user, &foe, 0x14_02_02);
+    let terrain = step(
+        &terrain_state,
+        &single_move_action(0, ActionTarget::Automatic),
+        &mechanics,
+    )
+    .unwrap();
+    let seeded = terrain
+        .state
+        .side(SideId::P1)
+        .pokemon(PokemonIndex::new(0))
+        .unwrap();
+    assert_eq!(seeded.stat_stages.def, 1);
+    assert_eq!(seeded.item, None);
+
+    let mut leftovers_user = set_with_moves(&dex, "goodra", "sapsipper", &["raindance"]);
+    leftovers_user.item = Some(dex.resolve_item("leftovers").unwrap().0);
+    let base = selected_primary_battle(&dex, &leftovers_user, &foe, 0x14_02_03);
+    let mut builder = BattleStateBuilder::from_state(base).unwrap();
+    builder
+        .edit_pokemon(source_ref, |pokemon| {
+            pokemon.current_hp = pokemon.stats.hp / 2;
+        })
+        .unwrap();
+    let leftovers_state = builder.build().unwrap();
+    let before = leftovers_state
+        .side(SideId::P1)
+        .pokemon(PokemonIndex::new(0))
+        .unwrap();
+    let expected = before.current_hp + (before.stats.hp / 16).max(1);
+    let leftovers = step(
+        &leftovers_state,
+        &single_move_action(0, ActionTarget::Automatic),
+        &mechanics,
+    )
+    .unwrap();
+    assert_eq!(
+        leftovers
+            .state
+            .side(SideId::P1)
+            .pokemon(PokemonIndex::new(0))
+            .unwrap()
+            .current_hp,
+        expected
+    );
 }
 
 #[test]

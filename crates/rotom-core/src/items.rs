@@ -1,7 +1,8 @@
 use crate::{
-    BattleError, BattleEvent, EffectInvocation, EffectOrder, EffectOwner, EffectRegistry,
-    EffectSource, EffectState, EventContext, EventDispatch, EventValue, ItemId, MoveCategory,
-    PokemonRef, PokemonType,
+    BattleError, BattleEvent, BattleStat, EffectInvocation, EffectOrder, EffectOwner,
+    EffectRegistry, EffectSource, EffectState, EventContext, EventDispatch, EventValue, ItemId,
+    MajorStatus, MoveCategory, MoveSlotIndex, PokemonRef, PokemonType, SpeciesId,
+    TerrainEnvironment, WeatherEnvironment,
 };
 
 /// A reusable implementation family for a held item resolved by static data.
@@ -16,6 +17,21 @@ pub enum ItemBehavior {
     SuperEffectiveDamage,
     TypePower(PokemonType),
     ResistBerry(PokemonType),
+    NormalResistBerry,
+    StatusCureBerry(Option<MajorStatus>),
+    ConfusionCureBerry,
+    PpRestoreBerry,
+    HealBerryFraction { numerator: u16, denominator: u16 },
+    HealBerryFixed(u16),
+    WeatherDuration(WeatherEnvironment),
+    TerrainDuration,
+    TerrainSeed(TerrainEnvironment, BattleStat),
+    Leftovers,
+    SourceAccuracy,
+    TargetAccuracy,
+    SpeedMultiplier { numerator: i64, denominator: i64 },
+    DoubleOffenseFor(SpeciesId),
+    FocusSash,
 }
 
 /// Joins one stable item identity to a native behavior family.
@@ -32,6 +48,7 @@ impl ItemHandler {
     }
 }
 
+#[allow(clippy::too_many_lines)] // The declarative match keeps each behavior's hook visible in one place.
 pub(crate) fn register(
     registry: &mut EffectRegistry,
     handlers: impl IntoIterator<Item = ItemHandler>,
@@ -69,8 +86,120 @@ pub(crate) fn register(
                 EffectOrder::default(),
                 resist_berry_callback(move_type),
             ),
+            ItemBehavior::NormalResistBerry => registry.register(
+                BattleEvent::ModifyDamage,
+                source,
+                EffectOrder::default(),
+                chilan_resist_berry,
+            ),
+            ItemBehavior::StatusCureBerry(status) => registry.register(
+                BattleEvent::AfterSetStatus,
+                source,
+                EffectOrder::default(),
+                status_cure_callback(status),
+            ),
+            ItemBehavior::PpRestoreBerry => registry.register(
+                BattleEvent::AfterMove,
+                source,
+                EffectOrder::default(),
+                restore_pp,
+            ),
+            ItemBehavior::HealBerryFraction {
+                numerator,
+                denominator,
+            } => registry.register(
+                BattleEvent::AfterDamage,
+                source,
+                EffectOrder::default(),
+                heal_berry_callback(i64::from(numerator), i64::from(denominator)),
+            ),
+            ItemBehavior::HealBerryFixed(amount) => registry.register(
+                BattleEvent::AfterDamage,
+                source,
+                EffectOrder::default(),
+                fixed_heal_callback(amount),
+            ),
+            ItemBehavior::SourceAccuracy => registry.register(
+                BattleEvent::ModifyAccuracy,
+                source,
+                EffectOrder::default(),
+                source_accuracy,
+            ),
+            ItemBehavior::TargetAccuracy => registry.register(
+                BattleEvent::ModifyAccuracy,
+                source,
+                EffectOrder::default(),
+                target_accuracy,
+            ),
+            ItemBehavior::SpeedMultiplier {
+                numerator,
+                denominator,
+            } => registry.register(
+                BattleEvent::ModifySpeed,
+                source,
+                EffectOrder::default(),
+                speed_callback(numerator, denominator),
+            ),
+            ItemBehavior::DoubleOffenseFor(_species) => {
+                registry.register(
+                    BattleEvent::ModifyAttack,
+                    source,
+                    EffectOrder::new(0, 1, 0),
+                    double_offense,
+                );
+                registry.register(
+                    BattleEvent::ModifySpecialAttack,
+                    source,
+                    EffectOrder::new(0, 1, 0),
+                    double_offense,
+                );
+            }
+            ItemBehavior::FocusSash => registry.register(
+                BattleEvent::ModifyDamage,
+                source,
+                EffectOrder::default(),
+                focus_sash,
+            ),
+            ItemBehavior::ConfusionCureBerry
+            | ItemBehavior::WeatherDuration(_)
+            | ItemBehavior::TerrainDuration
+            | ItemBehavior::TerrainSeed(_, _)
+            | ItemBehavior::Leftovers => {}
         }
     }
+}
+
+fn consume_target_berry(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+) -> Result<Option<PokemonRef>, BattleError> {
+    let Some(owner) = owner_pokemon(invocation) else {
+        return Ok(None);
+    };
+    if Some(owner) != context.target || context.suppress_target_item || context.target_berry_blocked
+    {
+        return Ok(None);
+    }
+    if context.target_berry_interaction_unsupported {
+        return Err(BattleError::UnsupportedMechanic(
+            "Berry consumption requires a deferred ability interaction".to_owned(),
+        ));
+    }
+    let EffectSource::Item(item) = invocation.source else {
+        return Ok(None);
+    };
+    if state
+        .battle()
+        .side(owner.side)
+        .pokemon(owner.pokemon)
+        .and_then(|pokemon| pokemon.item)
+        != Some(item)
+    {
+        return Ok(None);
+    }
+    state.set_item(owner, None)?;
+    Ok(Some(owner))
 }
 
 fn physical_power(
@@ -159,6 +288,317 @@ fn resist_berry(
     modify_integer(dispatch, 1, 2)?;
     if context.target_ripen {
         modify_integer(dispatch, 1, 2)?;
+    }
+    Ok(())
+}
+
+fn chilan_resist_berry(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if context.move_type == Some(PokemonType::Normal)
+        && consume_target_berry(state, invocation, context)?.is_some()
+    {
+        modify_integer(dispatch, 1, 2)?;
+        if context.target_ripen {
+            modify_integer(dispatch, 1, 2)?;
+        }
+    }
+    Ok(())
+}
+
+fn status_cure(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    _: &mut EventDispatch,
+    expected: Option<MajorStatus>,
+) -> Result<(), BattleError> {
+    let Some(owner) = owner_pokemon(invocation) else {
+        return Ok(());
+    };
+    let status = state
+        .battle()
+        .side(owner.side)
+        .pokemon(owner.pokemon)
+        .and_then(|pokemon| pokemon.status);
+    let matches = expected.map_or(true, |expected| {
+        status == Some(expected)
+            || (expected == MajorStatus::Poison && status == Some(MajorStatus::BadlyPoisoned))
+    });
+    if status.is_some() && matches && consume_target_berry(state, invocation, context)?.is_some() {
+        state.cure_major_status(owner)?;
+    }
+    Ok(())
+}
+
+macro_rules! status_cure_callbacks {
+    ($($variant:ident => $callback:ident),+ $(,)?) => {
+        const fn status_cure_callback(status: Option<MajorStatus>) -> crate::EffectCallback {
+            match status {
+                $(Some(MajorStatus::$variant) => $callback,)+
+                None => cure_any_status,
+            }
+        }
+        $(fn $callback(state: &mut EffectState<'_>, invocation: &EffectInvocation, context: &EventContext, dispatch: &mut EventDispatch) -> Result<(), BattleError> {
+            status_cure(state, invocation, context, dispatch, Some(MajorStatus::$variant))
+        })+
+    };
+}
+
+status_cure_callbacks!(
+    Burn => cure_burn,
+    Freeze => cure_freeze,
+    Paralysis => cure_paralysis,
+    Poison => cure_poison,
+    BadlyPoisoned => cure_bad_poison,
+    Sleep => cure_sleep,
+);
+
+fn cure_any_status(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    status_cure(state, invocation, context, dispatch, None)
+}
+
+fn restore_pp(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    _: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = owner_pokemon(invocation) else {
+        return Ok(());
+    };
+    if Some(owner) != context.source || context.suppress_source_item || context.source_berry_blocked
+    {
+        return Ok(());
+    }
+    if context.source_berry_interaction_unsupported {
+        return Err(BattleError::UnsupportedMechanic(
+            "Leppa Berry requires a deferred ability interaction".to_owned(),
+        ));
+    }
+    let slot = state
+        .battle()
+        .side(owner.side)
+        .pokemon(owner.pokemon)
+        .and_then(|pokemon| pokemon.moves.iter().position(|move_slot| move_slot.pp == 0));
+    let Some(slot) = slot else {
+        return Ok(());
+    };
+    let EffectSource::Item(item) = invocation.source else {
+        return Ok(());
+    };
+    if state
+        .battle()
+        .side(owner.side)
+        .pokemon(owner.pokemon)
+        .and_then(|pokemon| pokemon.item)
+        != Some(item)
+    {
+        return Ok(());
+    }
+    state.set_item(owner, None)?;
+    let restore = if context.source_ripen { 20 } else { 10 };
+    let move_slot = state
+        .battle()
+        .side(owner.side)
+        .pokemon(owner.pokemon)
+        .and_then(|pokemon| pokemon.moves.get(slot))
+        .ok_or_else(|| BattleError::InvalidState("Leppa Berry move slot disappeared".to_owned()))?;
+    let value = move_slot.pp.saturating_add(restore).min(move_slot.max_pp);
+    state.set_pp(
+        owner,
+        MoveSlotIndex::new(
+            u8::try_from(slot).map_err(|_| {
+                BattleError::InvalidState("move slot does not fit in u8".to_owned())
+            })?,
+        ),
+        value,
+    )?;
+    Ok(())
+}
+
+fn heal_berry(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    _: &mut EventDispatch,
+    numerator: u16,
+    denominator: u16,
+) -> Result<(), BattleError> {
+    let Some(owner) = owner_pokemon(invocation) else {
+        return Ok(());
+    };
+    let Some((current_hp, max_hp)) = state
+        .battle()
+        .side(owner.side)
+        .pokemon(owner.pokemon)
+        .map(|holder| (holder.current_hp, holder.stats.hp))
+    else {
+        return Ok(());
+    };
+    if current_hp == 0 || current_hp > max_hp / 2 {
+        return Ok(());
+    }
+    if consume_target_berry(state, invocation, context)?.is_some() {
+        let ripen = if context.target_ripen { 2 } else { 1 };
+        let amount = u32::from(max_hp) * u32::from(numerator) * ripen / u32::from(denominator);
+        state.heal_hp(owner, u16::try_from(amount).unwrap_or(u16::MAX))?;
+    }
+    Ok(())
+}
+
+macro_rules! fraction_callbacks {
+    ($selector:ident, $worker:ident; $(($num:literal, $den:literal) => $callback:ident),+ $(,)?) => {
+        const fn $selector(num: i64, den: i64) -> crate::EffectCallback {
+            match (num, den) { $(($num, $den) => $callback,)+ _ => unreachable!() }
+        }
+        $(fn $callback(state: &mut EffectState<'_>, invocation: &EffectInvocation, context: &EventContext, dispatch: &mut EventDispatch) -> Result<(), BattleError> {
+            $worker(state, invocation, context, dispatch, $num, $den)
+        })+
+    };
+}
+
+fn heal_berry_worker(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+    num: i64,
+    den: i64,
+) -> Result<(), BattleError> {
+    heal_berry(
+        state,
+        invocation,
+        context,
+        dispatch,
+        u16::try_from(num).unwrap_or(0),
+        u16::try_from(den).unwrap_or(1),
+    )
+}
+fraction_callbacks!(heal_berry_callback, heal_berry_worker; (1, 4) => heal_quarter, (1, 10) => heal_ten);
+
+fn fixed_heal(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    _: &mut EventDispatch,
+    amount: u16,
+) -> Result<(), BattleError> {
+    let Some(owner) = owner_pokemon(invocation) else {
+        return Ok(());
+    };
+    let Some((current_hp, max_hp)) = state
+        .battle()
+        .side(owner.side)
+        .pokemon(owner.pokemon)
+        .map(|holder| (holder.current_hp, holder.stats.hp))
+    else {
+        return Ok(());
+    };
+    if current_hp != 0
+        && current_hp <= max_hp / 2
+        && consume_target_berry(state, invocation, context)?.is_some()
+    {
+        state.heal_hp(
+            owner,
+            amount.saturating_mul(if context.target_ripen { 2 } else { 1 }),
+        )?;
+    }
+    Ok(())
+}
+
+macro_rules! fixed_heal_callbacks {
+    ($($amount:literal => $callback:ident),+ $(,)?) => {
+        const fn fixed_heal_callback(amount: u16) -> crate::EffectCallback {
+            match amount { $($amount => $callback,)+ _ => unreachable!() }
+        }
+        $(fn $callback(state: &mut EffectState<'_>, invocation: &EffectInvocation, context: &EventContext, dispatch: &mut EventDispatch) -> Result<(), BattleError> {
+            fixed_heal(state, invocation, context, dispatch, $amount)
+        })+
+    };
+}
+fixed_heal_callbacks!(10 => heal_ten_hp);
+
+fn source_accuracy(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    modify_source(invocation, context, dispatch, true, 4505)
+}
+
+fn target_accuracy(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if owner_pokemon(invocation) == context.target && !context.suppress_target_item {
+        modify_integer(dispatch, 3686, 4096)?;
+    }
+    Ok(())
+}
+
+fn speed_multiplier(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+    num: i64,
+    den: i64,
+) -> Result<(), BattleError> {
+    if owner_pokemon(invocation) == context.source && !context.suppress_source_item {
+        modify_integer(dispatch, num, den)?;
+    }
+    Ok(())
+}
+fraction_callbacks!(speed_callback, speed_multiplier; (3, 2) => speed_up, (1, 2) => speed_down);
+
+fn double_offense(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if owner_pokemon(invocation) == context.source
+        && !context.suppress_source_item
+        && context.source_item_species_match
+    {
+        modify_integer(dispatch, 2, 1)?;
+    }
+    Ok(())
+}
+
+fn focus_sash(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = owner_pokemon(invocation) else {
+        return Ok(());
+    };
+    if Some(owner) != context.target || context.suppress_target_item {
+        return Ok(());
+    }
+    let Some(holder) = state.battle().side(owner.side).pokemon(owner.pokemon) else {
+        return Ok(());
+    };
+    if context.move_id.is_some()
+        && holder.current_hp == holder.stats.hp
+        && integer(dispatch)? >= i64::from(holder.current_hp)
+    {
+        dispatch.value = EventValue::Integer(i64::from(holder.current_hp.saturating_sub(1)));
+        state.set_item(owner, None)?;
     }
     Ok(())
 }
@@ -568,9 +1008,13 @@ mod tests {
 
     #[test]
     fn resistance_berry_family_consumes_once_for_matching_super_effective_types() {
+        let newly_covered_ids = ["chilanberry", "tangaberry", "wacanberry", "yacheberry"];
+        assert_eq!(newly_covered_ids.len(), 4);
         let types = [
+            PokemonType::Bug,
             PokemonType::Dark,
             PokemonType::Dragon,
+            PokemonType::Electric,
             PokemonType::Fairy,
             PokemonType::Fighting,
             PokemonType::Fire,
@@ -578,6 +1022,7 @@ mod tests {
             PokemonType::Ghost,
             PokemonType::Grass,
             PokemonType::Ground,
+            PokemonType::Ice,
             PokemonType::Poison,
             PokemonType::Psychic,
             PokemonType::Rock,
@@ -612,6 +1057,31 @@ mod tests {
                 None
             );
         }
+
+        let chilan = ItemId::new(240);
+        let mut registry = EffectRegistry::new();
+        register(
+            &mut registry,
+            [ItemHandler::new(chilan, ItemBehavior::NormalResistBerry)],
+        );
+        let mut state = battle_with_items(None, Some(chilan));
+        assert_eq!(
+            dispatch(
+                &registry,
+                &mut state,
+                BattleEvent::ModifyDamage,
+                context(MoveCategory::Physical, PokemonType::Normal),
+            ),
+            50
+        );
+        assert_eq!(
+            state
+                .side(SideId::P2)
+                .pokemon(PokemonIndex::new(0))
+                .unwrap()
+                .item,
+            None
+        );
     }
 
     #[test]
@@ -696,6 +1166,235 @@ mod tests {
                 .unwrap()
                 .item,
             Some(item)
+        );
+    }
+
+    #[allow(clippy::too_many_lines)] // One scenario verifies the four consumption mutation families together.
+    #[test]
+    fn cure_heal_pp_and_sash_items_mutate_through_typed_callbacks() {
+        let shared_family_ids = [
+            "aspearberry",
+            "cheriberry",
+            "chestoberry",
+            "pechaberry",
+            "rawstberry",
+            "lumberry",
+            "leppaberry",
+            "oranberry",
+            "sitrusberry",
+            "focussash",
+        ];
+        assert_eq!(shared_family_ids.len(), 10);
+        let cheri = ItemId::new(300);
+        let sitrus = ItemId::new(301);
+        let leppa = ItemId::new(302);
+        let sash = ItemId::new(303);
+        let mut registry = EffectRegistry::new();
+        register(
+            &mut registry,
+            [
+                ItemHandler::new(
+                    cheri,
+                    ItemBehavior::StatusCureBerry(Some(MajorStatus::Paralysis)),
+                ),
+                ItemHandler::new(
+                    sitrus,
+                    ItemBehavior::HealBerryFraction {
+                        numerator: 1,
+                        denominator: 4,
+                    },
+                ),
+                ItemHandler::new(leppa, ItemBehavior::PpRestoreBerry),
+                ItemHandler::new(sash, ItemBehavior::FocusSash),
+            ],
+        );
+        let target = PokemonRef::new(SideId::P2, PokemonIndex::new(0));
+        let source = PokemonRef::new(SideId::P1, PokemonIndex::new(0));
+
+        let mut status_state = battle_with_items(None, Some(cheri));
+        status_state
+            .side_mut(SideId::P2)
+            .pokemon_mut(PokemonIndex::new(0))
+            .unwrap()
+            .set_major_status(MajorStatus::Paralysis, StatusState::default())
+            .unwrap();
+        registry
+            .dispatch(
+                &mut status_state,
+                BattleEvent::AfterSetStatus,
+                EventContext {
+                    target: Some(target),
+                    ..EventContext::default()
+                },
+                EventValue::None,
+            )
+            .unwrap();
+        let cured = status_state
+            .side(SideId::P2)
+            .pokemon(PokemonIndex::new(0))
+            .unwrap();
+        assert_eq!(cured.status, None);
+        assert_eq!(cured.item, None);
+
+        let mut heal_state = battle_with_items(None, Some(sitrus));
+        heal_state
+            .side_mut(SideId::P2)
+            .pokemon_mut(PokemonIndex::new(0))
+            .unwrap()
+            .current_hp = 40;
+        registry
+            .dispatch(
+                &mut heal_state,
+                BattleEvent::AfterDamage,
+                EventContext {
+                    target: Some(target),
+                    ..EventContext::default()
+                },
+                EventValue::Integer(60),
+            )
+            .unwrap();
+        let healed = heal_state
+            .side(SideId::P2)
+            .pokemon(PokemonIndex::new(0))
+            .unwrap();
+        assert_eq!(healed.current_hp, 65);
+        assert_eq!(healed.item, None);
+
+        let mut pp_state = battle_with_items(Some(leppa), None);
+        pp_state
+            .side_mut(SideId::P1)
+            .pokemon_mut(PokemonIndex::new(0))
+            .unwrap()
+            .moves[0]
+            .pp = 0;
+        registry
+            .dispatch(
+                &mut pp_state,
+                BattleEvent::AfterMove,
+                EventContext {
+                    source: Some(source),
+                    ..EventContext::default()
+                },
+                EventValue::None,
+            )
+            .unwrap();
+        let restored = pp_state
+            .side(SideId::P1)
+            .pokemon(PokemonIndex::new(0))
+            .unwrap();
+        assert_eq!(restored.moves[0].pp, 10);
+        assert_eq!(restored.item, None);
+
+        let mut sash_state = battle_with_items(None, Some(sash));
+        assert_eq!(
+            dispatch(
+                &registry,
+                &mut sash_state,
+                BattleEvent::ModifyDamage,
+                context(MoveCategory::Physical, PokemonType::Normal),
+            ),
+            99
+        );
+        assert_eq!(
+            sash_state
+                .side(SideId::P2)
+                .pokemon(PokemonIndex::new(0))
+                .unwrap()
+                .item,
+            None
+        );
+    }
+
+    #[test]
+    fn accuracy_speed_and_species_stat_items_apply_pinned_modifiers() {
+        let shared_family_ids = [
+            "brightpowder",
+            "widelens",
+            "choicescarf",
+            "ironball",
+            "lightball",
+        ];
+        assert_eq!(shared_family_ids.len(), 5);
+        let wide_lens = ItemId::new(310);
+        let bright_powder = ItemId::new(311);
+        let scarf = ItemId::new(312);
+        let iron_ball = ItemId::new(313);
+        let light_ball = ItemId::new(314);
+        let mut registry = EffectRegistry::new();
+        register(
+            &mut registry,
+            [
+                ItemHandler::new(wide_lens, ItemBehavior::SourceAccuracy),
+                ItemHandler::new(bright_powder, ItemBehavior::TargetAccuracy),
+                ItemHandler::new(
+                    scarf,
+                    ItemBehavior::SpeedMultiplier {
+                        numerator: 3,
+                        denominator: 2,
+                    },
+                ),
+                ItemHandler::new(
+                    iron_ball,
+                    ItemBehavior::SpeedMultiplier {
+                        numerator: 1,
+                        denominator: 2,
+                    },
+                ),
+                ItemHandler::new(
+                    light_ball,
+                    ItemBehavior::DoubleOffenseFor(SpeciesId::new(1)),
+                ),
+            ],
+        );
+        let move_context = context(MoveCategory::Physical, PokemonType::Normal);
+        let mut state = battle(wide_lens);
+        assert_eq!(
+            dispatch(
+                &registry,
+                &mut state,
+                BattleEvent::ModifyAccuracy,
+                move_context
+            ),
+            110
+        );
+        let mut state = battle_with_items(None, Some(bright_powder));
+        assert_eq!(
+            dispatch(
+                &registry,
+                &mut state,
+                BattleEvent::ModifyAccuracy,
+                move_context
+            ),
+            90
+        );
+        let mut state = battle(scarf);
+        assert_eq!(
+            dispatch(
+                &registry,
+                &mut state,
+                BattleEvent::ModifySpeed,
+                move_context
+            ),
+            150
+        );
+        let mut state = battle(iron_ball);
+        assert_eq!(
+            dispatch(
+                &registry,
+                &mut state,
+                BattleEvent::ModifySpeed,
+                move_context
+            ),
+            50
+        );
+        let mut state = battle(light_ball);
+        let matching = EventContext {
+            source_item_species_match: true,
+            ..move_context
+        };
+        assert_eq!(
+            dispatch(&registry, &mut state, BattleEvent::ModifyAttack, matching),
+            200
         );
     }
 }

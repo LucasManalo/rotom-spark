@@ -9100,15 +9100,18 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks",
+        "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.3"
     },
     {
       "id": "audinite",
@@ -9320,15 +9323,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#accuracy_speed_and_species_stat_items_apply_pinned_modifiers"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.3"
     },
     {
       "id": "cameruptite",
@@ -9439,15 +9444,18 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks",
+        "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.3"
     },
     {
       "id": "chesnaughtite",
@@ -9471,15 +9479,18 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks",
+        "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.3"
     },
     {
       "id": "chilanberry",
@@ -9487,15 +9498,18 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types",
+        "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.3"
     },
     {
       "id": "chimechite",
@@ -9519,15 +9533,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#accuracy_speed_and_species_stat_items_apply_pinned_modifiers"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.3"
     },
     {
       "id": "chopleberry",
@@ -9627,15 +9643,18 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#duration_seed_and_leftovers_items_apply_through_canonical_step",
+        "species/abomasnow",
+        "unit:crates/rotom-dex/tests/combat.rs#duration_seed_and_leftovers_items_apply_through_canonical_step"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "unit_tested",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.6.3"
     },
     {
       "id": "delphoxite",
@@ -9759,15 +9778,18 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#duration_seed_and_leftovers_items_apply_through_canonical_step",
+        "species/abomasnow",
+        "unit:crates/rotom-dex/tests/combat.rs#duration_seed_and_leftovers_items_apply_through_canonical_step"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "unit_tested",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.6.3"
     },
     {
       "id": "emboarite",
@@ -9910,15 +9932,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.3"
     },
     {
       "id": "froslassite",
@@ -10086,15 +10110,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.3"
     },
     {
       "id": "greninjite",
@@ -10190,15 +10216,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.3"
     },
     {
       "id": "heracronite",
@@ -10238,15 +10266,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.3"
     },
     {
       "id": "ironball",
@@ -10254,15 +10284,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#accuracy_speed_and_species_stat_items_apply_pinned_modifiers"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.3"
     },
     {
       "id": "kangaskhanite",
@@ -10358,15 +10390,18 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#duration_seed_and_leftovers_items_apply_through_canonical_step",
+        "species/abomasnow",
+        "unit:crates/rotom-dex/tests/combat.rs#duration_seed_and_leftovers_items_apply_through_canonical_step"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "unit_tested",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.6.3"
     },
     {
       "id": "leppaberry",
@@ -10374,15 +10409,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.3"
     },
     {
       "id": "lifeorb",
@@ -10406,15 +10443,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/pikachu"
+        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "species/pikachu",
+        "unit:crates/rotom-core/src/items.rs#accuracy_speed_and_species_stat_items_apply_pinned_modifiers"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.3"
     },
     {
       "id": "lightclay",
@@ -10486,15 +10525,18 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks",
+        "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.3"
     },
     {
       "id": "magnet",
@@ -10706,15 +10748,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.3"
     },
     {
       "id": "muscleband",
@@ -10817,15 +10861,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.3"
     },
     {
       "id": "passhoberry",
@@ -10873,15 +10919,18 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks",
+        "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.3"
     },
     {
       "id": "persimberry",
@@ -10889,15 +10938,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
         "species/abomasnow"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
+      "implementation": "partial",
       "verification": "not_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.3"
     },
     {
       "id": "pidgeotite",
@@ -10957,15 +11008,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.3"
     },
     {
       "id": "pyroarite",
@@ -11037,15 +11090,18 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks",
+        "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.3"
     },
     {
       "id": "redcard",
@@ -11382,15 +11438,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.3"
     },
     {
       "id": "skarmorite",
@@ -11430,15 +11488,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.3"
     },
     {
       "id": "softsand",
@@ -11550,15 +11610,18 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types",
+        "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.3"
     },
     {
       "id": "terrainextender",
@@ -11566,15 +11629,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.3"
     },
     {
       "id": "twistedspoon",
@@ -11650,15 +11715,18 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types",
+        "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.3"
     },
     {
       "id": "whiteherb",
@@ -11682,15 +11750,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#accuracy_speed_and_species_stat_items_apply_pinned_modifiers"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.3"
     },
     {
       "id": "wiseglasses",
@@ -11717,15 +11787,18 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types",
+        "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.3"
     },
     {
       "id": "zoomlens",
@@ -48137,18 +48210,18 @@
       "item": {
         "total": 166,
         "implementation": {
-          "unsupported": 131,
-          "partial": 14,
-          "implemented": 21
+          "unsupported": 101,
+          "partial": 29,
+          "implemented": 36
         },
         "verification": {
-          "not_tested": 131,
-          "unit_tested": 35,
+          "not_tested": 102,
+          "unit_tested": 64,
           "differential_verified": 0
         },
         "interaction_verification": {
-          "not_tested": 164,
-          "unit_tested": 2,
+          "not_tested": 161,
+          "unit_tested": 5,
           "differential_verified": 0
         },
         "reachability": {

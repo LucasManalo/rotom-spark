@@ -1578,6 +1578,96 @@
     },
     {
       "id": "shucaberry", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 13.6.2", "evidence": ["file:docs/research/pr-13-6-thirty-item-batch.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types", "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families", "interaction_unit:crates/rotom-dex/tests/combat.rs#resistance_berries_consume_in_step_and_respect_unnerve_ripen_and_magic_room"]
+    },
+    {
+      "id": "chilanberry", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.3", "evidence": ["file:docs/research/pr-13-6-second-thirty-item-batch.md", "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types", "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"]
+    },
+    {
+      "id": "tangaberry", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.3", "evidence": ["file:docs/research/pr-13-6-second-thirty-item-batch.md", "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types", "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"]
+    },
+    {
+      "id": "wacanberry", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.3", "evidence": ["file:docs/research/pr-13-6-second-thirty-item-batch.md", "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types", "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"]
+    },
+    {
+      "id": "yacheberry", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.3", "evidence": ["file:docs/research/pr-13-6-second-thirty-item-batch.md", "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types", "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"]
+    },
+    {
+      "id": "aspearberry", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.3", "evidence": ["file:docs/research/pr-13-6-second-thirty-item-batch.md", "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks", "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"]
+    },
+    {
+      "id": "cheriberry", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.3", "evidence": ["file:docs/research/pr-13-6-second-thirty-item-batch.md", "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks", "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"]
+    },
+    {
+      "id": "chestoberry", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.3", "evidence": ["file:docs/research/pr-13-6-second-thirty-item-batch.md", "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks", "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"]
+    },
+    {
+      "id": "pechaberry", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.3", "evidence": ["file:docs/research/pr-13-6-second-thirty-item-batch.md", "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks", "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"]
+    },
+    {
+      "id": "rawstberry", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.3", "evidence": ["file:docs/research/pr-13-6-second-thirty-item-batch.md", "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks", "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"]
+    },
+    {
+      "id": "persimberry", "kind": "item", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.3", "evidence": ["file:docs/research/pr-13-6-second-thirty-item-batch.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "lumberry", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.3", "evidence": ["file:docs/research/pr-13-6-second-thirty-item-batch.md", "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks", "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"]
+    },
+    {
+      "id": "leppaberry", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.3", "evidence": ["file:docs/research/pr-13-6-second-thirty-item-batch.md", "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks"]
+    },
+    {
+      "id": "oranberry", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.3", "evidence": ["file:docs/research/pr-13-6-second-thirty-item-batch.md", "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks"]
+    },
+    {
+      "id": "sitrusberry", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.3", "evidence": ["file:docs/research/pr-13-6-second-thirty-item-batch.md", "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks"]
+    },
+    {
+      "id": "damprock", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 13.6.3", "evidence": ["file:docs/research/pr-13-6-second-thirty-item-batch.md", "unit:crates/rotom-dex/tests/combat.rs#duration_seed_and_leftovers_items_apply_through_canonical_step", "interaction_unit:crates/rotom-dex/tests/combat.rs#duration_seed_and_leftovers_items_apply_through_canonical_step"]
+    },
+    {
+      "id": "heatrock", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.3", "evidence": ["file:docs/research/pr-13-6-second-thirty-item-batch.md", "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"]
+    },
+    {
+      "id": "icyrock", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.3", "evidence": ["file:docs/research/pr-13-6-second-thirty-item-batch.md", "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"]
+    },
+    {
+      "id": "smoothrock", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.3", "evidence": ["file:docs/research/pr-13-6-second-thirty-item-batch.md", "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"]
+    },
+    {
+      "id": "terrainextender", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.3", "evidence": ["file:docs/research/pr-13-6-second-thirty-item-batch.md", "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"]
+    },
+    {
+      "id": "electricseed", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 13.6.3", "evidence": ["file:docs/research/pr-13-6-second-thirty-item-batch.md", "unit:crates/rotom-dex/tests/combat.rs#duration_seed_and_leftovers_items_apply_through_canonical_step", "interaction_unit:crates/rotom-dex/tests/combat.rs#duration_seed_and_leftovers_items_apply_through_canonical_step"]
+    },
+    {
+      "id": "grassyseed", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.3", "evidence": ["file:docs/research/pr-13-6-second-thirty-item-batch.md", "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"]
+    },
+    {
+      "id": "mistyseed", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.3", "evidence": ["file:docs/research/pr-13-6-second-thirty-item-batch.md", "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"]
+    },
+    {
+      "id": "psychicseed", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.3", "evidence": ["file:docs/research/pr-13-6-second-thirty-item-batch.md", "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"]
+    },
+    {
+      "id": "leftovers", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 13.6.3", "evidence": ["file:docs/research/pr-13-6-second-thirty-item-batch.md", "unit:crates/rotom-dex/tests/combat.rs#duration_seed_and_leftovers_items_apply_through_canonical_step", "interaction_unit:crates/rotom-dex/tests/combat.rs#duration_seed_and_leftovers_items_apply_through_canonical_step"]
+    },
+    {
+      "id": "brightpowder", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.3", "evidence": ["file:docs/research/pr-13-6-second-thirty-item-batch.md", "unit:crates/rotom-core/src/items.rs#accuracy_speed_and_species_stat_items_apply_pinned_modifiers"]
+    },
+    {
+      "id": "widelens", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.3", "evidence": ["file:docs/research/pr-13-6-second-thirty-item-batch.md", "unit:crates/rotom-core/src/items.rs#accuracy_speed_and_species_stat_items_apply_pinned_modifiers"]
+    },
+    {
+      "id": "choicescarf", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.3", "evidence": ["file:docs/research/pr-13-6-second-thirty-item-batch.md", "unit:crates/rotom-core/src/items.rs#accuracy_speed_and_species_stat_items_apply_pinned_modifiers"]
+    },
+    {
+      "id": "ironball", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.3", "evidence": ["file:docs/research/pr-13-6-second-thirty-item-batch.md", "unit:crates/rotom-core/src/items.rs#accuracy_speed_and_species_stat_items_apply_pinned_modifiers"]
+    },
+    {
+      "id": "lightball", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.3", "evidence": ["file:docs/research/pr-13-6-second-thirty-item-batch.md", "unit:crates/rotom-core/src/items.rs#accuracy_speed_and_species_stat_items_apply_pinned_modifiers"]
+    },
+    {
+      "id": "focussash", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.3", "evidence": ["file:docs/research/pr-13-6-second-thirty-item-batch.md", "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks"]
     }
   ]
 }

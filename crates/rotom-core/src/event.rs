@@ -229,6 +229,18 @@ pub struct EventContext {
     /// Whether Magic Room or Klutz suppresses the move source's held item.
     #[serde(default, skip_serializing_if = "is_false")]
     pub suppress_source_item: bool,
+    /// Whether a species-restricted source item matches its current holder.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub source_item_species_match: bool,
+    /// Whether an opposing active Unnerve holder prevents the source eating a Berry.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub source_berry_blocked: bool,
+    /// Whether the source's Ripen doubles a Berry's effect.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub source_ripen: bool,
+    /// Whether source Berry consumption requires a deferred cross-ability behavior.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub source_berry_interaction_unsupported: bool,
     /// Whether Magic Room or Klutz suppresses the move target's held item.
     #[serde(default, skip_serializing_if = "is_false")]
     pub suppress_target_item: bool,
@@ -547,6 +559,21 @@ impl EffectState<'_> {
         item: Option<ItemId>,
     ) -> Result<Option<ItemId>, BattleError> {
         StateKernel::new(self.battle).set_item(target, item)
+    }
+
+    /// Replaces one move slot's PP through the mutation kernel.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the holder or move slot is invalid, or the value exceeds max PP.
+    pub fn set_pp(
+        &mut self,
+        target: PokemonRef,
+        slot: crate::MoveSlotIndex,
+        value: u8,
+    ) -> Result<(), BattleError> {
+        StateKernel::new(self.battle).set_pp(target, slot, value)?;
+        Ok(())
     }
 
     /// Replaces an ability identity and returns the previous identity.

@@ -137,6 +137,11 @@ impl BattleState {
                 source: Some(PokemonRef::new(side, pokemon)),
                 target: action_target(self, side, slot, action),
                 move_id,
+                suppress_source_item: !mechanics.field_effects().item_is_active_for(
+                    self,
+                    mechanics.data(),
+                    PokemonRef::new(side, pokemon),
+                ),
                 move_category: move_id
                     .and_then(|move_id| mechanics.data().move_data(move_id))
                     .map(|move_data| move_data.category),

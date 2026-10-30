@@ -2,7 +2,7 @@ use crate::{Accuracy, DexData, MoveBehaviorKind, MoveData, SpeciesData, Stats};
 use rotom_core::{
     AbilityBehavior, AbilityHandler, AbilityId, AbilitySuppression, BattleError, BattleStat,
     BattleStats, CombatData, CombatMove, ConditionId, EffectFraction, FieldEffectIds, HitSequence,
-    ItemBehavior, ItemHandler, MajorStatus, MoveAccuracy, MoveCapabilities, MoveCapability,
+    ItemBehavior, ItemHandler, ItemId, MajorStatus, MoveAccuracy, MoveCapabilities, MoveCapability,
     MoveCategory, MoveId, MoveIntrinsic, MoveOperation, MoveSlot, MoveTarget, PokemonPosition,
     PokemonSet, PokemonState, PokemonType, PokemonTypes, PrimaryMoveEffect, PriorMoveEffect,
     SecondaryMoveEffect, SelfMoveEffect, StatAllocation, StatStages, StatusState,
@@ -347,13 +347,35 @@ impl CombatData for DexData {
     }
 
     fn item_handlers(&self) -> Vec<ItemHandler> {
-        IMPLEMENTED_ITEM_BEHAVIORS
+        let mut handlers: Vec<_> = IMPLEMENTED_ITEM_BEHAVIORS
             .iter()
             .filter_map(|(key, behavior)| {
                 let item = self.resolve_item(key).map(|(item, _)| item)?;
                 Some(ItemHandler::new(item, *behavior))
             })
-            .collect()
+            .collect();
+        if let (Some((item, _)), Some((species, _))) = (
+            self.resolve_item("lightball"),
+            self.resolve_species("pikachu"),
+        ) {
+            handlers.push(ItemHandler::new(
+                item,
+                ItemBehavior::DoubleOffenseFor(species),
+            ));
+        }
+        handlers
+    }
+
+    fn item_has_behavior(&self, item: ItemId, behavior: ItemBehavior) -> bool {
+        self.item(item).is_some_and(|item_data| {
+            IMPLEMENTED_ITEM_BEHAVIORS
+                .iter()
+                .any(|(key, candidate)| item_data.id == *key && *candidate == behavior)
+                || (item_data.id == "lightball"
+                    && self.resolve_species("pikachu").is_some_and(|(species, _)| {
+                        behavior == ItemBehavior::DoubleOffenseFor(species)
+                    }))
+        })
     }
 }
 
@@ -404,6 +426,95 @@ const IMPLEMENTED_ITEM_BEHAVIORS: &[(&str, ItemBehavior)] = &[
     ("rindoberry", ItemBehavior::ResistBerry(PokemonType::Grass)),
     ("roseliberry", ItemBehavior::ResistBerry(PokemonType::Fairy)),
     ("shucaberry", ItemBehavior::ResistBerry(PokemonType::Ground)),
+    ("chilanberry", ItemBehavior::NormalResistBerry),
+    ("tangaberry", ItemBehavior::ResistBerry(PokemonType::Bug)),
+    (
+        "wacanberry",
+        ItemBehavior::ResistBerry(PokemonType::Electric),
+    ),
+    ("yacheberry", ItemBehavior::ResistBerry(PokemonType::Ice)),
+    (
+        "aspearberry",
+        ItemBehavior::StatusCureBerry(Some(MajorStatus::Freeze)),
+    ),
+    (
+        "cheriberry",
+        ItemBehavior::StatusCureBerry(Some(MajorStatus::Paralysis)),
+    ),
+    (
+        "chestoberry",
+        ItemBehavior::StatusCureBerry(Some(MajorStatus::Sleep)),
+    ),
+    (
+        "pechaberry",
+        ItemBehavior::StatusCureBerry(Some(MajorStatus::Poison)),
+    ),
+    (
+        "rawstberry",
+        ItemBehavior::StatusCureBerry(Some(MajorStatus::Burn)),
+    ),
+    ("persimberry", ItemBehavior::ConfusionCureBerry),
+    ("lumberry", ItemBehavior::StatusCureBerry(None)),
+    ("leppaberry", ItemBehavior::PpRestoreBerry),
+    ("oranberry", ItemBehavior::HealBerryFixed(10)),
+    (
+        "sitrusberry",
+        ItemBehavior::HealBerryFraction {
+            numerator: 1,
+            denominator: 4,
+        },
+    ),
+    (
+        "damprock",
+        ItemBehavior::WeatherDuration(WeatherEnvironment::Rain),
+    ),
+    (
+        "heatrock",
+        ItemBehavior::WeatherDuration(WeatherEnvironment::Sun),
+    ),
+    (
+        "icyrock",
+        ItemBehavior::WeatherDuration(WeatherEnvironment::Snow),
+    ),
+    (
+        "smoothrock",
+        ItemBehavior::WeatherDuration(WeatherEnvironment::Sandstorm),
+    ),
+    ("terrainextender", ItemBehavior::TerrainDuration),
+    (
+        "electricseed",
+        ItemBehavior::TerrainSeed(TerrainEnvironment::Electric, BattleStat::Defense),
+    ),
+    (
+        "grassyseed",
+        ItemBehavior::TerrainSeed(TerrainEnvironment::Grassy, BattleStat::Defense),
+    ),
+    (
+        "mistyseed",
+        ItemBehavior::TerrainSeed(TerrainEnvironment::Misty, BattleStat::SpecialDefense),
+    ),
+    (
+        "psychicseed",
+        ItemBehavior::TerrainSeed(TerrainEnvironment::Psychic, BattleStat::SpecialDefense),
+    ),
+    ("leftovers", ItemBehavior::Leftovers),
+    ("brightpowder", ItemBehavior::TargetAccuracy),
+    ("widelens", ItemBehavior::SourceAccuracy),
+    (
+        "choicescarf",
+        ItemBehavior::SpeedMultiplier {
+            numerator: 3,
+            denominator: 2,
+        },
+    ),
+    (
+        "ironball",
+        ItemBehavior::SpeedMultiplier {
+            numerator: 1,
+            denominator: 2,
+        },
+    ),
+    ("focussash", ItemBehavior::FocusSash),
 ];
 
 /// Declarative identity-to-behavior join for the implemented PR 13.5 batch.

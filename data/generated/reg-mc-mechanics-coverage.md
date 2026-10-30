@@ -11,7 +11,7 @@ This report is generated from `reg-mc-mechanics-manifest.json`. Presence means r
 | ability | 215 | 120 | 95 | 0 | 51 | 78 | 86 | 77 |
 | condition | 96 | 0 | 0 | 96 | 0 | 0 | 96 | 0 |
 | form | 153 | 0 | 0 | 153 | 0 | 0 | 153 | 0 |
-| item | 166 | 21 | 14 | 131 | 0 | 35 | 131 | 2 |
+| item | 166 | 36 | 29 | 101 | 0 | 64 | 102 | 5 |
 | move | 510 | 223 | 0 | 287 | 23 | 200 | 287 | 15 |
 | species | 293 | 0 | 0 | 293 | 0 | 0 | 293 | 0 |
 

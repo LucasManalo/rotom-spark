@@ -1,9 +1,10 @@
 use crate::{
     kernel::StateKernel, AbilityId, ActionTarget, ActiveSlot, BattleError, BattleEvent,
     BattlePhase, BattleStat, BattleState, ConditionId, ConditionState, EffectRegistry,
-    EventContext, EventDispatch, EventValue, FaintTarget, FieldEffectIds, FormId, MajorStatus,
-    MoveId, MoveSlotIndex, MoveTarget, PokemonAction, PokemonIndex, PokemonRef, PokemonState,
-    QueuedAction, RngReason, SideId, SpeciesId, TerrainEnvironment, WeatherEnvironment,
+    EventContext, EventDispatch, EventValue, FaintTarget, FieldEffectIds, FormId, ItemId,
+    MajorStatus, MoveId, MoveSlotIndex, MoveTarget, PokemonAction, PokemonIndex, PokemonRef,
+    PokemonState, QueuedAction, RngReason, SideId, SpeciesId, TerrainEnvironment,
+    WeatherEnvironment,
 };
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
@@ -542,6 +543,11 @@ pub trait CombatData {
     fn item_handlers(&self) -> Vec<crate::ItemHandler> {
         Vec::new()
     }
+
+    /// Whether one held item identity belongs to a native behavior family.
+    fn item_has_behavior(&self, _item: ItemId, _behavior: crate::ItemBehavior) -> bool {
+        false
+    }
 }
 
 #[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
@@ -880,6 +886,7 @@ impl BattleState {
         self.process_weather_residuals(data, effects, field_effects, resolution)?;
         self.tick_weather_duration(resolution);
         self.process_terrain_residuals(data, field_effects, resolution)?;
+        self.apply_leftovers(data, field_effects)?;
         let before = self.active_status_hp()?;
         let residual = effects.dispatch(
             self,
@@ -898,6 +905,140 @@ impl BattleState {
         if self.phase != BattlePhase::BattleEnd {
             self.tick_side_durations(resolution);
             self.tick_late_field_durations(field_effects, resolution);
+        }
+        Ok(())
+    }
+
+    fn berry_ability_context<D: CombatData>(
+        &self,
+        data: &D,
+        holder: PokemonRef,
+    ) -> Result<(bool, bool, bool), BattleError> {
+        let ability = self
+            .side(holder.side)
+            .pokemon(holder.pokemon)
+            .ok_or_else(|| BattleError::InvalidState("Berry holder is invalid".to_owned()))?
+            .ability;
+        let blocked = self
+            .side(holder.side.opponent())
+            .active
+            .into_iter()
+            .flatten()
+            .any(|pokemon| {
+                self.side(holder.side.opponent())
+                    .pokemon(pokemon)
+                    .is_some_and(|state| {
+                        data.ability_has_behavior(
+                            state.ability,
+                            crate::AbilityBehavior::BerryPrevention,
+                        )
+                    })
+            });
+        let deferred = [
+            crate::AbilityBehavior::BerryHeal,
+            crate::AbilityBehavior::BerryReuse,
+            crate::AbilityBehavior::BerryRestore,
+        ]
+        .into_iter()
+        .any(|behavior| data.ability_has_behavior(ability, behavior))
+            || self
+                .side(holder.side)
+                .active
+                .into_iter()
+                .flatten()
+                .filter(|pokemon| *pokemon != holder.pokemon)
+                .any(|pokemon| {
+                    self.side(holder.side)
+                        .pokemon(pokemon)
+                        .is_some_and(|state| {
+                            data.ability_has_behavior(
+                                state.ability,
+                                crate::AbilityBehavior::BerrySymbiosis,
+                            )
+                        })
+                });
+        Ok((
+            blocked,
+            data.ability_has_behavior(ability, crate::AbilityBehavior::Ripen),
+            deferred,
+        ))
+    }
+
+    fn apply_leftovers<D: CombatData>(
+        &mut self,
+        data: &D,
+        field_effects: &FieldEffectIds,
+    ) -> Result<(), BattleError> {
+        let holders: Vec<_> = [SideId::P1, SideId::P2]
+            .into_iter()
+            .flat_map(|side| {
+                self.side(side)
+                    .active
+                    .into_iter()
+                    .flatten()
+                    .map(move |pokemon| PokemonRef::new(side, pokemon))
+            })
+            .filter(|holder| {
+                self.side(holder.side)
+                    .pokemon(holder.pokemon)
+                    .and_then(|pokemon| pokemon.item)
+                    .is_some_and(|item| {
+                        data.item_has_behavior(item, crate::ItemBehavior::Leftovers)
+                    })
+                    && field_effects.item_is_active_for(self, data, *holder)
+            })
+            .collect();
+        for holder in holders {
+            let max_hp = self
+                .side(holder.side)
+                .pokemon(holder.pokemon)
+                .ok_or_else(|| BattleError::InvalidState("Leftovers holder is invalid".to_owned()))?
+                .stats
+                .hp;
+            StateKernel::new(self).heal_hp(holder, (max_hp / 16).max(1))?;
+        }
+        Ok(())
+    }
+
+    fn activate_terrain_seeds<D: CombatData>(
+        &mut self,
+        data: &D,
+        field_effects: &FieldEffectIds,
+        terrain: TerrainEnvironment,
+    ) -> Result<(), BattleError> {
+        let holders: Vec<_> = [SideId::P1, SideId::P2]
+            .into_iter()
+            .flat_map(|side| {
+                self.side(side)
+                    .active
+                    .into_iter()
+                    .flatten()
+                    .map(move |pokemon| PokemonRef::new(side, pokemon))
+            })
+            .collect();
+        for holder in holders {
+            if !field_effects.item_is_active_for(self, data, holder)
+                || !crate::field_effects::grounded(self, data, field_effects, holder)?
+            {
+                continue;
+            }
+            let Some(item) = self
+                .side(holder.side)
+                .pokemon(holder.pokemon)
+                .and_then(|pokemon| pokemon.item)
+            else {
+                continue;
+            };
+            let stat = [BattleStat::Defense, BattleStat::SpecialDefense]
+                .into_iter()
+                .find(|stat| {
+                    data.item_has_behavior(item, crate::ItemBehavior::TerrainSeed(terrain, *stat))
+                });
+            let Some(stat) = stat else { continue };
+            let change = StateKernel::new(self).change_stat_stage(holder, stat, 1)?;
+            if change.applied_delta != 0 {
+                StateKernel::new(self).set_item(holder, None)?;
+            }
         }
         Ok(())
     }
@@ -1115,49 +1256,8 @@ impl BattleState {
         let mut self_effect_applied = false;
         for (index, target_context) in eligible {
             let target = target_context.target;
-            let target_ability = self
-                .side(target.side)
-                .pokemon(target.pokemon)
-                .ok_or_else(|| BattleError::InvalidState("move target became invalid".to_owned()))?
-                .ability;
-            let target_berry_blocked = self
-                .side(target.side.opponent())
-                .active
-                .into_iter()
-                .flatten()
-                .any(|pokemon| {
-                    self.side(target.side.opponent())
-                        .pokemon(pokemon)
-                        .is_some_and(|state| {
-                            data.ability_has_behavior(
-                                state.ability,
-                                crate::AbilityBehavior::BerryPrevention,
-                            )
-                        })
-                });
-            let target_berry_interaction_unsupported = [
-                crate::AbilityBehavior::BerryHeal,
-                crate::AbilityBehavior::BerryReuse,
-                crate::AbilityBehavior::BerryRestore,
-            ]
-            .into_iter()
-            .any(|behavior| data.ability_has_behavior(target_ability, behavior))
-                || self
-                    .side(target.side)
-                    .active
-                    .into_iter()
-                    .flatten()
-                    .filter(|pokemon| *pokemon != target.pokemon)
-                    .any(|pokemon| {
-                        self.side(target.side)
-                            .pokemon(pokemon)
-                            .is_some_and(|state| {
-                                data.ability_has_behavior(
-                                    state.ability,
-                                    crate::AbilityBehavior::BerrySymbiosis,
-                                )
-                            })
-                    });
+            let (target_berry_blocked, target_ripen, target_berry_interaction_unsupported) =
+                self.berry_ability_context(data, target)?;
             let mut context = EventContext {
                 source: Some(move_context.source),
                 target: Some(target),
@@ -1170,8 +1270,7 @@ impl BattleState {
                 ),
                 suppress_target_item: !field_effects.item_is_active_for(self, data, target),
                 target_berry_blocked,
-                target_ripen: data
-                    .ability_has_behavior(target_ability, crate::AbilityBehavior::Ripen),
+                target_ripen,
                 target_berry_interaction_unsupported,
                 critical: false,
                 move_category: Some(move_context.move_data.category),
@@ -1326,11 +1425,21 @@ impl BattleState {
                 slot: move_context.queued.slot,
             });
         }
+        let (source_berry_blocked, source_ripen, source_berry_interaction_unsupported) =
+            self.berry_ability_context(data, move_context.source)?;
         let after_context = EventContext {
             source: Some(move_context.source),
             target: move_context.targets.last().map(|target| target.target),
             move_id: Some(move_context.move_id),
             suppress_target_ability: move_context.suppress_target_ability,
+            suppress_source_item: !field_effects.item_is_active_for(
+                self,
+                data,
+                move_context.source,
+            ),
+            source_berry_blocked,
+            source_ripen,
+            source_berry_interaction_unsupported,
             critical: false,
             ..EventContext::default()
         };
@@ -1600,16 +1709,37 @@ impl BattleState {
                 && data.ability_has_behavior(target_state.ability, crate::AbilityBehavior::Sturdy)
                 && target_state.current_hp == target_state.stats.hp
                 && requested >= target_state.current_hp;
-            let applied_request = if sturdy {
+            let focus_sash = target_state
+                .item
+                .is_some_and(|item| data.item_has_behavior(item, crate::ItemBehavior::FocusSash))
+                && field_effects.item_is_active_for(self, data, target_context.target)
+                && target_state.current_hp == target_state.stats.hp
+                && requested >= target_state.current_hp;
+            let current_hp = target_state.current_hp;
+            let applied_request = if sturdy || focus_sash {
                 target_state.current_hp.saturating_sub(1)
             } else {
                 requested
             };
+            if focus_sash {
+                StateKernel::new(self).set_item(target_context.target, None)?;
+            }
+            let (target_berry_blocked, target_ripen, target_berry_interaction_unsupported) =
+                self.berry_ability_context(data, target_context.target)?;
             let event_context = EventContext {
                 source: Some(context.source),
                 target: Some(target_context.target),
                 move_id: Some(context.move_id),
                 suppress_target_ability: context.suppress_target_ability,
+                suppress_source_item: !field_effects.item_is_active_for(self, data, context.source),
+                suppress_target_item: !field_effects.item_is_active_for(
+                    self,
+                    data,
+                    target_context.target,
+                ),
+                target_berry_blocked,
+                target_ripen,
+                target_berry_interaction_unsupported,
                 critical: false,
                 move_category: Some(context.move_data.category),
                 move_type: Some(context.move_data.move_type),
@@ -1631,7 +1761,7 @@ impl BattleState {
                 EventValue::None,
             )?);
             let damage = DamageResult {
-                base_damage: u32::from(applied_request),
+                base_damage: u32::from(applied_request.min(current_hp)),
                 attack_stat: 0,
                 defense_stat: 0,
                 stab_modifier: Modifier::NEUTRAL,
@@ -1717,6 +1847,8 @@ impl BattleState {
                 slot: context.queued.slot,
             }
         });
+        let (source_berry_blocked, source_ripen, source_berry_interaction_unsupported) =
+            self.berry_ability_context(data, context.source)?;
         resolution.events.push(effects.dispatch(
             self,
             BattleEvent::AfterMove,
@@ -1725,6 +1857,10 @@ impl BattleState {
                 target: context.targets.last().map(|target| target.target),
                 move_id: Some(context.move_id),
                 suppress_target_ability: context.suppress_target_ability,
+                suppress_source_item: !field_effects.item_is_active_for(self, data, context.source),
+                source_berry_blocked,
+                source_ripen,
+                source_berry_interaction_unsupported,
                 critical: false,
                 ..EventContext::default()
             },
@@ -2227,11 +2363,17 @@ impl BattleState {
                 )? {
                     return Ok(false);
                 }
+                let (target_berry_blocked, target_ripen, target_berry_interaction_unsupported) =
+                    self.berry_ability_context(data, target)?;
                 let status_context = EventContext {
                     source: Some(context.source),
                     target: Some(target),
                     move_id: Some(context.move_id),
                     suppress_target_ability: context.suppress_target_ability,
+                    suppress_target_item: !field_effects.item_is_active_for(self, data, target),
+                    target_berry_blocked,
+                    target_ripen,
+                    target_berry_interaction_unsupported,
                     critical: false,
                     move_category: Some(context.move_data.category),
                     move_type: Some(context.move_data.move_type),
@@ -2396,8 +2538,30 @@ impl BattleState {
                 {
                     return Ok(false);
                 }
-                StateKernel::new(self)
-                    .set_weather(Some(ConditionState::new(condition, Some(duration))))?;
+                let environment = [
+                    (field_effects.rain, WeatherEnvironment::Rain),
+                    (field_effects.sun, WeatherEnvironment::Sun),
+                    (field_effects.sandstorm, WeatherEnvironment::Sandstorm),
+                    (field_effects.snow, WeatherEnvironment::Snow),
+                ]
+                .into_iter()
+                .find_map(|(id, environment)| (id == Some(condition)).then_some(environment));
+                let extended = self
+                    .side(context.source.side)
+                    .pokemon(context.source.pokemon)
+                    .and_then(|pokemon| pokemon.item)
+                    .zip(environment)
+                    .is_some_and(|(item, environment)| {
+                        field_effects.item_is_active_for(self, data, context.source)
+                            && data.item_has_behavior(
+                                item,
+                                crate::ItemBehavior::WeatherDuration(environment),
+                            )
+                    });
+                StateKernel::new(self).set_weather(Some(ConditionState::new(
+                    condition,
+                    Some(if extended { 8 } else { duration }),
+                )))?;
                 Ok(true)
             }
             PrimaryMoveEffect::SetTerrain {
@@ -2411,8 +2575,21 @@ impl BattleState {
                 {
                     return Ok(false);
                 }
-                StateKernel::new(self)
-                    .set_terrain(Some(ConditionState::new(condition, Some(duration))))?;
+                let extended = self
+                    .side(context.source.side)
+                    .pokemon(context.source.pokemon)
+                    .and_then(|pokemon| pokemon.item)
+                    .is_some_and(|item| {
+                        field_effects.item_is_active_for(self, data, context.source)
+                            && data.item_has_behavior(item, crate::ItemBehavior::TerrainDuration)
+                    });
+                StateKernel::new(self).set_terrain(Some(ConditionState::new(
+                    condition,
+                    Some(if extended { 8 } else { duration }),
+                )))?;
+                if let Some(terrain) = field_effects.terrain_environment(self) {
+                    self.activate_terrain_seeds(data, field_effects, terrain)?;
+                }
                 Ok(true)
             }
             PrimaryMoveEffect::AddFieldCondition {
@@ -2898,6 +3075,12 @@ impl BattleState {
             move_id: Some(move_id),
             suppress_target_ability: move_context.suppress_target_ability,
             suppress_source_item: !field_effects.item_is_active_for(self, data, source),
+            source_item_species_match: source_state.item.is_some_and(|item| {
+                data.item_has_behavior(
+                    item,
+                    crate::ItemBehavior::DoubleOffenseFor(source_state.species),
+                )
+            }),
             critical: false,
             move_category: Some(move_data.category),
             move_type: Some(move_data.move_type),
@@ -3191,6 +3374,12 @@ impl BattleState {
                 target: Some(target),
                 move_id: Some(move_context.move_id),
                 suppress_target_ability: move_context.suppress_target_ability,
+                suppress_source_item: !field_effects.item_is_active_for(
+                    self,
+                    data,
+                    move_context.source,
+                ),
+                suppress_target_item: !field_effects.item_is_active_for(self, data, target),
                 move_category: Some(move_context.move_data.category),
                 move_type: Some(move_context.move_data.move_type),
                 move_flags: move_context.move_data.interaction_flags,
@@ -3357,6 +3546,9 @@ impl BattleState {
             PokemonRef::new(side, incoming),
             resolution,
         )?;
+        if let Some(terrain) = field_effects.terrain_environment(self) {
+            self.activate_terrain_seeds(data, field_effects, terrain)?;
+        }
         resolution.events.push(effects.dispatch(
             self,
             BattleEvent::SwitchIn,
