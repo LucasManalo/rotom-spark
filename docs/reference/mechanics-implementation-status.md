@@ -19,7 +19,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Kind | Total | Implemented | Partial | Unsupported |
 | --- | ---: | ---: | ---: | ---: |
 | Abilities | 215 | 120 | 95 | 0 |
-| Items | 166 | 47 | 48 | 71 |
+| Items | 166 | 47 | 119 | 0 |
 | Moves | 510 | 223 | 0 | 287 |
 
 ## Abilities
@@ -259,73 +259,73 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Audinite | `audinite` | partial | unit_tested | not_tested | PR 13.6.4 |
 | Babiri Berry | `babiriberry` | partial | unit_tested | not_tested | PR 13.6.2 |
 | Banettite | `banettite` | partial | unit_tested | not_tested | PR 13.6.4 |
-| Barbaracite | `barbaracite` | unsupported | not_tested | not_tested | — |
-| Baxcalibrite | `baxcalibrite` | unsupported | not_tested | not_tested | — |
-| Beedrillite | `beedrillite` | unsupported | not_tested | not_tested | — |
+| Barbaracite | `barbaracite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Baxcalibrite | `baxcalibrite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Beedrillite | `beedrillite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Big Root | `bigroot` | implemented | unit_tested | unit_tested | PR 13.6.4 |
 | Binding Band | `bindingband` | partial | unit_tested | not_tested | PR 13.6.4 |
 | Black Belt | `blackbelt` | implemented | unit_tested | not_tested | PR 13.6.2 |
 | Black Glasses | `blackglasses` | implemented | unit_tested | not_tested | PR 13.6.2 |
-| Blastoisinite | `blastoisinite` | unsupported | not_tested | not_tested | — |
-| Blazikenite | `blazikenite` | unsupported | not_tested | not_tested | — |
+| Blastoisinite | `blastoisinite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Blazikenite | `blazikenite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Bright Powder | `brightpowder` | implemented | unit_tested | not_tested | PR 13.6.3 |
-| Cameruptite | `cameruptite` | unsupported | not_tested | not_tested | — |
-| Chandelurite | `chandelurite` | unsupported | not_tested | not_tested | — |
+| Cameruptite | `cameruptite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Chandelurite | `chandelurite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Charcoal | `charcoal` | implemented | unit_tested | not_tested | PR 13.6.1 |
-| Charizardite X | `charizarditex` | unsupported | not_tested | not_tested | — |
-| Charizardite Y | `charizarditey` | unsupported | not_tested | not_tested | — |
+| Charizardite X | `charizarditex` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Charizardite Y | `charizarditey` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Charti Berry | `chartiberry` | partial | unit_tested | not_tested | PR 13.6.2 |
 | Cheri Berry | `cheriberry` | partial | unit_tested | not_tested | PR 13.6.3 |
-| Chesnaughtite | `chesnaughtite` | unsupported | not_tested | not_tested | — |
+| Chesnaughtite | `chesnaughtite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Chesto Berry | `chestoberry` | partial | unit_tested | not_tested | PR 13.6.3 |
 | Chilan Berry | `chilanberry` | partial | unit_tested | not_tested | PR 13.6.3 |
-| Chimechite | `chimechite` | unsupported | not_tested | not_tested | — |
+| Chimechite | `chimechite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Choice Scarf | `choicescarf` | partial | unit_tested | not_tested | PR 13.6.3 |
 | Chople Berry | `chopleberry` | partial | unit_tested | not_tested | PR 13.6.2 |
-| Clefablite | `clefablite` | unsupported | not_tested | not_tested | — |
+| Clefablite | `clefablite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Coba Berry | `cobaberry` | partial | unit_tested | not_tested | PR 13.6.2 |
 | Colbur Berry | `colburberry` | partial | unit_tested | not_tested | PR 13.6.2 |
-| Crabominite | `crabominite` | unsupported | not_tested | not_tested | — |
+| Crabominite | `crabominite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Damp Rock | `damprock` | implemented | unit_tested | unit_tested | PR 13.6.3 |
-| Delphoxite | `delphoxite` | unsupported | not_tested | not_tested | — |
-| Dragalgite | `dragalgite` | unsupported | not_tested | not_tested | — |
+| Delphoxite | `delphoxite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Dragalgite | `dragalgite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Dragon Fang | `dragonfang` | implemented | unit_tested | not_tested | PR 13.6.2 |
-| Dragoninite | `dragoninite` | unsupported | not_tested | not_tested | — |
-| Drampanite | `drampanite` | unsupported | not_tested | not_tested | — |
-| Eelektrossite | `eelektrossite` | unsupported | not_tested | not_tested | — |
+| Dragoninite | `dragoninite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Drampanite | `drampanite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Eelektrossite | `eelektrossite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Eject Button | `ejectbutton` | partial | unit_tested | not_tested | PR 13.6.4 |
 | Electric Seed | `electricseed` | implemented | unit_tested | unit_tested | PR 13.6.3 |
-| Emboarite | `emboarite` | unsupported | not_tested | not_tested | — |
-| Excadrite | `excadrite` | unsupported | not_tested | not_tested | — |
+| Emboarite | `emboarite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Excadrite | `excadrite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Expert Belt | `expertbelt` | implemented | unit_tested | not_tested | PR 13.6.1 |
 | Fairy Feather | `fairyfeather` | implemented | unit_tested | not_tested | PR 13.6.2 |
-| Falinksite | `falinksite` | unsupported | not_tested | not_tested | — |
-| Feraligite | `feraligite` | unsupported | not_tested | not_tested | — |
-| Floettite | `floettite` | unsupported | not_tested | not_tested | — |
+| Falinksite | `falinksite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Feraligite | `feraligite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Floettite | `floettite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Focus Band | `focusband` | implemented | unit_tested | not_tested | PR 13.6.4 |
 | Focus Sash | `focussash` | implemented | unit_tested | not_tested | PR 13.6.3 |
-| Froslassite | `froslassite` | unsupported | not_tested | not_tested | — |
-| Galladite | `galladite` | unsupported | not_tested | not_tested | — |
-| Garchompite | `garchompite` | unsupported | not_tested | not_tested | — |
-| Garchompite Z | `garchompitez` | unsupported | not_tested | not_tested | — |
-| Gardevoirite | `gardevoirite` | unsupported | not_tested | not_tested | — |
-| Gengarite | `gengarite` | unsupported | not_tested | not_tested | — |
-| Glalitite | `glalitite` | unsupported | not_tested | not_tested | — |
-| Glimmoranite | `glimmoranite` | unsupported | not_tested | not_tested | — |
-| Golisopite | `golisopite` | unsupported | not_tested | not_tested | — |
-| Golurkite | `golurkite` | unsupported | not_tested | not_tested | — |
+| Froslassite | `froslassite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Galladite | `galladite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Garchompite | `garchompite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Garchompite Z | `garchompitez` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Gardevoirite | `gardevoirite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Gengarite | `gengarite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Glalitite | `glalitite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Glimmoranite | `glimmoranite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Golisopite | `golisopite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Golurkite | `golurkite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Grassy Seed | `grassyseed` | implemented | unit_tested | not_tested | PR 13.6.3 |
-| Greninjite | `greninjite` | unsupported | not_tested | not_tested | — |
-| Gyaradosite | `gyaradosite` | unsupported | not_tested | not_tested | — |
+| Greninjite | `greninjite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Gyaradosite | `gyaradosite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Haban Berry | `habanberry` | partial | unit_tested | not_tested | PR 13.6.2 |
 | Hard Stone | `hardstone` | implemented | unit_tested | not_tested | PR 13.6.2 |
-| Hawluchanite | `hawluchanite` | unsupported | not_tested | not_tested | — |
+| Hawluchanite | `hawluchanite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Heat Rock | `heatrock` | implemented | unit_tested | not_tested | PR 13.6.3 |
-| Heracronite | `heracronite` | unsupported | not_tested | not_tested | — |
-| Houndoominite | `houndoominite` | unsupported | not_tested | not_tested | — |
+| Heracronite | `heracronite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Houndoominite | `houndoominite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Icy Rock | `icyrock` | implemented | unit_tested | not_tested | PR 13.6.3 |
 | Iron Ball | `ironball` | implemented | unit_tested | not_tested | PR 13.6.3 |
-| Kangaskhanite | `kangaskhanite` | unsupported | not_tested | not_tested | — |
+| Kangaskhanite | `kangaskhanite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Kasib Berry | `kasibberry` | partial | unit_tested | not_tested | PR 13.6.2 |
 | Kebia Berry | `kebiaberry` | partial | unit_tested | not_tested | PR 13.6.2 |
 | King's Rock | `kingsrock` | partial | unit_tested | not_tested | PR 13.6.4 |
@@ -335,19 +335,19 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Life Orb | `lifeorb` | implemented | unit_tested | not_tested | PR 13.6.4 |
 | Light Ball | `lightball` | implemented | unit_tested | not_tested | PR 13.6.3 |
 | Light Clay | `lightclay` | implemented | unit_tested | unit_tested | PR 13.6.4 |
-| Lopunnite | `lopunnite` | unsupported | not_tested | not_tested | — |
-| Lucarionite | `lucarionite` | unsupported | not_tested | not_tested | — |
-| Lucarionite Z | `lucarionitez` | unsupported | not_tested | not_tested | — |
+| Lopunnite | `lopunnite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Lucarionite | `lucarionite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Lucarionite Z | `lucarionitez` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Lum Berry | `lumberry` | partial | unit_tested | not_tested | PR 13.6.3 |
 | Magnet | `magnet` | implemented | unit_tested | not_tested | PR 13.6.2 |
-| Malamarite | `malamarite` | unsupported | not_tested | not_tested | — |
-| Manectite | `manectite` | unsupported | not_tested | not_tested | — |
-| Mawilite | `mawilite` | unsupported | not_tested | not_tested | — |
-| Medichamite | `medichamite` | unsupported | not_tested | not_tested | — |
-| Meganiumite | `meganiumite` | unsupported | not_tested | not_tested | — |
+| Malamarite | `malamarite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Manectite | `manectite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Mawilite | `mawilite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Medichamite | `medichamite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Meganiumite | `meganiumite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Mental Herb | `mentalherb` | partial | unit_tested | not_tested | PR 13.6.4 |
-| Meowsticite | `meowsticite` | unsupported | not_tested | not_tested | — |
-| Metagrossite | `metagrossite` | unsupported | not_tested | not_tested | — |
+| Meowsticite | `meowsticite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Metagrossite | `metagrossite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Metal Coat | `metalcoat` | implemented | unit_tested | not_tested | PR 13.6.2 |
 | Metronome | `metronome` | partial | unit_tested | not_tested | PR 13.6.4 |
 | Miracle Seed | `miracleseed` | implemented | unit_tested | not_tested | PR 13.6.2 |
@@ -362,50 +362,50 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Payapa Berry | `payapaberry` | partial | unit_tested | not_tested | PR 13.6.2 |
 | Pecha Berry | `pechaberry` | partial | unit_tested | not_tested | PR 13.6.3 |
 | Persim Berry | `persimberry` | partial | not_tested | not_tested | PR 13.6.3 |
-| Pidgeotite | `pidgeotite` | unsupported | not_tested | not_tested | — |
-| Pinsirite | `pinsirite` | unsupported | not_tested | not_tested | — |
+| Pidgeotite | `pidgeotite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Pinsirite | `pinsirite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Poison Barb | `poisonbarb` | implemented | unit_tested | not_tested | PR 13.6.2 |
 | Psychic Seed | `psychicseed` | implemented | unit_tested | not_tested | PR 13.6.3 |
-| Pyroarite | `pyroarite` | unsupported | not_tested | not_tested | — |
+| Pyroarite | `pyroarite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Quick Claw | `quickclaw` | partial | unit_tested | not_tested | PR 13.6.4 |
-| Raichunite X | `raichunitex` | unsupported | not_tested | not_tested | — |
-| Raichunite Y | `raichunitey` | unsupported | not_tested | not_tested | — |
+| Raichunite X | `raichunitex` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Raichunite Y | `raichunitey` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Rawst Berry | `rawstberry` | partial | unit_tested | not_tested | PR 13.6.3 |
 | Red Card | `redcard` | partial | unit_tested | not_tested | PR 13.6.4 |
 | Rindo Berry | `rindoberry` | partial | unit_tested | not_tested | PR 13.6.2 |
 | Rocky Helmet | `rockyhelmet` | implemented | unit_tested | not_tested | PR 13.6.4 |
 | Roseli Berry | `roseliberry` | partial | unit_tested | not_tested | PR 13.6.2 |
-| Sablenite | `sablenite` | unsupported | not_tested | not_tested | — |
-| Salamencite | `salamencite` | unsupported | not_tested | not_tested | — |
-| Sceptilite | `sceptilite` | unsupported | not_tested | not_tested | — |
-| Scizorite | `scizorite` | unsupported | not_tested | not_tested | — |
-| Scolipite | `scolipite` | unsupported | not_tested | not_tested | — |
+| Sablenite | `sablenite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Salamencite | `salamencite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Sceptilite | `sceptilite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Scizorite | `scizorite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Scolipite | `scolipite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Scope Lens | `scopelens` | implemented | unit_tested | not_tested | PR 13.6.4 |
-| Scovillainite | `scovillainite` | unsupported | not_tested | not_tested | — |
-| Scraftinite | `scraftinite` | unsupported | not_tested | not_tested | — |
+| Scovillainite | `scovillainite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Scraftinite | `scraftinite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Sharp Beak | `sharpbeak` | implemented | unit_tested | not_tested | PR 13.6.2 |
-| Sharpedonite | `sharpedonite` | unsupported | not_tested | not_tested | — |
+| Sharpedonite | `sharpedonite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Shed Shell | `shedshell` | partial | unit_tested | not_tested | PR 13.6.4 |
 | Shell Bell | `shellbell` | implemented | unit_tested | not_tested | PR 13.6.4 |
 | Shuca Berry | `shucaberry` | partial | unit_tested | unit_tested | PR 13.6.2 |
 | Silk Scarf | `silkscarf` | implemented | unit_tested | not_tested | PR 13.6.2 |
 | Silver Powder | `silverpowder` | implemented | unit_tested | not_tested | PR 13.6.2 |
 | Sitrus Berry | `sitrusberry` | partial | unit_tested | not_tested | PR 13.6.3 |
-| Skarmorite | `skarmorite` | unsupported | not_tested | not_tested | — |
-| Slowbronite | `slowbronite` | unsupported | not_tested | not_tested | — |
+| Skarmorite | `skarmorite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Slowbronite | `slowbronite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Smooth Rock | `smoothrock` | implemented | unit_tested | not_tested | PR 13.6.3 |
 | Soft Sand | `softsand` | implemented | unit_tested | not_tested | PR 13.6.2 |
 | Spell Tag | `spelltag` | implemented | unit_tested | not_tested | PR 13.6.2 |
-| Staraptite | `staraptite` | unsupported | not_tested | not_tested | — |
-| Starminite | `starminite` | unsupported | not_tested | not_tested | — |
-| Steelixite | `steelixite` | unsupported | not_tested | not_tested | — |
-| Swampertite | `swampertite` | unsupported | not_tested | not_tested | — |
+| Staraptite | `staraptite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Starminite | `starminite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Steelixite | `steelixite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Swampertite | `swampertite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Tanga Berry | `tangaberry` | partial | unit_tested | not_tested | PR 13.6.3 |
 | Terrain Extender | `terrainextender` | implemented | unit_tested | not_tested | PR 13.6.3 |
 | Twisted Spoon | `twistedspoon` | implemented | unit_tested | not_tested | PR 13.6.2 |
-| Tyranitarite | `tyranitarite` | unsupported | not_tested | not_tested | — |
-| Venusaurite | `venusaurite` | unsupported | not_tested | not_tested | — |
-| Victreebelite | `victreebelite` | unsupported | not_tested | not_tested | — |
+| Tyranitarite | `tyranitarite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Venusaurite | `venusaurite` | partial | unit_tested | not_tested | PR 13.6.5 |
+| Victreebelite | `victreebelite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Wacan Berry | `wacanberry` | partial | unit_tested | not_tested | PR 13.6.3 |
 | White Herb | `whiteherb` | partial | unit_tested | not_tested | PR 13.6.4 |
 | Wide Lens | `widelens` | implemented | unit_tested | not_tested | PR 13.6.3 |

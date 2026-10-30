@@ -363,6 +363,13 @@ impl CombatData for DexData {
                 ItemBehavior::DoubleOffenseFor(species),
             ));
         }
+        handlers.extend(self.items.iter().enumerate().filter_map(|(index, item)| {
+            if !item.legal || item.mega_stone.is_empty() {
+                return None;
+            }
+            let item = ItemId::new(u32::try_from(index).ok()?);
+            Some(ItemHandler::new(item, ItemBehavior::MegaStone))
+        }));
         handlers
     }
 
@@ -375,6 +382,9 @@ impl CombatData for DexData {
                     && self.resolve_species("pikachu").is_some_and(|(species, _)| {
                         behavior == ItemBehavior::DoubleOffenseFor(species)
                     }))
+                || (item_data.legal
+                    && !item_data.mega_stone.is_empty()
+                    && behavior == ItemBehavior::MegaStone)
         })
     }
 
@@ -549,16 +559,6 @@ const IMPLEMENTED_ITEM_BEHAVIORS: &[(&str, ItemBehavior)] = &[
     ("shellbell", ItemBehavior::ShellBell),
     ("whiteherb", ItemBehavior::WhiteHerb),
     ("zoomlens", ItemBehavior::ZoomLens),
-    ("abomasite", ItemBehavior::MegaStone),
-    ("absolite", ItemBehavior::MegaStone),
-    ("absolitez", ItemBehavior::MegaStone),
-    ("aerodactylite", ItemBehavior::MegaStone),
-    ("aggronite", ItemBehavior::MegaStone),
-    ("alakazite", ItemBehavior::MegaStone),
-    ("altarianite", ItemBehavior::MegaStone),
-    ("ampharosite", ItemBehavior::MegaStone),
-    ("audinite", ItemBehavior::MegaStone),
-    ("banettite", ItemBehavior::MegaStone),
 ];
 
 /// Declarative identity-to-behavior join for the implemented PR 13.5 batch.

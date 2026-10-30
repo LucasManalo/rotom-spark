@@ -1758,6 +1758,219 @@
     },
     {
       "id": "banettite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"]
+    },
+    {
+      "id": "barbaracite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "baxcalibrite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "beedrillite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "blastoisinite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "blazikenite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "cameruptite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "chandelurite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "charizarditex", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "charizarditey", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "chesnaughtite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "chimechite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "clefablite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "crabominite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "delphoxite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "dragalgite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "dragoninite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "drampanite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "eelektrossite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "emboarite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "excadrite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "falinksite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "feraligite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "floettite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "froslassite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "galladite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "garchompite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "garchompitez", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "gardevoirite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "gengarite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "glalitite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "glimmoranite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "golisopite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "golurkite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "greninjite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "gyaradosite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "hawluchanite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "heracronite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "houndoominite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "kangaskhanite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "lopunnite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "lucarionite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "lucarionitez", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "malamarite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "manectite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "mawilite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "medichamite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "meganiumite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "meowsticite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "metagrossite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "pidgeotite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "pinsirite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "pyroarite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "raichunitex", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "raichunitey", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "sablenite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "salamencite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "sceptilite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "scizorite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "scolipite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "scovillainite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "scraftinite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "sharpedonite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "skarmorite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "slowbronite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "staraptite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "starminite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "steelixite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "swampertite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "tyranitarite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "venusaurite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
+    },
+    {
+      "id": "victreebelite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.5", "evidence": ["file:docs/research/pr-13-6-mega-stone-foundation.md", "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"]
     }
   ]
 }

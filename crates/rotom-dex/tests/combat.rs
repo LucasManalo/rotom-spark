@@ -4117,7 +4117,7 @@ fn first_five_item_handlers_are_resolved_from_stable_dex_identities() {
         let item = dex.resolve_item(name).unwrap().0;
         assert!(handlers.contains(&rotom_core::ItemHandler::new(item, behavior)));
     }
-    assert_eq!(handlers.len(), 95);
+    assert_eq!(handlers.len(), 166);
 }
 
 #[test]
@@ -4342,6 +4342,104 @@ fn third_thirty_items_resolve_to_explicit_behavior_families() {
         assert!(
             dex.item_has_behavior(item, behavior),
             "missing query for {name}"
+        );
+    }
+}
+
+#[allow(clippy::too_many_lines)]
+#[test]
+fn remaining_mega_stones_are_registered_from_generated_metadata() {
+    use rotom_core::ItemBehavior;
+
+    let dex = champions_reg_mc().unwrap();
+    let handlers = dex.item_handlers();
+    let expected = [
+        "barbaracite",
+        "baxcalibrite",
+        "beedrillite",
+        "blastoisinite",
+        "blazikenite",
+        "cameruptite",
+        "chandelurite",
+        "charizarditex",
+        "charizarditey",
+        "chesnaughtite",
+        "chimechite",
+        "clefablite",
+        "crabominite",
+        "delphoxite",
+        "dragalgite",
+        "dragoninite",
+        "drampanite",
+        "eelektrossite",
+        "emboarite",
+        "excadrite",
+        "falinksite",
+        "feraligite",
+        "floettite",
+        "froslassite",
+        "galladite",
+        "garchompite",
+        "garchompitez",
+        "gardevoirite",
+        "gengarite",
+        "glalitite",
+        "glimmoranite",
+        "golisopite",
+        "golurkite",
+        "greninjite",
+        "gyaradosite",
+        "hawluchanite",
+        "heracronite",
+        "houndoominite",
+        "kangaskhanite",
+        "lopunnite",
+        "lucarionite",
+        "lucarionitez",
+        "malamarite",
+        "manectite",
+        "mawilite",
+        "medichamite",
+        "meganiumite",
+        "meowsticite",
+        "metagrossite",
+        "pidgeotite",
+        "pinsirite",
+        "pyroarite",
+        "raichunitex",
+        "raichunitey",
+        "sablenite",
+        "salamencite",
+        "sceptilite",
+        "scizorite",
+        "scolipite",
+        "scovillainite",
+        "scraftinite",
+        "sharpedonite",
+        "skarmorite",
+        "slowbronite",
+        "staraptite",
+        "starminite",
+        "steelixite",
+        "swampertite",
+        "tyranitarite",
+        "venusaurite",
+        "victreebelite",
+    ];
+    assert_eq!(expected.len(), 71);
+    for name in expected {
+        let (item, data) = dex.resolve_item(name).unwrap();
+        assert!(
+            !data.mega_stone.is_empty(),
+            "{name} must retain generated Mega Stone metadata"
+        );
+        assert!(
+            handlers.contains(&rotom_core::ItemHandler::new(item, ItemBehavior::MegaStone)),
+            "missing Mega Stone handler for {name}"
+        );
+        assert!(
+            dex.item_has_behavior(item, ItemBehavior::MegaStone),
+            "missing Mega Stone behavior query for {name}"
         );
     }
 }

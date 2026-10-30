@@ -9193,15 +9193,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/barbaracle"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/barbaracle",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "baxcalibrite",
@@ -9209,15 +9211,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/baxcalibur"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/baxcalibur",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "beedrillite",
@@ -9225,15 +9229,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/beedrill"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/beedrill",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "bigroot",
@@ -9318,15 +9324,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/blastoise"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/blastoise",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "blazikenite",
@@ -9334,15 +9342,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/blaziken"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/blaziken",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "brightpowder",
@@ -9368,15 +9378,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/camerupt"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/camerupt",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "chandelurite",
@@ -9384,15 +9396,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/chandelure"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/chandelure",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "charcoal",
@@ -9419,15 +9433,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/charizard"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/charizard",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "charizarditey",
@@ -9435,15 +9451,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/charizard"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/charizard",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "chartiberry",
@@ -9490,15 +9508,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/chesnaught"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/chesnaught",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "chestoberry",
@@ -9544,15 +9564,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/chimecho"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/chimecho",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "choicescarf",
@@ -9598,15 +9620,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/clefable"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/clefable",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "cobaberry",
@@ -9654,15 +9678,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/crabominable"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/crabominable",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "damprock",
@@ -9689,15 +9715,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/delphox"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/delphox",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "dragalgite",
@@ -9705,15 +9733,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/dragalge"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/dragalge",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "dragonfang",
@@ -9741,15 +9771,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/dragonite"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/dragonite",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "drampanite",
@@ -9757,15 +9789,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/drampa"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/drampa",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "eelektrossite",
@@ -9773,15 +9807,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/eelektross"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/eelektross",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "ejectbutton",
@@ -9826,15 +9862,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/emboar"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/emboar",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "excadrite",
@@ -9842,15 +9880,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/excadrill"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/excadrill",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "expertbelt",
@@ -9897,15 +9937,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/falinks"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/falinks",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "feraligite",
@@ -9913,15 +9955,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/feraligatr"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/feraligatr",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "floettite",
@@ -9929,15 +9973,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/floetteeternal"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/floetteeternal",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "focusband",
@@ -9981,15 +10027,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/froslass"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/froslass",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "galladite",
@@ -9997,15 +10045,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/gallade"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/gallade",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "garchompite",
@@ -10013,15 +10063,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/garchomp"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/garchomp",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "garchompitez",
@@ -10029,15 +10081,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/garchomp"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/garchomp",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "gardevoirite",
@@ -10045,15 +10099,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/gardevoir"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/gardevoir",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "gengarite",
@@ -10061,15 +10117,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/gengar"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/gengar",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "glalitite",
@@ -10077,15 +10135,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/glalie"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/glalie",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "glimmoranite",
@@ -10093,15 +10153,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/glimmora"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/glimmora",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "golisopite",
@@ -10109,15 +10171,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/golisopod"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/golisopod",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "golurkite",
@@ -10125,15 +10189,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/golurk"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/golurk",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "grassyseed",
@@ -10159,15 +10225,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/greninja"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/greninja",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "gyaradosite",
@@ -10175,15 +10243,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/gyarados"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/gyarados",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "habanberry",
@@ -10231,15 +10301,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/hawlucha"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/hawlucha",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "heatrock",
@@ -10265,15 +10337,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/heracross"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/heracross",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "houndoominite",
@@ -10281,15 +10355,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/houndoom"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/houndoom",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "icyrock",
@@ -10333,15 +10409,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/kangaskhan"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/kangaskhan",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "kasibberry",
@@ -10517,15 +10595,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/lopunny"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/lopunny",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "lucarionite",
@@ -10533,15 +10613,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/lucario"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/lucario",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "lucarionitez",
@@ -10549,15 +10631,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/lucario"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/lucario",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "lumberry",
@@ -10604,15 +10688,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/malamar"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/malamar",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "manectite",
@@ -10620,15 +10706,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/manectric"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/manectric",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "mawilite",
@@ -10636,15 +10724,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/mawile"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/mawile",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "medichamite",
@@ -10652,15 +10742,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/medicham"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/medicham",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "meganiumite",
@@ -10668,15 +10760,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/meganium"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/meganium",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "mentalherb",
@@ -10702,15 +10796,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/meowstic"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/meowstic",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "metagrossite",
@@ -10718,15 +10814,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/metagross"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/metagross",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "metalcoat",
@@ -11002,15 +11100,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/pidgeot"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/pidgeot",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "pinsirite",
@@ -11018,15 +11118,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/pinsir"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/pinsir",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "poisonbarb",
@@ -11072,15 +11174,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/pyroar"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/pyroar",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "quickclaw",
@@ -11106,15 +11210,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/raichu"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/raichu",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "raichunitey",
@@ -11122,15 +11228,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/raichu"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/raichu",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "rawstberry",
@@ -11233,15 +11341,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/sableye"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/sableye",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "salamencite",
@@ -11249,15 +11359,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/salamence"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/salamence",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "sceptilite",
@@ -11265,15 +11377,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/sceptile"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/sceptile",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "scizorite",
@@ -11281,15 +11395,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/scizor"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/scizor",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "scolipite",
@@ -11297,15 +11413,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/scolipede"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/scolipede",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "scopelens",
@@ -11331,15 +11449,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/scovillain"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/scovillain",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "scraftinite",
@@ -11347,15 +11467,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/scrafty"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/scrafty",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "sharpbeak",
@@ -11383,15 +11505,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/sharpedo"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/sharpedo",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "shedshell",
@@ -11514,15 +11638,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/skarmory"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/skarmory",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "slowbronite",
@@ -11530,15 +11656,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/slowbro"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/slowbro",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "smoothrock",
@@ -11604,15 +11732,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/staraptor"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/staraptor",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "starminite",
@@ -11620,15 +11750,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/starmie"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/starmie",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "steelixite",
@@ -11636,15 +11768,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/steelix"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/steelix",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "swampertite",
@@ -11652,15 +11786,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/swampert"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/swampert",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "tangaberry",
@@ -11725,15 +11861,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/tyranitar"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/tyranitar",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "venusaurite",
@@ -11741,15 +11879,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/venusaur"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/venusaur",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "victreebelite",
@@ -11757,15 +11897,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/victreebel"
+        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "species/victreebel",
+        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.5"
     },
     {
       "id": "wacanberry",
@@ -48272,13 +48414,13 @@
       "item": {
         "total": 166,
         "implementation": {
-          "unsupported": 71,
-          "partial": 48,
+          "unsupported": 0,
+          "partial": 119,
           "implemented": 47
         },
         "verification": {
-          "not_tested": 72,
-          "unit_tested": 94,
+          "not_tested": 1,
+          "unit_tested": 165,
           "differential_verified": 0
         },
         "interaction_verification": {
