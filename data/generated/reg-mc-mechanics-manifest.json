@@ -9132,15 +9132,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:crates/rotom-core/src/items.rs",
+        "file:docs/research/pr-13-6-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types",
+        "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.2"
     },
     {
       "id": "banettite",
@@ -9244,15 +9248,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:crates/rotom-core/src/items.rs",
+        "file:docs/research/pr-13-6-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#all_type_power_handlers_apply_the_showdown_modifier_only_to_the_matching_type",
+        "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.2"
     },
     {
       "id": "blackglasses",
@@ -9260,15 +9268,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:crates/rotom-core/src/items.rs",
+        "file:docs/research/pr-13-6-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#all_type_power_handlers_apply_the_showdown_modifier_only_to_the_matching_type",
+        "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.2"
     },
     {
       "id": "blastoisinite",
@@ -9407,15 +9419,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:crates/rotom-core/src/items.rs",
+        "file:docs/research/pr-13-6-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types",
+        "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.2"
     },
     {
       "id": "cheriberry",
@@ -9519,15 +9535,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:crates/rotom-core/src/items.rs",
+        "file:docs/research/pr-13-6-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types",
+        "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.2"
     },
     {
       "id": "clefablite",
@@ -9551,15 +9571,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:crates/rotom-core/src/items.rs",
+        "file:docs/research/pr-13-6-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types",
+        "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.2"
     },
     {
       "id": "colburberry",
@@ -9567,15 +9591,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:crates/rotom-core/src/items.rs",
+        "file:docs/research/pr-13-6-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types",
+        "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.2"
     },
     {
       "id": "crabominite",
@@ -9647,15 +9675,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:crates/rotom-core/src/items.rs",
+        "file:docs/research/pr-13-6-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#all_type_power_handlers_apply_the_showdown_modifier_only_to_the_matching_type",
+        "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.2"
     },
     {
       "id": "dragoninite",
@@ -9794,15 +9826,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:crates/rotom-core/src/items.rs",
+        "file:docs/research/pr-13-6-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#all_type_power_handlers_apply_the_showdown_modifier_only_to_the_matching_type",
+        "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.2"
     },
     {
       "id": "falinksite",
@@ -10098,15 +10134,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:crates/rotom-core/src/items.rs",
+        "file:docs/research/pr-13-6-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types",
+        "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.2"
     },
     {
       "id": "hardstone",
@@ -10114,15 +10154,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:crates/rotom-core/src/items.rs",
+        "file:docs/research/pr-13-6-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#all_type_power_handlers_apply_the_showdown_modifier_only_to_the_matching_type",
+        "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.2"
     },
     {
       "id": "hawluchanite",
@@ -10242,15 +10286,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:crates/rotom-core/src/items.rs",
+        "file:docs/research/pr-13-6-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types",
+        "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.2"
     },
     {
       "id": "kebiaberry",
@@ -10258,15 +10306,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:crates/rotom-core/src/items.rs",
+        "file:docs/research/pr-13-6-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types",
+        "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.2"
     },
     {
       "id": "kingsrock",
@@ -10450,15 +10502,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:crates/rotom-core/src/items.rs",
+        "file:docs/research/pr-13-6-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#all_type_power_handlers_apply_the_showdown_modifier_only_to_the_matching_type",
+        "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.2"
     },
     {
       "id": "malamarite",
@@ -10594,15 +10650,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:crates/rotom-core/src/items.rs",
+        "file:docs/research/pr-13-6-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#all_type_power_handlers_apply_the_showdown_modifier_only_to_the_matching_type",
+        "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.2"
     },
     {
       "id": "metronome",
@@ -10626,15 +10686,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:crates/rotom-core/src/items.rs",
+        "file:docs/research/pr-13-6-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#all_type_power_handlers_apply_the_showdown_modifier_only_to_the_matching_type",
+        "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.2"
     },
     {
       "id": "mistyseed",
@@ -10697,15 +10761,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:crates/rotom-core/src/items.rs",
+        "file:docs/research/pr-13-6-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#all_type_power_handlers_apply_the_showdown_modifier_only_to_the_matching_type",
+        "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.2"
     },
     {
       "id": "normalgem",
@@ -10729,15 +10797,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:crates/rotom-core/src/items.rs",
+        "file:docs/research/pr-13-6-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types",
+        "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.2"
     },
     {
       "id": "oranberry",
@@ -10761,15 +10833,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:crates/rotom-core/src/items.rs",
+        "file:docs/research/pr-13-6-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types",
+        "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.2"
     },
     {
       "id": "payapaberry",
@@ -10777,15 +10853,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:crates/rotom-core/src/items.rs",
+        "file:docs/research/pr-13-6-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types",
+        "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.2"
     },
     {
       "id": "pechaberry",
@@ -10857,15 +10937,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:crates/rotom-core/src/items.rs",
+        "file:docs/research/pr-13-6-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#all_type_power_handlers_apply_the_showdown_modifier_only_to_the_matching_type",
+        "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.2"
     },
     {
       "id": "psychicseed",
@@ -10985,15 +11069,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:crates/rotom-core/src/items.rs",
+        "file:docs/research/pr-13-6-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types",
+        "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.2"
     },
     {
       "id": "rockyhelmet",
@@ -11017,15 +11105,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:crates/rotom-core/src/items.rs",
+        "file:docs/research/pr-13-6-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types",
+        "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.2"
     },
     {
       "id": "sablenite",
@@ -11161,15 +11253,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:crates/rotom-core/src/items.rs",
+        "file:docs/research/pr-13-6-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#all_type_power_handlers_apply_the_showdown_modifier_only_to_the_matching_type",
+        "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.2"
     },
     {
       "id": "sharpedonite",
@@ -11225,15 +11321,20 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:crates/rotom-core/src/items.rs",
+        "file:docs/research/pr-13-6-thirty-item-batch.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#resistance_berries_consume_in_step_and_respect_unnerve_ripen_and_magic_room",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types",
+        "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "partial",
+      "verification": "unit_tested",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.6.2"
     },
     {
       "id": "silkscarf",
@@ -11241,15 +11342,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:crates/rotom-core/src/items.rs",
+        "file:docs/research/pr-13-6-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#all_type_power_handlers_apply_the_showdown_modifier_only_to_the_matching_type",
+        "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.2"
     },
     {
       "id": "silverpowder",
@@ -11257,15 +11362,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:crates/rotom-core/src/items.rs",
+        "file:docs/research/pr-13-6-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#all_type_power_handlers_apply_the_showdown_modifier_only_to_the_matching_type",
+        "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.2"
     },
     {
       "id": "sitrusberry",
@@ -11337,15 +11446,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:crates/rotom-core/src/items.rs",
+        "file:docs/research/pr-13-6-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#all_type_power_handlers_apply_the_showdown_modifier_only_to_the_matching_type",
+        "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.2"
     },
     {
       "id": "spelltag",
@@ -11353,15 +11466,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:crates/rotom-core/src/items.rs",
+        "file:docs/research/pr-13-6-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#all_type_power_handlers_apply_the_showdown_modifier_only_to_the_matching_type",
+        "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.2"
     },
     {
       "id": "staraptite",
@@ -11465,15 +11582,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:crates/rotom-core/src/items.rs",
+        "file:docs/research/pr-13-6-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#all_type_power_handlers_apply_the_showdown_modifier_only_to_the_matching_type",
+        "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.2"
     },
     {
       "id": "tyranitarite",
@@ -48016,18 +48137,18 @@
       "item": {
         "total": 166,
         "implementation": {
-          "unsupported": 161,
-          "partial": 0,
-          "implemented": 5
+          "unsupported": 131,
+          "partial": 14,
+          "implemented": 21
         },
         "verification": {
-          "not_tested": 161,
-          "unit_tested": 5,
+          "not_tested": 131,
+          "unit_tested": 35,
           "differential_verified": 0
         },
         "interaction_verification": {
-          "not_tested": 165,
-          "unit_tested": 1,
+          "not_tested": 164,
+          "unit_tested": 2,
           "differential_verified": 0
         },
         "reachability": {

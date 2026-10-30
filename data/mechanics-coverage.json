@@ -1488,6 +1488,96 @@
     },
     {
       "id": "mysticwater", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.1", "evidence": ["file:docs/research/pr-13-6-first-five-items.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-dex/tests/combat.rs#first_five_items_modify_canonical_damage_through_typed_events"]
+    },
+    {
+      "id": "blackbelt", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.2", "evidence": ["file:docs/research/pr-13-6-thirty-item-batch.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-core/src/items.rs#all_type_power_handlers_apply_the_showdown_modifier_only_to_the_matching_type", "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"]
+    },
+    {
+      "id": "blackglasses", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.2", "evidence": ["file:docs/research/pr-13-6-thirty-item-batch.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-core/src/items.rs#all_type_power_handlers_apply_the_showdown_modifier_only_to_the_matching_type", "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"]
+    },
+    {
+      "id": "dragonfang", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.2", "evidence": ["file:docs/research/pr-13-6-thirty-item-batch.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-core/src/items.rs#all_type_power_handlers_apply_the_showdown_modifier_only_to_the_matching_type", "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"]
+    },
+    {
+      "id": "fairyfeather", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.2", "evidence": ["file:docs/research/pr-13-6-thirty-item-batch.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-core/src/items.rs#all_type_power_handlers_apply_the_showdown_modifier_only_to_the_matching_type", "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"]
+    },
+    {
+      "id": "hardstone", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.2", "evidence": ["file:docs/research/pr-13-6-thirty-item-batch.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-core/src/items.rs#all_type_power_handlers_apply_the_showdown_modifier_only_to_the_matching_type", "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"]
+    },
+    {
+      "id": "magnet", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.2", "evidence": ["file:docs/research/pr-13-6-thirty-item-batch.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-core/src/items.rs#all_type_power_handlers_apply_the_showdown_modifier_only_to_the_matching_type", "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"]
+    },
+    {
+      "id": "metalcoat", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.2", "evidence": ["file:docs/research/pr-13-6-thirty-item-batch.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-core/src/items.rs#all_type_power_handlers_apply_the_showdown_modifier_only_to_the_matching_type", "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"]
+    },
+    {
+      "id": "miracleseed", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.2", "evidence": ["file:docs/research/pr-13-6-thirty-item-batch.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-core/src/items.rs#all_type_power_handlers_apply_the_showdown_modifier_only_to_the_matching_type", "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"]
+    },
+    {
+      "id": "nevermeltice", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.2", "evidence": ["file:docs/research/pr-13-6-thirty-item-batch.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-core/src/items.rs#all_type_power_handlers_apply_the_showdown_modifier_only_to_the_matching_type", "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"]
+    },
+    {
+      "id": "poisonbarb", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.2", "evidence": ["file:docs/research/pr-13-6-thirty-item-batch.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-core/src/items.rs#all_type_power_handlers_apply_the_showdown_modifier_only_to_the_matching_type", "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"]
+    },
+    {
+      "id": "sharpbeak", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.2", "evidence": ["file:docs/research/pr-13-6-thirty-item-batch.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-core/src/items.rs#all_type_power_handlers_apply_the_showdown_modifier_only_to_the_matching_type", "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"]
+    },
+    {
+      "id": "silkscarf", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.2", "evidence": ["file:docs/research/pr-13-6-thirty-item-batch.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-core/src/items.rs#all_type_power_handlers_apply_the_showdown_modifier_only_to_the_matching_type", "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"]
+    },
+    {
+      "id": "silverpowder", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.2", "evidence": ["file:docs/research/pr-13-6-thirty-item-batch.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-core/src/items.rs#all_type_power_handlers_apply_the_showdown_modifier_only_to_the_matching_type", "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"]
+    },
+    {
+      "id": "softsand", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.2", "evidence": ["file:docs/research/pr-13-6-thirty-item-batch.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-core/src/items.rs#all_type_power_handlers_apply_the_showdown_modifier_only_to_the_matching_type", "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"]
+    },
+    {
+      "id": "spelltag", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.2", "evidence": ["file:docs/research/pr-13-6-thirty-item-batch.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-core/src/items.rs#all_type_power_handlers_apply_the_showdown_modifier_only_to_the_matching_type", "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"]
+    },
+    {
+      "id": "twistedspoon", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.2", "evidence": ["file:docs/research/pr-13-6-thirty-item-batch.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-core/src/items.rs#all_type_power_handlers_apply_the_showdown_modifier_only_to_the_matching_type", "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"]
+    },
+    {
+      "id": "babiriberry", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.2", "evidence": ["file:docs/research/pr-13-6-thirty-item-batch.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types", "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"]
+    },
+    {
+      "id": "chartiberry", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.2", "evidence": ["file:docs/research/pr-13-6-thirty-item-batch.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types", "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"]
+    },
+    {
+      "id": "chopleberry", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.2", "evidence": ["file:docs/research/pr-13-6-thirty-item-batch.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types", "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"]
+    },
+    {
+      "id": "cobaberry", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.2", "evidence": ["file:docs/research/pr-13-6-thirty-item-batch.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types", "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"]
+    },
+    {
+      "id": "colburberry", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.2", "evidence": ["file:docs/research/pr-13-6-thirty-item-batch.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types", "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"]
+    },
+    {
+      "id": "habanberry", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.2", "evidence": ["file:docs/research/pr-13-6-thirty-item-batch.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types", "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"]
+    },
+    {
+      "id": "kasibberry", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.2", "evidence": ["file:docs/research/pr-13-6-thirty-item-batch.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types", "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"]
+    },
+    {
+      "id": "kebiaberry", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.2", "evidence": ["file:docs/research/pr-13-6-thirty-item-batch.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types", "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"]
+    },
+    {
+      "id": "occaberry", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.2", "evidence": ["file:docs/research/pr-13-6-thirty-item-batch.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types", "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"]
+    },
+    {
+      "id": "passhoberry", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.2", "evidence": ["file:docs/research/pr-13-6-thirty-item-batch.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types", "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"]
+    },
+    {
+      "id": "payapaberry", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.2", "evidence": ["file:docs/research/pr-13-6-thirty-item-batch.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types", "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"]
+    },
+    {
+      "id": "rindoberry", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.2", "evidence": ["file:docs/research/pr-13-6-thirty-item-batch.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types", "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"]
+    },
+    {
+      "id": "roseliberry", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.2", "evidence": ["file:docs/research/pr-13-6-thirty-item-batch.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types", "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families"]
+    },
+    {
+      "id": "shucaberry", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 13.6.2", "evidence": ["file:docs/research/pr-13-6-thirty-item-batch.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-core/src/items.rs#resistance_berry_family_consumes_once_for_matching_super_effective_types", "unit:crates/rotom-dex/tests/combat.rs#thirty_additional_items_resolve_to_complete_native_behavior_families", "interaction_unit:crates/rotom-dex/tests/combat.rs#resistance_berries_consume_in_step_and_respect_unnerve_ripen_and_magic_room"]
     }
   ]
 }

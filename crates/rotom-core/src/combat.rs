@@ -1115,6 +1115,49 @@ impl BattleState {
         let mut self_effect_applied = false;
         for (index, target_context) in eligible {
             let target = target_context.target;
+            let target_ability = self
+                .side(target.side)
+                .pokemon(target.pokemon)
+                .ok_or_else(|| BattleError::InvalidState("move target became invalid".to_owned()))?
+                .ability;
+            let target_berry_blocked = self
+                .side(target.side.opponent())
+                .active
+                .into_iter()
+                .flatten()
+                .any(|pokemon| {
+                    self.side(target.side.opponent())
+                        .pokemon(pokemon)
+                        .is_some_and(|state| {
+                            data.ability_has_behavior(
+                                state.ability,
+                                crate::AbilityBehavior::BerryPrevention,
+                            )
+                        })
+                });
+            let target_berry_interaction_unsupported = [
+                crate::AbilityBehavior::BerryHeal,
+                crate::AbilityBehavior::BerryReuse,
+                crate::AbilityBehavior::BerryRestore,
+            ]
+            .into_iter()
+            .any(|behavior| data.ability_has_behavior(target_ability, behavior))
+                || self
+                    .side(target.side)
+                    .active
+                    .into_iter()
+                    .flatten()
+                    .filter(|pokemon| *pokemon != target.pokemon)
+                    .any(|pokemon| {
+                        self.side(target.side)
+                            .pokemon(pokemon)
+                            .is_some_and(|state| {
+                                data.ability_has_behavior(
+                                    state.ability,
+                                    crate::AbilityBehavior::BerrySymbiosis,
+                                )
+                            })
+                    });
             let mut context = EventContext {
                 source: Some(move_context.source),
                 target: Some(target),
@@ -1125,6 +1168,11 @@ impl BattleState {
                     data,
                     move_context.source,
                 ),
+                suppress_target_item: !field_effects.item_is_active_for(self, data, target),
+                target_berry_blocked,
+                target_ripen: data
+                    .ability_has_behavior(target_ability, crate::AbilityBehavior::Ripen),
+                target_berry_interaction_unsupported,
                 critical: false,
                 move_category: Some(move_context.move_data.category),
                 move_type: Some(move_context.move_data.move_type),

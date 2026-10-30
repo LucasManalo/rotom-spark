@@ -4105,13 +4105,76 @@ fn first_five_item_handlers_are_resolved_from_stable_dex_identities() {
         ("muscleband", rotom_core::ItemBehavior::PhysicalPower),
         ("wiseglasses", rotom_core::ItemBehavior::SpecialPower),
         ("expertbelt", rotom_core::ItemBehavior::SuperEffectiveDamage),
-        ("charcoal", rotom_core::ItemBehavior::FirePower),
-        ("mysticwater", rotom_core::ItemBehavior::WaterPower),
+        (
+            "charcoal",
+            rotom_core::ItemBehavior::TypePower(rotom_core::PokemonType::Fire),
+        ),
+        (
+            "mysticwater",
+            rotom_core::ItemBehavior::TypePower(rotom_core::PokemonType::Water),
+        ),
     ] {
         let item = dex.resolve_item(name).unwrap().0;
         assert!(handlers.contains(&rotom_core::ItemHandler::new(item, behavior)));
     }
-    assert_eq!(handlers.len(), 5);
+    assert_eq!(handlers.len(), 35);
+}
+
+#[test]
+fn thirty_additional_items_resolve_to_complete_native_behavior_families() {
+    use rotom_core::{ItemBehavior, PokemonType};
+
+    let dex = champions_reg_mc().unwrap();
+    let handlers = dex.item_handlers();
+    let expected = [
+        ("blackbelt", ItemBehavior::TypePower(PokemonType::Fighting)),
+        ("blackglasses", ItemBehavior::TypePower(PokemonType::Dark)),
+        ("dragonfang", ItemBehavior::TypePower(PokemonType::Dragon)),
+        ("fairyfeather", ItemBehavior::TypePower(PokemonType::Fairy)),
+        ("hardstone", ItemBehavior::TypePower(PokemonType::Rock)),
+        ("magnet", ItemBehavior::TypePower(PokemonType::Electric)),
+        ("metalcoat", ItemBehavior::TypePower(PokemonType::Steel)),
+        ("miracleseed", ItemBehavior::TypePower(PokemonType::Grass)),
+        ("nevermeltice", ItemBehavior::TypePower(PokemonType::Ice)),
+        ("poisonbarb", ItemBehavior::TypePower(PokemonType::Poison)),
+        ("sharpbeak", ItemBehavior::TypePower(PokemonType::Flying)),
+        ("silkscarf", ItemBehavior::TypePower(PokemonType::Normal)),
+        ("silverpowder", ItemBehavior::TypePower(PokemonType::Bug)),
+        ("softsand", ItemBehavior::TypePower(PokemonType::Ground)),
+        ("spelltag", ItemBehavior::TypePower(PokemonType::Ghost)),
+        (
+            "twistedspoon",
+            ItemBehavior::TypePower(PokemonType::Psychic),
+        ),
+        ("babiriberry", ItemBehavior::ResistBerry(PokemonType::Steel)),
+        ("chartiberry", ItemBehavior::ResistBerry(PokemonType::Rock)),
+        (
+            "chopleberry",
+            ItemBehavior::ResistBerry(PokemonType::Fighting),
+        ),
+        ("cobaberry", ItemBehavior::ResistBerry(PokemonType::Flying)),
+        ("colburberry", ItemBehavior::ResistBerry(PokemonType::Dark)),
+        ("habanberry", ItemBehavior::ResistBerry(PokemonType::Dragon)),
+        ("kasibberry", ItemBehavior::ResistBerry(PokemonType::Ghost)),
+        ("kebiaberry", ItemBehavior::ResistBerry(PokemonType::Poison)),
+        ("occaberry", ItemBehavior::ResistBerry(PokemonType::Fire)),
+        ("passhoberry", ItemBehavior::ResistBerry(PokemonType::Water)),
+        (
+            "payapaberry",
+            ItemBehavior::ResistBerry(PokemonType::Psychic),
+        ),
+        ("rindoberry", ItemBehavior::ResistBerry(PokemonType::Grass)),
+        ("roseliberry", ItemBehavior::ResistBerry(PokemonType::Fairy)),
+        ("shucaberry", ItemBehavior::ResistBerry(PokemonType::Ground)),
+    ];
+    assert_eq!(expected.len(), 30);
+    for (name, behavior) in expected {
+        let item = dex.resolve_item(name).unwrap().0;
+        assert!(
+            handlers.contains(&rotom_core::ItemHandler::new(item, behavior)),
+            "missing handler for {name}"
+        );
+    }
 }
 
 #[test]
@@ -4275,6 +4338,135 @@ fn magic_room_and_klutz_suppress_item_damage_modifiers() {
             "{name} must suppress Muscle Band"
         );
     }
+}
+
+#[test]
+fn resistance_berries_consume_in_step_and_respect_unnerve_ripen_and_magic_room() {
+    let dex = champions_reg_mc().unwrap();
+    let shuca = dex.resolve_item("shucaberry").unwrap().0;
+    let source_ref = PokemonRef::new(SideId::P1, PokemonIndex::new(0));
+    let target_ref = PokemonRef::new(SideId::P2, PokemonIndex::new(0));
+    let source = set_with_moves(&dex, "goodra", "sapsipper", &["earthpower"]);
+    let mut target = set_with_moves(&dex, "metagross", "clearbody", &["recover"]);
+    target.item = Some(shuca);
+    let action = single_move_action(0, ActionTarget::Foe(ActiveSlot::Left));
+
+    let run = |source_ability: Option<&str>, target_ability: Option<&str>, magic_room: bool| {
+        let base = selected_primary_battle(&dex, &source, &target, 0x13_06_30);
+        let mut builder = BattleStateBuilder::from_state(base).unwrap();
+        if let Some(ability) = source_ability {
+            builder
+                .edit_pokemon(source_ref, |pokemon| {
+                    pokemon.ability = dex.resolve_ability(ability).unwrap().0;
+                })
+                .unwrap();
+        }
+        if let Some(ability) = target_ability {
+            builder
+                .edit_pokemon(target_ref, |pokemon| {
+                    pokemon.ability = dex.resolve_ability(ability).unwrap().0;
+                })
+                .unwrap();
+        }
+        if magic_room {
+            let condition = dex.field_effect_ids().magic_room.unwrap();
+            builder.edit_field(|field| {
+                field
+                    .conditions
+                    .push(ConditionState::new(condition, Some(5)));
+            });
+        }
+        step(
+            &builder.build().unwrap(),
+            &action,
+            &Mechanics::new(&dex, &EffectRegistry::new()),
+        )
+        .unwrap()
+    };
+
+    let without_berry = {
+        let mut no_item = target.clone();
+        no_item.item = None;
+        step(
+            &selected_primary_battle(&dex, &source, &no_item, 0x13_06_30),
+            &action,
+            &Mechanics::new(&dex, &EffectRegistry::new()),
+        )
+        .unwrap()
+    };
+    let baseline_damage = p1_left_hits(&without_berry)[0].calculated_damage;
+
+    let reduced = run(None, None, false);
+    assert_eq!(
+        p1_left_hits(&reduced)[0].calculated_damage,
+        u16::try_from((i64::from(baseline_damage) * 2048 + 2047) / 4096).unwrap()
+    );
+    assert_eq!(
+        reduced
+            .state
+            .side(target_ref.side)
+            .pokemon(target_ref.pokemon)
+            .unwrap()
+            .item,
+        None
+    );
+
+    let ripen = run(None, Some("ripen"), false);
+    let half = (i64::from(baseline_damage) * 2048 + 2047) / 4096;
+    assert_eq!(
+        p1_left_hits(&ripen)[0].calculated_damage,
+        u16::try_from((half * 2048 + 2047) / 4096).unwrap()
+    );
+
+    for blocked in [run(Some("unnerve"), None, false), run(None, None, true)] {
+        assert_eq!(p1_left_hits(&blocked)[0].calculated_damage, baseline_damage);
+        assert_eq!(
+            blocked
+                .state
+                .side(target_ref.side)
+                .pokemon(target_ref.pokemon)
+                .unwrap()
+                .item,
+            Some(shuca)
+        );
+    }
+}
+
+#[test]
+fn deferred_berry_ability_interactions_fail_atomically_before_consumption() {
+    let dex = champions_reg_mc().unwrap();
+    let shuca = dex.resolve_item("shucaberry").unwrap().0;
+    let source = set_with_moves(&dex, "goodra", "sapsipper", &["earthpower"]);
+    let mut target = set_with_moves(&dex, "metagross", "clearbody", &["recover"]);
+    target.item = Some(shuca);
+    let target_ref = PokemonRef::new(SideId::P2, PokemonIndex::new(0));
+    let deferred = selected_primary_battle(&dex, &source, &target, 0x13_06_30);
+    let mut builder = BattleStateBuilder::from_state(deferred).unwrap();
+    builder
+        .edit_pokemon(target_ref, |pokemon| {
+            pokemon.ability = dex.resolve_ability("cheekpouch").unwrap().0;
+        })
+        .unwrap();
+    let deferred = builder.build().unwrap();
+    let error = step(
+        &deferred,
+        &single_move_action(0, ActionTarget::Foe(ActiveSlot::Left)),
+        &Mechanics::new(&dex, &EffectRegistry::new()),
+    )
+    .unwrap_err();
+    assert!(matches!(
+        error,
+        rotom_core::BattleError::UnsupportedMechanic(_)
+    ));
+    assert_eq!(
+        deferred
+            .side(target_ref.side)
+            .pokemon(target_ref.pokemon)
+            .unwrap()
+            .item,
+        Some(shuca),
+        "failed public transition must not consume the input Berry"
+    );
 }
 
 fn p1_left_hits(result: &rotom_core::StepResult) -> Vec<&rotom_core::TargetOutcome> {

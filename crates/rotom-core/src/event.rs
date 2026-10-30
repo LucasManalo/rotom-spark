@@ -229,6 +229,18 @@ pub struct EventContext {
     /// Whether Magic Room or Klutz suppresses the move source's held item.
     #[serde(default, skip_serializing_if = "is_false")]
     pub suppress_source_item: bool,
+    /// Whether Magic Room or Klutz suppresses the move target's held item.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub suppress_target_item: bool,
+    /// Whether an opposing active Unnerve holder prevents the target eating a Berry.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub target_berry_blocked: bool,
+    /// Whether the target's active Ripen doubles a Berry's effect.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub target_ripen: bool,
+    /// Whether Berry consumption would require a deferred cross-ability behavior.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub target_berry_interaction_unsupported: bool,
     /// Whether the current hit was confirmed as critical.
     #[serde(default, skip_serializing_if = "is_false")]
     pub critical: bool,

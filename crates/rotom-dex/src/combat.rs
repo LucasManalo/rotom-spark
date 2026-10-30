@@ -363,8 +363,47 @@ const IMPLEMENTED_ITEM_BEHAVIORS: &[(&str, ItemBehavior)] = &[
     ("muscleband", ItemBehavior::PhysicalPower),
     ("wiseglasses", ItemBehavior::SpecialPower),
     ("expertbelt", ItemBehavior::SuperEffectiveDamage),
-    ("charcoal", ItemBehavior::FirePower),
-    ("mysticwater", ItemBehavior::WaterPower),
+    ("charcoal", ItemBehavior::TypePower(PokemonType::Fire)),
+    ("mysticwater", ItemBehavior::TypePower(PokemonType::Water)),
+    ("blackbelt", ItemBehavior::TypePower(PokemonType::Fighting)),
+    ("blackglasses", ItemBehavior::TypePower(PokemonType::Dark)),
+    ("dragonfang", ItemBehavior::TypePower(PokemonType::Dragon)),
+    ("fairyfeather", ItemBehavior::TypePower(PokemonType::Fairy)),
+    ("hardstone", ItemBehavior::TypePower(PokemonType::Rock)),
+    ("magnet", ItemBehavior::TypePower(PokemonType::Electric)),
+    ("metalcoat", ItemBehavior::TypePower(PokemonType::Steel)),
+    ("miracleseed", ItemBehavior::TypePower(PokemonType::Grass)),
+    ("nevermeltice", ItemBehavior::TypePower(PokemonType::Ice)),
+    ("poisonbarb", ItemBehavior::TypePower(PokemonType::Poison)),
+    ("sharpbeak", ItemBehavior::TypePower(PokemonType::Flying)),
+    ("silkscarf", ItemBehavior::TypePower(PokemonType::Normal)),
+    ("silverpowder", ItemBehavior::TypePower(PokemonType::Bug)),
+    ("softsand", ItemBehavior::TypePower(PokemonType::Ground)),
+    ("spelltag", ItemBehavior::TypePower(PokemonType::Ghost)),
+    (
+        "twistedspoon",
+        ItemBehavior::TypePower(PokemonType::Psychic),
+    ),
+    ("babiriberry", ItemBehavior::ResistBerry(PokemonType::Steel)),
+    ("chartiberry", ItemBehavior::ResistBerry(PokemonType::Rock)),
+    (
+        "chopleberry",
+        ItemBehavior::ResistBerry(PokemonType::Fighting),
+    ),
+    ("cobaberry", ItemBehavior::ResistBerry(PokemonType::Flying)),
+    ("colburberry", ItemBehavior::ResistBerry(PokemonType::Dark)),
+    ("habanberry", ItemBehavior::ResistBerry(PokemonType::Dragon)),
+    ("kasibberry", ItemBehavior::ResistBerry(PokemonType::Ghost)),
+    ("kebiaberry", ItemBehavior::ResistBerry(PokemonType::Poison)),
+    ("occaberry", ItemBehavior::ResistBerry(PokemonType::Fire)),
+    ("passhoberry", ItemBehavior::ResistBerry(PokemonType::Water)),
+    (
+        "payapaberry",
+        ItemBehavior::ResistBerry(PokemonType::Psychic),
+    ),
+    ("rindoberry", ItemBehavior::ResistBerry(PokemonType::Grass)),
+    ("roseliberry", ItemBehavior::ResistBerry(PokemonType::Fairy)),
+    ("shucaberry", ItemBehavior::ResistBerry(PokemonType::Ground)),
 ];
 
 /// Declarative identity-to-behavior join for the implemented PR 13.5 batch.
@@ -1249,12 +1288,12 @@ const IMPLEMENTED_ABILITY_BEHAVIORS: &[(&str, AbilityBehavior, AbilitySuppressio
     ),
     (
         "cheekpouch",
-        AbilityBehavior::DeferredItemInteraction,
+        AbilityBehavior::BerryHeal,
         AbilitySuppression::Unbreakable,
     ),
     (
         "cudchew",
-        AbilityBehavior::DeferredItemInteraction,
+        AbilityBehavior::BerryReuse,
         AbilitySuppression::Unbreakable,
     ),
     (
@@ -1309,7 +1348,7 @@ const IMPLEMENTED_ABILITY_BEHAVIORS: &[(&str, AbilityBehavior, AbilitySuppressio
     ),
     (
         "harvest",
-        AbilityBehavior::DeferredItemInteraction,
+        AbilityBehavior::BerryRestore,
         AbilitySuppression::Unbreakable,
     ),
     (
@@ -1389,7 +1428,7 @@ const IMPLEMENTED_ABILITY_BEHAVIORS: &[(&str, AbilityBehavior, AbilitySuppressio
     ),
     (
         "ripen",
-        AbilityBehavior::DeferredItemInteraction,
+        AbilityBehavior::Ripen,
         AbilitySuppression::Unbreakable,
     ),
     (
@@ -1454,7 +1493,7 @@ const IMPLEMENTED_ABILITY_BEHAVIORS: &[(&str, AbilityBehavior, AbilitySuppressio
     ),
     (
         "symbiosis",
-        AbilityBehavior::DeferredItemInteraction,
+        AbilityBehavior::BerrySymbiosis,
         AbilitySuppression::Unbreakable,
     ),
     (
@@ -1469,7 +1508,7 @@ const IMPLEMENTED_ABILITY_BEHAVIORS: &[(&str, AbilityBehavior, AbilitySuppressio
     ),
     (
         "unnerve",
-        AbilityBehavior::DeferredItemInteraction,
+        AbilityBehavior::BerryPrevention,
         AbilitySuppression::Unbreakable,
     ),
     (
