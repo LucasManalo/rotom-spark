@@ -4097,6 +4097,186 @@ fn pr_13_4_battle_against(
     selected_primary_battle(dex, &source, &target, seed)
 }
 
+#[test]
+fn first_five_item_handlers_are_resolved_from_stable_dex_identities() {
+    let dex = champions_reg_mc().unwrap();
+    let handlers = dex.item_handlers();
+    for (name, behavior) in [
+        ("muscleband", rotom_core::ItemBehavior::PhysicalPower),
+        ("wiseglasses", rotom_core::ItemBehavior::SpecialPower),
+        ("expertbelt", rotom_core::ItemBehavior::SuperEffectiveDamage),
+        ("charcoal", rotom_core::ItemBehavior::FirePower),
+        ("mysticwater", rotom_core::ItemBehavior::WaterPower),
+    ] {
+        let item = dex.resolve_item(name).unwrap().0;
+        assert!(handlers.contains(&rotom_core::ItemHandler::new(item, behavior)));
+    }
+    assert_eq!(handlers.len(), 5);
+}
+
+#[test]
+fn first_five_items_modify_canonical_damage_through_typed_events() {
+    let dex = champions_reg_mc().unwrap();
+    let source_ref = PokemonRef::new(SideId::P1, PokemonIndex::new(0));
+    let target_ref = PokemonRef::new(SideId::P2, PokemonIndex::new(0));
+
+    for (item_name, move_name, event, modifier) in [
+        (
+            "muscleband",
+            "facade",
+            BattleEvent::ModifyBasePower,
+            4505_i64,
+        ),
+        (
+            "wiseglasses",
+            "dragonpulse",
+            BattleEvent::ModifyBasePower,
+            4505,
+        ),
+        (
+            "charcoal",
+            "flamethrower",
+            BattleEvent::ModifyBasePower,
+            4915,
+        ),
+        (
+            "mysticwater",
+            "hydropump",
+            BattleEvent::ModifyBasePower,
+            4915,
+        ),
+        ("expertbelt", "thunderbolt", BattleEvent::ModifyDamage, 4915),
+    ] {
+        let move_id = dex.resolve_move(move_name).unwrap().0;
+        let item = dex.resolve_item(item_name).unwrap().0;
+        let mut source = set_with_moves(&dex, "goodra", "sapsipper", &[move_name]);
+        source.item = Some(item);
+        let target = set_with_moves(&dex, "blastoise", "torrent", &["recover"]);
+        let state = selected_primary_battle(&dex, &source, &target, 0x13_06);
+        let result = step(
+            &state,
+            &single_move_action(0, ActionTarget::Foe(ActiveSlot::Left)),
+            &Mechanics::new(&dex, &EffectRegistry::new()),
+        )
+        .unwrap();
+        let dispatch = result
+            .diagnostics
+            .turn
+            .as_ref()
+            .unwrap()
+            .events
+            .iter()
+            .find(|dispatch| {
+                dispatch.event == event
+                    && dispatch.context.source == Some(source_ref)
+                    && dispatch.context.target == Some(target_ref)
+                    && dispatch.context.move_id == Some(move_id)
+            })
+            .unwrap_or_else(|| panic!("missing {event:?} dispatch for {item_name}"));
+        assert!(dispatch
+            .invocations
+            .iter()
+            .any(|invocation| invocation.source == EffectSource::Item(item)));
+
+        let baseline_source = set_with_moves(&dex, "goodra", "sapsipper", &[move_name]);
+        let baseline_state = selected_primary_battle(&dex, &baseline_source, &target, 0x13_06);
+        let baseline = step(
+            &baseline_state,
+            &single_move_action(0, ActionTarget::Foe(ActiveSlot::Left)),
+            &Mechanics::new(&dex, &EffectRegistry::new()),
+        )
+        .unwrap();
+        let baseline_value = baseline
+            .diagnostics
+            .turn
+            .as_ref()
+            .unwrap()
+            .events
+            .iter()
+            .find(|dispatch| {
+                dispatch.event == event
+                    && dispatch.context.source == Some(source_ref)
+                    && dispatch.context.target == Some(target_ref)
+                    && dispatch.context.move_id == Some(move_id)
+            })
+            .and_then(|dispatch| match dispatch.value {
+                rotom_core::EventValue::Integer(value) => Some(value),
+                _ => None,
+            })
+            .unwrap();
+        let rotom_core::EventValue::Integer(actual) = dispatch.value else {
+            panic!("{item_name} must retain an integer relay");
+        };
+        assert_eq!(
+            actual,
+            baseline_value.saturating_mul(modifier).saturating_add(2047) / 4096,
+            "{item_name} modifier"
+        );
+    }
+}
+
+#[test]
+fn magic_room_and_klutz_suppress_item_damage_modifiers() {
+    let dex = champions_reg_mc().unwrap();
+    let item = dex.resolve_item("muscleband").unwrap().0;
+    let move_id = dex.resolve_move("facade").unwrap().0;
+    let mut source = set_with_moves(&dex, "goodra", "sapsipper", &["facade"]);
+    source.item = Some(item);
+    let target = set_with_moves(&dex, "blastoise", "torrent", &["recover"]);
+    let base = selected_primary_battle(&dex, &source, &target, 0x13_06_01);
+    let source_ref = PokemonRef::new(SideId::P1, PokemonIndex::new(0));
+    let target_ref = PokemonRef::new(SideId::P2, PokemonIndex::new(0));
+
+    for (name, state) in [
+        ("klutz", {
+            let mut builder = BattleStateBuilder::from_state(base.clone()).unwrap();
+            builder
+                .edit_pokemon(source_ref, |pokemon| {
+                    pokemon.ability = dex.resolve_ability("klutz").unwrap().0;
+                })
+                .unwrap();
+            builder.build().unwrap()
+        }),
+        ("magic room", {
+            let mut builder = BattleStateBuilder::from_state(base).unwrap();
+            let magic_room = dex.field_effect_ids().magic_room.unwrap();
+            builder.edit_field(|field| {
+                field
+                    .conditions
+                    .push(ConditionState::new(magic_room, Some(5)));
+            });
+            builder.build().unwrap()
+        }),
+    ] {
+        let result = step(
+            &state,
+            &single_move_action(0, ActionTarget::Foe(ActiveSlot::Left)),
+            &Mechanics::new(&dex, &EffectRegistry::new()),
+        )
+        .unwrap();
+        let dispatch = result
+            .diagnostics
+            .turn
+            .as_ref()
+            .unwrap()
+            .events
+            .iter()
+            .find(|dispatch| {
+                dispatch.event == BattleEvent::ModifyBasePower
+                    && dispatch.context.source == Some(source_ref)
+                    && dispatch.context.target == Some(target_ref)
+                    && dispatch.context.move_id == Some(move_id)
+            })
+            .unwrap();
+        assert!(dispatch.context.suppress_source_item, "{name}");
+        assert_eq!(
+            dispatch.value,
+            rotom_core::EventValue::Integer(70),
+            "{name} must suppress Muscle Band"
+        );
+    }
+}
+
 fn p1_left_hits(result: &rotom_core::StepResult) -> Vec<&rotom_core::TargetOutcome> {
     result
         .diagnostics

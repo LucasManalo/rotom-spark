@@ -12,6 +12,7 @@ mod error;
 mod event;
 mod field_effects;
 mod id;
+mod items;
 mod kernel;
 mod rng;
 mod side;
@@ -40,6 +41,7 @@ pub use event::{
 };
 pub use field_effects::{FieldEffectIds, TerrainEnvironment, WeatherEnvironment};
 pub use id::{AbilityId, ConditionId, FormId, ItemId, MoveId, NatureId, SpeciesId};
+pub use items::{ItemBehavior, ItemHandler};
 pub use rng::{BattleRng, RngOperation, RngReason, RngTraceEntry};
 pub use side::SideId;
 pub use state::{

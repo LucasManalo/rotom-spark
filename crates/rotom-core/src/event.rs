@@ -226,6 +226,9 @@ pub struct EventContext {
     /// Whether the current move ignores suppressible defensive handlers on its target's side.
     #[serde(default, skip_serializing_if = "is_false")]
     pub suppress_target_ability: bool,
+    /// Whether Magic Room or Klutz suppresses the move source's held item.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub suppress_source_item: bool,
     /// Whether the current hit was confirmed as critical.
     #[serde(default, skip_serializing_if = "is_false")]
     pub critical: bool,

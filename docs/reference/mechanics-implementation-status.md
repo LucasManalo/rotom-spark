@@ -19,7 +19,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Kind | Total | Implemented | Partial | Unsupported |
 | --- | ---: | ---: | ---: | ---: |
 | Abilities | 215 | 120 | 95 | 0 |
-| Items | 166 | 0 | 0 | 166 |
+| Items | 166 | 5 | 0 | 161 |
 | Moves | 510 | 223 | 0 | 287 |
 
 ## Abilities
@@ -271,7 +271,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Bright Powder | `brightpowder` | unsupported | not_tested | not_tested | — |
 | Cameruptite | `cameruptite` | unsupported | not_tested | not_tested | — |
 | Chandelurite | `chandelurite` | unsupported | not_tested | not_tested | — |
-| Charcoal | `charcoal` | unsupported | not_tested | not_tested | — |
+| Charcoal | `charcoal` | implemented | unit_tested | not_tested | PR 13.6.1 |
 | Charizardite X | `charizarditex` | unsupported | not_tested | not_tested | — |
 | Charizardite Y | `charizarditey` | unsupported | not_tested | not_tested | — |
 | Charti Berry | `chartiberry` | unsupported | not_tested | not_tested | — |
@@ -297,7 +297,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Electric Seed | `electricseed` | unsupported | not_tested | not_tested | — |
 | Emboarite | `emboarite` | unsupported | not_tested | not_tested | — |
 | Excadrite | `excadrite` | unsupported | not_tested | not_tested | — |
-| Expert Belt | `expertbelt` | unsupported | not_tested | not_tested | — |
+| Expert Belt | `expertbelt` | implemented | unit_tested | not_tested | PR 13.6.1 |
 | Fairy Feather | `fairyfeather` | unsupported | not_tested | not_tested | — |
 | Falinksite | `falinksite` | unsupported | not_tested | not_tested | — |
 | Feraligite | `feraligite` | unsupported | not_tested | not_tested | — |
@@ -352,8 +352,8 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Metronome | `metronome` | unsupported | not_tested | not_tested | — |
 | Miracle Seed | `miracleseed` | unsupported | not_tested | not_tested | — |
 | Misty Seed | `mistyseed` | unsupported | not_tested | not_tested | — |
-| Muscle Band | `muscleband` | unsupported | not_tested | not_tested | — |
-| Mystic Water | `mysticwater` | unsupported | not_tested | not_tested | — |
+| Muscle Band | `muscleband` | implemented | unit_tested | unit_tested | PR 13.6.1 |
+| Mystic Water | `mysticwater` | implemented | unit_tested | not_tested | PR 13.6.1 |
 | Never-Melt Ice | `nevermeltice` | unsupported | not_tested | not_tested | — |
 | Normal Gem | `normalgem` | unsupported | not_tested | not_tested | — |
 | Occa Berry | `occaberry` | unsupported | not_tested | not_tested | — |
@@ -409,7 +409,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Wacan Berry | `wacanberry` | unsupported | not_tested | not_tested | — |
 | White Herb | `whiteherb` | unsupported | not_tested | not_tested | — |
 | Wide Lens | `widelens` | unsupported | not_tested | not_tested | — |
-| Wise Glasses | `wiseglasses` | unsupported | not_tested | not_tested | — |
+| Wise Glasses | `wiseglasses` | implemented | unit_tested | not_tested | PR 13.6.1 |
 | Yache Berry | `yacheberry` | unsupported | not_tested | not_tested | — |
 | Zoom Lens | `zoomlens` | unsupported | not_tested | not_tested | — |
 

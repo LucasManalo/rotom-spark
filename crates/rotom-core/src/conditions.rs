@@ -6,13 +6,23 @@ use crate::{
 
 const CHAMPIONS_SLEEP_DURATIONS: [u8; 3] = [2, 3, 3];
 
+#[cfg(test)]
 pub(crate) fn composed_registry(
     custom: &EffectRegistry,
     ability_handlers: impl IntoIterator<Item = crate::AbilityHandler>,
 ) -> EffectRegistry {
+    composed_registry_with_items(custom, ability_handlers, [])
+}
+
+pub(crate) fn composed_registry_with_items(
+    custom: &EffectRegistry,
+    ability_handlers: impl IntoIterator<Item = crate::AbilityHandler>,
+    item_handlers: impl IntoIterator<Item = crate::ItemHandler>,
+) -> EffectRegistry {
     let mut registry = EffectRegistry::new();
     register_common_conditions(&mut registry);
     crate::abilities::register(&mut registry, ability_handlers);
+    crate::items::register(&mut registry, item_handlers);
     registry.append(custom);
     registry
 }

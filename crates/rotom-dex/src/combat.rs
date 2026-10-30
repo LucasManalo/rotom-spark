@@ -2,11 +2,11 @@ use crate::{Accuracy, DexData, MoveBehaviorKind, MoveData, SpeciesData, Stats};
 use rotom_core::{
     AbilityBehavior, AbilityHandler, AbilityId, AbilitySuppression, BattleError, BattleStat,
     BattleStats, CombatData, CombatMove, ConditionId, EffectFraction, FieldEffectIds, HitSequence,
-    MajorStatus, MoveAccuracy, MoveCapabilities, MoveCapability, MoveCategory, MoveId,
-    MoveIntrinsic, MoveOperation, MoveSlot, MoveTarget, PokemonPosition, PokemonSet, PokemonState,
-    PokemonType, PokemonTypes, PrimaryMoveEffect, PriorMoveEffect, SecondaryMoveEffect,
-    SelfMoveEffect, StatAllocation, StatStages, StatusState, TerrainEnvironment,
-    WeatherEnvironment,
+    ItemBehavior, ItemHandler, MajorStatus, MoveAccuracy, MoveCapabilities, MoveCapability,
+    MoveCategory, MoveId, MoveIntrinsic, MoveOperation, MoveSlot, MoveTarget, PokemonPosition,
+    PokemonSet, PokemonState, PokemonType, PokemonTypes, PrimaryMoveEffect, PriorMoveEffect,
+    SecondaryMoveEffect, SelfMoveEffect, StatAllocation, StatStages, StatusState,
+    TerrainEnvironment, WeatherEnvironment,
 };
 
 impl CombatData for DexData {
@@ -345,7 +345,27 @@ impl CombatData for DexData {
             })
             .collect()
     }
+
+    fn item_handlers(&self) -> Vec<ItemHandler> {
+        IMPLEMENTED_ITEM_BEHAVIORS
+            .iter()
+            .filter_map(|(key, behavior)| {
+                let item = self.resolve_item(key).map(|(item, _)| item)?;
+                Some(ItemHandler::new(item, *behavior))
+            })
+            .collect()
+    }
 }
+
+/// First PR 13.6 item batch. The generated Dex owns identity and metadata;
+/// `rotom-core` owns the native callback families.
+const IMPLEMENTED_ITEM_BEHAVIORS: &[(&str, ItemBehavior)] = &[
+    ("muscleband", ItemBehavior::PhysicalPower),
+    ("wiseglasses", ItemBehavior::SpecialPower),
+    ("expertbelt", ItemBehavior::SuperEffectiveDamage),
+    ("charcoal", ItemBehavior::FirePower),
+    ("mysticwater", ItemBehavior::WaterPower),
+];
 
 /// Declarative identity-to-behavior join for the implemented PR 13.5 batch.
 /// Ability metadata and numeric identity remain owned by the generated Dex;

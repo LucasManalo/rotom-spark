@@ -1473,6 +1473,21 @@
     },
     {
       "id": "zerotohero", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+    },
+    {
+      "id": "muscleband", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 13.6.1", "evidence": ["file:docs/research/pr-13-6-first-five-items.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-dex/tests/combat.rs#first_five_items_modify_canonical_damage_through_typed_events", "interaction_unit:crates/rotom-dex/tests/combat.rs#magic_room_and_klutz_suppress_item_damage_modifiers"]
+    },
+    {
+      "id": "wiseglasses", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.1", "evidence": ["file:docs/research/pr-13-6-first-five-items.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-dex/tests/combat.rs#first_five_items_modify_canonical_damage_through_typed_events"]
+    },
+    {
+      "id": "expertbelt", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.1", "evidence": ["file:docs/research/pr-13-6-first-five-items.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-dex/tests/combat.rs#first_five_items_modify_canonical_damage_through_typed_events"]
+    },
+    {
+      "id": "charcoal", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.1", "evidence": ["file:docs/research/pr-13-6-first-five-items.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-dex/tests/combat.rs#first_five_items_modify_canonical_damage_through_typed_events"]
+    },
+    {
+      "id": "mysticwater", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.1", "evidence": ["file:docs/research/pr-13-6-first-five-items.md", "file:crates/rotom-core/src/items.rs", "unit:crates/rotom-dex/tests/combat.rs#first_five_items_modify_canonical_damage_through_typed_events"]
     }
   ]
 }

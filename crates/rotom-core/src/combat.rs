@@ -534,6 +534,14 @@ pub trait CombatData {
     fn ability_handlers(&self) -> Vec<crate::AbilityHandler> {
         Vec::new()
     }
+
+    /// Enumerates stable item identities with implemented native handlers.
+    ///
+    /// This is consumed once while building immutable mechanics, outside the
+    /// event-dispatch hot path.
+    fn item_handlers(&self) -> Vec<crate::ItemHandler> {
+        Vec::new()
+    }
 }
 
 #[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
@@ -1112,6 +1120,11 @@ impl BattleState {
                 target: Some(target),
                 move_id: Some(move_context.move_id),
                 suppress_target_ability: move_context.suppress_target_ability,
+                suppress_source_item: !field_effects.item_is_active_for(
+                    self,
+                    data,
+                    move_context.source,
+                ),
                 critical: false,
                 move_category: Some(move_context.move_data.category),
                 move_type: Some(move_context.move_data.move_type),
@@ -2836,6 +2849,7 @@ impl BattleState {
             target: Some(target),
             move_id: Some(move_id),
             suppress_target_ability: move_context.suppress_target_ability,
+            suppress_source_item: !field_effects.item_is_active_for(self, data, source),
             critical: false,
             move_category: Some(move_data.category),
             move_type: Some(move_data.move_type),

@@ -9356,15 +9356,18 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:crates/rotom-core/src/items.rs",
+        "file:docs/research/pr-13-6-first-five-items.md",
+        "species/abomasnow",
+        "unit:crates/rotom-dex/tests/combat.rs#first_five_items_modify_canonical_damage_through_typed_events"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.1"
     },
     {
       "id": "charizarditex",
@@ -9772,15 +9775,18 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:crates/rotom-core/src/items.rs",
+        "file:docs/research/pr-13-6-first-five-items.md",
+        "species/abomasnow",
+        "unit:crates/rotom-dex/tests/combat.rs#first_five_items_modify_canonical_damage_through_typed_events"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.1"
     },
     {
       "id": "fairyfeather",
@@ -10652,15 +10658,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:crates/rotom-core/src/items.rs",
+        "file:docs/research/pr-13-6-first-five-items.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#magic_room_and_klutz_suppress_item_damage_modifiers",
+        "species/abomasnow",
+        "unit:crates/rotom-dex/tests/combat.rs#first_five_items_modify_canonical_damage_through_typed_events"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "unit_tested",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.6.1"
     },
     {
       "id": "mysticwater",
@@ -10668,15 +10678,18 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:crates/rotom-core/src/items.rs",
+        "file:docs/research/pr-13-6-first-five-items.md",
+        "species/abomasnow",
+        "unit:crates/rotom-dex/tests/combat.rs#first_five_items_modify_canonical_damage_through_typed_events"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.1"
     },
     {
       "id": "nevermeltice",
@@ -11564,15 +11577,18 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:crates/rotom-core/src/items.rs",
+        "file:docs/research/pr-13-6-first-five-items.md",
+        "species/abomasnow",
+        "unit:crates/rotom-dex/tests/combat.rs#first_five_items_modify_canonical_damage_through_typed_events"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.1"
     },
     {
       "id": "yacheberry",
@@ -48000,18 +48016,18 @@
       "item": {
         "total": 166,
         "implementation": {
-          "unsupported": 166,
+          "unsupported": 161,
           "partial": 0,
-          "implemented": 0
+          "implemented": 5
         },
         "verification": {
-          "not_tested": 166,
-          "unit_tested": 0,
+          "not_tested": 161,
+          "unit_tested": 5,
           "differential_verified": 0
         },
         "interaction_verification": {
-          "not_tested": 166,
-          "unit_tested": 0,
+          "not_tested": 165,
+          "unit_tested": 1,
           "differential_verified": 0
         },
         "reachability": {
