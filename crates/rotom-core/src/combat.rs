@@ -548,6 +548,11 @@ pub trait CombatData {
     fn item_has_behavior(&self, _item: ItemId, _behavior: crate::ItemBehavior) -> bool {
         false
     }
+
+    /// Whether a species-restricted item effect applies to its current holder.
+    fn item_species_matches(&self, _item: ItemId, _species: SpeciesId) -> bool {
+        false
+    }
 }
 
 #[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
@@ -1373,7 +1378,7 @@ impl BattleState {
                 }
                 target_hit = true;
                 any_hit = true;
-                self.apply_drain(data, move_context, target, applied_hp_loss)?;
+                self.apply_drain(data, field_effects, move_context, target, applied_hp_loss)?;
                 if !self_effect_applied {
                     self.apply_self_move_effect(
                         data,
@@ -1440,6 +1445,11 @@ impl BattleState {
             source_berry_blocked,
             source_ripen,
             source_berry_interaction_unsupported,
+            move_category: Some(move_context.move_data.category),
+            move_type: Some(move_context.move_data.move_type),
+            move_flags: move_context.move_data.interaction_flags,
+            sheer_force_boosted: move_context.sheer_force_boosted,
+            move_total_damage: total_applied_damage,
             critical: false,
             ..EventContext::default()
         };
@@ -1478,6 +1488,7 @@ impl BattleState {
     fn apply_drain<D: CombatData>(
         &mut self,
         data: &D,
+        field_effects: &FieldEffectIds,
         context: &MoveExecutionContext,
         target: PokemonRef,
         applied_damage: u16,
@@ -1485,7 +1496,18 @@ impl BattleState {
         let Some(fraction) = context.move_data.drain else {
             return Ok(());
         };
-        let amount = rounded_fraction(u32::from(applied_damage), fraction)?;
+        let mut amount = rounded_fraction(u32::from(applied_damage), fraction)?;
+        let big_root = self
+            .side(context.source.side)
+            .pokemon(context.source.pokemon)
+            .and_then(|pokemon| pokemon.item)
+            .is_some_and(|item| {
+                field_effects.item_is_active_for(self, data, context.source)
+                    && data.item_has_behavior(item, crate::ItemBehavior::BigRoot)
+            });
+        if big_root {
+            amount = amount.saturating_mul(5324).saturating_add(2047) / 4096;
+        }
         if amount > 0 {
             let target_has_liquid_ooze = self
                 .side(target.side)
@@ -1705,19 +1727,26 @@ impl BattleState {
                 .ok_or_else(|| {
                     BattleError::InvalidState("fixed-damage target is invalid".to_owned())
                 })?;
+            let target_ability = target_state.ability;
+            let target_item = target_state.item;
+            let current_hp = target_state.current_hp;
+            let max_hp = target_state.stats.hp;
             let sturdy = !context.suppress_target_ability
-                && data.ability_has_behavior(target_state.ability, crate::AbilityBehavior::Sturdy)
-                && target_state.current_hp == target_state.stats.hp
-                && requested >= target_state.current_hp;
-            let focus_sash = target_state
-                .item
+                && data.ability_has_behavior(target_ability, crate::AbilityBehavior::Sturdy)
+                && current_hp == max_hp
+                && requested >= current_hp;
+            let focus_sash = target_item
                 .is_some_and(|item| data.item_has_behavior(item, crate::ItemBehavior::FocusSash))
                 && field_effects.item_is_active_for(self, data, target_context.target)
-                && target_state.current_hp == target_state.stats.hp
-                && requested >= target_state.current_hp;
-            let current_hp = target_state.current_hp;
-            let applied_request = if sturdy || focus_sash {
-                target_state.current_hp.saturating_sub(1)
+                && current_hp == max_hp
+                && requested >= current_hp;
+            let focus_band = target_item
+                .is_some_and(|item| data.item_has_behavior(item, crate::ItemBehavior::FocusBand))
+                && field_effects.item_is_active_for(self, data, target_context.target)
+                && self.rng.chance(RngReason::Item, 1, 10)?
+                && requested >= current_hp;
+            let applied_request = if sturdy || focus_sash || focus_band {
+                current_hp.saturating_sub(1)
             } else {
                 requested
             };
@@ -1806,7 +1835,13 @@ impl BattleState {
                 applied_hp_loss,
                 fainted,
             });
-            self.apply_drain(data, context, target_context.target, applied_hp_loss)?;
+            self.apply_drain(
+                data,
+                field_effects,
+                context,
+                target_context.target,
+                applied_hp_loss,
+            )?;
             self.apply_self_move_effect(data, effects, field_effects, context, resolution)?;
             self.apply_secondary_effects(
                 data,
@@ -1861,6 +1896,11 @@ impl BattleState {
                 source_berry_blocked,
                 source_ripen,
                 source_berry_interaction_unsupported,
+                move_category: Some(context.move_data.category),
+                move_type: Some(context.move_data.move_type),
+                move_flags: context.move_data.interaction_flags,
+                sheer_force_boosted: context.sheer_force_boosted,
+                move_total_damage: total_applied,
                 critical: false,
                 ..EventContext::default()
             },
@@ -2431,6 +2471,7 @@ impl BattleState {
                     target: Some(target),
                     move_id: Some(context.move_id),
                     suppress_target_ability: context.suppress_target_ability,
+                    suppress_target_item: !field_effects.item_is_active_for(self, data, target),
                     requested_stat: Some(stat),
                     target_types: data.pokemon_types(
                         self.side(target.side)
@@ -2641,8 +2682,25 @@ impl BattleState {
                 {
                     return Ok(false);
                 }
-                StateKernel::new(self)
-                    .add_side_condition(side, ConditionState::new(condition, Some(duration)))?;
+                let screen = [
+                    field_effects.reflect,
+                    field_effects.light_screen,
+                    field_effects.aurora_veil,
+                ]
+                .contains(&Some(condition));
+                let light_clay = screen
+                    && self
+                        .side(context.source.side)
+                        .pokemon(context.source.pokemon)
+                        .and_then(|pokemon| pokemon.item)
+                        .is_some_and(|item| {
+                            field_effects.item_is_active_for(self, data, context.source)
+                                && data.item_has_behavior(item, crate::ItemBehavior::LightClay)
+                        });
+                StateKernel::new(self).add_side_condition(
+                    side,
+                    ConditionState::new(condition, Some(if light_clay { 8 } else { duration })),
+                )?;
                 Ok(true)
             }
         }
@@ -3075,12 +3133,9 @@ impl BattleState {
             move_id: Some(move_id),
             suppress_target_ability: move_context.suppress_target_ability,
             suppress_source_item: !field_effects.item_is_active_for(self, data, source),
-            source_item_species_match: source_state.item.is_some_and(|item| {
-                data.item_has_behavior(
-                    item,
-                    crate::ItemBehavior::DoubleOffenseFor(source_state.species),
-                )
-            }),
+            source_item_species_match: source_state
+                .item
+                .is_some_and(|item| data.item_species_matches(item, source_state.species)),
             critical: false,
             move_category: Some(move_data.category),
             move_type: Some(move_data.move_type),
@@ -3380,6 +3435,7 @@ impl BattleState {
                     move_context.source,
                 ),
                 suppress_target_item: !field_effects.item_is_active_for(self, data, target),
+                target_acted: !move_context.later_actors.contains(&target),
                 move_category: Some(move_context.move_data.category),
                 move_type: Some(move_context.move_data.move_type),
                 move_flags: move_context.move_data.interaction_flags,
@@ -3596,6 +3652,7 @@ impl BattleState {
                 let context = EventContext {
                     source: Some(source),
                     target: Some(target),
+                    suppress_target_item: !field_effects.item_is_active_for(self, data, target),
                     requested_stat: Some(BattleStat::Attack),
                     intimidate: true,
                     ..EventContext::default()

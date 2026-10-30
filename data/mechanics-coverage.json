@@ -1668,6 +1668,96 @@
     },
     {
       "id": "focussash", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.3", "evidence": ["file:docs/research/pr-13-6-second-thirty-item-batch.md", "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks"]
+    },
+    {
+      "id": "airballoon", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-core/src/items.rs#third_batch_callbacks_apply_consumption_recoil_healing_and_stat_rules"]
+    },
+    {
+      "id": "bigroot", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-dex/tests/combat.rs#third_item_batch_integrates_big_root_and_light_clay_in_canonical_step", "interaction_unit:crates/rotom-dex/tests/combat.rs#third_item_batch_integrates_big_root_and_light_clay_in_canonical_step"]
+    },
+    {
+      "id": "bindingband", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"]
+    },
+    {
+      "id": "ejectbutton", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"]
+    },
+    {
+      "id": "focusband", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-core/src/items.rs#third_batch_callbacks_apply_consumption_recoil_healing_and_stat_rules"]
+    },
+    {
+      "id": "kingsrock", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"]
+    },
+    {
+      "id": "leek", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-core/src/items.rs#third_batch_callbacks_apply_consumption_recoil_healing_and_stat_rules"]
+    },
+    {
+      "id": "lifeorb", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-core/src/items.rs#third_batch_callbacks_apply_consumption_recoil_healing_and_stat_rules"]
+    },
+    {
+      "id": "lightclay", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-dex/tests/combat.rs#third_item_batch_integrates_big_root_and_light_clay_in_canonical_step", "interaction_unit:crates/rotom-dex/tests/combat.rs#third_item_batch_integrates_big_root_and_light_clay_in_canonical_step"]
+    },
+    {
+      "id": "mentalherb", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"]
+    },
+    {
+      "id": "metronome", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"]
+    },
+    {
+      "id": "normalgem", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-core/src/items.rs#third_batch_callbacks_apply_consumption_recoil_healing_and_stat_rules"]
+    },
+    {
+      "id": "quickclaw", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-core/src/items.rs#third_batch_callbacks_apply_consumption_recoil_healing_and_stat_rules"]
+    },
+    {
+      "id": "redcard", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"]
+    },
+    {
+      "id": "rockyhelmet", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-core/src/items.rs#third_batch_callbacks_apply_consumption_recoil_healing_and_stat_rules"]
+    },
+    {
+      "id": "scopelens", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-core/src/items.rs#third_batch_callbacks_apply_consumption_recoil_healing_and_stat_rules"]
+    },
+    {
+      "id": "shedshell", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"]
+    },
+    {
+      "id": "shellbell", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-core/src/items.rs#third_batch_callbacks_apply_consumption_recoil_healing_and_stat_rules"]
+    },
+    {
+      "id": "whiteherb", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-core/src/items.rs#third_batch_callbacks_apply_consumption_recoil_healing_and_stat_rules"]
+    },
+    {
+      "id": "zoomlens", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-core/src/items.rs#third_batch_callbacks_apply_consumption_recoil_healing_and_stat_rules"]
+    },
+    {
+      "id": "abomasite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"]
+    },
+    {
+      "id": "absolite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"]
+    },
+    {
+      "id": "absolitez", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"]
+    },
+    {
+      "id": "aerodactylite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"]
+    },
+    {
+      "id": "aggronite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"]
+    },
+    {
+      "id": "alakazite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"]
+    },
+    {
+      "id": "altarianite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"]
+    },
+    {
+      "id": "ampharosite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"]
+    },
+    {
+      "id": "audinite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"]
+    },
+    {
+      "id": "banettite", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"]
     }
   ]
 }

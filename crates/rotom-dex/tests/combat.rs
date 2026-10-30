@@ -4117,7 +4117,7 @@ fn first_five_item_handlers_are_resolved_from_stable_dex_identities() {
         let item = dex.resolve_item(name).unwrap().0;
         assert!(handlers.contains(&rotom_core::ItemHandler::new(item, behavior)));
     }
-    assert_eq!(handlers.len(), 65);
+    assert_eq!(handlers.len(), 95);
 }
 
 #[test]
@@ -4293,6 +4293,59 @@ fn next_thirty_items_resolve_to_native_behavior_families() {
     }
 }
 
+#[allow(clippy::too_many_lines)]
+#[test]
+fn third_thirty_items_resolve_to_explicit_behavior_families() {
+    use rotom_core::ItemBehavior;
+
+    let dex = champions_reg_mc().unwrap();
+    let handlers = dex.item_handlers();
+    let expected = [
+        ("airballoon", ItemBehavior::AirBalloon),
+        ("bigroot", ItemBehavior::BigRoot),
+        ("bindingband", ItemBehavior::BindingBand),
+        ("ejectbutton", ItemBehavior::ForcedSwitchItem),
+        ("focusband", ItemBehavior::FocusBand),
+        ("kingsrock", ItemBehavior::FlinchItem),
+        ("leek", ItemBehavior::SpeciesCritRatio(2)),
+        ("lifeorb", ItemBehavior::LifeOrb),
+        ("lightclay", ItemBehavior::LightClay),
+        ("mentalherb", ItemBehavior::MentalHerb),
+        ("metronome", ItemBehavior::Metronome),
+        ("normalgem", ItemBehavior::NormalGem),
+        ("quickclaw", ItemBehavior::QuickClaw),
+        ("redcard", ItemBehavior::ForcedSwitchItem),
+        ("rockyhelmet", ItemBehavior::RockyHelmet),
+        ("scopelens", ItemBehavior::CritRatio(1)),
+        ("shedshell", ItemBehavior::ShedShell),
+        ("shellbell", ItemBehavior::ShellBell),
+        ("whiteherb", ItemBehavior::WhiteHerb),
+        ("zoomlens", ItemBehavior::ZoomLens),
+        ("abomasite", ItemBehavior::MegaStone),
+        ("absolite", ItemBehavior::MegaStone),
+        ("absolitez", ItemBehavior::MegaStone),
+        ("aerodactylite", ItemBehavior::MegaStone),
+        ("aggronite", ItemBehavior::MegaStone),
+        ("alakazite", ItemBehavior::MegaStone),
+        ("altarianite", ItemBehavior::MegaStone),
+        ("ampharosite", ItemBehavior::MegaStone),
+        ("audinite", ItemBehavior::MegaStone),
+        ("banettite", ItemBehavior::MegaStone),
+    ];
+    assert_eq!(expected.len(), 30);
+    for (name, behavior) in expected {
+        let item = dex.resolve_item(name).unwrap().0;
+        assert!(
+            handlers.contains(&rotom_core::ItemHandler::new(item, behavior)),
+            "missing handler for {name}"
+        );
+        assert!(
+            dex.item_has_behavior(item, behavior),
+            "missing query for {name}"
+        );
+    }
+}
+
 #[test]
 fn duration_seed_and_leftovers_items_apply_through_canonical_step() {
     let dex = champions_reg_mc().unwrap();
@@ -4357,6 +4410,60 @@ fn duration_seed_and_leftovers_items_apply_through_canonical_step() {
             .unwrap()
             .current_hp,
         expected
+    );
+}
+
+#[test]
+fn third_item_batch_integrates_big_root_and_light_clay_in_canonical_step() {
+    let dex = champions_reg_mc().unwrap();
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let foe = set_with_moves(&dex, "blastoise", "torrent", &["recover"]);
+    let source_ref = PokemonRef::new(SideId::P1, PokemonIndex::new(0));
+
+    let run_drain = |item: Option<&str>| {
+        let mut user = set_with_moves(&dex, "goodra", "sapsipper", &["gigadrain"]);
+        user.item = item.map(|name| dex.resolve_item(name).unwrap().0);
+        let base = selected_primary_battle(&dex, &user, &foe, 0x14_03_01);
+        let mut builder = BattleStateBuilder::from_state(base).unwrap();
+        builder
+            .edit_pokemon(source_ref, |pokemon| {
+                pokemon.current_hp = pokemon.stats.hp / 2;
+            })
+            .unwrap();
+        step(
+            &builder.build().unwrap(),
+            &single_move_action(0, ActionTarget::Foe(ActiveSlot::Left)),
+            &mechanics,
+        )
+        .unwrap()
+        .state
+        .side(SideId::P1)
+        .pokemon(PokemonIndex::new(0))
+        .unwrap()
+        .current_hp
+    };
+    assert!(run_drain(Some("bigroot")) > run_drain(None));
+
+    let mut screen_user = set_with_moves(&dex, "goodra", "sapsipper", &["reflect"]);
+    screen_user.item = Some(dex.resolve_item("lightclay").unwrap().0);
+    let screen_state = selected_primary_battle(&dex, &screen_user, &foe, 0x14_03_02);
+    let screened = step(
+        &screen_state,
+        &single_move_action(0, ActionTarget::Automatic),
+        &mechanics,
+    )
+    .unwrap();
+    let reflect = dex.field_effect_ids().reflect.unwrap();
+    assert_eq!(
+        screened
+            .state
+            .side(SideId::P1)
+            .side_conditions
+            .iter()
+            .find(|condition| condition.id == reflect)
+            .unwrap()
+            .turns_remaining,
+        Some(7)
     );
 }
 

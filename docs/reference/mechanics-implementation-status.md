@@ -19,7 +19,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Kind | Total | Implemented | Partial | Unsupported |
 | --- | ---: | ---: | ---: | ---: |
 | Abilities | 215 | 120 | 95 | 0 |
-| Items | 166 | 36 | 29 | 101 |
+| Items | 166 | 47 | 48 | 71 |
 | Moves | 510 | 223 | 0 | 287 |
 
 ## Abilities
@@ -246,24 +246,24 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 
 | Name | ID | Implementation | Verification | Interaction verification | Owner |
 | --- | --- | --- | --- | --- | --- |
-| Abomasite | `abomasite` | unsupported | not_tested | not_tested | — |
-| Absolite | `absolite` | unsupported | not_tested | not_tested | — |
-| Absolite Z | `absolitez` | unsupported | not_tested | not_tested | — |
-| Aerodactylite | `aerodactylite` | unsupported | not_tested | not_tested | — |
-| Aggronite | `aggronite` | unsupported | not_tested | not_tested | — |
-| Air Balloon | `airballoon` | unsupported | not_tested | not_tested | — |
-| Alakazite | `alakazite` | unsupported | not_tested | not_tested | — |
-| Altarianite | `altarianite` | unsupported | not_tested | not_tested | — |
-| Ampharosite | `ampharosite` | unsupported | not_tested | not_tested | — |
+| Abomasite | `abomasite` | partial | unit_tested | not_tested | PR 13.6.4 |
+| Absolite | `absolite` | partial | unit_tested | not_tested | PR 13.6.4 |
+| Absolite Z | `absolitez` | partial | unit_tested | not_tested | PR 13.6.4 |
+| Aerodactylite | `aerodactylite` | partial | unit_tested | not_tested | PR 13.6.4 |
+| Aggronite | `aggronite` | partial | unit_tested | not_tested | PR 13.6.4 |
+| Air Balloon | `airballoon` | implemented | unit_tested | not_tested | PR 13.6.4 |
+| Alakazite | `alakazite` | partial | unit_tested | not_tested | PR 13.6.4 |
+| Altarianite | `altarianite` | partial | unit_tested | not_tested | PR 13.6.4 |
+| Ampharosite | `ampharosite` | partial | unit_tested | not_tested | PR 13.6.4 |
 | Aspear Berry | `aspearberry` | partial | unit_tested | not_tested | PR 13.6.3 |
-| Audinite | `audinite` | unsupported | not_tested | not_tested | — |
+| Audinite | `audinite` | partial | unit_tested | not_tested | PR 13.6.4 |
 | Babiri Berry | `babiriberry` | partial | unit_tested | not_tested | PR 13.6.2 |
-| Banettite | `banettite` | unsupported | not_tested | not_tested | — |
+| Banettite | `banettite` | partial | unit_tested | not_tested | PR 13.6.4 |
 | Barbaracite | `barbaracite` | unsupported | not_tested | not_tested | — |
 | Baxcalibrite | `baxcalibrite` | unsupported | not_tested | not_tested | — |
 | Beedrillite | `beedrillite` | unsupported | not_tested | not_tested | — |
-| Big Root | `bigroot` | unsupported | not_tested | not_tested | — |
-| Binding Band | `bindingband` | unsupported | not_tested | not_tested | — |
+| Big Root | `bigroot` | implemented | unit_tested | unit_tested | PR 13.6.4 |
+| Binding Band | `bindingband` | partial | unit_tested | not_tested | PR 13.6.4 |
 | Black Belt | `blackbelt` | implemented | unit_tested | not_tested | PR 13.6.2 |
 | Black Glasses | `blackglasses` | implemented | unit_tested | not_tested | PR 13.6.2 |
 | Blastoisinite | `blastoisinite` | unsupported | not_tested | not_tested | — |
@@ -293,7 +293,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Dragoninite | `dragoninite` | unsupported | not_tested | not_tested | — |
 | Drampanite | `drampanite` | unsupported | not_tested | not_tested | — |
 | Eelektrossite | `eelektrossite` | unsupported | not_tested | not_tested | — |
-| Eject Button | `ejectbutton` | unsupported | not_tested | not_tested | — |
+| Eject Button | `ejectbutton` | partial | unit_tested | not_tested | PR 13.6.4 |
 | Electric Seed | `electricseed` | implemented | unit_tested | unit_tested | PR 13.6.3 |
 | Emboarite | `emboarite` | unsupported | not_tested | not_tested | — |
 | Excadrite | `excadrite` | unsupported | not_tested | not_tested | — |
@@ -302,7 +302,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Falinksite | `falinksite` | unsupported | not_tested | not_tested | — |
 | Feraligite | `feraligite` | unsupported | not_tested | not_tested | — |
 | Floettite | `floettite` | unsupported | not_tested | not_tested | — |
-| Focus Band | `focusband` | unsupported | not_tested | not_tested | — |
+| Focus Band | `focusband` | implemented | unit_tested | not_tested | PR 13.6.4 |
 | Focus Sash | `focussash` | implemented | unit_tested | not_tested | PR 13.6.3 |
 | Froslassite | `froslassite` | unsupported | not_tested | not_tested | — |
 | Galladite | `galladite` | unsupported | not_tested | not_tested | — |
@@ -328,13 +328,13 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Kangaskhanite | `kangaskhanite` | unsupported | not_tested | not_tested | — |
 | Kasib Berry | `kasibberry` | partial | unit_tested | not_tested | PR 13.6.2 |
 | Kebia Berry | `kebiaberry` | partial | unit_tested | not_tested | PR 13.6.2 |
-| King's Rock | `kingsrock` | unsupported | not_tested | not_tested | — |
-| Leek | `leek` | unsupported | not_tested | not_tested | — |
+| King's Rock | `kingsrock` | partial | unit_tested | not_tested | PR 13.6.4 |
+| Leek | `leek` | implemented | unit_tested | not_tested | PR 13.6.4 |
 | Leftovers | `leftovers` | implemented | unit_tested | unit_tested | PR 13.6.3 |
 | Leppa Berry | `leppaberry` | partial | unit_tested | not_tested | PR 13.6.3 |
-| Life Orb | `lifeorb` | unsupported | not_tested | not_tested | — |
+| Life Orb | `lifeorb` | implemented | unit_tested | not_tested | PR 13.6.4 |
 | Light Ball | `lightball` | implemented | unit_tested | not_tested | PR 13.6.3 |
-| Light Clay | `lightclay` | unsupported | not_tested | not_tested | — |
+| Light Clay | `lightclay` | implemented | unit_tested | unit_tested | PR 13.6.4 |
 | Lopunnite | `lopunnite` | unsupported | not_tested | not_tested | — |
 | Lucarionite | `lucarionite` | unsupported | not_tested | not_tested | — |
 | Lucarionite Z | `lucarionitez` | unsupported | not_tested | not_tested | — |
@@ -345,17 +345,17 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Mawilite | `mawilite` | unsupported | not_tested | not_tested | — |
 | Medichamite | `medichamite` | unsupported | not_tested | not_tested | — |
 | Meganiumite | `meganiumite` | unsupported | not_tested | not_tested | — |
-| Mental Herb | `mentalherb` | unsupported | not_tested | not_tested | — |
+| Mental Herb | `mentalherb` | partial | unit_tested | not_tested | PR 13.6.4 |
 | Meowsticite | `meowsticite` | unsupported | not_tested | not_tested | — |
 | Metagrossite | `metagrossite` | unsupported | not_tested | not_tested | — |
 | Metal Coat | `metalcoat` | implemented | unit_tested | not_tested | PR 13.6.2 |
-| Metronome | `metronome` | unsupported | not_tested | not_tested | — |
+| Metronome | `metronome` | partial | unit_tested | not_tested | PR 13.6.4 |
 | Miracle Seed | `miracleseed` | implemented | unit_tested | not_tested | PR 13.6.2 |
 | Misty Seed | `mistyseed` | implemented | unit_tested | not_tested | PR 13.6.3 |
 | Muscle Band | `muscleband` | implemented | unit_tested | unit_tested | PR 13.6.1 |
 | Mystic Water | `mysticwater` | implemented | unit_tested | not_tested | PR 13.6.1 |
 | Never-Melt Ice | `nevermeltice` | implemented | unit_tested | not_tested | PR 13.6.2 |
-| Normal Gem | `normalgem` | unsupported | not_tested | not_tested | — |
+| Normal Gem | `normalgem` | implemented | unit_tested | not_tested | PR 13.6.4 |
 | Occa Berry | `occaberry` | partial | unit_tested | not_tested | PR 13.6.2 |
 | Oran Berry | `oranberry` | partial | unit_tested | not_tested | PR 13.6.3 |
 | Passho Berry | `passhoberry` | partial | unit_tested | not_tested | PR 13.6.2 |
@@ -367,26 +367,26 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Poison Barb | `poisonbarb` | implemented | unit_tested | not_tested | PR 13.6.2 |
 | Psychic Seed | `psychicseed` | implemented | unit_tested | not_tested | PR 13.6.3 |
 | Pyroarite | `pyroarite` | unsupported | not_tested | not_tested | — |
-| Quick Claw | `quickclaw` | unsupported | not_tested | not_tested | — |
+| Quick Claw | `quickclaw` | partial | unit_tested | not_tested | PR 13.6.4 |
 | Raichunite X | `raichunitex` | unsupported | not_tested | not_tested | — |
 | Raichunite Y | `raichunitey` | unsupported | not_tested | not_tested | — |
 | Rawst Berry | `rawstberry` | partial | unit_tested | not_tested | PR 13.6.3 |
-| Red Card | `redcard` | unsupported | not_tested | not_tested | — |
+| Red Card | `redcard` | partial | unit_tested | not_tested | PR 13.6.4 |
 | Rindo Berry | `rindoberry` | partial | unit_tested | not_tested | PR 13.6.2 |
-| Rocky Helmet | `rockyhelmet` | unsupported | not_tested | not_tested | — |
+| Rocky Helmet | `rockyhelmet` | implemented | unit_tested | not_tested | PR 13.6.4 |
 | Roseli Berry | `roseliberry` | partial | unit_tested | not_tested | PR 13.6.2 |
 | Sablenite | `sablenite` | unsupported | not_tested | not_tested | — |
 | Salamencite | `salamencite` | unsupported | not_tested | not_tested | — |
 | Sceptilite | `sceptilite` | unsupported | not_tested | not_tested | — |
 | Scizorite | `scizorite` | unsupported | not_tested | not_tested | — |
 | Scolipite | `scolipite` | unsupported | not_tested | not_tested | — |
-| Scope Lens | `scopelens` | unsupported | not_tested | not_tested | — |
+| Scope Lens | `scopelens` | implemented | unit_tested | not_tested | PR 13.6.4 |
 | Scovillainite | `scovillainite` | unsupported | not_tested | not_tested | — |
 | Scraftinite | `scraftinite` | unsupported | not_tested | not_tested | — |
 | Sharp Beak | `sharpbeak` | implemented | unit_tested | not_tested | PR 13.6.2 |
 | Sharpedonite | `sharpedonite` | unsupported | not_tested | not_tested | — |
-| Shed Shell | `shedshell` | unsupported | not_tested | not_tested | — |
-| Shell Bell | `shellbell` | unsupported | not_tested | not_tested | — |
+| Shed Shell | `shedshell` | partial | unit_tested | not_tested | PR 13.6.4 |
+| Shell Bell | `shellbell` | implemented | unit_tested | not_tested | PR 13.6.4 |
 | Shuca Berry | `shucaberry` | partial | unit_tested | unit_tested | PR 13.6.2 |
 | Silk Scarf | `silkscarf` | implemented | unit_tested | not_tested | PR 13.6.2 |
 | Silver Powder | `silverpowder` | implemented | unit_tested | not_tested | PR 13.6.2 |
@@ -407,11 +407,11 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Venusaurite | `venusaurite` | unsupported | not_tested | not_tested | — |
 | Victreebelite | `victreebelite` | unsupported | not_tested | not_tested | — |
 | Wacan Berry | `wacanberry` | partial | unit_tested | not_tested | PR 13.6.3 |
-| White Herb | `whiteherb` | unsupported | not_tested | not_tested | — |
+| White Herb | `whiteherb` | partial | unit_tested | not_tested | PR 13.6.4 |
 | Wide Lens | `widelens` | implemented | unit_tested | not_tested | PR 13.6.3 |
 | Wise Glasses | `wiseglasses` | implemented | unit_tested | not_tested | PR 13.6.1 |
 | Yache Berry | `yacheberry` | partial | unit_tested | not_tested | PR 13.6.3 |
-| Zoom Lens | `zoomlens` | unsupported | not_tested | not_tested | — |
+| Zoom Lens | `zoomlens` | implemented | unit_tested | not_tested | PR 13.6.4 |
 
 ## Moves
 

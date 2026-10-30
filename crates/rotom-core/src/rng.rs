@@ -21,6 +21,8 @@ pub enum RngReason {
     RandomMove,
     /// Random activation owned by an ability callback.
     Ability,
+    /// Random activation owned by a held-item callback.
+    Item,
     /// A temporary typed label for mechanics that do not have a dedicated
     /// variant yet. Stable mechanics should add a specific variant instead.
     Other(String),

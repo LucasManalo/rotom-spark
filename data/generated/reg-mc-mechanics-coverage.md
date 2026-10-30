@@ -11,7 +11,7 @@ This report is generated from `reg-mc-mechanics-manifest.json`. Presence means r
 | ability | 215 | 120 | 95 | 0 | 51 | 78 | 86 | 77 |
 | condition | 96 | 0 | 0 | 96 | 0 | 0 | 96 | 0 |
 | form | 153 | 0 | 0 | 153 | 0 | 0 | 153 | 0 |
-| item | 166 | 36 | 29 | 101 | 0 | 64 | 102 | 5 |
+| item | 166 | 47 | 48 | 71 | 0 | 94 | 72 | 7 |
 | move | 510 | 223 | 0 | 287 | 23 | 200 | 287 | 15 |
 | species | 293 | 0 | 0 | 293 | 0 | 0 | 293 | 0 |
 
@@ -19,7 +19,7 @@ This report is generated from `reg-mc-mechanics-manifest.json`. Presence means r
 
 - condition: `allyswitch` — Ally Switch (battle_generated)
 - form: `abomasnowmega` — Abomasnow-Mega (battle_generated)
-- item: `abomasite` — Abomasite (direct_legal_set)
+- item: `barbaracite` — Barbaracite (direct_legal_set)
 - move: `acrobatics` — Acrobatics (direct_legal_set)
 - species: `abomasnow` — Abomasnow (direct_legal_set)
 

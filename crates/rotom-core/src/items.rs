@@ -1,7 +1,7 @@
 use crate::{
     BattleError, BattleEvent, BattleStat, EffectInvocation, EffectOrder, EffectOwner,
     EffectRegistry, EffectSource, EffectState, EventContext, EventDispatch, EventValue, ItemId,
-    MajorStatus, MoveCategory, MoveSlotIndex, PokemonRef, PokemonType, SpeciesId,
+    MajorStatus, MoveCategory, MoveSlotIndex, PokemonRef, PokemonType, RngReason, SpeciesId,
     TerrainEnvironment, WeatherEnvironment,
 };
 
@@ -32,6 +32,26 @@ pub enum ItemBehavior {
     SpeedMultiplier { numerator: i64, denominator: i64 },
     DoubleOffenseFor(SpeciesId),
     FocusSash,
+    AirBalloon,
+    BigRoot,
+    BindingBand,
+    ForcedSwitchItem,
+    FocusBand,
+    FlinchItem,
+    SpeciesCritRatio(u8),
+    LifeOrb,
+    LightClay,
+    MentalHerb,
+    Metronome,
+    NormalGem,
+    QuickClaw,
+    RockyHelmet,
+    CritRatio(u8),
+    ShedShell,
+    ShellBell,
+    WhiteHerb,
+    ZoomLens,
+    MegaStone,
 }
 
 /// Joins one stable item identity to a native behavior family.
@@ -160,13 +180,120 @@ pub(crate) fn register(
                 EffectOrder::default(),
                 focus_sash,
             ),
+            ItemBehavior::AirBalloon => registry.register(
+                BattleEvent::AfterDamage,
+                source,
+                EffectOrder::default(),
+                air_balloon,
+            ),
+            ItemBehavior::FocusBand => registry.register(
+                BattleEvent::ModifyDamage,
+                source,
+                EffectOrder::new(0, -40, 0),
+                focus_band,
+            ),
+            ItemBehavior::SpeciesCritRatio(amount) => registry.register(
+                BattleEvent::ModifyCritRatio,
+                source,
+                EffectOrder::default(),
+                crit_ratio_callback(amount, true),
+            ),
+            ItemBehavior::LifeOrb => {
+                registry.register(
+                    BattleEvent::ModifyDamage,
+                    source,
+                    EffectOrder::default(),
+                    life_orb_damage,
+                );
+                registry.register(
+                    BattleEvent::AfterMove,
+                    source,
+                    EffectOrder::default(),
+                    life_orb_recoil,
+                );
+            }
+            ItemBehavior::NormalGem => {
+                registry.register(
+                    BattleEvent::ModifyBasePower,
+                    source,
+                    EffectOrder::new(0, 14, 0),
+                    normal_gem_power,
+                );
+                registry.register(
+                    BattleEvent::Hit,
+                    source,
+                    EffectOrder::default(),
+                    normal_gem_consume,
+                );
+            }
+            ItemBehavior::QuickClaw => registry.register(
+                BattleEvent::ModifyFractionalPriority,
+                source,
+                EffectOrder::new(0, -2, 0),
+                quick_claw,
+            ),
+            ItemBehavior::RockyHelmet => registry.register(
+                BattleEvent::AfterDamage,
+                source,
+                EffectOrder::new(2, 0, 0),
+                rocky_helmet,
+            ),
+            ItemBehavior::CritRatio(amount) => registry.register(
+                BattleEvent::ModifyCritRatio,
+                source,
+                EffectOrder::default(),
+                crit_ratio_callback(amount, false),
+            ),
+            ItemBehavior::ShellBell => registry.register(
+                BattleEvent::AfterMove,
+                source,
+                EffectOrder::new(0, -1, 0),
+                shell_bell,
+            ),
+            ItemBehavior::WhiteHerb => registry.register(
+                BattleEvent::AfterStatStageChange,
+                source,
+                EffectOrder::default(),
+                white_herb,
+            ),
+            ItemBehavior::ZoomLens => registry.register(
+                BattleEvent::ModifyAccuracy,
+                source,
+                EffectOrder::new(0, -2, 0),
+                zoom_lens,
+            ),
             ItemBehavior::ConfusionCureBerry
             | ItemBehavior::WeatherDuration(_)
             | ItemBehavior::TerrainDuration
             | ItemBehavior::TerrainSeed(_, _)
-            | ItemBehavior::Leftovers => {}
+            | ItemBehavior::Leftovers
+            | ItemBehavior::BigRoot
+            | ItemBehavior::BindingBand
+            | ItemBehavior::ForcedSwitchItem
+            | ItemBehavior::FlinchItem
+            | ItemBehavior::LightClay
+            | ItemBehavior::MentalHerb
+            | ItemBehavior::Metronome
+            | ItemBehavior::ShedShell
+            | ItemBehavior::MegaStone => {}
         }
     }
+}
+
+fn held_item_matches(
+    state: &EffectState<'_>,
+    invocation: &EffectInvocation,
+    owner: PokemonRef,
+) -> bool {
+    let EffectSource::Item(item) = invocation.source else {
+        return false;
+    };
+    state
+        .battle()
+        .side(owner.side)
+        .pokemon(owner.pokemon)
+        .and_then(|pokemon| pokemon.item)
+        == Some(item)
 }
 
 fn consume_target_berry(
@@ -599,6 +726,296 @@ fn focus_sash(
     {
         dispatch.value = EventValue::Integer(i64::from(holder.current_hp.saturating_sub(1)));
         state.set_item(owner, None)?;
+    }
+    Ok(())
+}
+
+fn air_balloon(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = owner_pokemon(invocation) else {
+        return Ok(());
+    };
+    if Some(owner) == context.target
+        && !context.suppress_target_item
+        && integer(dispatch)? > 0
+        && held_item_matches(state, invocation, owner)
+    {
+        state.set_item(owner, None)?;
+    }
+    Ok(())
+}
+
+fn focus_band(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = owner_pokemon(invocation) else {
+        return Ok(());
+    };
+    if Some(owner) != context.target
+        || context.suppress_target_item
+        || context.move_id.is_none()
+        || !held_item_matches(state, invocation, owner)
+    {
+        return Ok(());
+    }
+    let survives = state.chance(RngReason::Item, 1, 10)?;
+    let hp = state
+        .battle()
+        .side(owner.side)
+        .pokemon(owner.pokemon)
+        .ok_or_else(|| BattleError::InvalidState("Focus Band holder is invalid".to_owned()))?
+        .current_hp;
+    if survives && integer(dispatch)? >= i64::from(hp) {
+        dispatch.value = EventValue::Integer(i64::from(hp.saturating_sub(1)));
+    }
+    Ok(())
+}
+
+fn crit_ratio(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+    amount: i64,
+    species_restricted: bool,
+) -> Result<(), BattleError> {
+    if owner_pokemon(invocation) == context.source
+        && !context.suppress_source_item
+        && (!species_restricted || context.source_item_species_match)
+    {
+        dispatch.value = EventValue::Integer(integer(dispatch)?.saturating_add(amount));
+    }
+    Ok(())
+}
+
+macro_rules! crit_ratio_callbacks {
+    ($(($amount:literal, $restricted:literal) => $callback:ident),+ $(,)?) => {
+        const fn crit_ratio_callback(amount: u8, restricted: bool) -> crate::EffectCallback {
+            match (amount, restricted) {
+                $(($amount, $restricted) => $callback,)+
+                _ => unreachable!(),
+            }
+        }
+        $(fn $callback(state: &mut EffectState<'_>, invocation: &EffectInvocation, context: &EventContext, dispatch: &mut EventDispatch) -> Result<(), BattleError> {
+            crit_ratio(state, invocation, context, dispatch, $amount, $restricted)
+        })+
+    };
+}
+
+crit_ratio_callbacks!(
+    (1, false) => crit_plus_one,
+    (2, true) => species_crit_plus_two,
+);
+
+fn life_orb_damage(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if owner_pokemon(invocation) == context.source && !context.suppress_source_item {
+        modify_integer(dispatch, 5324, 4096)?;
+    }
+    Ok(())
+}
+
+fn life_orb_recoil(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    _: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = owner_pokemon(invocation) else {
+        return Ok(());
+    };
+    if Some(owner) == context.source
+        && context.target != context.source
+        && context.move_category != Some(MoveCategory::Status)
+        && context.move_total_damage > 0
+        && !context.sheer_force_boosted
+        && !context.suppress_source_item
+        && held_item_matches(state, invocation, owner)
+    {
+        let max_hp = state
+            .battle()
+            .side(owner.side)
+            .pokemon(owner.pokemon)
+            .ok_or_else(|| BattleError::InvalidState("Life Orb holder is invalid".to_owned()))?
+            .stats
+            .hp;
+        state.damage_hp(owner, (max_hp / 10).max(1))?;
+    }
+    Ok(())
+}
+
+fn normal_gem_power(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if owner_pokemon(invocation) == context.source
+        && context.target != context.source
+        && context.move_category != Some(MoveCategory::Status)
+        && context.move_type == Some(PokemonType::Normal)
+        && !context.suppress_source_item
+    {
+        modify_integer(dispatch, 5324, 4096)?;
+    }
+    Ok(())
+}
+
+fn normal_gem_consume(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    _: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = owner_pokemon(invocation) else {
+        return Ok(());
+    };
+    if Some(owner) == context.source
+        && context.target != context.source
+        && context.move_category != Some(MoveCategory::Status)
+        && context.move_type == Some(PokemonType::Normal)
+        && !context.suppress_source_item
+        && held_item_matches(state, invocation, owner)
+    {
+        state.set_item(owner, None)?;
+    }
+    Ok(())
+}
+
+fn quick_claw(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if owner_pokemon(invocation) == context.source
+        && !context.suppress_source_item
+        && integer(dispatch)? <= 0
+        && state.chance(RngReason::Item, 1, 5)?
+    {
+        dispatch.value = EventValue::Integer(1);
+    }
+    Ok(())
+}
+
+fn rocky_helmet(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = owner_pokemon(invocation) else {
+        return Ok(());
+    };
+    let Some(source) = context.source.filter(|source| *source != owner) else {
+        return Ok(());
+    };
+    if Some(owner) == context.target
+        && !context.suppress_target_item
+        && context.move_flags.contact()
+        && integer(dispatch)? > 0
+        && held_item_matches(state, invocation, owner)
+    {
+        let max_hp = state
+            .battle()
+            .side(source.side)
+            .pokemon(source.pokemon)
+            .ok_or_else(|| BattleError::InvalidState("Rocky Helmet source is invalid".to_owned()))?
+            .stats
+            .hp;
+        state.damage_hp(source, (max_hp / 6).max(1))?;
+    }
+    Ok(())
+}
+
+fn shell_bell(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    _: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = owner_pokemon(invocation) else {
+        return Ok(());
+    };
+    if Some(owner) == context.source
+        && context.move_total_damage > 0
+        && !context.suppress_source_item
+        && held_item_matches(state, invocation, owner)
+    {
+        let amount = u16::try_from(context.move_total_damage / 8)
+            .unwrap_or(u16::MAX)
+            .max(1);
+        state.heal_hp(owner, amount)?;
+    }
+    Ok(())
+}
+
+fn white_herb(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = owner_pokemon(invocation) else {
+        return Ok(());
+    };
+    if Some(owner) != context.target
+        || context.suppress_target_item
+        || integer(dispatch)? >= 0
+        || !held_item_matches(state, invocation, owner)
+    {
+        return Ok(());
+    }
+    let stages = state
+        .battle()
+        .side(owner.side)
+        .pokemon(owner.pokemon)
+        .ok_or_else(|| BattleError::InvalidState("White Herb holder is invalid".to_owned()))?
+        .stat_stages;
+    let mut changed = false;
+    for stat in [
+        BattleStat::Attack,
+        BattleStat::Defense,
+        BattleStat::SpecialAttack,
+        BattleStat::SpecialDefense,
+        BattleStat::Speed,
+        BattleStat::Accuracy,
+        BattleStat::Evasion,
+    ] {
+        let negative_stage = stages.get(stat);
+        if negative_stage < 0 {
+            state.change_stat_stage(owner, stat, -negative_stage)?;
+            changed = true;
+        }
+    }
+    if changed {
+        state.set_item(owner, None)?;
+    }
+    Ok(())
+}
+
+fn zoom_lens(
+    _: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    if owner_pokemon(invocation) == context.source
+        && !context.suppress_source_item
+        && context.target_acted
+    {
+        modify_integer(dispatch, 4915, 4096)?;
     }
     Ok(())
 }
@@ -1396,5 +1813,247 @@ mod tests {
             dispatch(&registry, &mut state, BattleEvent::ModifyAttack, matching),
             200
         );
+    }
+
+    #[allow(clippy::too_many_lines)]
+    #[test]
+    fn third_batch_callbacks_apply_consumption_recoil_healing_and_stat_rules() {
+        let covered_ids = [
+            "airballoon",
+            "focusband",
+            "leek",
+            "lifeorb",
+            "normalgem",
+            "quickclaw",
+            "rockyhelmet",
+            "scopelens",
+            "shellbell",
+            "whiteherb",
+            "zoomlens",
+        ];
+        assert_eq!(covered_ids.len(), 11);
+        let air_balloon = ItemId::new(400);
+        let focus_band_item = ItemId::new(401);
+        let leek = ItemId::new(402);
+        let life_orb = ItemId::new(403);
+        let normal_gem = ItemId::new(404);
+        let quick_claw_item = ItemId::new(405);
+        let rocky_helmet_item = ItemId::new(406);
+        let scope_lens = ItemId::new(407);
+        let shell_bell_item = ItemId::new(408);
+        let white_herb_item = ItemId::new(409);
+        let zoom_lens_item = ItemId::new(410);
+        let mut registry = EffectRegistry::new();
+        register(
+            &mut registry,
+            [
+                ItemHandler::new(air_balloon, ItemBehavior::AirBalloon),
+                ItemHandler::new(focus_band_item, ItemBehavior::FocusBand),
+                ItemHandler::new(leek, ItemBehavior::SpeciesCritRatio(2)),
+                ItemHandler::new(life_orb, ItemBehavior::LifeOrb),
+                ItemHandler::new(normal_gem, ItemBehavior::NormalGem),
+                ItemHandler::new(quick_claw_item, ItemBehavior::QuickClaw),
+                ItemHandler::new(rocky_helmet_item, ItemBehavior::RockyHelmet),
+                ItemHandler::new(scope_lens, ItemBehavior::CritRatio(1)),
+                ItemHandler::new(shell_bell_item, ItemBehavior::ShellBell),
+                ItemHandler::new(white_herb_item, ItemBehavior::WhiteHerb),
+                ItemHandler::new(zoom_lens_item, ItemBehavior::ZoomLens),
+            ],
+        );
+        let base = context(MoveCategory::Physical, PokemonType::Normal);
+
+        let mut balloon_state = battle_with_items(None, Some(air_balloon));
+        registry
+            .dispatch(
+                &mut balloon_state,
+                BattleEvent::AfterDamage,
+                base,
+                EventValue::Integer(10),
+            )
+            .unwrap();
+        assert_eq!(
+            balloon_state
+                .side(SideId::P2)
+                .pokemon(PokemonIndex::new(0))
+                .unwrap()
+                .item,
+            None
+        );
+
+        let mut crit_state = battle(scope_lens);
+        assert_eq!(
+            dispatch(
+                &registry,
+                &mut crit_state,
+                BattleEvent::ModifyCritRatio,
+                base
+            ),
+            101
+        );
+        let mut leek_state = battle(leek);
+        let matching = EventContext {
+            source_item_species_match: true,
+            ..base
+        };
+        assert_eq!(
+            dispatch(
+                &registry,
+                &mut leek_state,
+                BattleEvent::ModifyCritRatio,
+                matching
+            ),
+            102
+        );
+
+        let mut orb_state = battle(life_orb);
+        assert_eq!(
+            dispatch(&registry, &mut orb_state, BattleEvent::ModifyDamage, base),
+            130
+        );
+        registry
+            .dispatch(
+                &mut orb_state,
+                BattleEvent::AfterMove,
+                EventContext {
+                    move_total_damage: 50,
+                    ..base
+                },
+                EventValue::None,
+            )
+            .unwrap();
+        assert_eq!(
+            orb_state
+                .side(SideId::P1)
+                .pokemon(PokemonIndex::new(0))
+                .unwrap()
+                .current_hp,
+            90
+        );
+
+        let mut gem_state = battle(normal_gem);
+        assert_eq!(
+            dispatch(
+                &registry,
+                &mut gem_state,
+                BattleEvent::ModifyBasePower,
+                base
+            ),
+            130
+        );
+        registry
+            .dispatch(&mut gem_state, BattleEvent::Hit, base, EventValue::None)
+            .unwrap();
+        assert_eq!(
+            gem_state
+                .side(SideId::P1)
+                .pokemon(PokemonIndex::new(0))
+                .unwrap()
+                .item,
+            None
+        );
+
+        let mut helmet_state = battle_with_items(None, Some(rocky_helmet_item));
+        let contact = EventContext {
+            move_flags: crate::MoveInteractionFlags::default().with_contact(true),
+            ..base
+        };
+        registry
+            .dispatch(
+                &mut helmet_state,
+                BattleEvent::AfterDamage,
+                contact,
+                EventValue::Integer(25),
+            )
+            .unwrap();
+        assert_eq!(
+            helmet_state
+                .side(SideId::P1)
+                .pokemon(PokemonIndex::new(0))
+                .unwrap()
+                .current_hp,
+            84
+        );
+
+        let mut bell_state = battle(shell_bell_item);
+        bell_state
+            .side_mut(SideId::P1)
+            .pokemon_mut(PokemonIndex::new(0))
+            .unwrap()
+            .current_hp = 50;
+        registry
+            .dispatch(
+                &mut bell_state,
+                BattleEvent::AfterMove,
+                EventContext {
+                    move_total_damage: 80,
+                    ..base
+                },
+                EventValue::None,
+            )
+            .unwrap();
+        assert_eq!(
+            bell_state
+                .side(SideId::P1)
+                .pokemon(PokemonIndex::new(0))
+                .unwrap()
+                .current_hp,
+            60
+        );
+
+        let mut herb_state = battle_with_items(None, Some(white_herb_item));
+        herb_state
+            .side_mut(SideId::P2)
+            .pokemon_mut(PokemonIndex::new(0))
+            .unwrap()
+            .stat_stages
+            .atk = -2;
+        registry
+            .dispatch(
+                &mut herb_state,
+                BattleEvent::AfterStatStageChange,
+                base,
+                EventValue::Integer(-2),
+            )
+            .unwrap();
+        let restored = herb_state
+            .side(SideId::P2)
+            .pokemon(PokemonIndex::new(0))
+            .unwrap();
+        assert_eq!(restored.stat_stages.atk, 0);
+        assert_eq!(restored.item, None);
+
+        let mut zoom_state = battle(zoom_lens_item);
+        let moved = EventContext {
+            target_acted: true,
+            ..base
+        };
+        assert_eq!(
+            dispatch(
+                &registry,
+                &mut zoom_state,
+                BattleEvent::ModifyAccuracy,
+                moved
+            ),
+            120
+        );
+
+        for item in [focus_band_item, quick_claw_item] {
+            let mut rng_state = if item == focus_band_item {
+                battle_with_items(None, Some(item))
+            } else {
+                battle(item)
+            };
+            let before = rng_state.rng.draws();
+            let event = if item == focus_band_item {
+                BattleEvent::ModifyDamage
+            } else {
+                BattleEvent::ModifyFractionalPriority
+            };
+            let initial = if item == focus_band_item { 100 } else { 0 };
+            registry
+                .dispatch(&mut rng_state, event, base, EventValue::Integer(initial))
+                .unwrap();
+            assert_eq!(rng_state.rng.draws(), before + 1);
+        }
     }
 }

@@ -274,6 +274,12 @@ pub struct EventContext {
     /// Whether Analytic sees no later queued action for this target.
     #[serde(default, skip_serializing_if = "is_false")]
     pub analytic_active: bool,
+    /// Whether the current target no longer has a pending action this turn.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub target_acted: bool,
+    /// Total HP damage applied by the move before its `AfterMove` callbacks.
+    #[serde(default, skip_serializing_if = "is_zero_u32")]
+    pub move_total_damage: u32,
     /// Whether this stat-stage request was caused by Intimidate.
     #[serde(default, skip_serializing_if = "is_false")]
     pub intimidate: bool,
@@ -304,6 +310,11 @@ pub struct EventContext {
 #[allow(clippy::trivially_copy_pass_by_ref)] // Serde's skip predicate receives `&T`.
 const fn is_false(value: &bool) -> bool {
     !*value
+}
+
+#[allow(clippy::trivially_copy_pass_by_ref)]
+const fn is_zero_u32(value: &u32) -> bool {
+    *value == 0
 }
 
 /// Typed relay value passed through an event's ordered handlers.

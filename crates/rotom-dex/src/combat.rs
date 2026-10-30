@@ -5,7 +5,7 @@ use rotom_core::{
     ItemBehavior, ItemHandler, ItemId, MajorStatus, MoveAccuracy, MoveCapabilities, MoveCapability,
     MoveCategory, MoveId, MoveIntrinsic, MoveOperation, MoveSlot, MoveTarget, PokemonPosition,
     PokemonSet, PokemonState, PokemonType, PokemonTypes, PrimaryMoveEffect, PriorMoveEffect,
-    SecondaryMoveEffect, SelfMoveEffect, StatAllocation, StatStages, StatusState,
+    SecondaryMoveEffect, SelfMoveEffect, SpeciesId, StatAllocation, StatStages, StatusState,
     TerrainEnvironment, WeatherEnvironment,
 };
 
@@ -377,6 +377,20 @@ impl CombatData for DexData {
                     }))
         })
     }
+
+    fn item_species_matches(&self, item: ItemId, species: SpeciesId) -> bool {
+        let Some(item) = self.item(item) else {
+            return false;
+        };
+        let Some(species) = self.species(species) else {
+            return false;
+        };
+        match item.id.as_str() {
+            "lightball" => species.id == "pikachu",
+            "leek" => matches!(species.id.as_str(), "farfetchd" | "sirfetchd"),
+            _ => false,
+        }
+    }
 }
 
 /// First PR 13.6 item batch. The generated Dex owns identity and metadata;
@@ -515,6 +529,36 @@ const IMPLEMENTED_ITEM_BEHAVIORS: &[(&str, ItemBehavior)] = &[
         },
     ),
     ("focussash", ItemBehavior::FocusSash),
+    ("airballoon", ItemBehavior::AirBalloon),
+    ("bigroot", ItemBehavior::BigRoot),
+    ("bindingband", ItemBehavior::BindingBand),
+    ("ejectbutton", ItemBehavior::ForcedSwitchItem),
+    ("focusband", ItemBehavior::FocusBand),
+    ("kingsrock", ItemBehavior::FlinchItem),
+    ("leek", ItemBehavior::SpeciesCritRatio(2)),
+    ("lifeorb", ItemBehavior::LifeOrb),
+    ("lightclay", ItemBehavior::LightClay),
+    ("mentalherb", ItemBehavior::MentalHerb),
+    ("metronome", ItemBehavior::Metronome),
+    ("normalgem", ItemBehavior::NormalGem),
+    ("quickclaw", ItemBehavior::QuickClaw),
+    ("redcard", ItemBehavior::ForcedSwitchItem),
+    ("rockyhelmet", ItemBehavior::RockyHelmet),
+    ("scopelens", ItemBehavior::CritRatio(1)),
+    ("shedshell", ItemBehavior::ShedShell),
+    ("shellbell", ItemBehavior::ShellBell),
+    ("whiteherb", ItemBehavior::WhiteHerb),
+    ("zoomlens", ItemBehavior::ZoomLens),
+    ("abomasite", ItemBehavior::MegaStone),
+    ("absolite", ItemBehavior::MegaStone),
+    ("absolitez", ItemBehavior::MegaStone),
+    ("aerodactylite", ItemBehavior::MegaStone),
+    ("aggronite", ItemBehavior::MegaStone),
+    ("alakazite", ItemBehavior::MegaStone),
+    ("altarianite", ItemBehavior::MegaStone),
+    ("ampharosite", ItemBehavior::MegaStone),
+    ("audinite", ItemBehavior::MegaStone),
+    ("banettite", ItemBehavior::MegaStone),
 ];
 
 /// Declarative identity-to-behavior join for the implemented PR 13.5 batch.

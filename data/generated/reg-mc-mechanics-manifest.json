@@ -8956,15 +8956,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.4"
     },
     {
       "id": "absolite",
@@ -8972,15 +8974,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/absol"
+        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "species/absol",
+        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.4"
     },
     {
       "id": "absolitez",
@@ -8988,15 +8992,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/absol"
+        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "species/absol",
+        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.4"
     },
     {
       "id": "aerodactylite",
@@ -9004,15 +9010,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/aerodactyl"
+        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "species/aerodactyl",
+        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.4"
     },
     {
       "id": "aggronite",
@@ -9020,15 +9028,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/aggron"
+        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "species/aggron",
+        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.4"
     },
     {
       "id": "airballoon",
@@ -9036,15 +9046,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#third_batch_callbacks_apply_consumption_recoil_healing_and_stat_rules"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.4"
     },
     {
       "id": "alakazite",
@@ -9052,15 +9064,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/alakazam"
+        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "species/alakazam",
+        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.4"
     },
     {
       "id": "altarianite",
@@ -9068,15 +9082,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/altaria"
+        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "species/altaria",
+        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.4"
     },
     {
       "id": "ampharosite",
@@ -9084,15 +9100,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/ampharos"
+        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "species/ampharos",
+        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.4"
     },
     {
       "id": "aspearberry",
@@ -9119,15 +9137,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/audino"
+        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "species/audino",
+        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.4"
     },
     {
       "id": "babiriberry",
@@ -9155,15 +9175,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/banette"
+        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "species/banette",
+        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.4"
     },
     {
       "id": "barbaracite",
@@ -9219,15 +9241,18 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#third_item_batch_integrates_big_root_and_light_clay_in_canonical_step",
+        "species/abomasnow",
+        "unit:crates/rotom-dex/tests/combat.rs#third_item_batch_integrates_big_root_and_light_clay_in_canonical_step"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "unit_tested",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.6.4"
     },
     {
       "id": "bindingband",
@@ -9235,15 +9260,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.4"
     },
     {
       "id": "blackbelt",
@@ -9762,15 +9789,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.4"
     },
     {
       "id": "electricseed",
@@ -9916,15 +9945,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#third_batch_callbacks_apply_consumption_recoil_healing_and_stat_rules"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.4"
     },
     {
       "id": "focussash",
@@ -10358,15 +10389,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.4"
     },
     {
       "id": "leek",
@@ -10374,15 +10407,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/farfetchd"
+        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "species/farfetchd",
+        "unit:crates/rotom-core/src/items.rs#third_batch_callbacks_apply_consumption_recoil_healing_and_stat_rules"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.4"
     },
     {
       "id": "leftovers",
@@ -10427,15 +10462,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#third_batch_callbacks_apply_consumption_recoil_healing_and_stat_rules"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.4"
     },
     {
       "id": "lightball",
@@ -10461,15 +10498,18 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#third_item_batch_integrates_big_root_and_light_clay_in_canonical_step",
+        "species/abomasnow",
+        "unit:crates/rotom-dex/tests/combat.rs#third_item_batch_integrates_big_root_and_light_clay_in_canonical_step"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "unit_tested",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 13.6.4"
     },
     {
       "id": "lopunnite",
@@ -10644,15 +10684,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.4"
     },
     {
       "id": "meowsticite",
@@ -10712,15 +10754,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.4"
     },
     {
       "id": "miracleseed",
@@ -10825,15 +10869,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#third_batch_callbacks_apply_consumption_recoil_healing_and_stat_rules"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.4"
     },
     {
       "id": "occaberry",
@@ -11042,15 +11088,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#third_batch_callbacks_apply_consumption_recoil_healing_and_stat_rules"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.4"
     },
     {
       "id": "raichunitex",
@@ -11109,15 +11157,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.4"
     },
     {
       "id": "rindoberry",
@@ -11145,15 +11195,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#third_batch_callbacks_apply_consumption_recoil_healing_and_stat_rules"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.4"
     },
     {
       "id": "roseliberry",
@@ -11261,15 +11313,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#third_batch_callbacks_apply_consumption_recoil_healing_and_stat_rules"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.4"
     },
     {
       "id": "scovillainite",
@@ -11345,15 +11399,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.4"
     },
     {
       "id": "shellbell",
@@ -11361,15 +11417,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#third_batch_callbacks_apply_consumption_recoil_healing_and_stat_rules"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.4"
     },
     {
       "id": "shucaberry",
@@ -11734,15 +11792,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#third_batch_callbacks_apply_consumption_recoil_healing_and_stat_rules"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "partial",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.4"
     },
     {
       "id": "widelens",
@@ -11806,15 +11866,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/abomasnow"
+        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "species/abomasnow",
+        "unit:crates/rotom-core/src/items.rs#third_batch_callbacks_apply_consumption_recoil_healing_and_stat_rules"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 13.6.4"
     },
     {
       "id": "accelerock",
@@ -48210,18 +48272,18 @@
       "item": {
         "total": 166,
         "implementation": {
-          "unsupported": 101,
-          "partial": 29,
-          "implemented": 36
+          "unsupported": 71,
+          "partial": 48,
+          "implemented": 47
         },
         "verification": {
-          "not_tested": 102,
-          "unit_tested": 64,
+          "not_tested": 72,
+          "unit_tested": 94,
           "differential_verified": 0
         },
         "interaction_verification": {
-          "not_tested": 161,
-          "unit_tested": 5,
+          "not_tested": 159,
+          "unit_tested": 7,
           "differential_verified": 0
         },
         "reachability": {
