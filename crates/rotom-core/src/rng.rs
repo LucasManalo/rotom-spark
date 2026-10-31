@@ -19,6 +19,8 @@ pub enum RngReason {
     Protect,
     RandomTarget,
     RandomMove,
+    /// Uniform selection of an incoming Pokémon for a drag/forced switch.
+    ForcedSwitch,
     /// Random activation owned by an ability callback.
     Ability,
     /// Random activation owned by a held-item callback.

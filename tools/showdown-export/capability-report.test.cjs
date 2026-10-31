@@ -15,16 +15,16 @@ function identity(audit, kind, id) {
 
 test('dependency graph covers every partial ability and item and every unsupported move', () => {
 	const {audit} = generatedContents();
-	assert.deepEqual(audit.summary.dependency_targets, {ability: 95, item: 111, move: 287});
-	assert.equal(audit.identity_dependencies.length, 493);
+	assert.deepEqual(audit.summary.dependency_targets, {ability: 94, item: 109, move: 287});
+	assert.equal(audit.identity_dependencies.length, 490);
 	assert.ok(audit.identity_dependencies.every(entry => entry.outstanding_blockers.length > 0));
 	assert.ok(audit.identity_dependencies.every(entry => entry.unlocked === false));
 });
 
 test('headline separates identity labels from executable capability coverage', () => {
 	const {audit, markdown} = generatedContents();
-	assert.deepEqual(audit.summary.identity_coverage.ability, {reachable: 215, unsupported: 0, partial: 95, implemented: 120});
-	assert.deepEqual(audit.summary.identity_coverage.item, {reachable: 166, unsupported: 0, partial: 111, implemented: 55});
+	assert.deepEqual(audit.summary.identity_coverage.ability, {reachable: 215, unsupported: 0, partial: 94, implemented: 121});
+	assert.deepEqual(audit.summary.identity_coverage.item, {reachable: 166, unsupported: 0, partial: 109, implemented: 57});
 	assert.deepEqual(audit.summary.identity_coverage.move, {reachable: 510, unsupported: 287, partial: 0, implemented: 223});
 	assert.match(markdown, /## Identity coverage/);
 	assert.match(markdown, /## Executable capability coverage/);
@@ -35,7 +35,7 @@ test('roadmap examples expose their actual remaining blockers', () => {
 	const {audit} = generatedContents();
 	assert.deepEqual(identity(audit, 'item', 'choicescarf').outstanding_blockers, ['choice_lock']);
 	assert.ok(identity(audit, 'item', 'persimberry').outstanding_blockers.includes('confusion'));
-	assert.deepEqual(identity(audit, 'item', 'ejectbutton').outstanding_blockers, ['forced_switch']);
+	assert.equal(identity(audit, 'item', 'ejectbutton'), undefined);
 	assert.deepEqual(identity(audit, 'item', 'charizarditex').outstanding_blockers, [
 		'ability_transition', 'form_change', 'mega_eligibility', 'mega_timing',
 	]);
@@ -44,6 +44,11 @@ test('roadmap examples expose their actual remaining blockers', () => {
 	assert.deepEqual(berryLifecycle.unlocked_identities, [
 		'item:aspearberry', 'item:cheriberry', 'item:chestoberry', 'item:leppaberry',
 		'item:oranberry', 'item:pechaberry', 'item:rawstberry', 'item:sitrusberry',
+	]);
+	const forcedSwitch = audit.capabilities.find(entry => entry.id === 'forced_switch');
+	assert.equal(forcedSwitch.status, 'implemented');
+	assert.deepEqual(forcedSwitch.unlocked_identities, [
+		'ability:suctioncups', 'item:ejectbutton', 'item:redcard',
 	]);
 });
 

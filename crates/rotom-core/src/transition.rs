@@ -179,9 +179,21 @@ pub fn step<D: CombatData>(
             }
         }
         JointAction::ForcedSwitch { p1, p2 } => {
-            apply_replacements(&mut next, SideId::P1, *p1)?;
-            apply_replacements(&mut next, SideId::P2, *p2)?;
-            StepDiagnostics::default()
+            let mut turn = TurnResolution::default();
+            apply_replacements(&mut next, SideId::P1, *p1, mechanics, &mut turn)?;
+            apply_replacements(&mut next, SideId::P2, *p2, mechanics, &mut turn)?;
+            if next.phase == BattlePhase::ResolvingTurn {
+                let resumed = next.resolve_turn_inner(
+                    mechanics.data,
+                    &mechanics.effects,
+                    &mechanics.field_effects,
+                )?;
+                append_resolution(&mut turn, resumed);
+            }
+            StepDiagnostics {
+                queue_events: Vec::new(),
+                turn: Some(turn),
+            }
         }
     };
 
@@ -212,10 +224,38 @@ fn apply_replacements(
     state: &mut BattleState,
     side: SideId,
     choice: TurnChoice,
+    mechanics: &Mechanics<'_, impl CombatData>,
+    resolution: &mut TurnResolution,
 ) -> Result<(), BattleError> {
     for (slot, action) in ActiveSlot::ALL.into_iter().zip(choice.actions) {
         match action {
-            PokemonAction::Switch { pokemon } => state.replace_fainted(side, slot, pokemon)?,
+            PokemonAction::Switch { pokemon } => {
+                if state
+                    .switch_requests
+                    .iter()
+                    .any(|request| request.side == side && request.slot == slot)
+                {
+                    state.resolve_requested_switch(
+                        mechanics.data,
+                        &mechanics.effects,
+                        &mechanics.field_effects,
+                        side,
+                        slot,
+                        pokemon,
+                        resolution,
+                    )?;
+                } else {
+                    state.resolve_fainted_replacement(
+                        mechanics.data,
+                        &mechanics.effects,
+                        &mechanics.field_effects,
+                        side,
+                        slot,
+                        pokemon,
+                        resolution,
+                    )?;
+                }
+            }
             PokemonAction::Pass => {}
             PokemonAction::Move { .. } | PokemonAction::Struggle => {
                 return Err(BattleError::InvalidState(
@@ -225,6 +265,20 @@ fn apply_replacements(
         }
     }
     Ok(())
+}
+
+fn append_resolution(target: &mut TurnResolution, mut source: TurnResolution) {
+    target.actions.append(&mut source.actions);
+    target.residual_damage.append(&mut source.residual_damage);
+    target
+        .expired_volatiles
+        .append(&mut source.expired_volatiles);
+    target
+        .expired_conditions
+        .append(&mut source.expired_conditions);
+    target.field_hp_changes.append(&mut source.field_hp_changes);
+    target.events.append(&mut source.events);
+    target.target_outcomes.append(&mut source.target_outcomes);
 }
 
 #[cfg(test)]

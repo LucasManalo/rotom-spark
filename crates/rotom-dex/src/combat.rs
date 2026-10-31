@@ -542,7 +542,7 @@ const IMPLEMENTED_ITEM_BEHAVIORS: &[(&str, ItemBehavior)] = &[
     ("airballoon", ItemBehavior::AirBalloon),
     ("bigroot", ItemBehavior::BigRoot),
     ("bindingband", ItemBehavior::BindingBand),
-    ("ejectbutton", ItemBehavior::ForcedSwitchItem),
+    ("ejectbutton", ItemBehavior::EjectButton),
     ("focusband", ItemBehavior::FocusBand),
     ("kingsrock", ItemBehavior::FlinchItem),
     ("leek", ItemBehavior::SpeciesCritRatio(2)),
@@ -552,7 +552,7 @@ const IMPLEMENTED_ITEM_BEHAVIORS: &[(&str, ItemBehavior)] = &[
     ("metronome", ItemBehavior::Metronome),
     ("normalgem", ItemBehavior::NormalGem),
     ("quickclaw", ItemBehavior::QuickClaw),
-    ("redcard", ItemBehavior::ForcedSwitchItem),
+    ("redcard", ItemBehavior::RedCard),
     ("rockyhelmet", ItemBehavior::RockyHelmet),
     ("scopelens", ItemBehavior::CritRatio(1)),
     ("shedshell", ItemBehavior::ShedShell),
@@ -1643,7 +1643,7 @@ const IMPLEMENTED_ABILITY_BEHAVIORS: &[(&str, AbilityBehavior, AbilitySuppressio
     ),
     (
         "suctioncups",
-        AbilityBehavior::DeferredSwitchInteraction,
+        AbilityBehavior::PreventsForcedSwitch,
         AbilitySuppression::Breakable,
     ),
     (

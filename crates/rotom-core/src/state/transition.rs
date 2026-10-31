@@ -22,12 +22,31 @@ impl FaintTarget {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct ReplacementRequest {
-    /// Empty active positions that may receive a replacement.
+    /// Empty active positions or occupied positions whose holder must leave.
     pub slots: Vec<ActiveSlot>,
     /// Living selected-team members that may switch in.
     pub available: Vec<PokemonIndex>,
     /// Number of the empty positions that must be filled.
     pub required: usize,
+}
+
+/// How one mid-turn switch request chooses its incoming Pokémon.
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum SwitchRequestKind {
+    /// The owning player supplies a replacement at the next decision boundary.
+    PlayerChoice,
+    /// The engine chooses uniformly from the currently available bench.
+    Random,
+}
+
+/// One authoritative mid-turn request attached to an occupied active slot.
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct SwitchRequest {
+    pub side: SideId,
+    pub slot: ActiveSlot,
+    pub kind: SwitchRequestKind,
 }
 
 impl BattleState {
@@ -225,11 +244,20 @@ impl BattleState {
         }
 
         StateKernel::new(self).fill_active_position(side, slot, incoming)?;
+        self.settle_switch_phase()?;
+        Ok(())
+    }
 
-        if self.compute_replacement_request(SideId::P1)?.required == 0
-            && self.compute_replacement_request(SideId::P2)?.required == 0
+    pub(crate) fn settle_switch_phase(&mut self) -> Result<(), BattleError> {
+        if self.compute_replacement_request(SideId::P1)?.required > 0
+            || self.compute_replacement_request(SideId::P2)?.required > 0
+            || !self.switch_requests.is_empty()
         {
+            self.phase = BattlePhase::ForcedSwitch;
+        } else if self.queue.actions.is_empty() {
             self.phase = BattlePhase::TurnSelection;
+        } else {
+            self.phase = BattlePhase::ResolvingTurn;
         }
         Ok(())
     }
@@ -344,10 +372,22 @@ impl BattleState {
 
     fn compute_replacement_request(&self, side: SideId) -> Result<ReplacementRequest, BattleError> {
         let side_state = self.side(side);
-        let slots = ActiveSlot::ALL
+        let mut slots = ActiveSlot::ALL
             .into_iter()
             .filter(|slot| side_state.active[slot.index()].is_none())
             .collect::<Vec<_>>();
+        for slot in self
+            .switch_requests
+            .iter()
+            .filter(|request| {
+                request.side == side && request.kind == SwitchRequestKind::PlayerChoice
+            })
+            .map(|request| request.slot)
+        {
+            if !slots.contains(&slot) {
+                slots.push(slot);
+            }
+        }
         let available = side_state
             .selected_team
             .iter()

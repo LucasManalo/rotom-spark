@@ -6,7 +6,7 @@
 
 use rotom_core::{
     ActionOrder, ActiveSlot, BattlePhase, BattleState, MajorStatus, MoveTarget, PokemonAction,
-    PokemonIndex, PokemonPosition, SideId,
+    PokemonIndex, PokemonPosition, SideId, SwitchRequestKind,
 };
 use serde::{Deserialize, Serialize};
 
@@ -21,8 +21,17 @@ pub struct BattleSnapshot {
     pub field: FieldSnapshot,
     pub rng: RngSnapshot,
     pub queue: Vec<QueuedActionSnapshot>,
+    pub switch_requests: Vec<SwitchRequestSnapshot>,
     pub sides: [SideSnapshot; 2],
     pub winner: Option<SideId>,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct SwitchRequestSnapshot {
+    pub side: SideId,
+    pub slot: ActiveSlot,
+    pub kind: SwitchRequestKind,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -181,6 +190,15 @@ pub fn snapshot(state: &BattleState) -> BattleSnapshot {
                 order: action.order,
                 priority: action.priority,
                 speed: action.speed,
+            })
+            .collect(),
+        switch_requests: state
+            .switch_requests()
+            .iter()
+            .map(|request| SwitchRequestSnapshot {
+                side: request.side,
+                slot: request.slot,
+                kind: request.kind,
             })
             .collect(),
         sides: [

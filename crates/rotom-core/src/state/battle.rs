@@ -1,4 +1,4 @@
-use super::{ActionQueue, FieldState, SideState};
+use super::{ActionQueue, FieldState, SideState, SwitchRequest};
 use crate::{BattleError, BattleRng, PokemonPosition, SideId};
 use serde::{Deserialize, Serialize};
 
@@ -39,6 +39,8 @@ pub struct BattleState {
     pub(crate) field: FieldState,
     pub(crate) rng: BattleRng,
     pub(crate) queue: ActionQueue,
+    /// Mid-turn switches that must settle before the remaining action queue resumes.
+    pub(crate) switch_requests: Vec<SwitchRequest>,
     pub(crate) phase: BattlePhase,
     pub(crate) winner: Option<SideId>,
     /// Showdown-style creation order of each active Pokémon's current ability
@@ -111,6 +113,7 @@ impl BattleState {
             field: FieldState::default(),
             rng: BattleRng::new(seed),
             queue: ActionQueue::default(),
+            switch_requests: Vec::new(),
             phase: BattlePhase::TeamPreview,
             winner: None,
             active_effect_orders: [[None; 2]; 2],
@@ -148,6 +151,11 @@ impl BattleState {
     #[must_use]
     pub const fn queue(&self) -> &ActionQueue {
         &self.queue
+    }
+
+    #[must_use]
+    pub fn switch_requests(&self) -> &[SwitchRequest] {
+        &self.switch_requests
     }
 
     #[must_use]

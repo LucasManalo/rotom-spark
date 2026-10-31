@@ -9,15 +9,15 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 
 | Kind | Reachable | Implemented | Partial | Unsupported |
 | --- | ---: | ---: | ---: | ---: |
-| ability | 215 | 120 | 95 | 0 |
-| item | 166 | 55 | 111 | 0 |
+| ability | 215 | 121 | 94 | 0 |
+| item | 166 | 57 | 109 | 0 |
 | move | 510 | 223 | 0 | 287 |
 
 ## Executable capability coverage
 
 | Total | Verified | Implemented | Partial | Unsupported |
 | ---: | ---: | ---: | ---: | ---: |
-| 65 | 5 | 18 | 20 | 22 |
+| 66 | 5 | 19 | 20 | 22 |
 
 `implemented` means the shared capability executes in its stated scope. `verified` additionally has qualifying pinned-reference evidence. Partial and unsupported capabilities continue to block dependent identities.
 
@@ -45,7 +45,6 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | `berry_effect_coverage` | partial | 5 | 4 | Confusion-curing and pinch-stat berries remain incomplete, so berry-dependent abilities are not interaction-complete for every reachable berry. |
 | `move_type_conversion` | partial | 5 | 5 | Aerilate-family and Champions conversion abilities are not interaction-complete. |
 | `ability_lifecycle` | partial | 4 | 4 | Copying, replacement, suppression, and activation ordering are incomplete. |
-| `forced_switch` | unsupported | 4 | 4 | Eject Button, Red Card, Emergency Exit, pivots, and phazing are not end-to-end. |
 | `status_event_lifecycle` | partial | 3 | 3 | Synchronize, Leaf Guard, Purifying Salt, and related interactions are incomplete. |
 | `calls_move` | unsupported | 2 | 0 | Copycat, Sleep Talk, and other callers are not executable. |
 | `confusion` | unsupported | 2 | 0 | Confusion is not end-to-end. |
@@ -56,6 +55,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | `accuracy_override` | partial | 1 | 1 | No Guard and move-specific accuracy overrides are not interaction-complete. |
 | `action_order_modifier` | partial | 1 | 1 | Quick Claw-style bracket modification is not integrated with the canonical queue. |
 | `choice_lock` | unsupported | 1 | 1 | Choice Scarf modifies Speed but does not enforce a complete choice lock. |
+| `emergency_exit_trigger` | unsupported | 1 | 1 | Emergency Exit has not yet been connected to the shared forced-switch lifecycle. |
 | `hazard_lifecycle` | unsupported | 1 | 1 | Spikes, Toxic Spikes, Sticky Web, Stealth Rock, and reactive hazard setters are incomplete. |
 | `immunity_override` | partial | 1 | 1 | Exceptional immunity and suppression interactions remain incomplete. |
 | `move_history` | partial | 1 | 1 | Several predicates and consecutive-use effects lack one authoritative history lifecycle. |
@@ -69,11 +69,12 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 ## Recently unlocked identities
 
 - `berry_lifecycle`: `item:aspearberry`, `item:cheriberry`, `item:chestoberry`, `item:leppaberry`, `item:oranberry`, `item:pechaberry`, `item:rawstberry`, `item:sitrusberry`
+- `forced_switch`: `ability:suctioncups`, `item:ejectbutton`, `item:redcard`
 
 ## Dependency audit
 
-- ability: 95 partial identities mapped; 0 currently unlocked.
-- item: 111 partial identities mapped; 0 currently unlocked.
+- ability: 94 partial identities mapped; 0 currently unlocked.
+- item: 109 partial identities mapped; 0 currently unlocked.
 - move: 287 unsupported identities mapped; 0 currently unlocked.
 
 Mega Stones are reported as a **metadata foundation**. They remain partial until `mega_eligibility`, `mega_timing`, `form_change`, and `ability_transition` are complete.

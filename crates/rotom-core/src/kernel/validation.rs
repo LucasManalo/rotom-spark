@@ -36,9 +36,12 @@ pub(super) fn validate_stable_state(battle: &BattleState) -> Result<(), BattleEr
     if battle.phase == BattlePhase::ResolvingTurn {
         return invalid("ResolvingTurn is not a stable public boundary");
     }
-    if !battle.queue.actions.is_empty() || !battle.queue.events.is_empty() {
-        return invalid("a stable public state cannot retain a pending action queue");
+    if battle.phase != BattlePhase::ForcedSwitch
+        && (!battle.queue.actions.is_empty() || !battle.queue.events.is_empty())
+    {
+        return invalid("only a mid-turn ForcedSwitch may retain a pending action queue");
     }
+    validate_switch_requests(battle)?;
 
     match battle.phase {
         BattlePhase::TeamPreview => validate_team_preview(battle),
@@ -55,6 +58,7 @@ pub(super) fn validate_stable_state(battle: &BattleState) -> Result<(), BattleEr
             validate_started_battle(battle)?;
             if replacement_count(battle, SideId::P1)? == 0
                 && replacement_count(battle, SideId::P2)? == 0
+                && battle.switch_requests.is_empty()
             {
                 return invalid("ForcedSwitch requires at least one mandatory replacement");
             }
@@ -63,6 +67,34 @@ pub(super) fn validate_stable_state(battle: &BattleState) -> Result<(), BattleEr
         BattlePhase::BattleEnd => validate_battle_end(battle),
         BattlePhase::ResolvingTurn => invalid("ResolvingTurn is not a stable public boundary"),
     }
+}
+
+fn validate_switch_requests(battle: &BattleState) -> Result<(), BattleError> {
+    if battle.phase != BattlePhase::ForcedSwitch && !battle.switch_requests.is_empty() {
+        return invalid("mid-turn switch requests require ForcedSwitch phase");
+    }
+    let mut slots = HashSet::new();
+    for request in &battle.switch_requests {
+        if request.kind == crate::SwitchRequestKind::Random {
+            return invalid("random switch requests must settle before a public boundary");
+        }
+        if !slots.insert((request.side, request.slot)) {
+            return invalid("a slot cannot have duplicate switch requests");
+        }
+        let index = battle.side(request.side).active[request.slot.index()].ok_or_else(|| {
+            BattleError::InvalidState("switch request points to an empty active slot".to_owned())
+        })?;
+        let pokemon = battle.side(request.side).pokemon(index).ok_or_else(|| {
+            BattleError::InvalidState("switch request points outside the team".to_owned())
+        })?;
+        if pokemon.position != (PokemonPosition::Active { slot: request.slot })
+            || pokemon.current_hp == 0
+            || pokemon.is_fainted()
+        {
+            return invalid("switch request points to an inconsistent active Pokémon");
+        }
+    }
+    Ok(())
 }
 
 fn validate_active_effect_orders(battle: &BattleState) -> Result<(), BattleError> {

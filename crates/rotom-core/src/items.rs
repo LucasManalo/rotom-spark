@@ -35,7 +35,8 @@ pub enum ItemBehavior {
     AirBalloon,
     BigRoot,
     BindingBand,
-    ForcedSwitchItem,
+    EjectButton,
+    RedCard,
     FocusBand,
     FlinchItem,
     SpeciesCritRatio(u8),
@@ -238,6 +239,18 @@ pub(crate) fn register(
                 EffectOrder::new(2, 0, 0),
                 rocky_helmet,
             ),
+            ItemBehavior::EjectButton => registry.register(
+                BattleEvent::AfterMoveSecondary,
+                source,
+                EffectOrder::new(0, 2, 0),
+                eject_button,
+            ),
+            ItemBehavior::RedCard => registry.register(
+                BattleEvent::AfterMoveSecondary,
+                source,
+                EffectOrder::default(),
+                red_card,
+            ),
             ItemBehavior::CritRatio(amount) => registry.register(
                 BattleEvent::ModifyCritRatio,
                 source,
@@ -269,7 +282,6 @@ pub(crate) fn register(
             | ItemBehavior::Leftovers
             | ItemBehavior::BigRoot
             | ItemBehavior::BindingBand
-            | ItemBehavior::ForcedSwitchItem
             | ItemBehavior::FlinchItem
             | ItemBehavior::LightClay
             | ItemBehavior::MentalHerb
@@ -278,6 +290,109 @@ pub(crate) fn register(
             | ItemBehavior::MegaStone => {}
         }
     }
+}
+
+fn has_available_switch(state: &EffectState<'_>, target: PokemonRef) -> bool {
+    state
+        .battle()
+        .side(target.side)
+        .selected_team
+        .iter()
+        .copied()
+        .any(|index| {
+            state
+                .battle()
+                .side(target.side)
+                .pokemon(index)
+                .is_some_and(|pokemon| {
+                    pokemon.current_hp > 0 && pokemon.position == crate::PokemonPosition::Team
+                })
+        })
+}
+
+fn living_active(state: &EffectState<'_>, target: PokemonRef) -> bool {
+    state
+        .battle()
+        .side(target.side)
+        .pokemon(target.pokemon)
+        .is_some_and(|pokemon| {
+            pokemon.current_hp > 0
+                && matches!(pokemon.position, crate::PokemonPosition::Active { .. })
+        })
+}
+
+fn has_switch_request(
+    state: &EffectState<'_>,
+    target: PokemonRef,
+    kind: crate::SwitchRequestKind,
+) -> bool {
+    state.battle().switch_requests().iter().any(|request| {
+        request.side == target.side
+            && request.kind == kind
+            && state.battle().side(target.side).active[request.slot.index()] == Some(target.pokemon)
+    })
+}
+
+fn eject_button(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    _: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = owner_pokemon(invocation) else {
+        return Ok(());
+    };
+    let Some(source) = context.source else {
+        return Ok(());
+    };
+    if context.target != Some(owner)
+        || source == owner
+        || context.suppress_target_item
+        || context.move_category == Some(MoveCategory::Status)
+        || context.move_total_damage == 0
+        || !living_active(state, owner)
+        || !has_available_switch(state, owner)
+        || !state.battle().switch_requests().is_empty()
+        || !held_item_matches(state, invocation, owner)
+    {
+        return Ok(());
+    }
+    state.set_item(owner, None)?;
+    let _ = state.request_switch(owner, crate::SwitchRequestKind::PlayerChoice)?;
+    Ok(())
+}
+
+fn red_card(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    _: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = owner_pokemon(invocation) else {
+        return Ok(());
+    };
+    let Some(source) = context.source else {
+        return Ok(());
+    };
+    if context.target != Some(owner)
+        || source == owner
+        || context.suppress_target_item
+        || context.move_category == Some(MoveCategory::Status)
+        || context.move_total_damage == 0
+        || !living_active(state, owner)
+        || !living_active(state, source)
+        || !has_available_switch(state, source)
+        || has_switch_request(state, source, crate::SwitchRequestKind::Random)
+        || has_switch_request(state, owner, crate::SwitchRequestKind::Random)
+        || !held_item_matches(state, invocation, owner)
+    {
+        return Ok(());
+    }
+    state.set_item(owner, None)?;
+    if !context.source_forced_switch_blocked {
+        let _ = state.request_switch(source, crate::SwitchRequestKind::Random)?;
+    }
+    Ok(())
 }
 
 fn held_item_matches(

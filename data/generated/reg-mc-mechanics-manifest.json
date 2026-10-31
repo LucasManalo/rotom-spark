@@ -3919,17 +3919,19 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:crates/rotom-dex/src/combat.rs",
-        "file:docs/research/pr-13-5-final-ability-coverage.md",
-        "species/malamar/ability-slot/1"
+        "file:data/fixtures/differential/forced-switch-lifecycle.json",
+        "file:docs/research/pr-15-2-forced-switch-lifecycle.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#red_card_uses_forced_switch_rng_and_suction_cups_blocks_only_the_drag",
+        "species/malamar/ability-slot/1",
+        "unit:crates/rotom-dex/tests/combat.rs#red_card_uses_forced_switch_rng_and_suction_cups_blocks_only_the_drag"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "partial",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.5.12"
+      "implementation": "implemented",
+      "verification": "unit_tested",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.2"
     },
     {
       "id": "superluck",
@@ -9826,17 +9828,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "file:data/fixtures/differential/forced-switch-lifecycle.json",
+        "file:docs/research/pr-15-2-forced-switch-lifecycle.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#eject_button_pauses_and_resumes_the_remaining_action_queue",
         "species/abomasnow",
         "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.4"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.2"
     },
     {
       "id": "electricseed",
@@ -11266,17 +11270,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "file:data/fixtures/differential/forced-switch-lifecycle.json",
+        "file:docs/research/pr-15-2-forced-switch-lifecycle.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#red_card_uses_forced_switch_rng_and_suction_cups_blocks_only_the_drag",
         "species/abomasnow",
         "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.4"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.2"
     },
     {
       "id": "rindoberry",
@@ -48349,17 +48355,17 @@
         "total": 215,
         "implementation": {
           "unsupported": 0,
-          "partial": 95,
-          "implemented": 120
+          "partial": 94,
+          "implemented": 121
         },
         "verification": {
-          "not_tested": 86,
-          "unit_tested": 78,
+          "not_tested": 85,
+          "unit_tested": 79,
           "differential_verified": 51
         },
         "interaction_verification": {
-          "not_tested": 138,
-          "unit_tested": 77,
+          "not_tested": 137,
+          "unit_tested": 78,
           "differential_verified": 0
         },
         "reachability": {
@@ -48418,8 +48424,8 @@
         "total": 166,
         "implementation": {
           "unsupported": 0,
-          "partial": 111,
-          "implemented": 55
+          "partial": 109,
+          "implemented": 57
         },
         "verification": {
           "not_tested": 1,
@@ -48427,8 +48433,8 @@
           "differential_verified": 0
         },
         "interaction_verification": {
-          "not_tested": 157,
-          "unit_tested": 9,
+          "not_tested": 155,
+          "unit_tested": 11,
           "differential_verified": 0
         },
         "reachability": {

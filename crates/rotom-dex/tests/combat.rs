@@ -122,6 +122,13 @@ fn berry_lifecycle_fixture() -> serde_json::Value {
     .expect("berry lifecycle fixture")
 }
 
+fn forced_switch_fixture() -> serde_json::Value {
+    serde_json::from_str(include_str!(
+        "../../../data/fixtures/differential/forced-switch-lifecycle.json"
+    ))
+    .expect("forced-switch lifecycle fixture")
+}
+
 fn single_move_action(move_slot: u8, target: ActionTarget) -> JointAction {
     JointAction::Turn {
         p1: TurnChoice {
@@ -186,6 +193,179 @@ fn execute_single_move(
     .expect("supported primary non-damage move")
 }
 
+fn forced_switch_action(side: SideId, slot: ActiveSlot, pokemon: PokemonIndex) -> JointAction {
+    let replacement = TurnChoice {
+        actions: ActiveSlot::ALL.map(|candidate| {
+            if candidate == slot {
+                PokemonAction::Switch { pokemon }
+            } else {
+                PokemonAction::Pass
+            }
+        }),
+    };
+    let pass = TurnChoice {
+        actions: [PokemonAction::Pass, PokemonAction::Pass],
+    };
+    match side {
+        SideId::P1 => JointAction::ForcedSwitch {
+            p1: replacement,
+            p2: pass,
+        },
+        SideId::P2 => JointAction::ForcedSwitch {
+            p1: pass,
+            p2: replacement,
+        },
+    }
+}
+
+#[test]
+fn eject_button_pauses_and_resumes_the_remaining_action_queue() {
+    let dex = champions_reg_mc().unwrap();
+    let eject_button = dex.resolve_item("ejectbutton").unwrap().0;
+    let source = set_with_moves(&dex, "metagross", "clearbody", &["tackle"]);
+    let mut target = set_with_moves(&dex, "blissey", "naturalcure", &["swordsdance"]);
+    target.item = Some(eject_button);
+    let battle = selected_primary_battle(&dex, &source, &target, 0x15_02);
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let fixture = forced_switch_fixture();
+    let pinned = fixture["cases"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|case| case["id"] == "eject-button-pauses-queue")
+        .unwrap();
+
+    let interrupted = step(
+        &battle,
+        &single_move_action(0, ActionTarget::Foe(ActiveSlot::Left)),
+        &mechanics,
+    )
+    .unwrap();
+    assert_eq!(interrupted.state.phase(), BattlePhase::ForcedSwitch);
+    assert_eq!(pinned["pending"]["request_state"], "switch");
+    assert_eq!(pinned["pending"]["holder_item"], serde_json::Value::Null);
+    assert_ne!(interrupted.state.queue().actions.len(), 0);
+    assert_eq!(interrupted.state.switch_requests().len(), 1);
+    assert_eq!(interrupted.state.switch_requests()[0].side, SideId::P2);
+    assert_eq!(
+        interrupted.state.switch_requests()[0].slot,
+        ActiveSlot::Left
+    );
+    assert_eq!(
+        interrupted
+            .state
+            .side(SideId::P2)
+            .pokemon(PokemonIndex::new(0))
+            .unwrap()
+            .item,
+        None
+    );
+
+    let restored: BattleState =
+        serde_json::from_str(&serde_json::to_string(&interrupted.state).unwrap()).unwrap();
+    assert_eq!(restored, interrupted.state);
+
+    let resumed = step(
+        &interrupted.state,
+        &forced_switch_action(SideId::P2, ActiveSlot::Left, PokemonIndex::new(2)),
+        &mechanics,
+    )
+    .unwrap();
+    let replay = step(
+        &restored,
+        &forced_switch_action(SideId::P2, ActiveSlot::Left, PokemonIndex::new(2)),
+        &mechanics,
+    )
+    .unwrap();
+    assert_eq!(resumed, replay);
+    assert_eq!(resumed.state.phase(), BattlePhase::TurnSelection);
+    assert_eq!(resumed.state.turn(), 2);
+    assert_eq!(resumed.state.queue().actions.len(), 0);
+    assert_eq!(resumed.state.switch_requests().len(), 0);
+    assert_eq!(
+        resumed.state.side(SideId::P2).active[ActiveSlot::Left.index()],
+        Some(PokemonIndex::new(2))
+    );
+    let events = &resumed.diagnostics.turn.as_ref().unwrap().events;
+    let switch_out = events
+        .iter()
+        .position(|event| event.event == BattleEvent::SwitchOut)
+        .unwrap();
+    let switch_in = events
+        .iter()
+        .position(|event| event.event == BattleEvent::SwitchIn)
+        .unwrap();
+    assert!(switch_out < switch_in);
+}
+
+#[test]
+fn red_card_uses_forced_switch_rng_and_suction_cups_blocks_only_the_drag() {
+    let dex = champions_reg_mc().unwrap();
+    let red_card = dex.resolve_item("redcard").unwrap().0;
+    let target_ref = PokemonRef::new(SideId::P2, PokemonIndex::new(0));
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let fixture = forced_switch_fixture();
+    let red_card_battle = |ability: &str, seed| {
+        let source = set_with_moves(&dex, "shuckle", ability, &["tackle"]);
+        let mut target = set_with_moves(&dex, "blissey", "naturalcure", &["swordsdance"]);
+        target.item = Some(red_card);
+        selected_primary_battle(&dex, &source, &target, seed)
+    };
+
+    let mut ordinary = red_card_battle("sturdy", 0x15_02_01);
+    ordinary.enable_rng_trace();
+    let ordinary = step(
+        &ordinary,
+        &single_move_action(0, ActionTarget::Foe(ActiveSlot::Left)),
+        &mechanics,
+    )
+    .unwrap();
+    assert_eq!(ordinary.state.phase(), BattlePhase::TurnSelection);
+    assert_eq!(fixture["cases"][1]["source_active"], false);
+    assert_ne!(
+        ordinary.state.side(SideId::P1).active[ActiveSlot::Left.index()],
+        Some(PokemonIndex::new(0))
+    );
+    assert!(ordinary
+        .state
+        .rng()
+        .trace()
+        .unwrap()
+        .iter()
+        .any(|entry| entry.reason == RngReason::ForcedSwitch));
+    assert_eq!(
+        ordinary
+            .state
+            .side(target_ref.side)
+            .pokemon(target_ref.pokemon)
+            .unwrap()
+            .item,
+        None
+    );
+
+    let blocked = step(
+        &red_card_battle("suctioncups", 0x15_02_02),
+        &single_move_action(0, ActionTarget::Foe(ActiveSlot::Left)),
+        &mechanics,
+    )
+    .unwrap();
+    assert_eq!(
+        blocked.state.side(SideId::P1).active[ActiveSlot::Left.index()],
+        Some(PokemonIndex::new(0))
+    );
+    assert_eq!(fixture["cases"][2]["source_active"], true);
+    assert_eq!(
+        blocked
+            .state
+            .side(target_ref.side)
+            .pokemon(target_ref.pokemon)
+            .unwrap()
+            .item,
+        None,
+        "Red Card is consumed even when Suction Cups prevents the drag"
+    );
+}
+
 #[test]
 #[allow(clippy::too_many_lines)]
 fn primary_non_damage_operations_share_the_canonical_executor() {
@@ -197,7 +377,6 @@ fn primary_non_damage_operations_share_the_canonical_executor() {
         &["swordsdance", "recover", "willowisp", "sunnyday"],
     );
     let p2 = set_with_moves(&dex, "blastoise", "torrent", &["swordsdance"]);
-    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
     let action = |slot, target| PokemonAction::Move {
         move_slot: MoveSlotIndex::new(slot),
         target,
@@ -216,6 +395,7 @@ fn primary_non_damage_operations_share_the_canonical_executor() {
         )
         .unwrap();
     let battle = builder.build().unwrap();
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
     let result = step(
         &battle,
         &JointAction::Turn {
@@ -3536,7 +3716,8 @@ fn redirection_ignores_a_redirector_that_fainted_before_the_later_attack() {
             },
         )
         .unwrap();
-    let result = step(
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let interrupted = step(
         &builder.build().unwrap(),
         &JointAction::Turn {
             p1: TurnChoice {
@@ -3552,10 +3733,16 @@ fn redirection_ignores_a_redirector_that_fainted_before_the_later_attack() {
                 ],
             },
         },
-        &Mechanics::new(&dex, &EffectRegistry::new()),
+        &mechanics,
     )
     .unwrap();
-    let attacks = result
+    let resumed = step(
+        &interrupted.state,
+        &forced_switch_action(SideId::P2, ActiveSlot::Left, PokemonIndex::new(2)),
+        &mechanics,
+    )
+    .unwrap();
+    let mut attacks = interrupted
         .diagnostics
         .turn
         .unwrap()
@@ -3563,6 +3750,15 @@ fn redirection_ignores_a_redirector_that_fainted_before_the_later_attack() {
         .into_iter()
         .filter(|outcome| outcome.source.side == SideId::P1)
         .collect::<Vec<_>>();
+    attacks.extend(
+        resumed
+            .diagnostics
+            .turn
+            .unwrap()
+            .target_outcomes
+            .into_iter()
+            .filter(|outcome| outcome.source.side == SideId::P1),
+    );
     assert_eq!(attacks.len(), 2);
     assert!(attacks[0].redirected);
     assert!(attacks[0].fainted);
@@ -3699,6 +3895,7 @@ fn rage_powder_respects_grass_overcoat_and_safety_goggles_and_feint_breaks_prote
     let attacker = set_with_moves(&dex, "goodra", "gooey", &["feint", "protect"]);
     let defender = set_with_moves(&dex, "clefairy", "friendguard", &["protect"]);
     let battle = selected_battle_for_sets(&dex, &attacker, &defender, 0x135, false);
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
     let result = step(
         &battle,
         &JointAction::Turn {
@@ -3715,7 +3912,7 @@ fn rage_powder_respects_grass_overcoat_and_safety_goggles_and_feint_breaks_prote
                 ],
             },
         },
-        &Mechanics::new(&dex, &EffectRegistry::new()),
+        &mechanics,
     )
     .expect("Feint turn");
     let feint_id = dex.resolve_move("feint").expect("Feint").0;
@@ -4311,7 +4508,7 @@ fn third_thirty_items_resolve_to_explicit_behavior_families() {
         ("airballoon", ItemBehavior::AirBalloon),
         ("bigroot", ItemBehavior::BigRoot),
         ("bindingband", ItemBehavior::BindingBand),
-        ("ejectbutton", ItemBehavior::ForcedSwitchItem),
+        ("ejectbutton", ItemBehavior::EjectButton),
         ("focusband", ItemBehavior::FocusBand),
         ("kingsrock", ItemBehavior::FlinchItem),
         ("leek", ItemBehavior::SpeciesCritRatio(2)),
@@ -4321,7 +4518,7 @@ fn third_thirty_items_resolve_to_explicit_behavior_families() {
         ("metronome", ItemBehavior::Metronome),
         ("normalgem", ItemBehavior::NormalGem),
         ("quickclaw", ItemBehavior::QuickClaw),
-        ("redcard", ItemBehavior::ForcedSwitchItem),
+        ("redcard", ItemBehavior::RedCard),
         ("rockyhelmet", ItemBehavior::RockyHelmet),
         ("scopelens", ItemBehavior::CritRatio(1)),
         ("shedshell", ItemBehavior::ShedShell),
@@ -6272,8 +6469,10 @@ fn mechanics_manifest_drives_every_move_capability_and_execution_smoke_case() {
 }
 
 #[test]
+#[allow(clippy::too_many_lines)]
 fn combat_damage_processes_faints_and_requests_replacements() {
     let dex = champions_reg_mc().expect("generated Dex");
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
     let attacker = set(
         &dex,
         "glimmora",
@@ -6336,7 +6535,7 @@ fn combat_damage_processes_faints_and_requests_replacements() {
                 ],
             },
         },
-        &Mechanics::new(&dex, &EffectRegistry::new()),
+        &mechanics,
     )
     .expect("resolution");
     let battle = result.state;
@@ -6347,7 +6546,7 @@ fn combat_damage_processes_faints_and_requests_replacements() {
         .pokemon(PokemonIndex::new(0))
         .expect("target")
         .is_fainted());
-    assert!(battle
+    assert!(!battle
         .side(SideId::P2)
         .pokemon(PokemonIndex::new(1))
         .expect("target")
@@ -6358,7 +6557,29 @@ fn combat_damage_processes_faints_and_requests_replacements() {
             .expect("request")
             .expect("needed")
             .required,
-        2
+        1
+    );
+
+    let resumed = step(
+        &battle,
+        &forced_switch_action(SideId::P2, ActiveSlot::Left, PokemonIndex::new(2)),
+        &mechanics,
+    )
+    .expect("replacement should resume the pending attack queue");
+    assert!(resumed
+        .state
+        .side(SideId::P2)
+        .pokemon(PokemonIndex::new(1))
+        .expect("second target")
+        .is_fainted());
+    assert_eq!(
+        resumed
+            .state
+            .replacement_request(SideId::P2)
+            .unwrap()
+            .unwrap()
+            .required,
+        1
     );
 }
 

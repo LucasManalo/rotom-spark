@@ -179,6 +179,7 @@ pub enum AbilityBehavior {
     DeferredVolatileInteraction,
     DeferredTypeInteraction,
     DeferredSwitchInteraction,
+    PreventsForcedSwitch,
     DeferredWeightInteraction,
     DeferredGenderInteraction,
     DeferredTurnTracking,

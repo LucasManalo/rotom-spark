@@ -1457,7 +1457,7 @@
       "id": "stickyhold", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
     },
     {
-      "id": "suctioncups", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
+      "id": "suctioncups", "kind": "ability", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 15.2", "evidence": ["file:docs/research/pr-15-2-forced-switch-lifecycle.md", "unit:crates/rotom-dex/tests/combat.rs#red_card_uses_forced_switch_rng_and_suction_cups_blocks_only_the_drag", "interaction_unit:crates/rotom-dex/tests/combat.rs#red_card_uses_forced_switch_rng_and_suction_cups_blocks_only_the_drag", "file:data/fixtures/differential/forced-switch-lifecycle.json"]
     },
     {
       "id": "symbiosis", "kind": "ability", "implementation": "partial", "verification": "not_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.5.12", "evidence": ["file:docs/research/pr-13-5-final-ability-coverage.md", "file:crates/rotom-dex/src/combat.rs"]
@@ -1679,7 +1679,7 @@
       "id": "bindingband", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"]
     },
     {
-      "id": "ejectbutton", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"]
+      "id": "ejectbutton", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 15.2", "evidence": ["file:docs/research/pr-15-2-forced-switch-lifecycle.md", "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families", "interaction_unit:crates/rotom-dex/tests/combat.rs#eject_button_pauses_and_resumes_the_remaining_action_queue", "file:data/fixtures/differential/forced-switch-lifecycle.json"]
     },
     {
       "id": "focusband", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-core/src/items.rs#third_batch_callbacks_apply_consumption_recoil_healing_and_stat_rules"]
@@ -1709,7 +1709,7 @@
       "id": "quickclaw", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-core/src/items.rs#third_batch_callbacks_apply_consumption_recoil_healing_and_stat_rules"]
     },
     {
-      "id": "redcard", "kind": "item", "implementation": "partial", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"]
+      "id": "redcard", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "unit_tested", "owner_pr": "PR 15.2", "evidence": ["file:docs/research/pr-15-2-forced-switch-lifecycle.md", "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families", "interaction_unit:crates/rotom-dex/tests/combat.rs#red_card_uses_forced_switch_rng_and_suction_cups_blocks_only_the_drag", "file:data/fixtures/differential/forced-switch-lifecycle.json"]
     },
     {
       "id": "rockyhelmet", "kind": "item", "implementation": "implemented", "verification": "unit_tested", "interaction_verification": "not_tested", "owner_pr": "PR 13.6.4", "evidence": ["file:docs/research/pr-13-6-third-thirty-item-batch.md", "unit:crates/rotom-core/src/items.rs#third_batch_callbacks_apply_consumption_recoil_healing_and_stat_rules"]

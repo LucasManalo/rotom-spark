@@ -3,7 +3,7 @@ mod validation;
 use crate::{
     AbilityId, ActiveSlot, BattleError, BattleStat, BattleState, ConditionId, ConditionState,
     ItemId, MajorStatus, MoveSlotIndex, PokemonPosition, PokemonRef, SideId, StatStageChange,
-    StatusState,
+    StatusState, SwitchRequest, SwitchRequestKind,
 };
 
 /// The actual bounded result of one HP mutation.
@@ -124,6 +124,58 @@ impl<'a> StateKernel<'a> {
     ) -> Result<Option<ItemId>, BattleError> {
         let pokemon = self.pokemon_mut(target)?;
         Ok(std::mem::replace(&mut pokemon.item, item))
+    }
+
+    pub(crate) fn request_switch(
+        &mut self,
+        target: PokemonRef,
+        kind: SwitchRequestKind,
+    ) -> Result<bool, BattleError> {
+        let pokemon = self.pokemon(target)?;
+        let PokemonPosition::Active { slot } = pokemon.position else {
+            return Err(BattleError::InvalidState(
+                "a switch request requires an active Pokémon".to_owned(),
+            ));
+        };
+        if pokemon.current_hp == 0 || pokemon.is_fainted() {
+            return Err(BattleError::InvalidState(
+                "a switch request requires a living Pokémon".to_owned(),
+            ));
+        }
+        if self.battle.side(target.side).active[slot.index()] != Some(target.pokemon) {
+            return Err(BattleError::InvalidState(
+                "switch-request target disagrees with its active slot".to_owned(),
+            ));
+        }
+        if self
+            .battle
+            .switch_requests
+            .iter()
+            .any(|request| request.side == target.side && request.slot == slot)
+        {
+            return Ok(false);
+        }
+        self.battle.switch_requests.push(SwitchRequest {
+            side: target.side,
+            slot,
+            kind,
+        });
+        self.battle.phase = crate::BattlePhase::ForcedSwitch;
+        Ok(true)
+    }
+
+    pub(crate) fn clear_switch_request(
+        &mut self,
+        side: SideId,
+        slot: ActiveSlot,
+    ) -> Result<SwitchRequest, BattleError> {
+        let index = self
+            .battle
+            .switch_requests
+            .iter()
+            .position(|request| request.side == side && request.slot == slot)
+            .ok_or_else(|| BattleError::InvalidState("switch request is missing".to_owned()))?;
+        Ok(self.battle.switch_requests.remove(index))
     }
 
     pub(crate) fn consume_berry(

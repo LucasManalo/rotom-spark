@@ -809,7 +809,6 @@ impl BattleState {
         effects: &EffectRegistry,
         field_effects: &FieldEffectIds,
     ) -> Result<TurnResolution, BattleError> {
-        let queued = self.queue.actions.clone();
         let mut resolution = TurnResolution::default();
         self.activate_update_berries(data, field_effects)?;
         resolution.events.push(effects.dispatch(
@@ -818,7 +817,8 @@ impl BattleState {
             EventContext::default(),
             EventValue::None,
         )?);
-        for (action_index, action) in queued.iter().copied().enumerate() {
+        while let Some(action) = self.queue.actions.first().copied() {
+            self.queue.actions.remove(0);
             if self.phase == BattlePhase::BattleEnd {
                 break;
             }
@@ -857,7 +857,9 @@ impl BattleState {
                     target,
                     mega: false,
                 } => {
-                    let later_actors = queued[action_index + 1..]
+                    let later_actors = self
+                        .queue
+                        .actions
                         .iter()
                         .map(|later| PokemonRef::new(later.side, later.pokemon))
                         .collect::<Vec<_>>();
@@ -887,6 +889,10 @@ impl BattleState {
                     ));
                 }
                 PokemonAction::Pass => {}
+            }
+            self.settle_random_switch_requests(data, effects, field_effects, &mut resolution)?;
+            if self.phase == BattlePhase::ForcedSwitch {
+                return Ok(resolution);
             }
         }
 
@@ -1578,6 +1584,7 @@ impl BattleState {
         let hit_count = self.resolve_hit_count(move_context.move_data.hit_sequence)?;
         let mut any_hit = false;
         let mut total_applied_damage = 0_u32;
+        let mut after_move_damage = Vec::<(PokemonRef, u32)>::new();
         let mut hit_outcomes = Vec::new();
         let mut self_effect_applied = false;
         for (index, target_context) in eligible {
@@ -1683,6 +1690,16 @@ impl BattleState {
                 self.apply_reactive_field_abilities(data, field_effects, target, applied_hp_loss)?;
                 total_applied_damage =
                     total_applied_damage.saturating_add(u32::from(applied_hp_loss));
+                if applied_hp_loss > 0 {
+                    if let Some((_, total)) = after_move_damage
+                        .iter_mut()
+                        .find(|(damaged, _)| *damaged == target)
+                    {
+                        *total = total.saturating_add(u32::from(applied_hp_loss));
+                    } else {
+                        after_move_damage.push((target, u32::from(applied_hp_loss)));
+                    }
+                }
                 let outcome = TargetOutcome {
                     source: move_context.source,
                     move_id: move_context.move_id,
@@ -1746,6 +1763,17 @@ impl BattleState {
             effects,
             resolution,
         )?;
+        for (target, damage) in after_move_damage {
+            self.dispatch_after_move_secondary(
+                data,
+                effects,
+                field_effects,
+                move_context,
+                target,
+                damage,
+                resolution,
+            )?;
+        }
         if !any_hit {
             resolution.actions.push(ResolvedAction::Skipped {
                 side: move_context.queued.side,
@@ -1806,6 +1834,47 @@ impl BattleState {
                 BattleError::DataMismatch("move declares an invalid hit sequence".to_owned()),
             ),
         }
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn dispatch_after_move_secondary<D: CombatData>(
+        &mut self,
+        data: &D,
+        effects: &EffectRegistry,
+        field_effects: &FieldEffectIds,
+        context: &MoveExecutionContext,
+        target: PokemonRef,
+        damage: u32,
+        resolution: &mut TurnResolution,
+    ) -> Result<(), BattleError> {
+        let source_forced_switch_blocked = self
+            .side(context.source.side)
+            .pokemon(context.source.pokemon)
+            .is_some_and(|pokemon| {
+                data.ability_has_behavior(
+                    pokemon.ability,
+                    crate::AbilityBehavior::PreventsForcedSwitch,
+                )
+            });
+        resolution.events.push(effects.dispatch(
+            self,
+            BattleEvent::AfterMoveSecondary,
+            EventContext {
+                source: Some(context.source),
+                target: Some(target),
+                move_id: Some(context.move_id),
+                suppress_target_ability: context.suppress_target_ability,
+                suppress_target_item: !field_effects.item_is_active_for(self, data, target),
+                source_forced_switch_blocked,
+                move_category: Some(context.move_data.category),
+                move_type: Some(context.move_data.move_type),
+                move_flags: context.move_data.interaction_flags,
+                move_total_damage: damage,
+                ..EventContext::default()
+            },
+            EventValue::None,
+        )?);
+        Ok(())
     }
 
     fn apply_drain<D: CombatData>(
@@ -2043,6 +2112,7 @@ impl BattleState {
         };
         let mut any_hit = false;
         let mut total_applied = 0_u32;
+        let mut after_move_damage = Vec::new();
         for (index, target_context) in eligible {
             let target_state = self
                 .side(target_context.target.side)
@@ -2149,6 +2219,9 @@ impl BattleState {
                 applied_hp_loss,
             )?;
             total_applied = total_applied.saturating_add(u32::from(applied_hp_loss));
+            if applied_hp_loss > 0 {
+                after_move_damage.push((target_context.target, u32::from(applied_hp_loss)));
+            }
             outcomes[index] = Some(TargetOutcome {
                 source: context.source,
                 move_id: context.move_id,
@@ -2194,6 +2267,17 @@ impl BattleState {
             .target_outcomes
             .extend(outcomes.into_iter().flatten());
         self.apply_recoil(data, context, total_applied, effects, resolution)?;
+        for (target, damage) in after_move_damage {
+            self.dispatch_after_move_secondary(
+                data,
+                effects,
+                field_effects,
+                context,
+                target,
+                damage,
+                resolution,
+            )?;
+        }
         resolution.actions.push(if any_hit {
             ResolvedAction::Used {
                 side: context.queued.side,
@@ -3902,8 +3986,28 @@ impl BattleState {
         incoming: PokemonIndex,
         resolution: &mut TurnResolution,
     ) -> Result<bool, BattleError> {
-        let side = action.side;
-        let slot = action.slot;
+        self.resolve_active_switch(
+            data,
+            effects,
+            field_effects,
+            action.side,
+            action.slot,
+            incoming,
+            resolution,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn resolve_active_switch<D: CombatData>(
+        &mut self,
+        data: &D,
+        effects: &EffectRegistry,
+        field_effects: &FieldEffectIds,
+        side: SideId,
+        slot: ActiveSlot,
+        incoming: PokemonIndex,
+        resolution: &mut TurnResolution,
+    ) -> Result<bool, BattleError> {
         let outgoing = self.side(side).active[slot.index()].ok_or_else(|| {
             BattleError::InvalidState("queued switch has no outgoing Pokémon".to_owned())
         })?;
@@ -3944,6 +4048,154 @@ impl BattleState {
         )?);
         self.activate_update_berries(data, field_effects)?;
         Ok(true)
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn resolve_requested_switch<D: CombatData>(
+        &mut self,
+        data: &D,
+        effects: &EffectRegistry,
+        field_effects: &FieldEffectIds,
+        side: SideId,
+        slot: ActiveSlot,
+        incoming: PokemonIndex,
+        resolution: &mut TurnResolution,
+    ) -> Result<(), BattleError> {
+        let request = self
+            .switch_requests
+            .iter()
+            .find(|request| request.side == side && request.slot == slot)
+            .copied()
+            .ok_or_else(|| BattleError::IllegalChoice("slot has no switch request".to_owned()))?;
+        if request.kind != crate::SwitchRequestKind::PlayerChoice {
+            return Err(BattleError::InvalidState(
+                "random switch request escaped internal settlement".to_owned(),
+            ));
+        }
+        if !self.resolve_active_switch(
+            data,
+            effects,
+            field_effects,
+            side,
+            slot,
+            incoming,
+            resolution,
+        )? {
+            return Err(BattleError::InvalidState(
+                "requested switch was cancelled".to_owned(),
+            ));
+        }
+        StateKernel::new(self).clear_switch_request(side, slot)?;
+        self.settle_switch_phase()
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn resolve_fainted_replacement<D: CombatData>(
+        &mut self,
+        data: &D,
+        effects: &EffectRegistry,
+        field_effects: &FieldEffectIds,
+        side: SideId,
+        slot: ActiveSlot,
+        incoming: PokemonIndex,
+        resolution: &mut TurnResolution,
+    ) -> Result<(), BattleError> {
+        let request = self.replacement_request(side)?.ok_or_else(|| {
+            BattleError::IllegalChoice(format!("{side:?} has no replacement due"))
+        })?;
+        if !request.slots.contains(&slot) || self.side(side).active[slot.index()].is_some() {
+            return Err(BattleError::IllegalChoice(
+                "slot does not need a fainted replacement".to_owned(),
+            ));
+        }
+        if !request.available.contains(&incoming) {
+            return Err(BattleError::IllegalChoice(
+                "selected Pokémon is not an available replacement".to_owned(),
+            ));
+        }
+        StateKernel::new(self).fill_active_position(side, slot, incoming)?;
+        let incoming_ref = PokemonRef::new(side, incoming);
+        self.apply_direct_switch_in_abilities(
+            data,
+            effects,
+            field_effects,
+            incoming_ref,
+            resolution,
+        )?;
+        if let Some(terrain) = field_effects.terrain_environment(self) {
+            self.activate_terrain_seeds(data, field_effects, terrain)?;
+        }
+        resolution.events.push(effects.dispatch(
+            self,
+            BattleEvent::SwitchIn,
+            EventContext {
+                source: Some(incoming_ref),
+                ..EventContext::default()
+            },
+            EventValue::None,
+        )?);
+        self.activate_update_berries(data, field_effects)?;
+        self.settle_switch_phase()
+    }
+
+    fn settle_random_switch_requests<D: CombatData>(
+        &mut self,
+        data: &D,
+        effects: &EffectRegistry,
+        field_effects: &FieldEffectIds,
+        resolution: &mut TurnResolution,
+    ) -> Result<(), BattleError> {
+        if !self
+            .switch_requests
+            .iter()
+            .any(|request| request.kind == crate::SwitchRequestKind::Random)
+        {
+            return Ok(());
+        }
+        while let Some(request) = self
+            .switch_requests
+            .iter()
+            .find(|request| request.kind == crate::SwitchRequestKind::Random)
+            .copied()
+        {
+            let available = self
+                .side(request.side)
+                .selected_team
+                .iter()
+                .copied()
+                .filter(|index| {
+                    self.side(request.side)
+                        .pokemon(*index)
+                        .is_some_and(|pokemon| {
+                            pokemon.current_hp > 0
+                                && pokemon.position == crate::PokemonPosition::Team
+                        })
+                })
+                .collect::<Vec<_>>();
+            let choice = usize::try_from(
+                self.rng
+                    .range(RngReason::ForcedSwitch, 0..available.len() as u64)?,
+            )
+            .map_err(|_| BattleError::InvalidState("switch choice overflowed".to_owned()))?;
+            let incoming = available.get(choice).copied().ok_or_else(|| {
+                BattleError::InvalidState("random switch request has no replacement".to_owned())
+            })?;
+            if !self.resolve_active_switch(
+                data,
+                effects,
+                field_effects,
+                request.side,
+                request.slot,
+                incoming,
+                resolution,
+            )? {
+                return Err(BattleError::InvalidState(
+                    "random forced switch was cancelled".to_owned(),
+                ));
+            }
+            StateKernel::new(self).clear_switch_request(request.side, request.slot)?;
+        }
+        self.settle_switch_phase()
     }
 
     fn apply_direct_switch_in_abilities<D: CombatData>(

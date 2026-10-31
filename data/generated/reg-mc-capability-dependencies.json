@@ -20,14 +20,14 @@
       "ability": {
         "reachable": 215,
         "unsupported": 0,
-        "partial": 95,
-        "implemented": 120
+        "partial": 94,
+        "implemented": 121
       },
       "item": {
         "reachable": 166,
         "unsupported": 0,
-        "partial": 111,
-        "implemented": 55
+        "partial": 109,
+        "implemented": 57
       },
       "move": {
         "reachable": 510,
@@ -37,15 +37,15 @@
       }
     },
     "executable_capability_coverage": {
-      "total": 65,
+      "total": 66,
       "unsupported": 22,
       "partial": 20,
-      "implemented": 18,
+      "implemented": 19,
       "verified": 5
     },
     "dependency_targets": {
-      "ability": 95,
-      "item": 111,
+      "ability": 94,
+      "item": 109,
       "move": 287
     }
   },
@@ -1009,6 +1009,36 @@
       "would_unlock_if_completed": []
     },
     {
+      "id": "emergency_exit_trigger",
+      "status": "unsupported",
+      "title": "Emergency Exit trigger",
+      "sub_capabilities": [
+        "half-HP crossing",
+        "damage-source timing",
+        "switch request"
+      ],
+      "lifecycle_and_ordering": [
+        "half-HP crossing",
+        "damage-source timing",
+        "switch request"
+      ],
+      "known_gaps": [
+        "Emergency Exit has not yet been connected to the shared forced-switch lifecycle."
+      ],
+      "tests": [],
+      "differential_fixtures": [],
+      "pinned_reference_evidence": [
+        "showdown:data/abilities.ts:Abilities.emergencyexit"
+      ],
+      "blocked_identities": [
+        "ability:emergencyexit"
+      ],
+      "unlocked_identities": [],
+      "would_unlock_if_completed": [
+        "ability:emergencyexit"
+      ]
+    },
+    {
       "id": "end_turn_effects",
       "status": "partial",
       "title": "End-turn and delayed effects",
@@ -1191,42 +1221,45 @@
     },
     {
       "id": "forced_switch",
-      "status": "unsupported",
+      "status": "implemented",
       "title": "Forced-switch lifecycle",
       "sub_capabilities": [
         "request",
-        "queue mutation",
-        "replacement",
+        "queue preservation",
+        "replacement choice",
+        "random replacement",
         "entry/exit hooks"
       ],
       "lifecycle_and_ordering": [
         "request",
-        "queue mutation",
-        "replacement",
+        "queue preservation",
+        "replacement choice",
+        "random replacement",
         "entry/exit hooks"
       ],
       "known_gaps": [
-        "Eject Button, Red Card, Emergency Exit, pivots, and phazing are not end-to-end."
+        "The shared lifecycle is implemented; individual pivot, phazing, and ability trigger predicates remain separate capabilities."
       ],
-      "tests": [],
-      "differential_fixtures": [],
+      "tests": [
+        "unit:crates/rotom-dex/tests/combat.rs#eject_button_pauses_and_resumes_the_remaining_action_queue",
+        "unit:crates/rotom-dex/tests/combat.rs#red_card_uses_forced_switch_rng_and_suction_cups_blocks_only_the_drag"
+      ],
+      "differential_fixtures": [
+        "differential:data/fixtures/differential/forced-switch-lifecycle.json#eject-button-pauses-queue",
+        "differential:data/fixtures/differential/forced-switch-lifecycle.json#red-card-random-drag"
+      ],
       "pinned_reference_evidence": [
         "showdown:data/items.ts:Items.ejectbutton",
-        "showdown:data/items.ts:Items.redcard"
+        "showdown:data/items.ts:Items.redcard",
+        "showdown:sim/battle-actions.ts:BattleActions.switchIn"
       ],
-      "blocked_identities": [
-        "ability:emergencyexit",
+      "blocked_identities": [],
+      "unlocked_identities": [
         "ability:suctioncups",
         "item:ejectbutton",
         "item:redcard"
       ],
-      "unlocked_identities": [],
-      "would_unlock_if_completed": [
-        "ability:emergencyexit",
-        "ability:suctioncups",
-        "item:ejectbutton",
-        "item:redcard"
-      ]
+      "would_unlock_if_completed": []
     },
     {
       "id": "form_change",
@@ -3376,10 +3409,11 @@
       "name": "Emergency Exit",
       "identity_status": "partial",
       "capabilities": [
+        "emergency_exit_trigger",
         "forced_switch"
       ],
       "outstanding_blockers": [
-        "forced_switch"
+        "emergency_exit_trigger"
       ],
       "unlocked": false,
       "tests": [],
@@ -4632,24 +4666,6 @@
     },
     {
       "kind": "ability",
-      "id": "suctioncups",
-      "name": "Suction Cups",
-      "identity_status": "partial",
-      "capabilities": [
-        "forced_switch"
-      ],
-      "outstanding_blockers": [
-        "forced_switch"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/abilities.ts:Abilities.suctioncups"
-      ]
-    },
-    {
-      "kind": "ability",
       "id": "supersweetsyrup",
       "name": "Supersweet Syrup",
       "identity_status": "partial",
@@ -5734,26 +5750,6 @@
       "differential_fixtures": [],
       "pinned_reference_evidence": [
         "showdown:data/items.ts:Items.eelektrossite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "ejectbutton",
-      "name": "Eject Button",
-      "identity_status": "partial",
-      "capabilities": [
-        "forced_switch"
-      ],
-      "outstanding_blockers": [
-        "forced_switch"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.ejectbutton"
       ]
     },
     {
@@ -6951,26 +6947,6 @@
       "differential_fixtures": [],
       "pinned_reference_evidence": [
         "showdown:data/items.ts:Items.raichunitey"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "redcard",
-      "name": "Red Card",
-      "identity_status": "partial",
-      "capabilities": [
-        "forced_switch"
-      ],
-      "outstanding_blockers": [
-        "forced_switch"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.redcard"
       ]
     },
     {

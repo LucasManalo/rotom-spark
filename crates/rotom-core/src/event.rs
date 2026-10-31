@@ -51,6 +51,8 @@ pub enum BattleEvent {
     AfterSetStatus,
     Hit,
     AfterDamage,
+    /// Runs once per successfully damaged target after the complete move effect.
+    AfterMoveSecondary,
     AfterMove,
     SwitchIn,
     SwitchOut,
@@ -90,6 +92,7 @@ impl BattleEvent {
             Self::BeforeTurn
             | Self::Hit
             | Self::AfterSetStatus
+            | Self::AfterMoveSecondary
             | Self::AfterMove
             | Self::SwitchIn
             | Self::Faint
@@ -265,6 +268,9 @@ pub struct EventContext {
     /// Active ally whose item Symbiosis transfers after target consumption.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub target_symbiosis_ally: Option<PokemonRef>,
+    /// Whether the move source cannot be dragged out by the current effect.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub source_forced_switch_blocked: bool,
     /// Whether the current hit was confirmed as critical.
     #[serde(default, skip_serializing_if = "is_false")]
     pub critical: bool,
@@ -596,6 +602,19 @@ impl EffectState<'_> {
         schedule_cud_chew: bool,
     ) -> Result<(), BattleError> {
         StateKernel::new(self.battle).consume_berry(target, berry, schedule_cud_chew)
+    }
+
+    /// Records a structurally valid mid-turn switch request.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the target is not a living active Pokémon.
+    pub fn request_switch(
+        &mut self,
+        target: PokemonRef,
+        kind: crate::SwitchRequestKind,
+    ) -> Result<bool, BattleError> {
+        StateKernel::new(self.battle).request_switch(target, kind)
     }
 
     /// Replaces one move slot's PP through the mutation kernel.

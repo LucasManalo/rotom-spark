@@ -207,7 +207,10 @@ fn step_advances_preview_turn_and_forced_switch_phases() {
 
     let turn_result = step(&preview_result.state, &attacking_turn(), &mechanics).unwrap();
     assert_eq!(turn_result.state.phase(), BattlePhase::ForcedSwitch);
-    assert_eq!(turn_result.state.side(SideId::P2).active, [None, None]);
+    assert_eq!(
+        turn_result.state.side(SideId::P2).active,
+        [None, Some(index(1))]
+    );
     assert!(turn_result.diagnostics.turn.is_some());
 
     let p1_pass = TurnChoice {
@@ -224,11 +227,22 @@ fn step_advances_preview_turn_and_forced_switch_phases() {
         p2: TurnChoice {
             actions: [
                 PokemonAction::Switch { pokemon: index(2) },
-                PokemonAction::Switch { pokemon: index(3) },
+                PokemonAction::Pass,
             ],
         },
     };
     let replaced = step(&turn_result.state, &replacements, &mechanics).unwrap();
+    assert_eq!(replaced.state.phase(), BattlePhase::ForcedSwitch);
+    let final_replacement = JointAction::ForcedSwitch {
+        p1: p1_pass,
+        p2: TurnChoice {
+            actions: [
+                PokemonAction::Pass,
+                PokemonAction::Switch { pokemon: index(3) },
+            ],
+        },
+    };
+    let replaced = step(&replaced.state, &final_replacement, &mechanics).unwrap();
     assert_eq!(replaced.state.phase(), BattlePhase::TurnSelection);
     assert_eq!(
         replaced.state.side(SideId::P2).active,
@@ -321,13 +335,33 @@ fn authoritative_state_round_trips_and_resumes_across_every_stable_phase() {
         p2: TurnChoice {
             actions: [
                 PokemonAction::Switch { pokemon: index(2) },
-                PokemonAction::Switch { pokemon: index(3) },
+                PokemonAction::Pass,
             ],
         },
     };
     assert_roundtrip_continuation(&fainted, &replacements, &high_mechanics, "after faint");
 
-    let filled = step(&fainted, &replacements, &high_mechanics)
+    let partially_filled = step(&fainted, &replacements, &high_mechanics)
+        .unwrap()
+        .state;
+    let final_replacement = JointAction::ForcedSwitch {
+        p1: TurnChoice {
+            actions: [PokemonAction::Pass, PokemonAction::Pass],
+        },
+        p2: TurnChoice {
+            actions: [
+                PokemonAction::Pass,
+                PokemonAction::Switch { pokemon: index(3) },
+            ],
+        },
+    };
+    assert_roundtrip_continuation(
+        &partially_filled,
+        &final_replacement,
+        &high_mechanics,
+        "after first mid-turn replacement",
+    );
+    let filled = step(&partially_filled, &final_replacement, &high_mechanics)
         .unwrap()
         .state;
     assert_roundtrip_continuation(
@@ -546,7 +580,7 @@ fn authoritative_target_mismatch_is_rejected_atomically() {
 }
 
 #[test]
-fn removed_selected_foe_retargets_to_the_remaining_foe_reproducibly() {
+fn replacement_in_a_selected_slot_receives_the_remaining_queued_attack() {
     let effects = EffectRegistry::new();
     let current = started(0xfeed);
     let before = current.clone();
@@ -564,13 +598,29 @@ fn removed_selected_foe_retargets_to_the_remaining_foe_reproducibly() {
             ..TestData::basic(1_000)
         };
         let mechanics = Mechanics::new(&data, &effects);
-        let first = step(&current, &action, &mechanics).unwrap();
+        let interrupted = step(&current, &action, &mechanics).unwrap();
         let replay = step(&current, &action, &mechanics).unwrap();
-        assert_eq!(first, replay, "{target:?}");
-        let outcomes = &first.diagnostics.turn.as_ref().unwrap().target_outcomes;
-        assert_eq!(outcomes.len(), 2);
-        assert_eq!(outcomes[1].target.side, SideId::P2);
-        assert_eq!(outcomes[1].target.pokemon, PokemonIndex::new(1));
+        assert_eq!(interrupted, replay, "{target:?}");
+        let resumed = step(
+            &interrupted.state,
+            &JointAction::ForcedSwitch {
+                p1: TurnChoice {
+                    actions: [PokemonAction::Pass, PokemonAction::Pass],
+                },
+                p2: TurnChoice {
+                    actions: [
+                        PokemonAction::Switch { pokemon: index(2) },
+                        PokemonAction::Pass,
+                    ],
+                },
+            },
+            &mechanics,
+        )
+        .unwrap();
+        let outcomes = &resumed.diagnostics.turn.as_ref().unwrap().target_outcomes;
+        assert_eq!(outcomes.len(), 1);
+        assert_eq!(outcomes[0].target.side, SideId::P2);
+        assert_eq!(outcomes[0].target.pokemon, PokemonIndex::new(2));
         assert!(outcomes
             .iter()
             .all(|outcome| outcome.result == rotom_core::TargetResult::Hit && outcome.fainted));
@@ -669,11 +719,25 @@ fn supported_battle_runs_from_preview_through_replacements_to_terminal() {
         p2: TurnChoice {
             actions: [
                 PokemonAction::Switch { pokemon: index(2) },
-                PokemonAction::Switch { pokemon: index(3) },
+                PokemonAction::Pass,
             ],
         },
     };
     let replaced = step(&first_turn.state, &replacements, &mechanics).unwrap();
+    replaced.state.validate_stable_state().unwrap();
+    assert_eq!(replaced.state.phase(), BattlePhase::ForcedSwitch);
+    let replacements = JointAction::ForcedSwitch {
+        p1: TurnChoice {
+            actions: [PokemonAction::Pass, PokemonAction::Pass],
+        },
+        p2: TurnChoice {
+            actions: [
+                PokemonAction::Pass,
+                PokemonAction::Switch { pokemon: index(3) },
+            ],
+        },
+    };
+    let replaced = step(&replaced.state, &replacements, &mechanics).unwrap();
     replaced.state.validate_stable_state().unwrap();
     assert_eq!(replaced.state.phase(), BattlePhase::TurnSelection);
 
@@ -706,7 +770,9 @@ proptest! {
         prop_assert_eq!(&first, &replay);
         prop_assert!(first.state.validate_stable_state().is_ok());
         prop_assert_ne!(first.state.phase(), BattlePhase::ResolvingTurn);
-        prop_assert_eq!(first.state.queue().actions.len(), 0);
-        prop_assert_eq!(first.state.queue().events.len(), 0);
+        if first.state.phase() != BattlePhase::ForcedSwitch {
+            prop_assert_eq!(first.state.queue().actions.len(), 0);
+            prop_assert_eq!(first.state.queue().events.len(), 0);
+        }
     }
 }

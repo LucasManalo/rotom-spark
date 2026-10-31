@@ -1,0 +1,43 @@
+{
+  "showdown_commit": "b79ce06d06b8f0dc8de8bb348bc9cab5d931553f",
+  "format": "gen9championsvgc2026regmc",
+  "methodology": {
+    "source": "complete pinned Showdown doubles turns using Eject Button and Red Card",
+    "move_execution": true,
+    "full_transition_comparison": true
+  },
+  "cases": [
+    {
+      "id": "eject-button-pauses-queue",
+      "pending": {
+        "request_state": "switch",
+        "holder_item": null,
+        "holder_switch_flag": true,
+        "queued_choices": [
+          "move",
+          "move",
+          "move",
+          "residual"
+        ]
+      },
+      "settled": {
+        "request_state": "move",
+        "incoming_species": "feebas",
+        "outgoing_active": false
+      }
+    },
+    {
+      "id": "red-card-random-drag",
+      "holder_item": null,
+      "source_active": false,
+      "incoming_species": "wishiwashi",
+      "request_state": "move"
+    },
+    {
+      "id": "red-card-suction-cups",
+      "holder_item": null,
+      "source_active": true,
+      "active_species": "aerodactyl"
+    }
+  ]
+}

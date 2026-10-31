@@ -35,7 +35,8 @@ const CAPABILITIES = {
 	substitute_damage_routing: unsupported('Substitute-sensitive damage routing', ['damage recipient', 'post-damage item activation', 'source attribution'], 'Resistance Berries cannot be promoted until damage and item activation distinguish Substitute damage from direct HP damage.', ['showdown:data/conditions.ts:Conditions.substitute', 'showdown:sim/battle-actions.ts:BattleActions.moveHit']),
 	pinch_berry_thresholds: unsupported('Pinch-berry activation thresholds', ['ordinary threshold', 'Gluttony threshold', 'stat effect'], 'Stat-boosting pinch Berries and Gluttony threshold changes are not executable.', ['showdown:data/abilities.ts:Abilities.gluttony', 'showdown:data/items.ts:Items']),
 	choice_lock: unsupported('Choice-item move locking', ['lock acquisition', 'legal-action filtering', 'switch cleanup'], 'Choice Scarf modifies Speed but does not enforce a complete choice lock.', ['showdown:data/items.ts:Items.choicescarf', 'showdown:data/conditions.ts:Conditions.choicelock']),
-	forced_switch: unsupported('Forced-switch lifecycle', ['request', 'queue mutation', 'replacement', 'entry/exit hooks'], 'Eject Button, Red Card, Emergency Exit, pivots, and phazing are not end-to-end.', ['showdown:data/items.ts:Items.ejectbutton', 'showdown:data/items.ts:Items.redcard']),
+	forced_switch: implemented('Forced-switch lifecycle', ['request', 'queue preservation', 'replacement choice', 'random replacement', 'entry/exit hooks'], 'The shared lifecycle is implemented; individual pivot, phazing, and ability trigger predicates remain separate capabilities.', ['showdown:data/items.ts:Items.ejectbutton', 'showdown:data/items.ts:Items.redcard', 'showdown:sim/battle-actions.ts:BattleActions.switchIn']),
+	emergency_exit_trigger: unsupported('Emergency Exit trigger', ['half-HP crossing', 'damage-source timing', 'switch request'], 'Emergency Exit has not yet been connected to the shared forced-switch lifecycle.', ['showdown:data/abilities.ts:Abilities.emergencyexit']),
 	mega_eligibility: unsupported('Mega Evolution eligibility', ['species/stone compatibility', 'once-per-battle rule', 'request validation'], 'Mega Stones are metadata-only.', ['showdown:sim/battle-actions.ts:BattleActions.canMegaEvo']),
 	mega_timing: unsupported('Mega Evolution action timing', ['choice validation', 'queue timing', 'order recalculation'], 'No canonical Mega action lifecycle exists.', ['showdown:sim/battle-actions.ts:BattleActions.runMegaEvo']),
 	form_change: unsupported('Battle form transformation', ['species/form', 'typing', 'stats', 'HP preservation', 'persistence'], 'Mega and other battle transformations are not kernel-mediated end-to-end.', ['showdown:sim/pokemon.ts:Pokemon.formeChange']),
@@ -92,7 +93,7 @@ const ABILITY_GROUPS = [
 	[['disguise', 'forecast', 'hungerswitch', 'illusion', 'imposter', 'libero', 'mimicry', 'protean', 'stancechange', 'zerotohero'], ['form_change']],
 	[['drizzle', 'drought', 'electricsurge', 'grassysurge', 'psychicsurge', 'sandspit', 'sandstream', 'seedsower', 'snowwarning'], ['field_activation']],
 	[['electromorphosis'], ['volatile']],
-	[['emergencyexit'], ['forced_switch']],
+	[['emergencyexit'], ['emergency_exit_trigger', 'forced_switch']],
 	[['flashfire', 'heatproof', 'heavymetal', 'lightmetal', 'liquidooze', 'parentalbond', 'rivalry', 'stakeout', 'sturdy'], ['ability_damage_modifiers', 'damage_event_lifecycle']],
 	[['infiltrator'], ['volatile']],
 	[['innardsout', 'magicguard', 'poisonheal'], ['damage_event_lifecycle']],
@@ -181,11 +182,23 @@ Object.assign(CAPABILITIES.berry_lifecycle, {
 	differential_fixtures: ['differential:data/fixtures/differential/berry-lifecycle.json#sitrus-cud-chew'],
 });
 
+Object.assign(CAPABILITIES.forced_switch, {
+	tests: [
+		'unit:crates/rotom-dex/tests/combat.rs#eject_button_pauses_and_resumes_the_remaining_action_queue',
+		'unit:crates/rotom-dex/tests/combat.rs#red_card_uses_forced_switch_rng_and_suction_cups_blocks_only_the_drag',
+	],
+	differential_fixtures: [
+		'differential:data/fixtures/differential/forced-switch-lifecycle.json#eject-button-pauses-queue',
+		'differential:data/fixtures/differential/forced-switch-lifecycle.json#red-card-random-drag',
+	],
+});
+
 const UNLOCKED_IDENTITIES = {
 	berry_lifecycle: [
 		'item:aspearberry', 'item:cheriberry', 'item:chestoberry', 'item:leppaberry',
 		'item:oranberry', 'item:pechaberry', 'item:rawstberry', 'item:sitrusberry',
 	],
+	forced_switch: ['ability:suctioncups', 'item:ejectbutton', 'item:redcard'],
 };
 
 function dependenciesFromGroups(kind, groups) {

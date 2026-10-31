@@ -16,6 +16,6 @@ pub use pokemon::{
 pub use queue::{ActionOrder, ActionQueue, QueuedAction};
 pub use scenario::BattleStateBuilder;
 pub use side::SideState;
-pub use transition::{FaintTarget, ReplacementRequest};
+pub use transition::{FaintTarget, ReplacementRequest, SwitchRequest, SwitchRequestKind};
 
 pub(crate) use pokemon::validate_status_state;

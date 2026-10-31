@@ -18,8 +18,8 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 
 | Kind | Total | Implemented | Partial | Unsupported |
 | --- | ---: | ---: | ---: | ---: |
-| Abilities | 215 | 120 | 95 | 0 |
-| Items | 166 | 55 | 111 | 0 |
+| Abilities | 215 | 121 | 94 | 0 |
+| Items | 166 | 57 | 109 | 0 |
 | Moves | 510 | 223 | 0 | 287 |
 
 ## Abilities
@@ -210,7 +210,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Sticky Hold | `stickyhold` | partial | not_tested | not_tested | PR 13.5.12 |
 | Strong Jaw | `strongjaw` | implemented | differential_verified | unit_tested | PR 13.5 |
 | Sturdy | `sturdy` | partial | unit_tested | not_tested | PR 13.5 |
-| Suction Cups | `suctioncups` | partial | not_tested | not_tested | PR 13.5.12 |
+| Suction Cups | `suctioncups` | implemented | unit_tested | unit_tested | PR 15.2 |
 | Super Luck | `superluck` | implemented | differential_verified | unit_tested | PR 13.5 |
 | Supersweet Syrup | `supersweetsyrup` | partial | not_tested | not_tested | PR 13.5.11 |
 | Supreme Overlord | `supremeoverlord` | implemented | not_tested | not_tested | PR 13.5 |
@@ -293,7 +293,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Dragoninite | `dragoninite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Drampanite | `drampanite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Eelektrossite | `eelektrossite` | partial | unit_tested | not_tested | PR 13.6.5 |
-| Eject Button | `ejectbutton` | partial | unit_tested | not_tested | PR 13.6.4 |
+| Eject Button | `ejectbutton` | implemented | unit_tested | unit_tested | PR 15.2 |
 | Electric Seed | `electricseed` | implemented | unit_tested | unit_tested | PR 13.6.3 |
 | Emboarite | `emboarite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Excadrite | `excadrite` | partial | unit_tested | not_tested | PR 13.6.5 |
@@ -371,7 +371,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Raichunite X | `raichunitex` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Raichunite Y | `raichunitey` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Rawst Berry | `rawstberry` | implemented | unit_tested | not_tested | PR 15.1 |
-| Red Card | `redcard` | partial | unit_tested | not_tested | PR 13.6.4 |
+| Red Card | `redcard` | implemented | unit_tested | unit_tested | PR 15.2 |
 | Rindo Berry | `rindoberry` | partial | unit_tested | not_tested | PR 13.6.2 |
 | Rocky Helmet | `rockyhelmet` | implemented | unit_tested | not_tested | PR 13.6.4 |
 | Roseli Berry | `roseliberry` | partial | unit_tested | not_tested | PR 13.6.2 |

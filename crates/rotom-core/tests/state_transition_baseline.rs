@@ -253,38 +253,65 @@ fn switching_and_status_upkeep_preserve_the_current_state_contract() {
 }
 
 #[test]
-fn damage_faints_settle_positions_and_request_replacements() {
+fn damage_faints_pause_and_resume_the_remaining_turn_queue() {
     let state = battle(0xfa17);
     let (p1, p2) = attacking_choices();
     let data = TestData { base_power: 1_000 };
-    let result = step(
-        &state,
-        &JointAction::Turn { p1, p2 },
-        &Mechanics::new(&data, &EffectRegistry::new()),
-    )
-    .expect("turn should resolve");
+    let mechanics = Mechanics::new(&data, &EffectRegistry::new());
+    let result =
+        step(&state, &JointAction::Turn { p1, p2 }, &mechanics).expect("turn should resolve");
     let resolution = result.diagnostics.turn.as_ref().unwrap();
     let state = result.state;
 
     assert_eq!(state.phase(), BattlePhase::ForcedSwitch);
-    assert_eq!(state.side(SideId::P2).active, [None, None]);
-    for pokemon in [index(0), index(1)] {
-        let pokemon = state.side(SideId::P2).pokemon(pokemon).unwrap();
-        assert_eq!(pokemon.current_hp, 0);
-        assert_eq!(pokemon.position, PokemonPosition::Fainted);
-        assert_eq!(pokemon.status, None);
-        assert_eq!(pokemon.status_state, StatusState::default());
-    }
-    assert_eq!(resolution.actions.len(), 4);
+    assert_eq!(state.side(SideId::P2).active, [None, Some(index(1))]);
+    assert_ne!(state.queue().actions.len(), 0);
+    let fainted = state.side(SideId::P2).pokemon(index(0)).unwrap();
+    assert_eq!(fainted.current_hp, 0);
+    assert_eq!(fainted.position, PokemonPosition::Fainted);
+    assert_eq!(fainted.status, None);
+    assert_eq!(fainted.status_state, StatusState::default());
+    assert_eq!(resolution.actions.len(), 1);
     assert_eq!(
         state
             .replacement_request(SideId::P2)
             .expect("state should be valid")
             .expect("P2 should need replacements")
             .required,
-        2
+        1
     );
     state
         .validate_stable_state()
         .expect("forced-switch output should be a stable state");
+
+    let resumed = step(
+        &state,
+        &JointAction::ForcedSwitch {
+            p1: TurnChoice {
+                actions: [PokemonAction::Pass, PokemonAction::Pass],
+            },
+            p2: TurnChoice {
+                actions: [
+                    PokemonAction::Switch { pokemon: index(2) },
+                    PokemonAction::Pass,
+                ],
+            },
+        },
+        &mechanics,
+    )
+    .expect("replacement should resume the interrupted queue");
+    assert_eq!(resumed.state.phase(), BattlePhase::ForcedSwitch);
+    assert_eq!(
+        resumed.state.side(SideId::P2).active,
+        [Some(index(2)), None]
+    );
+    assert_eq!(
+        resumed
+            .state
+            .replacement_request(SideId::P2)
+            .unwrap()
+            .unwrap()
+            .required,
+        1
+    );
 }

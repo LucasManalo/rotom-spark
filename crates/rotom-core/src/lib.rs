@@ -48,7 +48,7 @@ pub use state::{
     ActionOrder, ActionQueue, ActiveSlot, BattlePhase, BattleStat, BattleState, BattleStateBuilder,
     BattleStats, ConditionState, FaintTarget, FieldState, MajorStatus, MoveSlot, PokemonIndex,
     PokemonPosition, PokemonState, QueuedAction, ReplacementRequest, SideState, StatStageChange,
-    StatStages, StatusState, TeamState,
+    StatStages, StatusState, SwitchRequest, SwitchRequestKind, TeamState,
 };
 pub use team::{Gender, PokemonSet, StatAllocation, TeamDefinition};
 pub use transition::{step, JointAction, Mechanics, StepDiagnostics, StepResult, TeamSelection};

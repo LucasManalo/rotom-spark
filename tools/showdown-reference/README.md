@@ -84,3 +84,11 @@ Harvest, and Symbiosis callback outcomes with:
 node tools/showdown-reference/berry-lifecycle.cjs
 node tools/showdown-reference/berry-lifecycle.cjs --check
 ```
+
+Regenerate or verify PR 15.2 Eject Button queue interruption, Red Card random
+dragging, and Suction Cups prevention using complete pinned Showdown turns:
+
+```text
+node tools/showdown-reference/forced-switch-lifecycle.cjs
+node tools/showdown-reference/forced-switch-lifecycle.cjs --check
+```
