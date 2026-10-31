@@ -126,6 +126,57 @@ impl<'a> StateKernel<'a> {
         Ok(std::mem::replace(&mut pokemon.item, item))
     }
 
+    pub(crate) fn consume_berry(
+        &mut self,
+        target: PokemonRef,
+        berry: ItemId,
+        schedule_cud_chew: bool,
+    ) -> Result<(), BattleError> {
+        let pokemon = self.pokemon_mut(target)?;
+        if pokemon.item != Some(berry) {
+            return Err(BattleError::InvalidState(
+                "consumed Berry does not match the holder's item".to_owned(),
+            ));
+        }
+        pokemon.item = None;
+        pokemon.last_consumed_berry = Some(berry);
+        if schedule_cud_chew {
+            pokemon.cud_chew_berry = Some(berry);
+            pokemon.cud_chew_turns = 2;
+        }
+        Ok(())
+    }
+
+    pub(crate) fn tick_cud_chew(
+        &mut self,
+        target: PokemonRef,
+    ) -> Result<Option<ItemId>, BattleError> {
+        let pokemon = self.pokemon_mut(target)?;
+        let Some(berry) = pokemon.cud_chew_berry else {
+            return Ok(None);
+        };
+        pokemon.cud_chew_turns = pokemon.cud_chew_turns.saturating_sub(1);
+        if pokemon.cud_chew_turns == 0 {
+            pokemon.cud_chew_berry = None;
+            Ok(Some(berry))
+        } else {
+            Ok(None)
+        }
+    }
+
+    pub(crate) fn restore_last_consumed_berry(
+        &mut self,
+        target: PokemonRef,
+    ) -> Result<Option<ItemId>, BattleError> {
+        let pokemon = self.pokemon_mut(target)?;
+        if pokemon.item.is_some() {
+            return Ok(None);
+        }
+        let berry = pokemon.last_consumed_berry.take();
+        pokemon.item = berry;
+        Ok(berry)
+    }
+
     pub(crate) fn set_ability(
         &mut self,
         target: PokemonRef,
@@ -593,6 +644,9 @@ mod tests {
             current_hp: 100,
             ability: AbilityId::new(1),
             item: None,
+            last_consumed_berry: None,
+            cud_chew_berry: None,
+            cud_chew_turns: 0,
             moves: vec![MoveSlot {
                 move_id: MoveId::new(1),
                 target: MoveTarget::Normal,

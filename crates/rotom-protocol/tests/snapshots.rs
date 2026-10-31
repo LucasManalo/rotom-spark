@@ -21,6 +21,9 @@ fn pokemon(species: u32, hp: u16) -> PokemonState {
         current_hp: hp,
         ability: AbilityId::new(2),
         item: None,
+        last_consumed_berry: None,
+        cud_chew_berry: None,
+        cud_chew_turns: 0,
         moves: vec![MoveSlot {
             move_id: MoveId::new(3),
             target: MoveTarget::Normal,
@@ -52,7 +55,18 @@ fn battle() -> BattleState {
 
 #[test]
 fn snapshot_is_normalized_and_serializable() {
-    let state = battle();
+    let mut builder = BattleStateBuilder::from_state(battle()).unwrap();
+    builder
+        .edit_pokemon(
+            PokemonRef::new(SideId::P1, PokemonIndex::new(0)),
+            |pokemon| {
+                pokemon.last_consumed_berry = Some(rotom_core::ItemId::new(7));
+                pokemon.cud_chew_berry = Some(rotom_core::ItemId::new(7));
+                pokemon.cud_chew_turns = 1;
+            },
+        )
+        .unwrap();
+    let state = builder.build().unwrap();
     let snapshot = state.snapshot();
 
     assert_eq!(snapshot.picked_team_size, 4);
@@ -61,6 +75,9 @@ fn snapshot_is_normalized_and_serializable() {
     assert_eq!(snapshot.sides[0].team[0].species, 11);
     assert_eq!(snapshot.sides[0].team[0].current_hp, 120);
     assert_eq!(snapshot.sides[0].team[0].stats.max_hp, 120);
+    assert_eq!(snapshot.sides[0].team[0].last_consumed_berry, Some(7));
+    assert_eq!(snapshot.sides[0].team[0].cud_chew_berry, Some(7));
+    assert_eq!(snapshot.sides[0].team[0].cud_chew_turns, 1);
 
     let json = serde_json::to_string_pretty(&snapshot).expect("snapshot should serialize");
     let decoded: BattleSnapshot = serde_json::from_str(&json).expect("snapshot should deserialize");

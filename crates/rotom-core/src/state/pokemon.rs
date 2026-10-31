@@ -207,6 +207,15 @@ pub struct PokemonState {
     pub current_hp: u16,
     pub ability: AbilityId,
     pub item: Option<ItemId>,
+    /// Most recent Berry consumed through the authoritative item lifecycle.
+    /// Harvest may restore this value while the holder has no item.
+    #[serde(default)]
+    pub last_consumed_berry: Option<ItemId>,
+    /// Berry and residual countdown scheduled by Cud Chew.
+    #[serde(default)]
+    pub cud_chew_berry: Option<ItemId>,
+    #[serde(default)]
+    pub cud_chew_turns: u8,
     pub moves: Vec<MoveSlot>,
     pub status: Option<MajorStatus>,
     pub status_state: StatusState,
@@ -329,6 +338,8 @@ impl PokemonState {
         self.stat_stages = StatStages::default();
         self.volatiles.clear();
         self.trapped = false;
+        self.cud_chew_berry = None;
+        self.cud_chew_turns = 0;
         for move_slot in &mut self.moves {
             move_slot.disabled = false;
         }

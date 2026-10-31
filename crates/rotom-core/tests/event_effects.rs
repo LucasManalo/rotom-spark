@@ -94,6 +94,9 @@ fn pokemon(species: u32, speed: u16, ability: u32, item: Option<u32>) -> Pokemon
         current_hp: 200,
         ability: AbilityId::new(ability),
         item: item.map(ItemId::new),
+        last_consumed_berry: None,
+        cud_chew_berry: None,
+        cud_chew_turns: 0,
         moves: vec![MoveSlot {
             move_id: MOVE_ID,
             target: MoveTarget::Normal,

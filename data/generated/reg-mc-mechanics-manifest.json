@@ -9118,7 +9118,7 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "file:docs/research/pr-15-1-berry-lifecycle.md",
         "species/abomasnow",
         "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks",
         "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"
@@ -9126,10 +9126,10 @@
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.3"
+      "owner_pr": "PR 15.1"
     },
     {
       "id": "audinite",
@@ -9489,7 +9489,8 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "file:docs/research/pr-15-1-berry-lifecycle.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#berry_update_handles_preexisting_status_residual_damage_and_klutz_suppression",
         "species/abomasnow",
         "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks",
         "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"
@@ -9497,10 +9498,10 @@
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.3"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.1"
     },
     {
       "id": "chesnaughtite",
@@ -9526,7 +9527,7 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "file:docs/research/pr-15-1-berry-lifecycle.md",
         "species/abomasnow",
         "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks",
         "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"
@@ -9534,10 +9535,10 @@
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.3"
+      "owner_pr": "PR 15.1"
     },
     {
       "id": "chilanberry",
@@ -10522,17 +10523,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "file:docs/research/pr-15-1-berry-lifecycle.md",
         "species/abomasnow",
         "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.3"
+      "owner_pr": "PR 15.1"
     },
     {
       "id": "lifeorb",
@@ -11005,17 +11006,17 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "file:docs/research/pr-15-1-berry-lifecycle.md",
         "species/abomasnow",
         "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.3"
+      "owner_pr": "PR 15.1"
     },
     {
       "id": "passhoberry",
@@ -11063,7 +11064,7 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "file:docs/research/pr-15-1-berry-lifecycle.md",
         "species/abomasnow",
         "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks",
         "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"
@@ -11071,10 +11072,10 @@
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.3"
+      "owner_pr": "PR 15.1"
     },
     {
       "id": "persimberry",
@@ -11246,7 +11247,7 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "file:docs/research/pr-15-1-berry-lifecycle.md",
         "species/abomasnow",
         "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks",
         "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"
@@ -11254,10 +11255,10 @@
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.3"
+      "owner_pr": "PR 15.1"
     },
     {
       "id": "redcard",
@@ -11620,17 +11621,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-second-thirty-item-batch.md",
+        "file:data/fixtures/differential/berry-lifecycle.json",
+        "file:docs/research/pr-15-1-berry-lifecycle.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#berry_update_cud_chew_reuses_consumption_history_after_one_residual",
         "species/abomasnow",
         "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.3"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.1"
     },
     {
       "id": "skarmorite",
@@ -48415,8 +48418,8 @@
         "total": 166,
         "implementation": {
           "unsupported": 0,
-          "partial": 119,
-          "implemented": 47
+          "partial": 111,
+          "implemented": 55
         },
         "verification": {
           "not_tested": 1,
@@ -48424,8 +48427,8 @@
           "differential_verified": 0
         },
         "interaction_verification": {
-          "not_tested": 159,
-          "unit_tested": 7,
+          "not_tested": 157,
+          "unit_tested": 9,
           "differential_verified": 0
         },
         "reachability": {

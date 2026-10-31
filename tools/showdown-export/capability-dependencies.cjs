@@ -30,7 +30,10 @@ const CAPABILITIES = {
 	conditional_power: implemented('Declarative conditional base power', ['Facade predicate'], 'Other variable-power predicates remain separate.', ['showdown:sim/battle-actions.ts:BattleActions.getDamage']),
 	effective_stat_override: implemented('Effective offensive/defensive stat override', ['Psyshock-style defense selection'], 'Move-specific ignore rules remain separate.', ['showdown:sim/battle-actions.ts:BattleActions.getDamage']),
 
-	berry_lifecycle: partial('Shared berry activation and consumption', ['trigger timing', 'eligibility', 'suppression', 'consumption', 'follow-up hooks'], 'Pre-existing status, damage/residual triggers, Substitute sensitivity, Unnerve, Klutz, Magic Room, Ripen, Cheek Pouch, Cud Chew, Harvest, and Symbiosis are not unified.', ['showdown:data/items.ts:Items.sitrusberry', 'showdown:sim/pokemon.ts:Pokemon.eatItem']),
+	berry_lifecycle: implemented('Shared berry activation and consumption', ['trigger timing', 'eligibility', 'suppression', 'consumption history', 'follow-up hooks'], 'The shared lifecycle is implemented; individual berry effects and Substitute damage routing remain separate capabilities.', ['showdown:data/items.ts:Items.sitrusberry', 'showdown:sim/pokemon.ts:Pokemon.eatItem']),
+	berry_effect_coverage: partial('Individual berry effect coverage', ['effect eligibility', 'effect application', 'ability interaction'], 'Confusion-curing and pinch-stat berries remain incomplete, so berry-dependent abilities are not interaction-complete for every reachable berry.', ['showdown:data/items.ts:Items']),
+	substitute_damage_routing: unsupported('Substitute-sensitive damage routing', ['damage recipient', 'post-damage item activation', 'source attribution'], 'Resistance Berries cannot be promoted until damage and item activation distinguish Substitute damage from direct HP damage.', ['showdown:data/conditions.ts:Conditions.substitute', 'showdown:sim/battle-actions.ts:BattleActions.moveHit']),
+	pinch_berry_thresholds: unsupported('Pinch-berry activation thresholds', ['ordinary threshold', 'Gluttony threshold', 'stat effect'], 'Stat-boosting pinch Berries and Gluttony threshold changes are not executable.', ['showdown:data/abilities.ts:Abilities.gluttony', 'showdown:data/items.ts:Items']),
 	choice_lock: unsupported('Choice-item move locking', ['lock acquisition', 'legal-action filtering', 'switch cleanup'], 'Choice Scarf modifies Speed but does not enforce a complete choice lock.', ['showdown:data/items.ts:Items.choicescarf', 'showdown:data/conditions.ts:Conditions.choicelock']),
 	forced_switch: unsupported('Forced-switch lifecycle', ['request', 'queue mutation', 'replacement', 'entry/exit hooks'], 'Eject Button, Red Card, Emergency Exit, pivots, and phazing are not end-to-end.', ['showdown:data/items.ts:Items.ejectbutton', 'showdown:data/items.ts:Items.redcard']),
 	mega_eligibility: unsupported('Mega Evolution eligibility', ['species/stone compatibility', 'once-per-battle rule', 'request validation'], 'Mega Stones are metadata-only.', ['showdown:sim/battle-actions.ts:BattleActions.canMegaEvo']),
@@ -78,8 +81,10 @@ const ABILITY_GROUPS = [
 	[['aerilate', 'dragonize', 'eelevate', 'pixilate', 'refrigerate'], ['move_type_conversion']],
 	[['aftermath', 'cutecharm', 'effectspore', 'flamebody', 'poisonpoint', 'poisontouch', 'roughskin', 'static', 'stench'], ['contact_effects']],
 	[['aromaveil', 'flowerveil', 'innerfocus', 'oblivious', 'owntempo', 'tangledfeet'], ['volatile', 'volatile_cure']],
-	[['cheekpouch', 'cudchew', 'gluttony', 'harvest', 'ripen', 'unnerve'], ['berry_lifecycle']],
-	[['cudchew', 'speedboost'], ['end_turn_effects']],
+	[['cheekpouch', 'harvest', 'ripen', 'unnerve'], ['berry_effect_coverage']],
+	[['cudchew'], ['berry_effect_coverage', 'end_turn_effects']],
+	[['gluttony'], ['pinch_berry_thresholds']],
+	[['speedboost'], ['end_turn_effects']],
 	[['cloudnine'], ['weather_suppression']],
 	[['curiousmedicine', 'guarddog', 'intimidate', 'mirrorarmor', 'opportunist', 'rattled', 'spicyspray', 'supersweetsyrup'], ['stat_event_lifecycle']],
 	[['cursedbody'], ['volatile']],
@@ -126,7 +131,8 @@ const STATUS_BERRIES = ['aspearberry', 'cheriberry', 'chestoberry', 'lumberry', 
 
 const ITEM_GROUPS = [
 	[MEGA_STONES, ['mega_eligibility', 'mega_timing', 'form_change', 'ability_transition']],
-	[[...RESIST_BERRIES, 'oranberry', 'sitrusberry'], ['berry_lifecycle']],
+	[RESIST_BERRIES, ['berry_lifecycle', 'substitute_damage_routing']],
+	[['oranberry', 'sitrusberry'], ['berry_lifecycle']],
 	[STATUS_BERRIES, ['berry_lifecycle', 'status_cure']],
 	[['persimberry', 'lumberry'], ['confusion']],
 	[['leppaberry'], ['berry_lifecycle', 'pp_restore']],
@@ -166,6 +172,22 @@ const VERIFIED_EVIDENCE = {
 
 for (const [id, evidence] of Object.entries(VERIFIED_EVIDENCE)) Object.assign(CAPABILITIES[id], evidence);
 
+Object.assign(CAPABILITIES.berry_lifecycle, {
+	tests: [
+		'unit:crates/rotom-dex/tests/combat.rs#berry_update_cud_chew_reuses_consumption_history_after_one_residual',
+		'unit:crates/rotom-dex/tests/combat.rs#berry_update_harvest_and_symbiosis_share_consumption_history',
+		'unit:crates/rotom-dex/tests/combat.rs#berry_update_handles_preexisting_status_residual_damage_and_klutz_suppression',
+	],
+	differential_fixtures: ['differential:data/fixtures/differential/berry-lifecycle.json#sitrus-cud-chew'],
+});
+
+const UNLOCKED_IDENTITIES = {
+	berry_lifecycle: [
+		'item:aspearberry', 'item:cheriberry', 'item:chestoberry', 'item:leppaberry',
+		'item:oranberry', 'item:pechaberry', 'item:rawstberry', 'item:sitrusberry',
+	],
+};
+
 function dependenciesFromGroups(kind, groups) {
 	const result = new Map();
 	for (const [ids, capabilities] of groups) {
@@ -182,4 +204,4 @@ const IDENTITY_DEPENDENCIES = new Map([
 	...dependenciesFromGroups('item', ITEM_GROUPS),
 ]);
 
-module.exports = {CAPABILITIES, IDENTITY_DEPENDENCIES, MEGA_STONES};
+module.exports = {CAPABILITIES, IDENTITY_DEPENDENCIES, MEGA_STONES, UNLOCKED_IDENTITIES};

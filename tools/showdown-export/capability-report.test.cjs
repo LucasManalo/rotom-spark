@@ -15,8 +15,8 @@ function identity(audit, kind, id) {
 
 test('dependency graph covers every partial ability and item and every unsupported move', () => {
 	const {audit} = generatedContents();
-	assert.deepEqual(audit.summary.dependency_targets, {ability: 95, item: 119, move: 287});
-	assert.equal(audit.identity_dependencies.length, 501);
+	assert.deepEqual(audit.summary.dependency_targets, {ability: 95, item: 111, move: 287});
+	assert.equal(audit.identity_dependencies.length, 493);
 	assert.ok(audit.identity_dependencies.every(entry => entry.outstanding_blockers.length > 0));
 	assert.ok(audit.identity_dependencies.every(entry => entry.unlocked === false));
 });
@@ -24,7 +24,7 @@ test('dependency graph covers every partial ability and item and every unsupport
 test('headline separates identity labels from executable capability coverage', () => {
 	const {audit, markdown} = generatedContents();
 	assert.deepEqual(audit.summary.identity_coverage.ability, {reachable: 215, unsupported: 0, partial: 95, implemented: 120});
-	assert.deepEqual(audit.summary.identity_coverage.item, {reachable: 166, unsupported: 0, partial: 119, implemented: 47});
+	assert.deepEqual(audit.summary.identity_coverage.item, {reachable: 166, unsupported: 0, partial: 111, implemented: 55});
 	assert.deepEqual(audit.summary.identity_coverage.move, {reachable: 510, unsupported: 287, partial: 0, implemented: 223});
 	assert.match(markdown, /## Identity coverage/);
 	assert.match(markdown, /## Executable capability coverage/);
@@ -38,6 +38,12 @@ test('roadmap examples expose their actual remaining blockers', () => {
 	assert.deepEqual(identity(audit, 'item', 'ejectbutton').outstanding_blockers, ['forced_switch']);
 	assert.deepEqual(identity(audit, 'item', 'charizarditex').outstanding_blockers, [
 		'ability_transition', 'form_change', 'mega_eligibility', 'mega_timing',
+	]);
+	const berryLifecycle = audit.capabilities.find(entry => entry.id === 'berry_lifecycle');
+	assert.equal(berryLifecycle.status, 'implemented');
+	assert.deepEqual(berryLifecycle.unlocked_identities, [
+		'item:aspearberry', 'item:cheriberry', 'item:chestoberry', 'item:leppaberry',
+		'item:oranberry', 'item:pechaberry', 'item:rawstberry', 'item:sitrusberry',
 	]);
 });
 

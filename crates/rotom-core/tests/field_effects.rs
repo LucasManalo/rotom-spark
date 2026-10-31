@@ -182,6 +182,9 @@ fn pokemon(species: u32, speed: u16) -> PokemonState {
         current_hp: 400,
         ability: AbilityId::new(1),
         item: None,
+        last_consumed_berry: None,
+        cud_chew_berry: None,
+        cud_chew_turns: 0,
         moves: vec![MoveSlot {
             move_id: MOVE,
             target: MoveTarget::Normal,

@@ -296,22 +296,24 @@ fn held_item_matches(
         == Some(item)
 }
 
-fn consume_target_berry(
+#[derive(Clone, Copy)]
+struct BerryConsumption {
+    holder: PokemonRef,
+    cheek_pouch: bool,
+    symbiosis_ally: Option<PokemonRef>,
+}
+
+fn begin_target_berry(
     state: &mut EffectState<'_>,
     invocation: &EffectInvocation,
     context: &EventContext,
-) -> Result<Option<PokemonRef>, BattleError> {
+) -> Result<Option<BerryConsumption>, BattleError> {
     let Some(owner) = owner_pokemon(invocation) else {
         return Ok(None);
     };
     if Some(owner) != context.target || context.suppress_target_item || context.target_berry_blocked
     {
         return Ok(None);
-    }
-    if context.target_berry_interaction_unsupported {
-        return Err(BattleError::UnsupportedMechanic(
-            "Berry consumption requires a deferred ability interaction".to_owned(),
-        ));
     }
     let EffectSource::Item(item) = invocation.source else {
         return Ok(None);
@@ -325,8 +327,73 @@ fn consume_target_berry(
     {
         return Ok(None);
     }
-    state.set_item(owner, None)?;
-    Ok(Some(owner))
+    state.consume_berry(owner, item, context.target_cud_chew)?;
+    Ok(Some(BerryConsumption {
+        holder: owner,
+        cheek_pouch: context.target_cheek_pouch,
+        symbiosis_ally: context.target_symbiosis_ally,
+    }))
+}
+
+fn begin_source_berry(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+) -> Result<Option<BerryConsumption>, BattleError> {
+    let Some(owner) = owner_pokemon(invocation) else {
+        return Ok(None);
+    };
+    if Some(owner) != context.source || context.suppress_source_item || context.source_berry_blocked
+    {
+        return Ok(None);
+    }
+    let EffectSource::Item(item) = invocation.source else {
+        return Ok(None);
+    };
+    if !held_item_matches(state, invocation, owner) {
+        return Ok(None);
+    }
+    state.consume_berry(owner, item, context.source_cud_chew)?;
+    Ok(Some(BerryConsumption {
+        holder: owner,
+        cheek_pouch: context.source_cheek_pouch,
+        symbiosis_ally: context.source_symbiosis_ally,
+    }))
+}
+
+fn finish_berry(
+    state: &mut EffectState<'_>,
+    consumption: BerryConsumption,
+) -> Result<(), BattleError> {
+    if consumption.cheek_pouch {
+        let max_hp = state
+            .battle()
+            .side(consumption.holder.side)
+            .pokemon(consumption.holder.pokemon)
+            .ok_or_else(|| BattleError::InvalidState("Berry holder disappeared".to_owned()))?
+            .stats
+            .hp;
+        state.heal_hp(consumption.holder, (max_hp / 3).max(1))?;
+    }
+    if let Some(ally) = consumption.symbiosis_ally {
+        if state
+            .battle()
+            .side(consumption.holder.side)
+            .pokemon(consumption.holder.pokemon)
+            .is_some_and(|holder| holder.item.is_none())
+        {
+            if let Some(item) = state
+                .battle()
+                .side(ally.side)
+                .pokemon(ally.pokemon)
+                .and_then(|pokemon| pokemon.item)
+            {
+                state.set_item(ally, None)?;
+                state.set_item(consumption.holder, Some(item))?;
+            }
+        }
+    }
+    Ok(())
 }
 
 fn physical_power(
@@ -392,11 +459,6 @@ fn resist_berry(
     {
         return Ok(());
     }
-    if context.target_berry_interaction_unsupported {
-        return Err(BattleError::UnsupportedMechanic(
-            "resistance Berry consumption requires a deferred ability interaction".to_owned(),
-        ));
-    }
     let EffectSource::Item(item) = invocation.source else {
         return Err(BattleError::InvalidState(
             "resistance Berry handler has a non-item source".to_owned(),
@@ -411,11 +473,14 @@ fn resist_berry(
     {
         return Ok(());
     }
-    state.set_item(owner, None)?;
+    let Some(consumption) = begin_target_berry(state, invocation, context)? else {
+        return Ok(());
+    };
     modify_integer(dispatch, 1, 2)?;
     if context.target_ripen {
         modify_integer(dispatch, 1, 2)?;
     }
+    finish_berry(state, consumption)?;
     Ok(())
 }
 
@@ -425,13 +490,15 @@ fn chilan_resist_berry(
     context: &EventContext,
     dispatch: &mut EventDispatch,
 ) -> Result<(), BattleError> {
-    if context.move_type == Some(PokemonType::Normal)
-        && consume_target_berry(state, invocation, context)?.is_some()
-    {
+    if context.move_type == Some(PokemonType::Normal) {
+        let Some(consumption) = begin_target_berry(state, invocation, context)? else {
+            return Ok(());
+        };
         modify_integer(dispatch, 1, 2)?;
         if context.target_ripen {
             modify_integer(dispatch, 1, 2)?;
         }
+        finish_berry(state, consumption)?;
     }
     Ok(())
 }
@@ -455,8 +522,12 @@ fn status_cure(
         status == Some(expected)
             || (expected == MajorStatus::Poison && status == Some(MajorStatus::BadlyPoisoned))
     });
-    if status.is_some() && matches && consume_target_berry(state, invocation, context)?.is_some() {
+    if status.is_some() && matches {
+        let Some(consumption) = begin_target_berry(state, invocation, context)? else {
+            return Ok(());
+        };
         state.cure_major_status(owner)?;
+        finish_berry(state, consumption)?;
     }
     Ok(())
 }
@@ -506,11 +577,6 @@ fn restore_pp(
     {
         return Ok(());
     }
-    if context.source_berry_interaction_unsupported {
-        return Err(BattleError::UnsupportedMechanic(
-            "Leppa Berry requires a deferred ability interaction".to_owned(),
-        ));
-    }
     let slot = state
         .battle()
         .side(owner.side)
@@ -519,19 +585,9 @@ fn restore_pp(
     let Some(slot) = slot else {
         return Ok(());
     };
-    let EffectSource::Item(item) = invocation.source else {
+    let Some(consumption) = begin_source_berry(state, invocation, context)? else {
         return Ok(());
     };
-    if state
-        .battle()
-        .side(owner.side)
-        .pokemon(owner.pokemon)
-        .and_then(|pokemon| pokemon.item)
-        != Some(item)
-    {
-        return Ok(());
-    }
-    state.set_item(owner, None)?;
     let restore = if context.source_ripen { 20 } else { 10 };
     let move_slot = state
         .battle()
@@ -549,6 +605,7 @@ fn restore_pp(
         ),
         value,
     )?;
+    finish_berry(state, consumption)?;
     Ok(())
 }
 
@@ -574,10 +631,11 @@ fn heal_berry(
     if current_hp == 0 || current_hp > max_hp / 2 {
         return Ok(());
     }
-    if consume_target_berry(state, invocation, context)?.is_some() {
+    if let Some(consumption) = begin_target_berry(state, invocation, context)? {
         let ripen = if context.target_ripen { 2 } else { 1 };
         let amount = u32::from(max_hp) * u32::from(numerator) * ripen / u32::from(denominator);
         state.heal_hp(owner, u16::try_from(amount).unwrap_or(u16::MAX))?;
+        finish_berry(state, consumption)?;
     }
     Ok(())
 }
@@ -630,14 +688,15 @@ fn fixed_heal(
     else {
         return Ok(());
     };
-    if current_hp != 0
-        && current_hp <= max_hp / 2
-        && consume_target_berry(state, invocation, context)?.is_some()
-    {
+    if current_hp != 0 && current_hp <= max_hp / 2 {
+        let Some(consumption) = begin_target_berry(state, invocation, context)? else {
+            return Ok(());
+        };
         state.heal_hp(
             owner,
             amount.saturating_mul(if context.target_ripen { 2 } else { 1 }),
         )?;
+        finish_berry(state, consumption)?;
     }
     Ok(())
 }
@@ -1178,6 +1237,9 @@ mod tests {
             current_hp: 100,
             ability: AbilityId::new(1),
             item,
+            last_consumed_berry: None,
+            cud_chew_berry: None,
+            cud_chew_turns: 0,
             moves: vec![MoveSlot {
                 move_id: MoveId::new(1),
                 target: MoveTarget::Normal,
@@ -1560,29 +1622,6 @@ mod tests {
                 ripen_context,
             ),
             25
-        );
-
-        let mut state = battle_with_items(None, Some(item));
-        let deferred_context = EventContext {
-            type_effectiveness: Some(1),
-            target_berry_interaction_unsupported: true,
-            ..context(MoveCategory::Special, PokemonType::Fire)
-        };
-        assert!(registry
-            .dispatch(
-                &mut state,
-                BattleEvent::ModifyDamage,
-                deferred_context,
-                EventValue::Integer(100),
-            )
-            .is_err());
-        assert_eq!(
-            state
-                .side(SideId::P2)
-                .pokemon(PokemonIndex::new(0))
-                .unwrap()
-                .item,
-            Some(item)
         );
     }
 

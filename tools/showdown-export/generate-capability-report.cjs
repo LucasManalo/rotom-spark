@@ -4,7 +4,7 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
-const {CAPABILITIES, IDENTITY_DEPENDENCIES} = require('./capability-dependencies.cjs');
+const {CAPABILITIES, IDENTITY_DEPENDENCIES, UNLOCKED_IDENTITIES} = require('./capability-dependencies.cjs');
 
 const repositoryRoot = path.resolve(__dirname, '..', '..');
 const manifestPath = path.join(repositoryRoot, 'data', 'generated', 'reg-mc-mechanics-manifest.json');
@@ -60,7 +60,7 @@ function buildCapabilityReport(manifest) {
 			id,
 			...definition,
 			blocked_identities: blocked.map(entry => `${entry.kind}:${entry.id}`),
-			unlocked_identities: [],
+			unlocked_identities: UNLOCKED_IDENTITIES[id] || [],
 			would_unlock_if_completed: solelyBlocked.map(entry => `${entry.kind}:${entry.id}`),
 		};
 	}).sort((left, right) => compareStrings(left.id, right.id));
@@ -120,6 +120,13 @@ function reportFor(audit) {
 	for (const entry of [...audit.capabilities].filter(value => value.blocked_identities.length)
 		.sort((left, right) => right.blocked_identities.length - left.blocked_identities.length || compareStrings(left.id, right.id))) {
 		lines.push(`| \`${entry.id}\` | ${entry.status} | ${entry.blocked_identities.length} | ${entry.would_unlock_if_completed.length} | ${entry.known_gaps.join(' ')} |`);
+	}
+	const unlocked = audit.capabilities.filter(entry => entry.unlocked_identities.length);
+	if (unlocked.length) {
+		lines.push('', '## Recently unlocked identities', '');
+		for (const entry of unlocked) {
+			lines.push(`- \`${entry.id}\`: ${entry.unlocked_identities.map(value => `\`${value}\``).join(', ')}`);
+		}
 	}
 	lines.push('', '## Dependency audit', '');
 	for (const kind of ['ability', 'item', 'move']) {

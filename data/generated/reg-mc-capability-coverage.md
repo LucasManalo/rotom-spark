@@ -10,14 +10,14 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Kind | Reachable | Implemented | Partial | Unsupported |
 | --- | ---: | ---: | ---: | ---: |
 | ability | 215 | 120 | 95 | 0 |
-| item | 166 | 47 | 119 | 0 |
+| item | 166 | 55 | 111 | 0 |
 | move | 510 | 223 | 0 | 287 |
 
 ## Executable capability coverage
 
 | Total | Verified | Implemented | Partial | Unsupported |
 | ---: | ---: | ---: | ---: | ---: |
-| 62 | 5 | 17 | 20 | 20 |
+| 65 | 5 | 18 | 20 | 22 |
 
 `implemented` means the shared capability executes in its stated scope. `verified` additionally has qualifying pinned-reference evidence. Partial and unsupported capabilities continue to block dependent identities.
 
@@ -32,7 +32,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | `mega_eligibility` | unsupported | 81 | 0 | Mega Stones are metadata-only. |
 | `mega_timing` | unsupported | 81 | 0 | No canonical Mega action lifecycle exists. |
 | `volatile` | partial | 52 | 3 | Only selected volatiles are executable; confusion, flinch, Taunt, Encore, Disable, Substitute, trapping, recharge, and invulnerability are incomplete. |
-| `berry_lifecycle` | partial | 34 | 25 | Pre-existing status, damage/residual triggers, Substitute sensitivity, Unnerve, Klutz, Magic Room, Ripen, Cheek Pouch, Cud Chew, Harvest, and Symbiosis are not unified. |
+| `substitute_damage_routing` | unsupported | 18 | 18 | Resistance Berries cannot be promoted until damage and item activation distinguish Substitute damage from direct HP damage. |
 | `field_or_side_condition` | partial | 14 | 1 | Hazards, delayed effects, screens with special removal, and several side conditions are incomplete. |
 | `damage_event_lifecycle` | partial | 13 | 4 | Sturdy, Innards Out, Magic Guard, Liquid Ooze, and related effects need canonical event history. |
 | `switch_control` | unsupported | 12 | 7 | Pivoting, phazing, item-driven switches, and ability-driven switches do not share an end-to-end lifecycle. |
@@ -41,8 +41,8 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | `field_activation` | partial | 9 | 9 | Several setters exist, but entry and damage-triggered activation is not uniformly sequenced. |
 | `stat_event_lifecycle` | partial | 9 | 8 | Intimidate and other reactive boosts/drops are not complete across interactions. |
 | `item_lifecycle` | partial | 7 | 7 | Theft, exchange, restoration, suppression, and consumed-item history are incomplete. |
-| `status_cure` | partial | 7 | 0 | Status berries, Heal Bell, Shed Skin, and related interactions are not unified. |
 | `volatile_cure` | unsupported | 7 | 0 | Mental Herb-related volatiles do not use one canonical lifecycle. |
+| `berry_effect_coverage` | partial | 5 | 4 | Confusion-curing and pinch-stat berries remain incomplete, so berry-dependent abilities are not interaction-complete for every reachable berry. |
 | `move_type_conversion` | partial | 5 | 5 | Aerilate-family and Champions conversion abilities are not interaction-complete. |
 | `ability_lifecycle` | partial | 4 | 4 | Copying, replacement, suppression, and activation ordering are incomplete. |
 | `forced_switch` | unsupported | 4 | 4 | Eject Button, Red Card, Emergency Exit, pivots, and phazing are not end-to-end. |
@@ -51,6 +51,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | `confusion` | unsupported | 2 | 0 | Confusion is not end-to-end. |
 | `end_turn_effects` | partial | 2 | 1 | Speed Boost, Cud Chew, Wish, Perish Song, and similar effects are incomplete. |
 | `flinch` | unsupported | 2 | 0 | Flinch is not represented by the canonical volatile lifecycle. |
+| `status_cure` | partial | 2 | 0 | Status berries, Heal Bell, Shed Skin, and related interactions are not unified. |
 | `switch_restriction` | unsupported | 2 | 2 | Shadow Tag, trapping volatiles, and Shed Shell are incomplete. |
 | `accuracy_override` | partial | 1 | 1 | No Guard and move-specific accuracy overrides are not interaction-complete. |
 | `action_order_modifier` | partial | 1 | 1 | Quick Claw-style bracket modification is not integrated with the canonical queue. |
@@ -59,16 +60,20 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | `immunity_override` | partial | 1 | 1 | Exceptional immunity and suppression interactions remain incomplete. |
 | `move_history` | partial | 1 | 1 | Several predicates and consecutive-use effects lack one authoritative history lifecycle. |
 | `move_reflection` | unsupported | 1 | 1 | Magic Bounce is incomplete. |
-| `pp_restore` | unsupported | 1 | 0 | Leppa Berry and move-driven PP restoration are incomplete. |
+| `pinch_berry_thresholds` | unsupported | 1 | 1 | Stat-boosting pinch Berries and Gluttony threshold changes are not executable. |
 | `redirection_ability` | unsupported | 1 | 1 | Lightning Rod-style redirection is incomplete. |
 | `residual_trapping` | unsupported | 1 | 1 | Binding moves and Binding Band are incomplete. |
 | `stat_restore` | partial | 1 | 1 | White Herb and several stage-manipulation moves are incomplete. |
 | `weather_suppression` | unsupported | 1 | 1 | Cloud Nine suppression is incomplete. |
 
+## Recently unlocked identities
+
+- `berry_lifecycle`: `item:aspearberry`, `item:cheriberry`, `item:chestoberry`, `item:leppaberry`, `item:oranberry`, `item:pechaberry`, `item:rawstberry`, `item:sitrusberry`
+
 ## Dependency audit
 
 - ability: 95 partial identities mapped; 0 currently unlocked.
-- item: 119 partial identities mapped; 0 currently unlocked.
+- item: 111 partial identities mapped; 0 currently unlocked.
 - move: 287 unsupported identities mapped; 0 currently unlocked.
 
 Mega Stones are reported as a **metadata foundation**. They remain partial until `mega_eligibility`, `mega_timing`, `form_change`, and `ability_transition` are complete.

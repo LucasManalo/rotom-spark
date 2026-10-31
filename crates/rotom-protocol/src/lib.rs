@@ -74,6 +74,9 @@ pub struct PokemonSnapshot {
     pub current_hp: u16,
     pub ability: u32,
     pub item: Option<u32>,
+    pub last_consumed_berry: Option<u32>,
+    pub cud_chew_berry: Option<u32>,
+    pub cud_chew_turns: u8,
     pub moves: Vec<MoveSnapshot>,
     pub status: Option<MajorStatus>,
     pub status_state: StatusSnapshot,
@@ -244,6 +247,9 @@ impl From<&rotom_core::PokemonState> for PokemonSnapshot {
             current_hp: state.current_hp,
             ability: state.ability.get(),
             item: state.item.map(rotom_core::ItemId::get),
+            last_consumed_berry: state.last_consumed_berry.map(rotom_core::ItemId::get),
+            cud_chew_berry: state.cud_chew_berry.map(rotom_core::ItemId::get),
+            cud_chew_turns: state.cud_chew_turns,
             moves: state
                 .moves
                 .iter()

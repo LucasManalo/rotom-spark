@@ -26,8 +26,8 @@
       "item": {
         "reachable": 166,
         "unsupported": 0,
-        "partial": 119,
-        "implemented": 47
+        "partial": 111,
+        "implemented": 55
       },
       "move": {
         "reachable": 510,
@@ -37,15 +37,15 @@
       }
     },
     "executable_capability_coverage": {
-      "total": 62,
-      "unsupported": 20,
+      "total": 65,
+      "unsupported": 22,
       "partial": 20,
-      "implemented": 17,
+      "implemented": 18,
       "verified": 5
     },
     "dependency_targets": {
       "ability": 95,
-      "item": 119,
+      "item": 111,
       "move": 287
     }
   },
@@ -352,96 +352,87 @@
       "would_unlock_if_completed": []
     },
     {
-      "id": "berry_lifecycle",
+      "id": "berry_effect_coverage",
       "status": "partial",
+      "title": "Individual berry effect coverage",
+      "sub_capabilities": [
+        "effect eligibility",
+        "effect application",
+        "ability interaction"
+      ],
+      "lifecycle_and_ordering": [
+        "effect eligibility",
+        "effect application",
+        "ability interaction"
+      ],
+      "known_gaps": [
+        "Confusion-curing and pinch-stat berries remain incomplete, so berry-dependent abilities are not interaction-complete for every reachable berry."
+      ],
+      "tests": [],
+      "differential_fixtures": [],
+      "pinned_reference_evidence": [
+        "showdown:data/items.ts:Items"
+      ],
+      "blocked_identities": [
+        "ability:cheekpouch",
+        "ability:cudchew",
+        "ability:harvest",
+        "ability:ripen",
+        "ability:unnerve"
+      ],
+      "unlocked_identities": [],
+      "would_unlock_if_completed": [
+        "ability:cheekpouch",
+        "ability:harvest",
+        "ability:ripen",
+        "ability:unnerve"
+      ]
+    },
+    {
+      "id": "berry_lifecycle",
+      "status": "implemented",
       "title": "Shared berry activation and consumption",
       "sub_capabilities": [
         "trigger timing",
         "eligibility",
         "suppression",
-        "consumption",
+        "consumption history",
         "follow-up hooks"
       ],
       "lifecycle_and_ordering": [
         "trigger timing",
         "eligibility",
         "suppression",
-        "consumption",
+        "consumption history",
         "follow-up hooks"
       ],
       "known_gaps": [
-        "Pre-existing status, damage/residual triggers, Substitute sensitivity, Unnerve, Klutz, Magic Room, Ripen, Cheek Pouch, Cud Chew, Harvest, and Symbiosis are not unified."
+        "The shared lifecycle is implemented; individual berry effects and Substitute damage routing remain separate capabilities."
       ],
-      "tests": [],
-      "differential_fixtures": [],
+      "tests": [
+        "unit:crates/rotom-dex/tests/combat.rs#berry_update_cud_chew_reuses_consumption_history_after_one_residual",
+        "unit:crates/rotom-dex/tests/combat.rs#berry_update_harvest_and_symbiosis_share_consumption_history",
+        "unit:crates/rotom-dex/tests/combat.rs#berry_update_handles_preexisting_status_residual_damage_and_klutz_suppression"
+      ],
+      "differential_fixtures": [
+        "differential:data/fixtures/differential/berry-lifecycle.json#sitrus-cud-chew"
+      ],
       "pinned_reference_evidence": [
         "showdown:data/items.ts:Items.sitrusberry",
         "showdown:sim/pokemon.ts:Pokemon.eatItem"
       ],
-      "blocked_identities": [
-        "ability:cheekpouch",
-        "ability:cudchew",
-        "ability:gluttony",
-        "ability:harvest",
-        "ability:ripen",
-        "ability:unnerve",
+      "blocked_identities": [],
+      "unlocked_identities": [
         "item:aspearberry",
-        "item:babiriberry",
-        "item:chartiberry",
         "item:cheriberry",
         "item:chestoberry",
-        "item:chilanberry",
-        "item:chopleberry",
-        "item:cobaberry",
-        "item:colburberry",
-        "item:habanberry",
-        "item:kasibberry",
-        "item:kebiaberry",
         "item:leppaberry",
-        "item:lumberry",
-        "item:occaberry",
         "item:oranberry",
-        "item:passhoberry",
-        "item:payapaberry",
         "item:pechaberry",
-        "item:persimberry",
         "item:rawstberry",
-        "item:rindoberry",
-        "item:roseliberry",
-        "item:shucaberry",
-        "item:sitrusberry",
-        "item:tangaberry",
-        "item:wacanberry",
-        "item:yacheberry"
+        "item:sitrusberry"
       ],
-      "unlocked_identities": [],
-      "would_unlock_if_completed": [
-        "ability:cheekpouch",
-        "ability:gluttony",
-        "ability:harvest",
-        "ability:ripen",
-        "ability:unnerve",
-        "item:babiriberry",
-        "item:chartiberry",
-        "item:chilanberry",
-        "item:chopleberry",
-        "item:cobaberry",
-        "item:colburberry",
-        "item:habanberry",
-        "item:kasibberry",
-        "item:kebiaberry",
-        "item:occaberry",
-        "item:oranberry",
-        "item:passhoberry",
-        "item:payapaberry",
-        "item:rindoberry",
-        "item:roseliberry",
-        "item:shucaberry",
-        "item:sitrusberry",
-        "item:tangaberry",
-        "item:wacanberry",
-        "item:yacheberry"
-      ]
+      "would_unlock_if_completed": []
     },
     {
       "id": "calls_move",
@@ -1943,6 +1934,37 @@
       "would_unlock_if_completed": []
     },
     {
+      "id": "pinch_berry_thresholds",
+      "status": "unsupported",
+      "title": "Pinch-berry activation thresholds",
+      "sub_capabilities": [
+        "ordinary threshold",
+        "Gluttony threshold",
+        "stat effect"
+      ],
+      "lifecycle_and_ordering": [
+        "ordinary threshold",
+        "Gluttony threshold",
+        "stat effect"
+      ],
+      "known_gaps": [
+        "Stat-boosting pinch Berries and Gluttony threshold changes are not executable."
+      ],
+      "tests": [],
+      "differential_fixtures": [],
+      "pinned_reference_evidence": [
+        "showdown:data/abilities.ts:Abilities.gluttony",
+        "showdown:data/items.ts:Items"
+      ],
+      "blocked_identities": [
+        "ability:gluttony"
+      ],
+      "unlocked_identities": [],
+      "would_unlock_if_completed": [
+        "ability:gluttony"
+      ]
+    },
+    {
       "id": "pp_restore",
       "status": "unsupported",
       "title": "PP restoration lifecycle",
@@ -1964,9 +1986,7 @@
       "pinned_reference_evidence": [
         "showdown:data/items.ts:Items.leppaberry"
       ],
-      "blocked_identities": [
-        "item:leppaberry"
-      ],
+      "blocked_identities": [],
       "unlocked_identities": [],
       "would_unlock_if_completed": []
     },
@@ -2644,13 +2664,8 @@
         "showdown:sim/pokemon.ts:Pokemon.cureStatus"
       ],
       "blocked_identities": [
-        "item:aspearberry",
-        "item:cheriberry",
-        "item:chestoberry",
         "item:lumberry",
-        "item:pechaberry",
-        "item:persimberry",
-        "item:rawstberry"
+        "item:persimberry"
       ],
       "unlocked_identities": [],
       "would_unlock_if_completed": []
@@ -2689,6 +2704,71 @@
         "ability:leafguard",
         "ability:purifyingsalt",
         "ability:synchronize"
+      ]
+    },
+    {
+      "id": "substitute_damage_routing",
+      "status": "unsupported",
+      "title": "Substitute-sensitive damage routing",
+      "sub_capabilities": [
+        "damage recipient",
+        "post-damage item activation",
+        "source attribution"
+      ],
+      "lifecycle_and_ordering": [
+        "damage recipient",
+        "post-damage item activation",
+        "source attribution"
+      ],
+      "known_gaps": [
+        "Resistance Berries cannot be promoted until damage and item activation distinguish Substitute damage from direct HP damage."
+      ],
+      "tests": [],
+      "differential_fixtures": [],
+      "pinned_reference_evidence": [
+        "showdown:data/conditions.ts:Conditions.substitute",
+        "showdown:sim/battle-actions.ts:BattleActions.moveHit"
+      ],
+      "blocked_identities": [
+        "item:babiriberry",
+        "item:chartiberry",
+        "item:chilanberry",
+        "item:chopleberry",
+        "item:cobaberry",
+        "item:colburberry",
+        "item:habanberry",
+        "item:kasibberry",
+        "item:kebiaberry",
+        "item:occaberry",
+        "item:passhoberry",
+        "item:payapaberry",
+        "item:rindoberry",
+        "item:roseliberry",
+        "item:shucaberry",
+        "item:tangaberry",
+        "item:wacanberry",
+        "item:yacheberry"
+      ],
+      "unlocked_identities": [],
+      "would_unlock_if_completed": [
+        "item:babiriberry",
+        "item:chartiberry",
+        "item:chilanberry",
+        "item:chopleberry",
+        "item:cobaberry",
+        "item:colburberry",
+        "item:habanberry",
+        "item:kasibberry",
+        "item:kebiaberry",
+        "item:occaberry",
+        "item:passhoberry",
+        "item:payapaberry",
+        "item:rindoberry",
+        "item:roseliberry",
+        "item:shucaberry",
+        "item:tangaberry",
+        "item:wacanberry",
+        "item:yacheberry"
       ]
     },
     {
@@ -3014,10 +3094,10 @@
       "name": "Cheek Pouch",
       "identity_status": "partial",
       "capabilities": [
-        "berry_lifecycle"
+        "berry_effect_coverage"
       ],
       "outstanding_blockers": [
-        "berry_lifecycle"
+        "berry_effect_coverage"
       ],
       "unlocked": false,
       "tests": [],
@@ -3050,11 +3130,11 @@
       "name": "Cud Chew",
       "identity_status": "partial",
       "capabilities": [
-        "berry_lifecycle",
+        "berry_effect_coverage",
         "end_turn_effects"
       ],
       "outstanding_blockers": [
-        "berry_lifecycle",
+        "berry_effect_coverage",
         "end_turn_effects"
       ],
       "unlocked": false,
@@ -3392,10 +3472,10 @@
       "name": "Gluttony",
       "identity_status": "partial",
       "capabilities": [
-        "berry_lifecycle"
+        "pinch_berry_thresholds"
       ],
       "outstanding_blockers": [
-        "berry_lifecycle"
+        "pinch_berry_thresholds"
       ],
       "unlocked": false,
       "tests": [],
@@ -3448,10 +3528,10 @@
       "name": "Harvest",
       "identity_status": "partial",
       "capabilities": [
-        "berry_lifecycle"
+        "berry_effect_coverage"
       ],
       "outstanding_blockers": [
-        "berry_lifecycle"
+        "berry_effect_coverage"
       ],
       "unlocked": false,
       "tests": [],
@@ -4194,10 +4274,10 @@
       "name": "Ripen",
       "identity_status": "partial",
       "capabilities": [
-        "berry_lifecycle"
+        "berry_effect_coverage"
       ],
       "outstanding_blockers": [
-        "berry_lifecycle"
+        "berry_effect_coverage"
       ],
       "unlocked": false,
       "tests": [],
@@ -4706,10 +4786,10 @@
       "name": "Unnerve",
       "identity_status": "partial",
       "capabilities": [
-        "berry_lifecycle"
+        "berry_effect_coverage"
       ],
       "outstanding_blockers": [
-        "berry_lifecycle"
+        "berry_effect_coverage"
       ],
       "unlocked": false,
       "tests": [],
@@ -4966,29 +5046,6 @@
     },
     {
       "kind": "item",
-      "id": "aspearberry",
-      "name": "Aspear Berry",
-      "identity_status": "partial",
-      "capabilities": [
-        "berry_lifecycle",
-        "status_cure"
-      ],
-      "outstanding_blockers": [
-        "berry_lifecycle",
-        "status_cure"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks",
-        "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.aspearberry"
-      ]
-    },
-    {
-      "kind": "item",
       "id": "audinite",
       "name": "Audinite",
       "identity_status": "partial",
@@ -5019,10 +5076,11 @@
       "name": "Babiri Berry",
       "identity_status": "partial",
       "capabilities": [
-        "berry_lifecycle"
+        "berry_lifecycle",
+        "substitute_damage_routing"
       ],
       "outstanding_blockers": [
-        "berry_lifecycle"
+        "substitute_damage_routing"
       ],
       "unlocked": false,
       "tests": [
@@ -5320,10 +5378,11 @@
       "name": "Charti Berry",
       "identity_status": "partial",
       "capabilities": [
-        "berry_lifecycle"
+        "berry_lifecycle",
+        "substitute_damage_routing"
       ],
       "outstanding_blockers": [
-        "berry_lifecycle"
+        "substitute_damage_routing"
       ],
       "unlocked": false,
       "tests": [
@@ -5333,29 +5392,6 @@
       "differential_fixtures": [],
       "pinned_reference_evidence": [
         "showdown:data/items.ts:Items.chartiberry"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "cheriberry",
-      "name": "Cheri Berry",
-      "identity_status": "partial",
-      "capabilities": [
-        "berry_lifecycle",
-        "status_cure"
-      ],
-      "outstanding_blockers": [
-        "berry_lifecycle",
-        "status_cure"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks",
-        "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.cheriberry"
       ]
     },
     {
@@ -5386,37 +5422,15 @@
     },
     {
       "kind": "item",
-      "id": "chestoberry",
-      "name": "Chesto Berry",
-      "identity_status": "partial",
-      "capabilities": [
-        "berry_lifecycle",
-        "status_cure"
-      ],
-      "outstanding_blockers": [
-        "berry_lifecycle",
-        "status_cure"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks",
-        "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.chestoberry"
-      ]
-    },
-    {
-      "kind": "item",
       "id": "chilanberry",
       "name": "Chilan Berry",
       "identity_status": "partial",
       "capabilities": [
-        "berry_lifecycle"
+        "berry_lifecycle",
+        "substitute_damage_routing"
       ],
       "outstanding_blockers": [
-        "berry_lifecycle"
+        "substitute_damage_routing"
       ],
       "unlocked": false,
       "tests": [
@@ -5480,10 +5494,11 @@
       "name": "Chople Berry",
       "identity_status": "partial",
       "capabilities": [
-        "berry_lifecycle"
+        "berry_lifecycle",
+        "substitute_damage_routing"
       ],
       "outstanding_blockers": [
-        "berry_lifecycle"
+        "substitute_damage_routing"
       ],
       "unlocked": false,
       "tests": [
@@ -5527,10 +5542,11 @@
       "name": "Coba Berry",
       "identity_status": "partial",
       "capabilities": [
-        "berry_lifecycle"
+        "berry_lifecycle",
+        "substitute_damage_routing"
       ],
       "outstanding_blockers": [
-        "berry_lifecycle"
+        "substitute_damage_routing"
       ],
       "unlocked": false,
       "tests": [
@@ -5548,10 +5564,11 @@
       "name": "Colbur Berry",
       "identity_status": "partial",
       "capabilities": [
-        "berry_lifecycle"
+        "berry_lifecycle",
+        "substitute_damage_routing"
       ],
       "outstanding_blockers": [
-        "berry_lifecycle"
+        "substitute_damage_routing"
       ],
       "unlocked": false,
       "tests": [
@@ -6187,10 +6204,11 @@
       "name": "Haban Berry",
       "identity_status": "partial",
       "capabilities": [
-        "berry_lifecycle"
+        "berry_lifecycle",
+        "substitute_damage_routing"
       ],
       "outstanding_blockers": [
-        "berry_lifecycle"
+        "substitute_damage_routing"
       ],
       "unlocked": false,
       "tests": [
@@ -6312,10 +6330,11 @@
       "name": "Kasib Berry",
       "identity_status": "partial",
       "capabilities": [
-        "berry_lifecycle"
+        "berry_lifecycle",
+        "substitute_damage_routing"
       ],
       "outstanding_blockers": [
-        "berry_lifecycle"
+        "substitute_damage_routing"
       ],
       "unlocked": false,
       "tests": [
@@ -6333,10 +6352,11 @@
       "name": "Kebia Berry",
       "identity_status": "partial",
       "capabilities": [
-        "berry_lifecycle"
+        "berry_lifecycle",
+        "substitute_damage_routing"
       ],
       "outstanding_blockers": [
-        "berry_lifecycle"
+        "substitute_damage_routing"
       ],
       "unlocked": false,
       "tests": [
@@ -6368,28 +6388,6 @@
       "differential_fixtures": [],
       "pinned_reference_evidence": [
         "showdown:data/items.ts:Items.kingsrock"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "leppaberry",
-      "name": "Leppa Berry",
-      "identity_status": "partial",
-      "capabilities": [
-        "berry_lifecycle",
-        "pp_restore"
-      ],
-      "outstanding_blockers": [
-        "berry_lifecycle",
-        "pp_restore"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.leppaberry"
       ]
     },
     {
@@ -6481,7 +6479,6 @@
         "status_cure"
       ],
       "outstanding_blockers": [
-        "berry_lifecycle",
         "confusion",
         "status_cure"
       ],
@@ -6725,10 +6722,11 @@
       "name": "Occa Berry",
       "identity_status": "partial",
       "capabilities": [
-        "berry_lifecycle"
+        "berry_lifecycle",
+        "substitute_damage_routing"
       ],
       "outstanding_blockers": [
-        "berry_lifecycle"
+        "substitute_damage_routing"
       ],
       "unlocked": false,
       "tests": [
@@ -6742,34 +6740,15 @@
     },
     {
       "kind": "item",
-      "id": "oranberry",
-      "name": "Oran Berry",
-      "identity_status": "partial",
-      "capabilities": [
-        "berry_lifecycle"
-      ],
-      "outstanding_blockers": [
-        "berry_lifecycle"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.oranberry"
-      ]
-    },
-    {
-      "kind": "item",
       "id": "passhoberry",
       "name": "Passho Berry",
       "identity_status": "partial",
       "capabilities": [
-        "berry_lifecycle"
+        "berry_lifecycle",
+        "substitute_damage_routing"
       ],
       "outstanding_blockers": [
-        "berry_lifecycle"
+        "substitute_damage_routing"
       ],
       "unlocked": false,
       "tests": [
@@ -6787,10 +6766,11 @@
       "name": "Payapa Berry",
       "identity_status": "partial",
       "capabilities": [
-        "berry_lifecycle"
+        "berry_lifecycle",
+        "substitute_damage_routing"
       ],
       "outstanding_blockers": [
-        "berry_lifecycle"
+        "substitute_damage_routing"
       ],
       "unlocked": false,
       "tests": [
@@ -6804,29 +6784,6 @@
     },
     {
       "kind": "item",
-      "id": "pechaberry",
-      "name": "Pecha Berry",
-      "identity_status": "partial",
-      "capabilities": [
-        "berry_lifecycle",
-        "status_cure"
-      ],
-      "outstanding_blockers": [
-        "berry_lifecycle",
-        "status_cure"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks",
-        "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.pechaberry"
-      ]
-    },
-    {
-      "kind": "item",
       "id": "persimberry",
       "name": "Persim Berry",
       "identity_status": "partial",
@@ -6836,7 +6793,6 @@
         "status_cure"
       ],
       "outstanding_blockers": [
-        "berry_lifecycle",
         "confusion",
         "status_cure"
       ],
@@ -6999,29 +6955,6 @@
     },
     {
       "kind": "item",
-      "id": "rawstberry",
-      "name": "Rawst Berry",
-      "identity_status": "partial",
-      "capabilities": [
-        "berry_lifecycle",
-        "status_cure"
-      ],
-      "outstanding_blockers": [
-        "berry_lifecycle",
-        "status_cure"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks",
-        "unit:crates/rotom-dex/tests/combat.rs#next_thirty_items_resolve_to_native_behavior_families"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.rawstberry"
-      ]
-    },
-    {
-      "kind": "item",
       "id": "redcard",
       "name": "Red Card",
       "identity_status": "partial",
@@ -7046,10 +6979,11 @@
       "name": "Rindo Berry",
       "identity_status": "partial",
       "capabilities": [
-        "berry_lifecycle"
+        "berry_lifecycle",
+        "substitute_damage_routing"
       ],
       "outstanding_blockers": [
-        "berry_lifecycle"
+        "substitute_damage_routing"
       ],
       "unlocked": false,
       "tests": [
@@ -7067,10 +7001,11 @@
       "name": "Roseli Berry",
       "identity_status": "partial",
       "capabilities": [
-        "berry_lifecycle"
+        "berry_lifecycle",
+        "substitute_damage_routing"
       ],
       "outstanding_blockers": [
-        "berry_lifecycle"
+        "substitute_damage_routing"
       ],
       "unlocked": false,
       "tests": [
@@ -7316,10 +7251,11 @@
       "name": "Shuca Berry",
       "identity_status": "partial",
       "capabilities": [
-        "berry_lifecycle"
+        "berry_lifecycle",
+        "substitute_damage_routing"
       ],
       "outstanding_blockers": [
-        "berry_lifecycle"
+        "substitute_damage_routing"
       ],
       "unlocked": false,
       "tests": [
@@ -7330,26 +7266,6 @@
       "differential_fixtures": [],
       "pinned_reference_evidence": [
         "showdown:data/items.ts:Items.shucaberry"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "sitrusberry",
-      "name": "Sitrus Berry",
-      "identity_status": "partial",
-      "capabilities": [
-        "berry_lifecycle"
-      ],
-      "outstanding_blockers": [
-        "berry_lifecycle"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-core/src/items.rs#cure_heal_pp_and_sash_items_mutate_through_typed_callbacks"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.sitrusberry"
       ]
     },
     {
@@ -7514,10 +7430,11 @@
       "name": "Tanga Berry",
       "identity_status": "partial",
       "capabilities": [
-        "berry_lifecycle"
+        "berry_lifecycle",
+        "substitute_damage_routing"
       ],
       "outstanding_blockers": [
-        "berry_lifecycle"
+        "substitute_damage_routing"
       ],
       "unlocked": false,
       "tests": [
@@ -7613,10 +7530,11 @@
       "name": "Wacan Berry",
       "identity_status": "partial",
       "capabilities": [
-        "berry_lifecycle"
+        "berry_lifecycle",
+        "substitute_damage_routing"
       ],
       "outstanding_blockers": [
-        "berry_lifecycle"
+        "substitute_damage_routing"
       ],
       "unlocked": false,
       "tests": [
@@ -7654,10 +7572,11 @@
       "name": "Yache Berry",
       "identity_status": "partial",
       "capabilities": [
-        "berry_lifecycle"
+        "berry_lifecycle",
+        "substitute_damage_routing"
       ],
       "outstanding_blockers": [
-        "berry_lifecycle"
+        "substitute_damage_routing"
       ],
       "unlocked": false,
       "tests": [

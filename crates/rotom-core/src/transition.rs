@@ -295,6 +295,9 @@ mod tests {
             current_hp: 120,
             ability: AbilityId::new(1),
             item: None,
+            last_consumed_berry: None,
+            cud_chew_berry: None,
+            cud_chew_turns: 0,
             moves: vec![MoveSlot {
                 move_id: MOVE_ID,
                 target: MoveTarget::Normal,

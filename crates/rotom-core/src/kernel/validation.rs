@@ -221,6 +221,12 @@ fn validate_pokemon(
         }
         None => {}
     }
+    if pokemon.cud_chew_berry.is_some() != (pokemon.cud_chew_turns > 0) {
+        return invalid(format!(
+            "{side:?} Pokémon {} has inconsistent Cud Chew state",
+            index.get()
+        ));
+    }
     for stage in [
         pokemon.stat_stages.atk,
         pokemon.stat_stages.def,
@@ -378,6 +384,9 @@ mod tests {
             current_hp: 100,
             ability: AbilityId::new(1),
             item: None,
+            last_consumed_berry: None,
+            cud_chew_berry: None,
+            cud_chew_turns: 0,
             moves: vec![MoveSlot {
                 move_id: MoveId::new(1),
                 target: MoveTarget::Normal,

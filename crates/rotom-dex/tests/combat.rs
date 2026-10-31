@@ -115,6 +115,13 @@ fn sequenced_effects_fixture() -> serde_json::Value {
     .expect("sequenced effects fixture")
 }
 
+fn berry_lifecycle_fixture() -> serde_json::Value {
+    serde_json::from_str(include_str!(
+        "../../../data/fixtures/differential/berry-lifecycle.json"
+    ))
+    .expect("berry lifecycle fixture")
+}
+
 fn single_move_action(move_slot: u8, target: ActionTarget) -> JointAction {
     JointAction::Turn {
         p1: TurnChoice {
@@ -4821,7 +4828,7 @@ fn resistance_berries_consume_in_step_and_respect_unnerve_ripen_and_magic_room()
 }
 
 #[test]
-fn deferred_berry_ability_interactions_fail_atomically_before_consumption() {
+fn cheek_pouch_completes_resistance_berry_consumption_without_aborting_the_turn() {
     let dex = champions_reg_mc().unwrap();
     let shuca = dex.resolve_item("shucaberry").unwrap().0;
     let source = set_with_moves(&dex, "goodra", "sapsipper", &["earthpower"]);
@@ -4833,28 +4840,258 @@ fn deferred_berry_ability_interactions_fail_atomically_before_consumption() {
     builder
         .edit_pokemon(target_ref, |pokemon| {
             pokemon.ability = dex.resolve_ability("cheekpouch").unwrap().0;
+            pokemon.current_hp = 80;
         })
         .unwrap();
-    let deferred = builder.build().unwrap();
-    let error = step(
-        &deferred,
+    let battle = builder.build().unwrap();
+    let result = step(
+        &battle,
         &single_move_action(0, ActionTarget::Foe(ActiveSlot::Left)),
         &Mechanics::new(&dex, &EffectRegistry::new()),
     )
-    .unwrap_err();
-    assert!(matches!(
-        error,
-        rotom_core::BattleError::UnsupportedMechanic(_)
-    ));
+    .unwrap();
+    let target = result
+        .state
+        .side(target_ref.side)
+        .pokemon(target_ref.pokemon)
+        .unwrap();
+    assert_eq!(target.item, None);
+    assert_eq!(target.last_consumed_berry, Some(shuca));
+    assert!(
+        target.current_hp > 80,
+        "Cheek Pouch must heal before damage lands"
+    );
+}
+
+#[test]
+fn berry_update_cud_chew_reuses_consumption_history_after_one_residual() {
+    let dex = champions_reg_mc().unwrap();
+    let sitrus = dex.resolve_item("sitrusberry").unwrap().0;
+    let source = set_with_moves(&dex, "goodra", "sapsipper", &["swordsdance"]);
+    let mut target = set_with_moves(&dex, "metagross", "clearbody", &["swordsdance"]);
+    target.item = Some(sitrus);
+    let target_ref = PokemonRef::new(SideId::P2, PokemonIndex::new(0));
+    let action = single_move_action(0, ActionTarget::Automatic);
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let fixture = berry_lifecycle_fixture();
+    let case = |id: &str| {
+        fixture["cases"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|case| case["id"] == id)
+            .unwrap()
+    };
+
+    let berry_battle = |ability: &str| {
+        let base = selected_primary_battle(&dex, &source, &target, 0x15_01);
+        let mut builder = BattleStateBuilder::from_state(base).unwrap();
+        builder
+            .edit_pokemon(target_ref, |pokemon| {
+                pokemon.ability = dex.resolve_ability(ability).unwrap().0;
+                pokemon.current_hp = 50;
+            })
+            .unwrap();
+        builder
+    };
+
+    let first = step(
+        &berry_battle("cudchew").build().unwrap(),
+        &action,
+        &mechanics,
+    )
+    .unwrap();
+    let holder = first
+        .state
+        .side(target_ref.side)
+        .pokemon(target_ref.pokemon)
+        .unwrap();
+    assert_eq!(holder.item, None);
+    assert_eq!(holder.last_consumed_berry, Some(sitrus));
+    assert_eq!(holder.cud_chew_berry, Some(sitrus));
     assert_eq!(
-        deferred
+        holder.cud_chew_turns,
+        u8::try_from(
+            case("sitrus-cud-chew")["after_one_residual"]["counter"]
+                .as_u64()
+                .unwrap()
+        )
+        .unwrap()
+    );
+
+    let mut second_builder = BattleStateBuilder::from_state(first.state).unwrap();
+    second_builder
+        .edit_pokemon(target_ref, |pokemon| pokemon.current_hp = 40)
+        .unwrap();
+    let second = step(&second_builder.build().unwrap(), &action, &mechanics).unwrap();
+    let holder = second
+        .state
+        .side(target_ref.side)
+        .pokemon(target_ref.pokemon)
+        .unwrap();
+    assert_eq!(
+        holder.current_hp,
+        u16::try_from(
+            case("sitrus-cud-chew")["after_two_residuals"]["hp"]
+                .as_u64()
+                .unwrap()
+        )
+        .unwrap(),
+        "Cud Chew must match the pinned delayed Sitrus healing"
+    );
+    assert_eq!(holder.cud_chew_berry, None);
+    assert_eq!(holder.cud_chew_turns, 0);
+}
+
+#[test]
+fn berry_update_harvest_and_symbiosis_share_consumption_history() {
+    let dex = champions_reg_mc().unwrap();
+    let sitrus = dex.resolve_item("sitrusberry").unwrap().0;
+    let leftovers = dex.resolve_item("leftovers").unwrap().0;
+    let source = set_with_moves(&dex, "goodra", "sapsipper", &["swordsdance"]);
+    let mut target = set_with_moves(&dex, "metagross", "clearbody", &["swordsdance"]);
+    target.item = Some(sitrus);
+    let target_ref = PokemonRef::new(SideId::P2, PokemonIndex::new(0));
+    let ally_ref = PokemonRef::new(SideId::P2, PokemonIndex::new(1));
+    let action = single_move_action(0, ActionTarget::Automatic);
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let fixture = berry_lifecycle_fixture();
+    let case = |id: &str| {
+        fixture["cases"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|case| case["id"] == id)
+            .unwrap()
+    };
+    let berry_battle = |ability: &str| {
+        let base = selected_primary_battle(&dex, &source, &target, 0x15_01);
+        let mut builder = BattleStateBuilder::from_state(base).unwrap();
+        builder
+            .edit_pokemon(target_ref, |pokemon| {
+                pokemon.ability = dex.resolve_ability(ability).unwrap().0;
+                pokemon.current_hp = 50;
+            })
+            .unwrap();
+        builder
+    };
+
+    let mut harvest = berry_battle("harvest");
+    let sun = dex.field_effect_ids().sun.unwrap();
+    harvest.edit_field(|field| {
+        field.weather = Some(ConditionState::new(sun, Some(5)));
+    });
+    let harvest = step(&harvest.build().unwrap(), &action, &mechanics).unwrap();
+    let holder = harvest
+        .state
+        .side(target_ref.side)
+        .pokemon(target_ref.pokemon)
+        .unwrap();
+    assert_eq!(holder.item, Some(sitrus));
+    assert_eq!(holder.last_consumed_berry, None);
+    assert_eq!(
+        case("sitrus-harvest-sun")["item_after_residual"],
+        "sitrusberry"
+    );
+
+    let mut symbiosis = berry_battle("clearbody");
+    symbiosis
+        .edit_pokemon(ally_ref, |pokemon| {
+            pokemon.ability = dex.resolve_ability("symbiosis").unwrap().0;
+            pokemon.item = Some(leftovers);
+        })
+        .unwrap();
+    let symbiosis = step(&symbiosis.build().unwrap(), &action, &mechanics).unwrap();
+    assert_eq!(
+        symbiosis
+            .state
             .side(target_ref.side)
             .pokemon(target_ref.pokemon)
             .unwrap()
             .item,
-        Some(shuca),
-        "failed public transition must not consume the input Berry"
+        Some(leftovers)
     );
+    assert_eq!(
+        symbiosis
+            .state
+            .side(ally_ref.side)
+            .pokemon(ally_ref.pokemon)
+            .unwrap()
+            .item,
+        None
+    );
+    assert_eq!(case("sitrus-symbiosis")["holder_item_after"], "leftovers");
+    assert!(case("sitrus-symbiosis")["ally_item_after"].is_null());
+}
+
+#[test]
+fn berry_update_handles_preexisting_status_residual_damage_and_klutz_suppression() {
+    let dex = champions_reg_mc().unwrap();
+    let cheri = dex.resolve_item("cheriberry").unwrap().0;
+    let sitrus = dex.resolve_item("sitrusberry").unwrap().0;
+    let source = set_with_moves(&dex, "goodra", "sapsipper", &["swordsdance"]);
+    let target = set_with_moves(&dex, "metagross", "clearbody", &["swordsdance"]);
+    let target_ref = PokemonRef::new(SideId::P2, PokemonIndex::new(0));
+    let action = single_move_action(0, ActionTarget::Automatic);
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+
+    let mut status_builder =
+        BattleStateBuilder::from_state(selected_primary_battle(&dex, &source, &target, 0x15_01_01))
+            .unwrap();
+    status_builder
+        .edit_pokemon(target_ref, |pokemon| {
+            pokemon.item = Some(cheri);
+            pokemon.status = Some(MajorStatus::Paralysis);
+        })
+        .unwrap();
+    let cured = step(&status_builder.build().unwrap(), &action, &mechanics).unwrap();
+    let holder = cured
+        .state
+        .side(target_ref.side)
+        .pokemon(target_ref.pokemon)
+        .unwrap();
+    assert_eq!(holder.status, None);
+    assert_eq!(holder.item, None);
+    assert_eq!(holder.last_consumed_berry, Some(cheri));
+
+    let mut klutz_builder =
+        BattleStateBuilder::from_state(selected_primary_battle(&dex, &source, &target, 0x15_01_02))
+            .unwrap();
+    klutz_builder
+        .edit_pokemon(target_ref, |pokemon| {
+            pokemon.ability = dex.resolve_ability("klutz").unwrap().0;
+            pokemon.item = Some(cheri);
+            pokemon.status = Some(MajorStatus::Paralysis);
+        })
+        .unwrap();
+    let suppressed = step(&klutz_builder.build().unwrap(), &action, &mechanics).unwrap();
+    let holder = suppressed
+        .state
+        .side(target_ref.side)
+        .pokemon(target_ref.pokemon)
+        .unwrap();
+    assert_eq!(holder.status, Some(MajorStatus::Paralysis));
+    assert_eq!(holder.item, Some(cheri));
+
+    let mut residual_builder =
+        BattleStateBuilder::from_state(selected_primary_battle(&dex, &source, &target, 0x15_01_03))
+            .unwrap();
+    residual_builder
+        .edit_pokemon(target_ref, |pokemon| {
+            pokemon.item = Some(sitrus);
+            pokemon.current_hp = 85;
+            pokemon.status = Some(MajorStatus::Poison);
+        })
+        .unwrap();
+    let residual = step(&residual_builder.build().unwrap(), &action, &mechanics).unwrap();
+    let holder = residual
+        .state
+        .side(target_ref.side)
+        .pokemon(target_ref.pokemon)
+        .unwrap();
+    assert_eq!(holder.current_hp, 104);
+    assert_eq!(holder.item, None);
+    assert_eq!(holder.last_consumed_berry, Some(sitrus));
 }
 
 fn p1_left_hits(result: &rotom_core::StepResult) -> Vec<&rotom_core::TargetOutcome> {

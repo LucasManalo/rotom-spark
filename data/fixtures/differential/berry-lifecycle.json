@@ -1,0 +1,53 @@
+{
+  "showdown_commit": "b79ce06d06b8f0dc8de8bb348bc9cab5d931553f",
+  "format": "gen9championsvgc2026regmc",
+  "methodology": {
+    "source": "pinned Pokemon.eatItem plus resolved EatItem, AfterUseItem, and Residual callbacks",
+    "move_execution": false,
+    "full_transition_comparison": false
+  },
+  "cases": [
+    {
+      "id": "sitrus-cheek-pouch",
+      "ability": "cheekpouch",
+      "item": "sitrusberry",
+      "consumed": true,
+      "hp_before": 50,
+      "hp_after": 139,
+      "item_after": null,
+      "last_item": "sitrusberry"
+    },
+    {
+      "id": "sitrus-cud-chew",
+      "ability": "cudchew",
+      "item": "sitrusberry",
+      "scheduled": {
+        "berry": "sitrusberry",
+        "counter": 2
+      },
+      "after_one_residual": {
+        "hp": 88,
+        "counter": 1
+      },
+      "after_two_residuals": {
+        "hp": 78,
+        "berry": null,
+        "counter": null
+      }
+    },
+    {
+      "id": "sitrus-harvest-sun",
+      "ability": "harvest",
+      "item": "sitrusberry",
+      "item_after_residual": "sitrusberry",
+      "last_item_after_residual": null
+    },
+    {
+      "id": "sitrus-symbiosis",
+      "ability": "symbiosis",
+      "item": "sitrusberry",
+      "holder_item_after": "leftovers",
+      "ally_item_after": null
+    }
+  ]
+}

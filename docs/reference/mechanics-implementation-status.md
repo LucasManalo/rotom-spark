@@ -19,7 +19,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Kind | Total | Implemented | Partial | Unsupported |
 | --- | ---: | ---: | ---: | ---: |
 | Abilities | 215 | 120 | 95 | 0 |
-| Items | 166 | 47 | 119 | 0 |
+| Items | 166 | 55 | 111 | 0 |
 | Moves | 510 | 223 | 0 | 287 |
 
 ## Abilities
@@ -255,7 +255,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Alakazite | `alakazite` | partial | unit_tested | not_tested | PR 13.6.4 |
 | Altarianite | `altarianite` | partial | unit_tested | not_tested | PR 13.6.4 |
 | Ampharosite | `ampharosite` | partial | unit_tested | not_tested | PR 13.6.4 |
-| Aspear Berry | `aspearberry` | partial | unit_tested | not_tested | PR 13.6.3 |
+| Aspear Berry | `aspearberry` | implemented | unit_tested | not_tested | PR 15.1 |
 | Audinite | `audinite` | partial | unit_tested | not_tested | PR 13.6.4 |
 | Babiri Berry | `babiriberry` | partial | unit_tested | not_tested | PR 13.6.2 |
 | Banettite | `banettite` | partial | unit_tested | not_tested | PR 13.6.4 |
@@ -275,9 +275,9 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Charizardite X | `charizarditex` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Charizardite Y | `charizarditey` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Charti Berry | `chartiberry` | partial | unit_tested | not_tested | PR 13.6.2 |
-| Cheri Berry | `cheriberry` | partial | unit_tested | not_tested | PR 13.6.3 |
+| Cheri Berry | `cheriberry` | implemented | unit_tested | unit_tested | PR 15.1 |
 | Chesnaughtite | `chesnaughtite` | partial | unit_tested | not_tested | PR 13.6.5 |
-| Chesto Berry | `chestoberry` | partial | unit_tested | not_tested | PR 13.6.3 |
+| Chesto Berry | `chestoberry` | implemented | unit_tested | not_tested | PR 15.1 |
 | Chilan Berry | `chilanberry` | partial | unit_tested | not_tested | PR 13.6.3 |
 | Chimechite | `chimechite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Choice Scarf | `choicescarf` | partial | unit_tested | not_tested | PR 13.6.3 |
@@ -331,7 +331,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | King's Rock | `kingsrock` | partial | unit_tested | not_tested | PR 13.6.4 |
 | Leek | `leek` | implemented | unit_tested | not_tested | PR 13.6.4 |
 | Leftovers | `leftovers` | implemented | unit_tested | unit_tested | PR 13.6.3 |
-| Leppa Berry | `leppaberry` | partial | unit_tested | not_tested | PR 13.6.3 |
+| Leppa Berry | `leppaberry` | implemented | unit_tested | not_tested | PR 15.1 |
 | Life Orb | `lifeorb` | implemented | unit_tested | not_tested | PR 13.6.4 |
 | Light Ball | `lightball` | implemented | unit_tested | not_tested | PR 13.6.3 |
 | Light Clay | `lightclay` | implemented | unit_tested | unit_tested | PR 13.6.4 |
@@ -357,10 +357,10 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Never-Melt Ice | `nevermeltice` | implemented | unit_tested | not_tested | PR 13.6.2 |
 | Normal Gem | `normalgem` | implemented | unit_tested | not_tested | PR 13.6.4 |
 | Occa Berry | `occaberry` | partial | unit_tested | not_tested | PR 13.6.2 |
-| Oran Berry | `oranberry` | partial | unit_tested | not_tested | PR 13.6.3 |
+| Oran Berry | `oranberry` | implemented | unit_tested | not_tested | PR 15.1 |
 | Passho Berry | `passhoberry` | partial | unit_tested | not_tested | PR 13.6.2 |
 | Payapa Berry | `payapaberry` | partial | unit_tested | not_tested | PR 13.6.2 |
-| Pecha Berry | `pechaberry` | partial | unit_tested | not_tested | PR 13.6.3 |
+| Pecha Berry | `pechaberry` | implemented | unit_tested | not_tested | PR 15.1 |
 | Persim Berry | `persimberry` | partial | not_tested | not_tested | PR 13.6.3 |
 | Pidgeotite | `pidgeotite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Pinsirite | `pinsirite` | partial | unit_tested | not_tested | PR 13.6.5 |
@@ -370,7 +370,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Quick Claw | `quickclaw` | partial | unit_tested | not_tested | PR 13.6.4 |
 | Raichunite X | `raichunitex` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Raichunite Y | `raichunitey` | partial | unit_tested | not_tested | PR 13.6.5 |
-| Rawst Berry | `rawstberry` | partial | unit_tested | not_tested | PR 13.6.3 |
+| Rawst Berry | `rawstberry` | implemented | unit_tested | not_tested | PR 15.1 |
 | Red Card | `redcard` | partial | unit_tested | not_tested | PR 13.6.4 |
 | Rindo Berry | `rindoberry` | partial | unit_tested | not_tested | PR 13.6.2 |
 | Rocky Helmet | `rockyhelmet` | implemented | unit_tested | not_tested | PR 13.6.4 |
@@ -390,7 +390,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Shuca Berry | `shucaberry` | partial | unit_tested | unit_tested | PR 13.6.2 |
 | Silk Scarf | `silkscarf` | implemented | unit_tested | not_tested | PR 13.6.2 |
 | Silver Powder | `silverpowder` | implemented | unit_tested | not_tested | PR 13.6.2 |
-| Sitrus Berry | `sitrusberry` | partial | unit_tested | not_tested | PR 13.6.3 |
+| Sitrus Berry | `sitrusberry` | implemented | unit_tested | unit_tested | PR 15.1 |
 | Skarmorite | `skarmorite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Slowbronite | `slowbronite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Smooth Rock | `smoothrock` | implemented | unit_tested | not_tested | PR 13.6.3 |

@@ -775,6 +775,33 @@ struct DamageEnvironment {
     adaptability: bool,
 }
 
+#[derive(Clone, Copy)]
+struct BerryAbilityContext {
+    blocked: bool,
+    ripen_multiplier: u8,
+    cheek_pouch: bool,
+    cud_chew: bool,
+    symbiosis_ally: Option<PokemonRef>,
+}
+
+impl Default for BerryAbilityContext {
+    fn default() -> Self {
+        Self {
+            blocked: false,
+            ripen_multiplier: 1,
+            cheek_pouch: false,
+            cud_chew: false,
+            symbiosis_ally: None,
+        }
+    }
+}
+
+impl BerryAbilityContext {
+    const fn ripen(self) -> bool {
+        self.ripen_multiplier == 2
+    }
+}
+
 impl BattleState {
     pub(crate) fn resolve_turn_inner<D: CombatData>(
         &mut self,
@@ -784,6 +811,7 @@ impl BattleState {
     ) -> Result<TurnResolution, BattleError> {
         let queued = self.queue.actions.clone();
         let mut resolution = TurnResolution::default();
+        self.activate_update_berries(data, field_effects)?;
         resolution.events.push(effects.dispatch(
             self,
             BattleEvent::BeforeTurn,
@@ -908,6 +936,8 @@ impl BattleState {
         resolution.events.push(residual);
         self.process_residual_faints(effects, &residual_invocations, resolution)?;
         if self.phase != BattlePhase::BattleEnd {
+            self.activate_update_berries(data, field_effects)?;
+            self.process_delayed_berry_abilities(data, field_effects)?;
             self.tick_side_durations(resolution);
             self.tick_late_field_durations(field_effects, resolution);
         }
@@ -918,7 +948,7 @@ impl BattleState {
         &self,
         data: &D,
         holder: PokemonRef,
-    ) -> Result<(bool, bool, bool), BattleError> {
+    ) -> Result<BerryAbilityContext, BattleError> {
         let ability = self
             .side(holder.side)
             .pokemon(holder.pokemon)
@@ -939,34 +969,325 @@ impl BattleState {
                         )
                     })
             });
-        let deferred = [
-            crate::AbilityBehavior::BerryHeal,
-            crate::AbilityBehavior::BerryReuse,
-            crate::AbilityBehavior::BerryRestore,
-        ]
-        .into_iter()
-        .any(|behavior| data.ability_has_behavior(ability, behavior))
-            || self
-                .side(holder.side)
-                .active
-                .into_iter()
-                .flatten()
-                .filter(|pokemon| *pokemon != holder.pokemon)
-                .any(|pokemon| {
-                    self.side(holder.side)
-                        .pokemon(pokemon)
-                        .is_some_and(|state| {
-                            data.ability_has_behavior(
-                                state.ability,
-                                crate::AbilityBehavior::BerrySymbiosis,
-                            )
+        let symbiosis_ally = self
+            .side(holder.side)
+            .active
+            .into_iter()
+            .flatten()
+            .filter(|pokemon| *pokemon != holder.pokemon)
+            .map(|pokemon| PokemonRef::new(holder.side, pokemon))
+            .find(|ally| {
+                self.side(ally.side)
+                    .pokemon(ally.pokemon)
+                    .is_some_and(|state| {
+                        data.ability_has_behavior(
+                            state.ability,
+                            crate::AbilityBehavior::BerrySymbiosis,
+                        ) && state.item.is_some_and(|item| {
+                            !data.item_has_behavior(item, crate::ItemBehavior::MegaStone)
                         })
-                });
-        Ok((
+                    })
+            });
+        Ok(BerryAbilityContext {
             blocked,
-            data.ability_has_behavior(ability, crate::AbilityBehavior::Ripen),
-            deferred,
-        ))
+            ripen_multiplier: if data.ability_has_behavior(ability, crate::AbilityBehavior::Ripen) {
+                2
+            } else {
+                1
+            },
+            cheek_pouch: data.ability_has_behavior(ability, crate::AbilityBehavior::BerryHeal),
+            cud_chew: data.ability_has_behavior(ability, crate::AbilityBehavior::BerryReuse),
+            symbiosis_ally,
+        })
+    }
+
+    fn berry_behavior<D: CombatData>(data: &D, item: ItemId) -> Option<crate::ItemBehavior> {
+        let candidates = [
+            crate::ItemBehavior::StatusCureBerry(Some(MajorStatus::Burn)),
+            crate::ItemBehavior::StatusCureBerry(Some(MajorStatus::Freeze)),
+            crate::ItemBehavior::StatusCureBerry(Some(MajorStatus::Paralysis)),
+            crate::ItemBehavior::StatusCureBerry(Some(MajorStatus::Poison)),
+            crate::ItemBehavior::StatusCureBerry(Some(MajorStatus::Sleep)),
+            crate::ItemBehavior::StatusCureBerry(None),
+            crate::ItemBehavior::ConfusionCureBerry,
+            crate::ItemBehavior::PpRestoreBerry,
+            crate::ItemBehavior::HealBerryFraction {
+                numerator: 1,
+                denominator: 4,
+            },
+            crate::ItemBehavior::HealBerryFixed(10),
+            crate::ItemBehavior::NormalResistBerry,
+            crate::ItemBehavior::ResistBerry(PokemonType::Bug),
+            crate::ItemBehavior::ResistBerry(PokemonType::Dark),
+            crate::ItemBehavior::ResistBerry(PokemonType::Dragon),
+            crate::ItemBehavior::ResistBerry(PokemonType::Electric),
+            crate::ItemBehavior::ResistBerry(PokemonType::Fairy),
+            crate::ItemBehavior::ResistBerry(PokemonType::Fighting),
+            crate::ItemBehavior::ResistBerry(PokemonType::Fire),
+            crate::ItemBehavior::ResistBerry(PokemonType::Flying),
+            crate::ItemBehavior::ResistBerry(PokemonType::Ghost),
+            crate::ItemBehavior::ResistBerry(PokemonType::Grass),
+            crate::ItemBehavior::ResistBerry(PokemonType::Ground),
+            crate::ItemBehavior::ResistBerry(PokemonType::Ice),
+            crate::ItemBehavior::ResistBerry(PokemonType::Poison),
+            crate::ItemBehavior::ResistBerry(PokemonType::Psychic),
+            crate::ItemBehavior::ResistBerry(PokemonType::Rock),
+            crate::ItemBehavior::ResistBerry(PokemonType::Steel),
+            crate::ItemBehavior::ResistBerry(PokemonType::Water),
+        ];
+        candidates
+            .into_iter()
+            .find(|behavior| data.item_has_behavior(item, *behavior))
+    }
+
+    fn finish_direct_berry(
+        &mut self,
+        context: BerryAbilityContext,
+        holder: PokemonRef,
+    ) -> Result<(), BattleError> {
+        if context.cheek_pouch {
+            let max_hp = self
+                .side(holder.side)
+                .pokemon(holder.pokemon)
+                .ok_or_else(|| BattleError::InvalidState("Berry holder disappeared".to_owned()))?
+                .stats
+                .hp;
+            StateKernel::new(self).heal_hp(holder, (max_hp / 3).max(1))?;
+        }
+        if let Some(ally) = context.symbiosis_ally {
+            if self
+                .side(holder.side)
+                .pokemon(holder.pokemon)
+                .is_some_and(|pokemon| pokemon.item.is_none())
+            {
+                if let Some(item) = self
+                    .side(ally.side)
+                    .pokemon(ally.pokemon)
+                    .and_then(|pokemon| pokemon.item)
+                {
+                    StateKernel::new(self).set_item(ally, None)?;
+                    StateKernel::new(self).set_item(holder, Some(item))?;
+                }
+            }
+        }
+        Ok(())
+    }
+
+    fn activate_update_berries<D: CombatData>(
+        &mut self,
+        data: &D,
+        field_effects: &FieldEffectIds,
+    ) -> Result<(), BattleError> {
+        let holders = [SideId::P1, SideId::P2]
+            .into_iter()
+            .flat_map(|side| {
+                self.side(side)
+                    .active
+                    .into_iter()
+                    .flatten()
+                    .map(move |pokemon| PokemonRef::new(side, pokemon))
+            })
+            .collect::<Vec<_>>();
+        for holder in holders {
+            if !field_effects.item_is_active_for(self, data, holder) {
+                continue;
+            }
+            let Some((item, behavior, current_hp, max_hp, status)) = self
+                .side(holder.side)
+                .pokemon(holder.pokemon)
+                .and_then(|pokemon| {
+                    let item = pokemon.item?;
+                    Some((
+                        item,
+                        Self::berry_behavior(data, item)?,
+                        pokemon.current_hp,
+                        pokemon.stats.hp,
+                        pokemon.status,
+                    ))
+                })
+            else {
+                continue;
+            };
+            let berry_context = self.berry_ability_context(data, holder)?;
+            if berry_context.blocked || current_hp == 0 {
+                continue;
+            }
+            let eligible = match behavior {
+                crate::ItemBehavior::StatusCureBerry(expected) => status.is_some_and(|status| {
+                    expected.map_or(true, |expected| {
+                        status == expected
+                            || (expected == MajorStatus::Poison
+                                && status == MajorStatus::BadlyPoisoned)
+                    })
+                }),
+                crate::ItemBehavior::PpRestoreBerry => self
+                    .side(holder.side)
+                    .pokemon(holder.pokemon)
+                    .is_some_and(|pokemon| pokemon.moves.iter().any(|slot| slot.pp == 0)),
+                crate::ItemBehavior::HealBerryFraction { .. }
+                | crate::ItemBehavior::HealBerryFixed(_) => current_hp <= max_hp / 2,
+                _ => false,
+            };
+            if !eligible {
+                continue;
+            }
+            StateKernel::new(self).consume_berry(holder, item, berry_context.cud_chew)?;
+            self.apply_eaten_berry_effect(data, holder, behavior, berry_context.ripen())?;
+            self.finish_direct_berry(berry_context, holder)?;
+        }
+        Ok(())
+    }
+
+    fn apply_eaten_berry_effect<D: CombatData>(
+        &mut self,
+        data: &D,
+        holder: PokemonRef,
+        behavior: crate::ItemBehavior,
+        ripen: bool,
+    ) -> Result<(), BattleError> {
+        match behavior {
+            crate::ItemBehavior::StatusCureBerry(expected) => {
+                let status = self
+                    .side(holder.side)
+                    .pokemon(holder.pokemon)
+                    .and_then(|pokemon| pokemon.status);
+                if status.is_some_and(|status| {
+                    expected.map_or(true, |expected| {
+                        status == expected
+                            || (expected == MajorStatus::Poison
+                                && status == MajorStatus::BadlyPoisoned)
+                    })
+                }) {
+                    StateKernel::new(self).cure_major_status(holder)?;
+                }
+            }
+            crate::ItemBehavior::PpRestoreBerry => {
+                let slot = self
+                    .side(holder.side)
+                    .pokemon(holder.pokemon)
+                    .and_then(|pokemon| {
+                        pokemon
+                            .moves
+                            .iter()
+                            .position(|slot| slot.pp == 0)
+                            .or_else(|| pokemon.moves.iter().position(|slot| slot.pp < slot.max_pp))
+                    });
+                if let Some(slot) = slot {
+                    let move_slot = self
+                        .side(holder.side)
+                        .pokemon(holder.pokemon)
+                        .and_then(|pokemon| pokemon.moves.get(slot))
+                        .ok_or_else(|| {
+                            BattleError::InvalidState(
+                                "Leppa Berry move slot disappeared".to_owned(),
+                            )
+                        })?;
+                    let value = move_slot
+                        .pp
+                        .saturating_add(if ripen { 20 } else { 10 })
+                        .min(move_slot.max_pp);
+                    StateKernel::new(self).set_pp(
+                        holder,
+                        MoveSlotIndex::new(u8::try_from(slot).map_err(|_| {
+                            BattleError::InvalidState("move slot does not fit in u8".to_owned())
+                        })?),
+                        value,
+                    )?;
+                }
+            }
+            crate::ItemBehavior::HealBerryFraction {
+                numerator,
+                denominator,
+            } => {
+                let max_hp = self
+                    .side(holder.side)
+                    .pokemon(holder.pokemon)
+                    .ok_or_else(|| {
+                        BattleError::InvalidState("Berry holder disappeared".to_owned())
+                    })?
+                    .stats
+                    .hp;
+                let multiplier = if ripen { 2 } else { 1 };
+                let amount =
+                    u32::from(max_hp) * u32::from(numerator) * multiplier / u32::from(denominator);
+                StateKernel::new(self)
+                    .heal_hp(holder, u16::try_from(amount).unwrap_or(u16::MAX))?;
+            }
+            crate::ItemBehavior::HealBerryFixed(amount) => {
+                StateKernel::new(self)
+                    .heal_hp(holder, amount.saturating_mul(if ripen { 2 } else { 1 }))?;
+            }
+            crate::ItemBehavior::ConfusionCureBerry => {
+                return Err(BattleError::UnsupportedMechanic(
+                    "confusion Berry activation is deferred to the volatile lifecycle".to_owned(),
+                ));
+            }
+            crate::ItemBehavior::ResistBerry(_) | crate::ItemBehavior::NormalResistBerry => {}
+            _ => {
+                return Err(BattleError::InvalidState(
+                    "non-Berry behavior entered the Berry lifecycle".to_owned(),
+                ));
+            }
+        }
+        let _ = data;
+        Ok(())
+    }
+
+    fn process_delayed_berry_abilities<D: CombatData>(
+        &mut self,
+        data: &D,
+        field_effects: &FieldEffectIds,
+    ) -> Result<(), BattleError> {
+        let holders = [SideId::P1, SideId::P2]
+            .into_iter()
+            .flat_map(|side| {
+                self.side(side)
+                    .active
+                    .into_iter()
+                    .flatten()
+                    .map(move |pokemon| PokemonRef::new(side, pokemon))
+            })
+            .collect::<Vec<_>>();
+        for holder in holders {
+            let ability = self
+                .side(holder.side)
+                .pokemon(holder.pokemon)
+                .ok_or_else(|| BattleError::InvalidState("Berry holder disappeared".to_owned()))?
+                .ability;
+            if data.ability_has_behavior(ability, crate::AbilityBehavior::BerryReuse) {
+                if let Some(berry) = StateKernel::new(self).tick_cud_chew(holder)? {
+                    let behavior = Self::berry_behavior(data, berry).ok_or_else(|| {
+                        BattleError::DataMismatch("Cud Chew remembered a non-Berry item".to_owned())
+                    })?;
+                    let ripen = data.ability_has_behavior(ability, crate::AbilityBehavior::Ripen);
+                    self.apply_eaten_berry_effect(data, holder, behavior, ripen)?;
+                    if data.ability_has_behavior(ability, crate::AbilityBehavior::BerryHeal) {
+                        self.finish_direct_berry(
+                            BerryAbilityContext {
+                                cheek_pouch: true,
+                                ..BerryAbilityContext::default()
+                            },
+                            holder,
+                        )?;
+                    }
+                }
+            }
+            if data.ability_has_behavior(ability, crate::AbilityBehavior::BerryRestore)
+                && self
+                    .side(holder.side)
+                    .pokemon(holder.pokemon)
+                    .is_some_and(|pokemon| {
+                        pokemon.item.is_none() && pokemon.last_consumed_berry.is_some()
+                    })
+            {
+                let sun = field_effects.effective_weather_environment(self, data)
+                    == Some(WeatherEnvironment::Sun);
+                if sun || self.rng.chance(RngReason::Ability, 1, 2)? {
+                    StateKernel::new(self).restore_last_consumed_berry(holder)?;
+                }
+            }
+        }
+        Ok(())
     }
 
     fn apply_leftovers<D: CombatData>(
@@ -1261,8 +1582,7 @@ impl BattleState {
         let mut self_effect_applied = false;
         for (index, target_context) in eligible {
             let target = target_context.target;
-            let (target_berry_blocked, target_ripen, target_berry_interaction_unsupported) =
-                self.berry_ability_context(data, target)?;
+            let berry = self.berry_ability_context(data, target)?;
             let mut context = EventContext {
                 source: Some(move_context.source),
                 target: Some(target),
@@ -1274,9 +1594,11 @@ impl BattleState {
                     move_context.source,
                 ),
                 suppress_target_item: !field_effects.item_is_active_for(self, data, target),
-                target_berry_blocked,
-                target_ripen,
-                target_berry_interaction_unsupported,
+                target_berry_blocked: berry.blocked,
+                target_ripen: berry.ripen(),
+                target_cheek_pouch: berry.cheek_pouch,
+                target_cud_chew: berry.cud_chew,
+                target_symbiosis_ally: berry.symbiosis_ally,
                 critical: false,
                 move_category: Some(move_context.move_data.category),
                 move_type: Some(move_context.move_data.move_type),
@@ -1430,8 +1752,7 @@ impl BattleState {
                 slot: move_context.queued.slot,
             });
         }
-        let (source_berry_blocked, source_ripen, source_berry_interaction_unsupported) =
-            self.berry_ability_context(data, move_context.source)?;
+        let berry = self.berry_ability_context(data, move_context.source)?;
         let after_context = EventContext {
             source: Some(move_context.source),
             target: move_context.targets.last().map(|target| target.target),
@@ -1442,9 +1763,11 @@ impl BattleState {
                 data,
                 move_context.source,
             ),
-            source_berry_blocked,
-            source_ripen,
-            source_berry_interaction_unsupported,
+            source_berry_blocked: berry.blocked,
+            source_ripen: berry.ripen(),
+            source_cheek_pouch: berry.cheek_pouch,
+            source_cud_chew: berry.cud_chew,
+            source_symbiosis_ally: berry.symbiosis_ally,
             move_category: Some(move_context.move_data.category),
             move_type: Some(move_context.move_data.move_type),
             move_flags: move_context.move_data.interaction_flags,
@@ -1753,8 +2076,7 @@ impl BattleState {
             if focus_sash {
                 StateKernel::new(self).set_item(target_context.target, None)?;
             }
-            let (target_berry_blocked, target_ripen, target_berry_interaction_unsupported) =
-                self.berry_ability_context(data, target_context.target)?;
+            let berry = self.berry_ability_context(data, target_context.target)?;
             let event_context = EventContext {
                 source: Some(context.source),
                 target: Some(target_context.target),
@@ -1766,9 +2088,11 @@ impl BattleState {
                     data,
                     target_context.target,
                 ),
-                target_berry_blocked,
-                target_ripen,
-                target_berry_interaction_unsupported,
+                target_berry_blocked: berry.blocked,
+                target_ripen: berry.ripen(),
+                target_cheek_pouch: berry.cheek_pouch,
+                target_cud_chew: berry.cud_chew,
+                target_symbiosis_ally: berry.symbiosis_ally,
                 critical: false,
                 move_category: Some(context.move_data.category),
                 move_type: Some(context.move_data.move_type),
@@ -1882,8 +2206,7 @@ impl BattleState {
                 slot: context.queued.slot,
             }
         });
-        let (source_berry_blocked, source_ripen, source_berry_interaction_unsupported) =
-            self.berry_ability_context(data, context.source)?;
+        let berry = self.berry_ability_context(data, context.source)?;
         resolution.events.push(effects.dispatch(
             self,
             BattleEvent::AfterMove,
@@ -1893,9 +2216,11 @@ impl BattleState {
                 move_id: Some(context.move_id),
                 suppress_target_ability: context.suppress_target_ability,
                 suppress_source_item: !field_effects.item_is_active_for(self, data, context.source),
-                source_berry_blocked,
-                source_ripen,
-                source_berry_interaction_unsupported,
+                source_berry_blocked: berry.blocked,
+                source_ripen: berry.ripen(),
+                source_cheek_pouch: berry.cheek_pouch,
+                source_cud_chew: berry.cud_chew,
+                source_symbiosis_ally: berry.symbiosis_ally,
                 move_category: Some(context.move_data.category),
                 move_type: Some(context.move_data.move_type),
                 move_flags: context.move_data.interaction_flags,
@@ -2403,17 +2728,18 @@ impl BattleState {
                 )? {
                     return Ok(false);
                 }
-                let (target_berry_blocked, target_ripen, target_berry_interaction_unsupported) =
-                    self.berry_ability_context(data, target)?;
+                let berry = self.berry_ability_context(data, target)?;
                 let status_context = EventContext {
                     source: Some(context.source),
                     target: Some(target),
                     move_id: Some(context.move_id),
                     suppress_target_ability: context.suppress_target_ability,
                     suppress_target_item: !field_effects.item_is_active_for(self, data, target),
-                    target_berry_blocked,
-                    target_ripen,
-                    target_berry_interaction_unsupported,
+                    target_berry_blocked: berry.blocked,
+                    target_ripen: berry.ripen(),
+                    target_cheek_pouch: berry.cheek_pouch,
+                    target_cud_chew: berry.cud_chew,
+                    target_symbiosis_ally: berry.symbiosis_ally,
                     critical: false,
                     move_category: Some(context.move_data.category),
                     move_type: Some(context.move_data.move_type),
@@ -3616,6 +3942,7 @@ impl BattleState {
             },
             EventValue::None,
         )?);
+        self.activate_update_berries(data, field_effects)?;
         Ok(true)
     }
 

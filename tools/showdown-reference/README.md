@@ -76,3 +76,11 @@ weather-immunity, and major-status ability fixture with:
 node tools/showdown-reference/ability-modifiers.cjs
 node tools/showdown-reference/ability-modifiers.cjs --check
 ```
+
+Regenerate or verify PR 15.1 Berry consumption, Cheek Pouch, Cud Chew,
+Harvest, and Symbiosis callback outcomes with:
+
+```text
+node tools/showdown-reference/berry-lifecycle.cjs
+node tools/showdown-reference/berry-lifecycle.cjs --check
+```

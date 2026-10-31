@@ -238,9 +238,15 @@ pub struct EventContext {
     /// Whether the source's Ripen doubles a Berry's effect.
     #[serde(default, skip_serializing_if = "is_false")]
     pub source_ripen: bool,
-    /// Whether source Berry consumption requires a deferred cross-ability behavior.
+    /// Whether Cheek Pouch heals the source after its Berry effect.
     #[serde(default, skip_serializing_if = "is_false")]
-    pub source_berry_interaction_unsupported: bool,
+    pub source_cheek_pouch: bool,
+    /// Whether Cud Chew schedules the source Berry for delayed reuse.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub source_cud_chew: bool,
+    /// Active ally whose item Symbiosis transfers after source consumption.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub source_symbiosis_ally: Option<PokemonRef>,
     /// Whether Magic Room or Klutz suppresses the move target's held item.
     #[serde(default, skip_serializing_if = "is_false")]
     pub suppress_target_item: bool,
@@ -250,9 +256,15 @@ pub struct EventContext {
     /// Whether the target's active Ripen doubles a Berry's effect.
     #[serde(default, skip_serializing_if = "is_false")]
     pub target_ripen: bool,
-    /// Whether Berry consumption would require a deferred cross-ability behavior.
+    /// Whether Cheek Pouch heals the target after its Berry effect.
     #[serde(default, skip_serializing_if = "is_false")]
-    pub target_berry_interaction_unsupported: bool,
+    pub target_cheek_pouch: bool,
+    /// Whether Cud Chew schedules the target Berry for delayed reuse.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub target_cud_chew: bool,
+    /// Active ally whose item Symbiosis transfers after target consumption.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub target_symbiosis_ally: Option<PokemonRef>,
     /// Whether the current hit was confirmed as critical.
     #[serde(default, skip_serializing_if = "is_false")]
     pub critical: bool,
@@ -570,6 +582,20 @@ impl EffectState<'_> {
         item: Option<ItemId>,
     ) -> Result<Option<ItemId>, BattleError> {
         StateKernel::new(self.battle).set_item(target, item)
+    }
+
+    /// Consumes a held Berry and records its reusable history.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the target is invalid or no longer holds `berry`.
+    pub fn consume_berry(
+        &mut self,
+        target: PokemonRef,
+        berry: ItemId,
+        schedule_cud_chew: bool,
+    ) -> Result<(), BattleError> {
+        StateKernel::new(self.battle).consume_berry(target, berry, schedule_cud_chew)
     }
 
     /// Replaces one move slot's PP through the mutation kernel.
