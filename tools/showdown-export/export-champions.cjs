@@ -103,6 +103,7 @@ function normalizeSecondary(value) {
 	return {
 		chance: value.chance ?? 100,
 		status: optional(value.status),
+		volatile_status: optional(value.volatileStatus),
 		boosts: sortedObjectEntries(value.boosts),
 		self_boosts: sortedObjectEntries(value.self?.boosts),
 	};

@@ -180,6 +180,8 @@ pub enum AbilityBehavior {
     DeferredTypeInteraction,
     DeferredSwitchInteraction,
     PreventsForcedSwitch,
+    FlinchImmunity,
+    FlinchSpeedBoost,
     DeferredWeightInteraction,
     DeferredGenderInteraction,
     DeferredTurnTracking,
@@ -810,6 +812,12 @@ const BEHAVIOR_REGISTRATIONS: &[BehaviorRegistration] = &[
         BattleEvent::BeforeMove,
         EffectOrder::new(0, 10, 0),
         early_bird,
+    ),
+    BehaviorRegistration::new(
+        AbilityBehavior::FlinchSpeedBoost,
+        BattleEvent::BeforeMove,
+        EffectOrder::new(0, 9, 0),
+        steadfast,
     ),
     BehaviorRegistration::new(
         AbilityBehavior::Sturdy,
@@ -3732,6 +3740,25 @@ fn early_bird(
     };
     if pokemon(state, owner)?.status == Some(MajorStatus::Sleep) {
         state.decrement_sleep_turns(owner)?;
+    }
+    Ok(())
+}
+
+fn steadfast(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    _: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let Some(owner) = owner_pokemon(invocation) else {
+        return Ok(());
+    };
+    let flinching = context.source == Some(owner)
+        && context.flinch_condition.is_some_and(|condition| {
+            pokemon(state, owner).is_ok_and(|pokemon| pokemon.has_volatile(condition))
+        });
+    if flinching {
+        state.change_stat_stage(owner, BattleStat::Speed, 1)?;
     }
     Ok(())
 }

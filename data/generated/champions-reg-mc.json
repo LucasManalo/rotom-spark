@@ -160910,6 +160910,7 @@
         {
           "chance": 10,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "spd",
@@ -161086,6 +161087,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "spd",
@@ -161546,6 +161548,7 @@
         {
           "chance": 30,
           "status": null,
+          "volatile_status": "flinch",
           "boosts": [],
           "self_boosts": []
         }
@@ -161562,7 +161565,7 @@
         "callbacks": [],
         "intrinsic_flags": [],
         "special_properties": [],
-        "structured_effects_supported": false
+        "structured_effects_supported": true
       },
       "is_nonstandard": null,
       "legal": true,
@@ -161658,6 +161661,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -161836,6 +161840,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -161898,6 +161903,7 @@
         {
           "chance": 10,
           "status": null,
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": [
             {
@@ -161980,6 +161986,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "spd",
@@ -162210,6 +162217,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": [
             {
@@ -162688,6 +162696,7 @@
         {
           "chance": 30,
           "status": null,
+          "volatile_status": "flinch",
           "boosts": [],
           "self_boosts": []
         }
@@ -162704,7 +162713,7 @@
         "callbacks": [],
         "intrinsic_flags": [],
         "special_properties": [],
-        "structured_effects_supported": false
+        "structured_effects_supported": true
       },
       "is_nonstandard": "Past",
       "legal": false,
@@ -162968,6 +162977,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": [
             {
@@ -163038,6 +163048,7 @@
         {
           "chance": 10,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "atk",
@@ -163282,6 +163293,7 @@
         {
           "chance": 30,
           "status": null,
+          "volatile_status": "confusion",
           "boosts": [],
           "self_boosts": []
         }
@@ -163526,6 +163538,7 @@
         {
           "chance": 50,
           "status": "psn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -164281,6 +164294,7 @@
         {
           "chance": 30,
           "status": null,
+          "volatile_status": "flinch",
           "boosts": [],
           "self_boosts": []
         }
@@ -164297,7 +164311,7 @@
         "callbacks": [],
         "intrinsic_flags": [],
         "special_properties": [],
-        "structured_effects_supported": false
+        "structured_effects_supported": true
       },
       "is_nonstandard": null,
       "legal": true,
@@ -164404,6 +164418,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "atk",
@@ -164581,6 +164596,7 @@
         {
           "chance": 10,
           "status": "brn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -164649,6 +164665,7 @@
         {
           "chance": 30,
           "status": "brn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -164712,6 +164729,7 @@
         {
           "chance": 30,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "spe",
@@ -164782,6 +164800,7 @@
         {
           "chance": 10,
           "status": "frz",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -165006,6 +165025,7 @@
         {
           "chance": 20,
           "status": "brn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -165126,6 +165146,7 @@
         {
           "chance": 30,
           "status": "par",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -165247,6 +165268,7 @@
         {
           "chance": 20,
           "status": "par",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -165309,6 +165331,7 @@
         {
           "chance": 10,
           "status": null,
+          "volatile_status": "flinch",
           "boosts": [],
           "self_boosts": []
         }
@@ -165325,7 +165348,7 @@
         "callbacks": [],
         "intrinsic_flags": [],
         "special_properties": [],
-        "structured_effects_supported": false
+        "structured_effects_supported": true
       },
       "is_nonstandard": "Past",
       "legal": false,
@@ -165545,6 +165568,7 @@
         {
           "chance": 30,
           "status": "par",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -165781,6 +165805,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "atk",
@@ -166061,6 +166086,7 @@
         {
           "chance": 10,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "spe",
@@ -166128,6 +166154,7 @@
         {
           "chance": 10,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "spe",
@@ -166253,6 +166280,7 @@
         {
           "chance": 10,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "spd",
@@ -166385,6 +166413,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "spe",
@@ -166622,6 +166651,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -166746,6 +166776,7 @@
         {
           "chance": 100,
           "status": "par",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -167044,6 +167075,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -167227,6 +167259,7 @@
         {
           "chance": 70,
           "status": null,
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": [
             {
@@ -167365,6 +167398,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": "confusion",
           "boosts": [],
           "self_boosts": []
         }
@@ -167426,6 +167460,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "atk",
@@ -167919,6 +167954,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -168322,6 +168358,7 @@
         {
           "chance": 30,
           "status": "par",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -168619,6 +168656,7 @@
         {
           "chance": 10,
           "status": null,
+          "volatile_status": "confusion",
           "boosts": [],
           "self_boosts": []
         }
@@ -168682,6 +168720,7 @@
         {
           "chance": 10,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "spe",
@@ -169658,6 +169697,7 @@
         {
           "chance": 10,
           "status": "psn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -169722,6 +169762,7 @@
         {
           "chance": 20,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "def",
@@ -169791,6 +169832,7 @@
         {
           "chance": 50,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "def",
@@ -170085,6 +170127,7 @@
         {
           "chance": 20,
           "status": null,
+          "volatile_status": "flinch",
           "boosts": [],
           "self_boosts": []
         }
@@ -170101,7 +170144,7 @@
         "callbacks": [],
         "intrinsic_flags": [],
         "special_properties": [],
-        "structured_effects_supported": false
+        "structured_effects_supported": true
       },
       "is_nonstandard": null,
       "legal": true,
@@ -170664,6 +170707,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -170800,6 +170844,7 @@
         {
           "chance": 30,
           "status": null,
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -170975,6 +171020,7 @@
         {
           "chance": 30,
           "status": "par",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -171103,6 +171149,7 @@
         {
           "chance": 20,
           "status": null,
+          "volatile_status": "confusion",
           "boosts": [],
           "self_boosts": []
         }
@@ -171392,6 +171439,7 @@
         {
           "chance": 30,
           "status": null,
+          "volatile_status": "flinch",
           "boosts": [],
           "self_boosts": []
         }
@@ -171408,7 +171456,7 @@
         "callbacks": [],
         "intrinsic_flags": [],
         "special_properties": [],
-        "structured_effects_supported": false
+        "structured_effects_supported": true
       },
       "is_nonstandard": "Past",
       "legal": false,
@@ -171820,6 +171868,7 @@
         {
           "chance": 30,
           "status": "par",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -172337,6 +172386,7 @@
         {
           "chance": 20,
           "status": null,
+          "volatile_status": "flinch",
           "boosts": [],
           "self_boosts": []
         }
@@ -172355,7 +172405,7 @@
           "minimize"
         ],
         "special_properties": [],
-        "structured_effects_supported": false
+        "structured_effects_supported": true
       },
       "is_nonstandard": null,
       "legal": true,
@@ -172749,6 +172799,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "spe",
@@ -172989,6 +173040,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": "confusion",
           "boosts": [],
           "self_boosts": []
         }
@@ -173052,6 +173104,7 @@
         {
           "chance": 10,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "spd",
@@ -173296,6 +173349,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -173695,6 +173749,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "spe",
@@ -173818,6 +173873,7 @@
         {
           "chance": 10,
           "status": "brn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -174054,6 +174110,7 @@
         {
           "chance": 10,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "spd",
@@ -174236,6 +174293,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": [
             {
@@ -174475,6 +174533,7 @@
         {
           "chance": 10,
           "status": null,
+          "volatile_status": "flinch",
           "boosts": [],
           "self_boosts": []
         }
@@ -174491,7 +174550,7 @@
         "callbacks": [],
         "intrinsic_flags": [],
         "special_properties": [],
-        "structured_effects_supported": false
+        "structured_effects_supported": true
       },
       "is_nonstandard": null,
       "legal": true,
@@ -174831,6 +174890,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": "flinch",
           "boosts": [],
           "self_boosts": []
         }
@@ -174850,7 +174910,7 @@
         ],
         "intrinsic_flags": [],
         "special_properties": [],
-        "structured_effects_supported": false
+        "structured_effects_supported": true
       },
       "is_nonstandard": null,
       "legal": true,
@@ -175353,6 +175413,7 @@
         {
           "chance": 50,
           "status": null,
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": [
             {
@@ -175419,6 +175480,7 @@
         {
           "chance": 20,
           "status": null,
+          "volatile_status": "flinch",
           "boosts": [],
           "self_boosts": []
         }
@@ -175435,7 +175497,7 @@
         "callbacks": [],
         "intrinsic_flags": [],
         "special_properties": [],
-        "structured_effects_supported": false
+        "structured_effects_supported": true
       },
       "is_nonstandard": "Past",
       "legal": false,
@@ -175609,6 +175671,7 @@
         {
           "chance": 10,
           "status": "brn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -175673,12 +175736,14 @@
         {
           "chance": 10,
           "status": "brn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         },
         {
           "chance": 10,
           "status": null,
+          "volatile_status": "flinch",
           "boosts": [],
           "self_boosts": []
         }
@@ -175695,7 +175760,7 @@
         "callbacks": [],
         "intrinsic_flags": [],
         "special_properties": [],
-        "structured_effects_supported": false
+        "structured_effects_supported": true
       },
       "is_nonstandard": null,
       "legal": true,
@@ -175742,6 +175807,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "def",
@@ -175872,6 +175938,7 @@
         {
           "chance": 10,
           "status": "brn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -176270,6 +176337,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": [
             {
@@ -176337,6 +176405,7 @@
         {
           "chance": 10,
           "status": "brn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -176401,6 +176470,7 @@
         {
           "chance": 10,
           "status": "brn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -176470,6 +176540,7 @@
         {
           "chance": 10,
           "status": "brn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -176597,6 +176668,7 @@
         {
           "chance": 10,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "spd",
@@ -176904,6 +176976,7 @@
         {
           "chance": 30,
           "status": null,
+          "volatile_status": "flinch",
           "boosts": [],
           "self_boosts": []
         }
@@ -176922,7 +176995,7 @@
           "gravity"
         ],
         "special_properties": [],
-        "structured_effects_supported": false
+        "structured_effects_supported": true
       },
       "is_nonstandard": "LGPE",
       "legal": false,
@@ -177266,6 +177339,7 @@
         {
           "chance": 10,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "spd",
@@ -177503,6 +177577,7 @@
         {
           "chance": 30,
           "status": "par",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -177795,6 +177870,7 @@
         {
           "chance": 30,
           "status": "par",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -177860,6 +177936,7 @@
         {
           "chance": 10,
           "status": "frz",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -178659,6 +178736,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -179073,6 +179151,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "spe",
@@ -181327,6 +181406,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "def",
@@ -181855,6 +181935,7 @@
         {
           "chance": 30,
           "status": "psn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -182374,6 +182455,7 @@
         {
           "chance": 30,
           "status": null,
+          "volatile_status": "flinch",
           "boosts": [],
           "self_boosts": []
         }
@@ -182390,7 +182472,7 @@
         "callbacks": [],
         "intrinsic_flags": [],
         "special_properties": [],
-        "structured_effects_supported": false
+        "structured_effects_supported": true
       },
       "is_nonstandard": "Past",
       "legal": false,
@@ -182918,6 +183000,7 @@
         {
           "chance": 30,
           "status": null,
+          "volatile_status": "flinch",
           "boosts": [],
           "self_boosts": []
         }
@@ -182934,7 +183017,7 @@
         "callbacks": [],
         "intrinsic_flags": [],
         "special_properties": [],
-        "structured_effects_supported": false
+        "structured_effects_supported": true
       },
       "is_nonstandard": "Past",
       "legal": false,
@@ -183100,6 +183183,7 @@
         {
           "chance": 10,
           "status": "brn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -184747,6 +184831,7 @@
         {
           "chance": 30,
           "status": null,
+          "volatile_status": "confusion",
           "boosts": [],
           "self_boosts": []
         }
@@ -185146,6 +185231,7 @@
         {
           "chance": 10,
           "status": null,
+          "volatile_status": "flinch",
           "boosts": [],
           "self_boosts": []
         }
@@ -185162,7 +185248,7 @@
         "callbacks": [],
         "intrinsic_flags": [],
         "special_properties": [],
-        "structured_effects_supported": false
+        "structured_effects_supported": true
       },
       "is_nonstandard": "Past",
       "legal": false,
@@ -185499,6 +185585,7 @@
         {
           "chance": 10,
           "status": "frz",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -185563,6 +185650,7 @@
         {
           "chance": 30,
           "status": "brn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -185631,12 +185719,14 @@
         {
           "chance": 10,
           "status": "frz",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         },
         {
           "chance": 10,
           "status": null,
+          "volatile_status": "flinch",
           "boosts": [],
           "self_boosts": []
         }
@@ -185653,7 +185743,7 @@
         "callbacks": [],
         "intrinsic_flags": [],
         "special_properties": [],
-        "structured_effects_supported": false
+        "structured_effects_supported": true
       },
       "is_nonstandard": null,
       "legal": true,
@@ -185766,6 +185856,7 @@
         {
           "chance": 10,
           "status": "frz",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -185938,6 +186029,7 @@
         {
           "chance": 30,
           "status": null,
+          "volatile_status": "flinch",
           "boosts": [],
           "self_boosts": []
         }
@@ -185954,7 +186046,7 @@
         "callbacks": [],
         "intrinsic_flags": [],
         "special_properties": [],
-        "structured_effects_supported": false
+        "structured_effects_supported": true
       },
       "is_nonstandard": null,
       "legal": true,
@@ -186057,6 +186149,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "spe",
@@ -186234,6 +186327,7 @@
         {
           "chance": 30,
           "status": "brn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -186298,6 +186392,7 @@
         {
           "chance": 100,
           "status": "brn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -186688,6 +186783,7 @@
         {
           "chance": 20,
           "status": null,
+          "volatile_status": "flinch",
           "boosts": [],
           "self_boosts": []
         }
@@ -186704,7 +186800,7 @@
         "callbacks": [],
         "intrinsic_flags": [],
         "special_properties": [],
-        "structured_effects_supported": false
+        "structured_effects_supported": true
       },
       "is_nonstandard": null,
       "legal": true,
@@ -186751,6 +186847,7 @@
         {
           "chance": 30,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "def",
@@ -187719,6 +187816,7 @@
         {
           "chance": 30,
           "status": "brn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -187952,6 +188050,7 @@
         {
           "chance": 50,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "accuracy",
@@ -188251,6 +188350,7 @@
         {
           "chance": 30,
           "status": "par",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -188537,6 +188637,7 @@
         {
           "chance": 20,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "def",
@@ -188775,6 +188876,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "spe",
@@ -188897,6 +188999,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "spd",
@@ -189085,6 +189188,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "atk",
@@ -189152,6 +189256,7 @@
         {
           "chance": 50,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "spd",
@@ -189332,6 +189437,7 @@
         {
           "chance": 30,
           "status": null,
+          "volatile_status": "confusion",
           "boosts": [],
           "self_boosts": []
         }
@@ -189956,6 +190062,7 @@
         {
           "chance": 50,
           "status": "tox",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -190083,6 +190190,7 @@
         {
           "chance": 20,
           "status": "brn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -191737,6 +191845,7 @@
         {
           "chance": 10,
           "status": null,
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": [
             {
@@ -191991,6 +192100,7 @@
         {
           "chance": 20,
           "status": null,
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": [
             {
@@ -192648,6 +192758,7 @@
         {
           "chance": 30,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "accuracy",
@@ -192771,6 +192882,7 @@
         {
           "chance": 50,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "spa",
@@ -192950,6 +193062,7 @@
         {
           "chance": 10,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "spa",
@@ -193188,6 +193301,7 @@
         {
           "chance": 100,
           "status": "psn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -193253,6 +193367,7 @@
         {
           "chance": 30,
           "status": null,
+          "volatile_status": "flinch",
           "boosts": [],
           "self_boosts": []
         }
@@ -193269,7 +193384,7 @@
         "callbacks": [],
         "intrinsic_flags": [],
         "special_properties": [],
-        "structured_effects_supported": false
+        "structured_effects_supported": true
       },
       "is_nonstandard": null,
       "legal": true,
@@ -193316,6 +193431,7 @@
         {
           "chance": 30,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "accuracy",
@@ -193384,6 +193500,7 @@
         {
           "chance": 30,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "accuracy",
@@ -193451,6 +193568,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "spe",
@@ -193518,6 +193636,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "accuracy",
@@ -193696,6 +193815,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "spa",
@@ -193763,6 +193883,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": [
             {
@@ -194062,6 +194183,7 @@
         {
           "chance": 30,
           "status": null,
+          "volatile_status": "flinch",
           "boosts": [],
           "self_boosts": []
         }
@@ -194078,7 +194200,7 @@
         "callbacks": [],
         "intrinsic_flags": [],
         "special_properties": [],
-        "structured_effects_supported": false
+        "structured_effects_supported": true
       },
       "is_nonstandard": "Past",
       "legal": false,
@@ -194172,6 +194294,7 @@
         {
           "chance": 40,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "accuracy",
@@ -194614,6 +194737,7 @@
         {
           "chance": 30,
           "status": "psn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -194677,6 +194801,7 @@
         {
           "chance": 100,
           "status": "par",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -194905,6 +195030,7 @@
         {
           "chance": 50,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "accuracy",
@@ -195088,6 +195214,7 @@
         {
           "chance": 10,
           "status": null,
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": [
             {
@@ -195512,6 +195639,7 @@
         {
           "chance": 20,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "atk",
@@ -196383,6 +196511,7 @@
         {
           "chance": 10,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "atk",
@@ -196509,6 +196638,7 @@
         {
           "chance": 50,
           "status": "tox",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -196628,6 +196758,7 @@
         {
           "chance": 30,
           "status": "psn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -196749,6 +196880,7 @@
         {
           "chance": 30,
           "status": "psn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -196812,6 +196944,7 @@
         {
           "chance": 10,
           "status": "psn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -196875,6 +197008,7 @@
         {
           "chance": 10,
           "status": "frz",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -197115,6 +197249,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "spe",
@@ -197296,6 +197431,7 @@
         {
           "chance": 10,
           "status": "frz",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -197688,6 +197824,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": [
             {
@@ -198035,6 +198172,7 @@
         {
           "chance": 10,
           "status": null,
+          "volatile_status": "confusion",
           "boosts": [],
           "self_boosts": []
         }
@@ -198154,6 +198292,7 @@
         {
           "chance": 10,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "spd",
@@ -198280,6 +198419,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": "healblock",
           "boosts": [],
           "self_boosts": []
         }
@@ -198633,6 +198773,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": [
             {
@@ -199089,6 +199230,7 @@
         {
           "chance": 10,
           "status": "brn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -199730,6 +199872,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": [
             {
@@ -199856,6 +199999,7 @@
         {
           "chance": 50,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "def",
@@ -200267,6 +200411,7 @@
         {
           "chance": 10,
           "status": "slp",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -200965,6 +201110,7 @@
         {
           "chance": 20,
           "status": null,
+          "volatile_status": "confusion",
           "boosts": [],
           "self_boosts": []
         }
@@ -201087,6 +201233,7 @@
         {
           "chance": 30,
           "status": null,
+          "volatile_status": "flinch",
           "boosts": [],
           "self_boosts": []
         }
@@ -201103,7 +201250,7 @@
         "callbacks": [],
         "intrinsic_flags": [],
         "special_properties": [],
-        "structured_effects_supported": false
+        "structured_effects_supported": true
       },
       "is_nonstandard": null,
       "legal": true,
@@ -201150,6 +201297,7 @@
         {
           "chance": 50,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "def",
@@ -201270,6 +201418,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "spe",
@@ -201457,6 +201606,7 @@
         {
           "chance": 30,
           "status": null,
+          "volatile_status": "flinch",
           "boosts": [],
           "self_boosts": []
         }
@@ -201473,7 +201623,7 @@
         "callbacks": [],
         "intrinsic_flags": [],
         "special_properties": [],
-        "structured_effects_supported": false
+        "structured_effects_supported": true
       },
       "is_nonstandard": "Past",
       "legal": false,
@@ -201813,6 +201963,7 @@
         {
           "chance": 50,
           "status": "brn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -201989,6 +202140,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": "saltcure",
           "boosts": [],
           "self_boosts": []
         }
@@ -202115,6 +202267,7 @@
         {
           "chance": 20,
           "status": "brn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -202391,6 +202544,7 @@
         {
           "chance": 30,
           "status": "brn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -202592,6 +202746,7 @@
         {
           "chance": 30,
           "status": "brn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -202779,6 +202934,7 @@
         {
           "chance": 30,
           "status": "brn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -202893,6 +203049,7 @@
         {
           "chance": 30,
           "status": "par",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -203066,6 +203223,7 @@
         {
           "chance": 40,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "spd",
@@ -203247,6 +203405,7 @@
         {
           "chance": 20,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "spd",
@@ -203314,6 +203473,7 @@
         {
           "chance": 20,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "def",
@@ -203607,6 +203767,7 @@
         {
           "chance": 50,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "def",
@@ -203896,6 +204057,7 @@
         {
           "chance": 20,
           "status": "psn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -204332,6 +204494,7 @@
         {
           "chance": 10,
           "status": null,
+          "volatile_status": "confusion",
           "boosts": [],
           "self_boosts": []
         }
@@ -204448,6 +204611,7 @@
         {
           "chance": 10,
           "status": null,
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": [
             {
@@ -204698,6 +204862,7 @@
         {
           "chance": 100,
           "status": "brn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -204883,6 +205048,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "spa",
@@ -205015,6 +205181,7 @@
         {
           "chance": 30,
           "status": null,
+          "volatile_status": "flinch",
           "boosts": [],
           "self_boosts": []
         }
@@ -205035,7 +205202,7 @@
           "charge"
         ],
         "special_properties": [],
-        "structured_effects_supported": false
+        "structured_effects_supported": true
       },
       "is_nonstandard": null,
       "legal": true,
@@ -205500,6 +205667,7 @@
         {
           "chance": 30,
           "status": "psn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -205563,6 +205731,7 @@
         {
           "chance": 30,
           "status": "psn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -205625,6 +205794,7 @@
         {
           "chance": 10,
           "status": "psn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -205851,6 +206021,7 @@
         {
           "chance": 40,
           "status": "psn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -206030,6 +206201,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "spa",
@@ -206208,6 +206380,7 @@
         {
           "chance": 30,
           "status": null,
+          "volatile_status": "flinch",
           "boosts": [],
           "self_boosts": []
         }
@@ -206228,7 +206401,7 @@
         "special_properties": [
           "sleepUsable"
         ],
-        "structured_effects_supported": false
+        "structured_effects_supported": true
       },
       "is_nonstandard": null,
       "legal": true,
@@ -206730,6 +206903,7 @@
         {
           "chance": 30,
           "status": "par",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -206794,6 +206968,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": "sparklingaria",
           "boosts": [],
           "self_boosts": []
         }
@@ -207385,6 +207560,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "spa",
@@ -207452,6 +207628,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -207737,6 +207914,7 @@
         {
           "chance": 30,
           "status": "par",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -207916,6 +208094,7 @@
         {
           "chance": 30,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "atk",
@@ -208039,6 +208218,7 @@
         {
           "chance": 30,
           "status": "brn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -208107,6 +208287,7 @@
         {
           "chance": 30,
           "status": null,
+          "volatile_status": "flinch",
           "boosts": [],
           "self_boosts": []
         }
@@ -208125,7 +208306,7 @@
           "minimize"
         ],
         "special_properties": [],
-        "structured_effects_supported": false
+        "structured_effects_supported": true
       },
       "is_nonstandard": "Past",
       "legal": false,
@@ -208289,6 +208470,7 @@
         {
           "chance": 10,
           "status": null,
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": [
             {
@@ -208461,6 +208643,7 @@
         {
           "chance": 100,
           "status": "par",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -208526,6 +208709,7 @@
         {
           "chance": 30,
           "status": null,
+          "volatile_status": "flinch",
           "boosts": [],
           "self_boosts": []
         }
@@ -208544,7 +208728,7 @@
           "minimize"
         ],
         "special_properties": [],
-        "structured_effects_supported": false
+        "structured_effects_supported": true
       },
       "is_nonstandard": "Past",
       "legal": false,
@@ -208648,6 +208832,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -208876,6 +209061,7 @@
         {
           "chance": 20,
           "status": null,
+          "volatile_status": "confusion",
           "boosts": [],
           "self_boosts": []
         }
@@ -209182,6 +209368,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "spa",
@@ -210624,6 +210811,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": "syrupbomb",
           "boosts": [],
           "self_boosts": []
         }
@@ -212121,6 +212309,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -212183,6 +212372,7 @@
         {
           "chance": 30,
           "status": "par",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -212247,6 +212437,7 @@
         {
           "chance": 10,
           "status": "par",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -212418,12 +212609,14 @@
         {
           "chance": 10,
           "status": "par",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         },
         {
           "chance": 10,
           "status": null,
+          "volatile_status": "flinch",
           "boosts": [],
           "self_boosts": []
         }
@@ -212440,7 +212633,7 @@
         "callbacks": [],
         "intrinsic_flags": [],
         "special_properties": [],
-        "structured_effects_supported": false
+        "structured_effects_supported": true
       },
       "is_nonstandard": null,
       "legal": true,
@@ -212486,6 +212679,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "def",
@@ -212555,6 +212749,7 @@
         {
           "chance": 10,
           "status": "par",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -212617,6 +212812,7 @@
         {
           "chance": 10,
           "status": "par",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -212913,6 +213109,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": [
             {
@@ -213213,6 +213410,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": [
             {
@@ -213339,6 +213537,7 @@
         {
           "chance": 20,
           "status": null,
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -213575,6 +213774,7 @@
         {
           "chance": 50,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "def",
@@ -213586,6 +213786,7 @@
         {
           "chance": 30,
           "status": null,
+          "volatile_status": "flinch",
           "boosts": [],
           "self_boosts": []
         }
@@ -213602,7 +213803,7 @@
         "callbacks": [],
         "intrinsic_flags": [],
         "special_properties": [],
-        "structured_effects_supported": false
+        "structured_effects_supported": true
       },
       "is_nonstandard": null,
       "legal": true,
@@ -213828,6 +214029,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [
             {
               "key": "atk",
@@ -214008,6 +214210,7 @@
         {
           "chance": 20,
           "status": "psn",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -214119,6 +214322,7 @@
         {
           "chance": 20,
           "status": null,
+          "volatile_status": "flinch",
           "boosts": [],
           "self_boosts": []
         }
@@ -214135,7 +214339,7 @@
         "callbacks": [],
         "intrinsic_flags": [],
         "special_properties": [],
-        "structured_effects_supported": false
+        "structured_effects_supported": true
       },
       "is_nonstandard": "Past",
       "legal": false,
@@ -214182,6 +214386,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": "flinch",
           "boosts": [],
           "self_boosts": []
         }
@@ -214200,7 +214405,7 @@
         ],
         "intrinsic_flags": [],
         "special_properties": [],
-        "structured_effects_supported": false
+        "structured_effects_supported": true
       },
       "is_nonstandard": null,
       "legal": true,
@@ -214946,6 +215151,7 @@
         {
           "chance": 10,
           "status": "par",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -215066,6 +215272,7 @@
         {
           "chance": 20,
           "status": null,
+          "volatile_status": "flinch",
           "boosts": [],
           "self_boosts": []
         }
@@ -215082,7 +215289,7 @@
         "callbacks": [],
         "intrinsic_flags": [],
         "special_properties": [],
-        "structured_effects_supported": false
+        "structured_effects_supported": true
       },
       "is_nonstandard": null,
       "legal": true,
@@ -215244,6 +215451,7 @@
         {
           "chance": 20,
           "status": null,
+          "volatile_status": "confusion",
           "boosts": [],
           "self_boosts": []
         }
@@ -215764,6 +215972,7 @@
         {
           "chance": 10,
           "status": "slp",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -215884,6 +216093,7 @@
         {
           "chance": 20,
           "status": "par",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -216694,6 +216904,7 @@
         {
           "chance": 100,
           "status": "par",
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": []
         }
@@ -216757,6 +216968,7 @@
         {
           "chance": 20,
           "status": null,
+          "volatile_status": "flinch",
           "boosts": [],
           "self_boosts": []
         }
@@ -216773,7 +216985,7 @@
         "callbacks": [],
         "intrinsic_flags": [],
         "special_properties": [],
-        "structured_effects_supported": false
+        "structured_effects_supported": true
       },
       "is_nonstandard": null,
       "legal": true,
@@ -216820,6 +217032,7 @@
         {
           "chance": 30,
           "status": null,
+          "volatile_status": "flinch",
           "boosts": [],
           "self_boosts": []
         }
@@ -216836,7 +217049,7 @@
         "callbacks": [],
         "intrinsic_flags": [],
         "special_properties": [],
-        "structured_effects_supported": false
+        "structured_effects_supported": true
       },
       "is_nonstandard": null,
       "legal": true,
@@ -216882,6 +217095,7 @@
         {
           "chance": 100,
           "status": null,
+          "volatile_status": null,
           "boosts": [],
           "self_boosts": [
             {

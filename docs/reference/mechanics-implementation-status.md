@@ -18,9 +18,9 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 
 | Kind | Total | Implemented | Partial | Unsupported |
 | --- | ---: | ---: | ---: | ---: |
-| Abilities | 215 | 121 | 94 | 0 |
-| Items | 166 | 57 | 109 | 0 |
-| Moves | 510 | 223 | 0 | 287 |
+| Abilities | 215 | 123 | 92 | 0 |
+| Items | 166 | 59 | 107 | 0 |
+| Moves | 510 | 238 | 0 | 272 |
 
 ## Abilities
 
@@ -103,7 +103,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Imposter | `imposter` | partial | not_tested | not_tested | PR 13.5.12 |
 | Infiltrator | `infiltrator` | partial | not_tested | not_tested | PR 13.5 |
 | Innards Out | `innardsout` | partial | unit_tested | not_tested | PR 13.5.12 |
-| Inner Focus | `innerfocus` | partial | unit_tested | not_tested | PR 13.5.11 |
+| Inner Focus | `innerfocus` | implemented | unit_tested | unit_tested | PR 15.3 |
 | Insomnia | `insomnia` | implemented | differential_verified | unit_tested | PR 13.5 |
 | Intimidate | `intimidate` | partial | unit_tested | unit_tested | PR 13.5.11 |
 | Iron Fist | `ironfist` | implemented | differential_verified | unit_tested | PR 13.5 |
@@ -204,7 +204,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Stamina | `stamina` | implemented | unit_tested | not_tested | PR 13.5 |
 | Stance Change | `stancechange` | partial | not_tested | not_tested | PR 13.5.12 |
 | Static | `static` | partial | not_tested | not_tested | PR 13.5.11 |
-| Steadfast | `steadfast` | partial | not_tested | not_tested | PR 13.5.12 |
+| Steadfast | `steadfast` | implemented | unit_tested | unit_tested | PR 15.3 |
 | Steely Spirit | `steelyspirit` | implemented | differential_verified | unit_tested | PR 13.5 |
 | Stench | `stench` | partial | not_tested | not_tested | PR 13.5.12 |
 | Sticky Hold | `stickyhold` | partial | not_tested | not_tested | PR 13.5.12 |
@@ -328,7 +328,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Kangaskhanite | `kangaskhanite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Kasib Berry | `kasibberry` | partial | unit_tested | not_tested | PR 13.6.2 |
 | Kebia Berry | `kebiaberry` | partial | unit_tested | not_tested | PR 13.6.2 |
-| King's Rock | `kingsrock` | partial | unit_tested | not_tested | PR 13.6.4 |
+| King's Rock | `kingsrock` | implemented | unit_tested | unit_tested | PR 15.3 |
 | Leek | `leek` | implemented | unit_tested | not_tested | PR 13.6.4 |
 | Leftovers | `leftovers` | implemented | unit_tested | unit_tested | PR 13.6.3 |
 | Leppa Berry | `leppaberry` | implemented | unit_tested | not_tested | PR 15.1 |
@@ -345,7 +345,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Mawilite | `mawilite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Medichamite | `medichamite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Meganiumite | `meganiumite` | partial | unit_tested | not_tested | PR 13.6.5 |
-| Mental Herb | `mentalherb` | partial | unit_tested | not_tested | PR 13.6.4 |
+| Mental Herb | `mentalherb` | implemented | unit_tested | unit_tested | PR 15.3 |
 | Meowsticite | `meowsticite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Metagrossite | `metagrossite` | partial | unit_tested | not_tested | PR 13.6.5 |
 | Metal Coat | `metalcoat` | implemented | unit_tested | not_tested | PR 13.6.2 |
@@ -426,7 +426,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | After You | `afteryou` | unsupported | not_tested | not_tested | — |
 | Agility | `agility` | implemented | unit_tested | not_tested | PR 13.3 |
 | Air Cutter | `aircutter` | implemented | unit_tested | not_tested | PR 13.2 |
-| Air Slash | `airslash` | unsupported | not_tested | not_tested | — |
+| Air Slash | `airslash` | implemented | unit_tested | not_tested | PR 15.3 |
 | Alluring Voice | `alluringvoice` | unsupported | not_tested | not_tested | — |
 | Ally Switch | `allyswitch` | unsupported | not_tested | not_tested | — |
 | Amnesia | `amnesia` | implemented | unit_tested | not_tested | PR 13.3 |
@@ -455,7 +455,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Belch | `belch` | unsupported | not_tested | not_tested | — |
 | Belly Drum | `bellydrum` | unsupported | not_tested | not_tested | — |
 | Bind | `bind` | unsupported | not_tested | not_tested | — |
-| Bite | `bite` | unsupported | not_tested | not_tested | — |
+| Bite | `bite` | implemented | unit_tested | not_tested | PR 15.3 |
 | Bitter Blade | `bitterblade` | implemented | unit_tested | not_tested | PR 13.4 |
 | Bitter Malice | `bittermalice` | implemented | unit_tested | not_tested | PR 13.4 |
 | Blast Burn | `blastburn` | unsupported | not_tested | not_tested | — |
@@ -510,7 +510,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Crush Claw | `crushclaw` | implemented | unit_tested | not_tested | PR 13.4 |
 | Curse | `curse` | unsupported | not_tested | not_tested | — |
 | Darkest Lariat | `darkestlariat` | unsupported | not_tested | not_tested | — |
-| Dark Pulse | `darkpulse` | unsupported | not_tested | not_tested | — |
+| Dark Pulse | `darkpulse` | implemented | unit_tested | not_tested | PR 15.3 |
 | Dazzling Gleam | `dazzlinggleam` | implemented | unit_tested | not_tested | PR 13.2 |
 | Decorate | `decorate` | implemented | unit_tested | not_tested | PR 13.3 |
 | Defog | `defog` | unsupported | not_tested | not_tested | — |
@@ -557,7 +557,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Eruption | `eruption` | unsupported | not_tested | not_tested | — |
 | Expanding Force | `expandingforce` | unsupported | not_tested | not_tested | — |
 | Explosion | `explosion` | unsupported | not_tested | not_tested | — |
-| Extrasensory | `extrasensory` | unsupported | not_tested | not_tested | — |
+| Extrasensory | `extrasensory` | implemented | unit_tested | not_tested | PR 15.3 |
 | Extreme Speed | `extremespeed` | implemented | unit_tested | not_tested | PR 13.2 |
 | Facade | `facade` | implemented | unit_tested | not_tested | PR 13.4 |
 | Fairy Lock | `fairylock` | unsupported | not_tested | not_tested | — |
@@ -570,7 +570,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Fiery Dance | `fierydance` | implemented | unit_tested | not_tested | PR 13.4 |
 | Final Gambit | `finalgambit` | unsupported | not_tested | not_tested | — |
 | Fire Blast | `fireblast` | implemented | unit_tested | not_tested | PR 13.4 |
-| Fire Fang | `firefang` | unsupported | not_tested | not_tested | — |
+| Fire Fang | `firefang` | implemented | unit_tested | not_tested | PR 15.3 |
 | Fire Lash | `firelash` | implemented | unit_tested | not_tested | PR 13.4 |
 | Fire Punch | `firepunch` | implemented | unit_tested | not_tested | PR 13.4 |
 | Fire Spin | `firespin` | unsupported | not_tested | not_tested | — |
@@ -639,12 +639,12 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Hyper Voice | `hypervoice` | implemented | unit_tested | not_tested | PR 13.2 |
 | Hypnosis | `hypnosis` | implemented | differential_verified | unit_tested | PR 13.3.1 |
 | Ice Beam | `icebeam` | implemented | unit_tested | not_tested | PR 13.4 |
-| Ice Fang | `icefang` | unsupported | not_tested | not_tested | — |
+| Ice Fang | `icefang` | implemented | unit_tested | not_tested | PR 15.3 |
 | Ice Hammer | `icehammer` | implemented | unit_tested | not_tested | PR 13.4 |
 | Ice Punch | `icepunch` | implemented | unit_tested | not_tested | PR 13.4 |
 | Ice Shard | `iceshard` | implemented | unit_tested | not_tested | PR 13.2 |
 | Ice Spinner | `icespinner` | unsupported | not_tested | not_tested | — |
-| Icicle Crash | `iciclecrash` | unsupported | not_tested | not_tested | — |
+| Icicle Crash | `iciclecrash` | implemented | unit_tested | not_tested | PR 15.3 |
 | Icicle Spear | `iciclespear` | implemented | unit_tested | not_tested | PR 13.4 |
 | Icy Wind | `icywind` | implemented | unit_tested | not_tested | PR 13.4 |
 | Imprison | `imprison` | unsupported | not_tested | not_tested | — |
@@ -654,7 +654,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Ingrain | `ingrain` | unsupported | not_tested | not_tested | — |
 | Instruct | `instruct` | unsupported | not_tested | not_tested | — |
 | Iron Defense | `irondefense` | implemented | unit_tested | not_tested | PR 13.3 |
-| Iron Head | `ironhead` | unsupported | not_tested | not_tested | — |
+| Iron Head | `ironhead` | implemented | unit_tested | not_tested | PR 15.3 |
 | Iron Tail | `irontail` | implemented | unit_tested | not_tested | PR 13.4 |
 | Jaw Lock | `jawlock` | unsupported | not_tested | not_tested | — |
 | Jet Punch | `jetpunch` | implemented | unit_tested | not_tested | PR 13.2 |
@@ -703,7 +703,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Moonlight | `moonlight` | unsupported | not_tested | not_tested | — |
 | Morning Sun | `morningsun` | unsupported | not_tested | not_tested | — |
 | Mortal Spin | `mortalspin` | unsupported | not_tested | not_tested | — |
-| Mountain Gale | `mountaingale` | unsupported | not_tested | not_tested | — |
+| Mountain Gale | `mountaingale` | implemented | unit_tested | not_tested | PR 15.3 |
 | Muddy Water | `muddywater` | implemented | unit_tested | not_tested | PR 13.4 |
 | Mud Shot | `mudshot` | implemented | unit_tested | not_tested | PR 13.4 |
 | Mud-Slap | `mudslap` | implemented | unit_tested | not_tested | PR 13.4 |
@@ -775,7 +775,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Roar | `roar` | unsupported | not_tested | not_tested | — |
 | Rock Blast | `rockblast` | implemented | unit_tested | not_tested | PR 13.4 |
 | Rock Polish | `rockpolish` | implemented | unit_tested | not_tested | PR 13.3 |
-| Rock Slide | `rockslide` | unsupported | not_tested | not_tested | — |
+| Rock Slide | `rockslide` | implemented | unit_tested | not_tested | PR 15.3 |
 | Rock Tomb | `rocktomb` | implemented | unit_tested | not_tested | PR 13.4 |
 | Rock Wrecker | `rockwrecker` | unsupported | not_tested | not_tested | — |
 | Role Play | `roleplay` | unsupported | not_tested | not_tested | — |
@@ -878,7 +878,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Throat Chop | `throatchop` | unsupported | not_tested | not_tested | — |
 | Thunder | `thunder` | unsupported | not_tested | not_tested | — |
 | Thunderbolt | `thunderbolt` | implemented | unit_tested | not_tested | PR 13.4 |
-| Thunder Fang | `thunderfang` | unsupported | not_tested | not_tested | — |
+| Thunder Fang | `thunderfang` | implemented | unit_tested | not_tested | PR 15.3 |
 | Thunder Punch | `thunderpunch` | implemented | unit_tested | not_tested | PR 13.4 |
 | Thunder Wave | `thunderwave` | implemented | differential_verified | differential_verified | PR 13.3.1 |
 | Tickle | `tickle` | implemented | unit_tested | not_tested | PR 13.3 |
@@ -895,7 +895,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Trick | `trick` | unsupported | not_tested | not_tested | — |
 | Trick-or-Treat | `trickortreat` | unsupported | not_tested | not_tested | — |
 | Trick Room | `trickroom` | implemented | differential_verified | differential_verified | PR 13.3.1 |
-| Triple Arrows | `triplearrows` | unsupported | not_tested | not_tested | — |
+| Triple Arrows | `triplearrows` | implemented | unit_tested | not_tested | PR 15.3 |
 | Triple Axel | `tripleaxel` | unsupported | not_tested | not_tested | — |
 | Trop Kick | `tropkick` | implemented | unit_tested | not_tested | PR 13.4 |
 | Twin Beam | `twinbeam` | implemented | unit_tested | not_tested | PR 13.4 |
@@ -906,7 +906,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Venoshock | `venoshock` | unsupported | not_tested | not_tested | — |
 | Volt Switch | `voltswitch` | unsupported | not_tested | not_tested | — |
 | Volt Tackle | `volttackle` | implemented | unit_tested | not_tested | PR 13.4 |
-| Waterfall | `waterfall` | unsupported | not_tested | not_tested | — |
+| Waterfall | `waterfall` | implemented | unit_tested | not_tested | PR 15.3 |
 | Water Pulse | `waterpulse` | unsupported | not_tested | not_tested | — |
 | Water Shuriken | `watershuriken` | unsupported | not_tested | not_tested | — |
 | Water Spout | `waterspout` | unsupported | not_tested | not_tested | — |
@@ -925,6 +925,6 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | X-Scissor | `xscissor` | implemented | unit_tested | not_tested | PR 13.2 |
 | Yawn | `yawn` | unsupported | not_tested | not_tested | — |
 | Zap Cannon | `zapcannon` | implemented | unit_tested | not_tested | PR 13.4 |
-| Zen Headbutt | `zenheadbutt` | unsupported | not_tested | not_tested | — |
-| Zing Zap | `zingzap` | unsupported | not_tested | not_tested | — |
+| Zen Headbutt | `zenheadbutt` | implemented | unit_tested | not_tested | PR 15.3 |
+| Zing Zap | `zingzap` | implemented | unit_tested | not_tested | PR 15.3 |
 

@@ -68,6 +68,39 @@ fn register_common_conditions(registry: &mut EffectRegistry) {
     );
 }
 
+pub(crate) fn register_volatile_conditions(
+    registry: &mut EffectRegistry,
+    ids: &crate::FieldEffectIds,
+) {
+    if let Some(flinch) = ids.flinch {
+        registry.register(
+            BattleEvent::BeforeMove,
+            EffectSource::Condition(flinch),
+            EffectOrder::new(0, 8, 0),
+            flinch_before_move,
+        );
+    }
+}
+
+fn flinch_before_move(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    let EffectOwner::Pokemon { pokemon: target } = invocation.owner else {
+        return Ok(());
+    };
+    let EffectSource::Condition(condition) = invocation.source else {
+        return Ok(());
+    };
+    if context.source == Some(target) && context.flinch_condition == Some(condition) {
+        state.remove_volatile(target, condition)?;
+        dispatch.cancel();
+    }
+    Ok(())
+}
+
 impl BattleState {
     /// Applies one major status and initializes its Champions-specific state.
     ///

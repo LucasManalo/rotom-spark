@@ -1637,7 +1637,9 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-5-ability-batch-30b.md",
+        "file:data/fixtures/differential/volatile-lifecycle.json",
+        "file:docs/research/pr-15-3-volatile-lifecycle.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#flinch_uses_the_shared_volatile_lifecycle_and_ability_hooks",
         "species/alakazam/ability-slot/1",
         "species/annihilape/ability-slot/1",
         "species/dragonite/ability-slot/0",
@@ -1649,15 +1651,15 @@
         "species/mudsdale/ability-slot/H",
         "species/oranguru/ability-slot/0",
         "species/umbreon/ability-slot/H",
-        "unit:crates/rotom-core/src/abilities.rs#analytic_damp_lightning_rod_and_intimidate_guards_use_typed_relays"
+        "unit:crates/rotom-dex/tests/combat.rs#flinch_uses_the_shared_volatile_lifecycle_and_ability_hooks"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.5.11"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.3"
     },
     {
       "id": "insomnia",
@@ -3791,21 +3793,23 @@
       "kind": "ability",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:crates/rotom-dex/src/combat.rs",
-        "file:docs/research/pr-13-5-final-ability-coverage.md",
+        "file:data/fixtures/differential/volatile-lifecycle.json",
+        "file:docs/research/pr-15-3-volatile-lifecycle.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#flinch_uses_the_shared_volatile_lifecycle_and_ability_hooks",
         "species/gallade/ability-slot/0",
         "species/lucario/ability-slot/0",
         "species/lycanroc/ability-slot/H",
         "species/machamp/ability-slot/H",
-        "species/sirfetchd/ability-slot/0"
+        "species/sirfetchd/ability-slot/0",
+        "unit:crates/rotom-dex/tests/combat.rs#flinch_uses_the_shared_volatile_lifecycle_and_ability_hooks"
       ],
       "effect_families": [
         "ability_behavior"
       ],
-      "implementation": "partial",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.5.12"
+      "implementation": "implemented",
+      "verification": "unit_tested",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.3"
     },
     {
       "id": "steelyspirit",
@@ -10472,17 +10476,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "file:data/fixtures/differential/volatile-lifecycle.json",
+        "file:docs/research/pr-15-3-volatile-lifecycle.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#kings_rock_adds_one_canonical_flinch_secondary",
         "species/abomasnow",
-        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
+        "unit:crates/rotom-dex/tests/combat.rs#kings_rock_adds_one_canonical_flinch_secondary"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.4"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.3"
     },
     {
       "id": "leek",
@@ -10783,17 +10789,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "file:data/fixtures/differential/volatile-lifecycle.json",
+        "file:docs/research/pr-15-3-volatile-lifecycle.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mental_herb_cures_its_complete_volatile_set_through_the_kernel",
         "species/abomasnow",
-        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
+        "unit:crates/rotom-dex/tests/combat.rs#mental_herb_cures_its_complete_volatile_set_through_the_kernel"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.4"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.3"
     },
     {
       "id": "meowsticite",
@@ -12597,6 +12605,9 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-15-3-volatile-lifecycle.md",
         "species/absol",
         "species/aegislash",
         "species/charizard",
@@ -12651,7 +12662,8 @@
         "species/vivillonsavanna",
         "species/vivillonsun",
         "species/vivillontundra",
-        "species/volcarona"
+        "species/volcarona",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage",
@@ -12663,16 +12675,16 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
-        "special_behavior",
+        "volatile",
         "protection",
         "redirection",
         "retargeting",
         "per_target_hit"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 15.3"
     },
     {
       "id": "alluringvoice",
@@ -13579,6 +13591,7 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
+        "volatile",
         "custom_callback",
         "special_behavior",
         "protection",
@@ -13978,6 +13991,9 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-15-3-volatile-lifecycle.md",
         "species/absol",
         "species/aerodactyl",
         "species/araquanid",
@@ -14051,7 +14067,8 @@
         "species/vaporeon",
         "species/watchog",
         "species/weavile",
-        "species/wyrdeer"
+        "species/wyrdeer",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage",
@@ -14063,16 +14080,16 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
-        "special_behavior",
+        "volatile",
         "protection",
         "redirection",
         "retargeting",
         "per_target_hit"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 15.3"
     },
     {
       "id": "bitterblade",
@@ -17251,6 +17268,9 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-15-3-volatile-lifecycle.md",
         "species/absol",
         "species/aggron",
         "species/arbok",
@@ -17327,7 +17347,8 @@
         "species/weavile",
         "species/wigglytuff",
         "species/zoroark",
-        "species/zoroarkhisui"
+        "species/zoroarkhisui",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage",
@@ -17339,16 +17360,16 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
-        "special_behavior",
+        "volatile",
         "protection",
         "redirection",
         "retargeting",
         "per_target_hit"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 15.3"
     },
     {
       "id": "dazzlinggleam",
@@ -18598,6 +18619,7 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
+        "volatile",
         "special_behavior",
         "protection",
         "redirection",
@@ -19042,6 +19064,7 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
+        "volatile",
         "special_behavior",
         "protection",
         "redirection",
@@ -20358,6 +20381,9 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-15-3-volatile-lifecycle.md",
         "species/chimecho",
         "species/drampa",
         "species/greninja",
@@ -20371,7 +20397,8 @@
         "species/typhlosionhisui",
         "species/wyrdeer",
         "species/zoroark",
-        "species/zoroarkhisui"
+        "species/zoroarkhisui",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage",
@@ -20383,16 +20410,16 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
-        "special_behavior",
+        "volatile",
         "protection",
         "redirection",
         "retargeting",
         "per_target_hit"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 15.3"
     },
     {
       "id": "extremespeed",
@@ -20819,8 +20846,8 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
+        "volatile",
         "custom_callback",
-        "special_behavior",
         "protection",
         "redirection",
         "retargeting",
@@ -21253,6 +21280,9 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-15-3-volatile-lifecycle.md",
         "species/aerodactyl",
         "species/arbok",
         "species/arcanine",
@@ -21290,7 +21320,8 @@
         "species/typhlosion",
         "species/typhlosionhisui",
         "species/tyranitar",
-        "species/tyrantrum"
+        "species/tyrantrum",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage",
@@ -21302,16 +21333,16 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
-        "special_behavior",
+        "volatile",
         "protection",
         "redirection",
         "retargeting",
         "per_target_hit"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 15.3"
     },
     {
       "id": "firelash",
@@ -24975,6 +25006,7 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
+        "volatile",
         "custom_callback",
         "special_behavior",
         "protection",
@@ -25662,6 +25694,9 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-15-3-volatile-lifecycle.md",
         "species/aerodactyl",
         "species/arbok",
         "species/avalugg",
@@ -25694,7 +25729,8 @@
         "species/stunfiskgalar",
         "species/thievul",
         "species/tyranitar",
-        "species/tyrantrum"
+        "species/tyrantrum",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage",
@@ -25706,16 +25742,16 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
-        "special_behavior",
+        "volatile",
         "protection",
         "redirection",
         "retargeting",
         "per_target_hit"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 15.3"
     },
     {
       "id": "icehammer",
@@ -25927,6 +25963,9 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-15-3-volatile-lifecycle.md",
         "species/avalugg",
         "species/baxcalibur",
         "species/beartic",
@@ -25934,7 +25973,8 @@
         "species/glalie",
         "species/mamoswine",
         "species/vanilluxe",
-        "species/weavile"
+        "species/weavile",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage",
@@ -25946,16 +25986,16 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
-        "special_behavior",
+        "volatile",
         "protection",
         "redirection",
         "retargeting",
         "per_target_hit"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 15.3"
     },
     {
       "id": "iciclespear",
@@ -26468,6 +26508,9 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-15-3-volatile-lifecycle.md",
         "species/aegislash",
         "species/aerodactyl",
         "species/aggron",
@@ -26538,7 +26581,8 @@
         "species/typhlosion",
         "species/typhlosionhisui",
         "species/tyranitar",
-        "species/tyrantrum"
+        "species/tyrantrum",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage",
@@ -26550,16 +26594,16 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
-        "special_behavior",
+        "volatile",
         "protection",
         "redirection",
         "retargeting",
         "per_target_hit"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 15.3"
     },
     {
       "id": "irontail",
@@ -28833,7 +28877,11 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/avalugghisui"
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-15-3-volatile-lifecycle.md",
+        "species/avalugghisui",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage",
@@ -28845,16 +28893,16 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
-        "special_behavior",
+        "volatile",
         "protection",
         "redirection",
         "retargeting",
         "per_target_hit"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 15.3"
     },
     {
       "id": "muddywater",
@@ -31483,6 +31531,7 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
+        "volatile",
         "special_behavior",
         "protection",
         "redirection",
@@ -33372,6 +33421,9 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-15-3-volatile-lifecycle.md",
         "species/abomasnow",
         "species/absol",
         "species/aegislash",
@@ -33479,7 +33531,8 @@
         "species/typhlosion",
         "species/typhlosionhisui",
         "species/tyranitar",
-        "species/tyrantrum"
+        "species/tyrantrum",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage",
@@ -33491,17 +33544,17 @@
         "accuracy",
         "advanced_targeting",
         "secondary_effect",
-        "special_behavior",
+        "volatile",
         "target_set",
         "spread_damage",
         "protection",
         "retargeting",
         "per_target_hit"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 15.3"
     },
     {
       "id": "rocktomb",
@@ -34180,6 +34233,7 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
+        "volatile",
         "special_behavior",
         "protection",
         "redirection",
@@ -35630,6 +35684,7 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
+        "volatile",
         "custom_callback",
         "special_behavior",
         "protection",
@@ -36759,6 +36814,7 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
+        "volatile",
         "custom_callback",
         "special_behavior",
         "protection",
@@ -37060,6 +37116,7 @@
         "accuracy",
         "advanced_targeting",
         "secondary_effect",
+        "volatile",
         "custom_callback",
         "special_behavior",
         "target_set",
@@ -39531,6 +39588,7 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
+        "volatile",
         "special_behavior",
         "protection",
         "redirection",
@@ -40497,6 +40555,9 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-15-3-volatile-lifecycle.md",
         "species/aerodactyl",
         "species/arbok",
         "species/arcanine",
@@ -40533,7 +40594,8 @@
         "species/toxtricity",
         "species/toxtricitylowkey",
         "species/tyranitar",
-        "species/tyrantrum"
+        "species/tyrantrum",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage",
@@ -40545,16 +40607,16 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
-        "special_behavior",
+        "volatile",
         "protection",
         "redirection",
         "retargeting",
         "per_target_hit"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 15.3"
     },
     {
       "id": "thunderpunch",
@@ -41488,7 +41550,11 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/decidueyehisui"
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-15-3-volatile-lifecycle.md",
+        "species/decidueyehisui",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage",
@@ -41500,16 +41566,16 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
-        "special_behavior",
+        "volatile",
         "protection",
         "redirection",
         "retargeting",
         "per_target_hit"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 15.3"
     },
     {
       "id": "tripleaxel",
@@ -41662,8 +41728,8 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
+        "volatile",
         "custom_callback",
-        "special_behavior",
         "protection",
         "redirection",
         "retargeting",
@@ -42085,6 +42151,9 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-15-3-volatile-lifecycle.md",
         "species/araquanid",
         "species/azumarill",
         "species/barbaracle",
@@ -42119,7 +42188,8 @@
         "species/slowkinggalar",
         "species/starmie",
         "species/swampert",
-        "species/vaporeon"
+        "species/vaporeon",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage",
@@ -42131,16 +42201,16 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
-        "special_behavior",
+        "volatile",
         "protection",
         "redirection",
         "retargeting",
         "per_target_hit"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 15.3"
     },
     {
       "id": "waterpulse",
@@ -42210,6 +42280,7 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
+        "volatile",
         "special_behavior",
         "protection",
         "redirection",
@@ -43115,6 +43186,9 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-15-3-volatile-lifecycle.md",
         "species/absol",
         "species/aegislash",
         "species/alakazam",
@@ -43201,7 +43275,8 @@
         "species/volcarona",
         "species/watchog",
         "species/wigglytuff",
-        "species/wyrdeer"
+        "species/wyrdeer",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage",
@@ -43213,16 +43288,16 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
-        "special_behavior",
+        "volatile",
         "protection",
         "redirection",
         "retargeting",
         "per_target_hit"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 15.3"
     },
     {
       "id": "zingzap",
@@ -43230,7 +43305,11 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/pincurchin"
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-15-3-volatile-lifecycle.md",
+        "species/pincurchin",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage",
@@ -43242,16 +43321,16 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
-        "special_behavior",
+        "volatile",
         "protection",
         "redirection",
         "retargeting",
         "per_target_hit"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
+      "implementation": "implemented",
+      "verification": "unit_tested",
       "interaction_verification": "not_tested",
-      "owner_pr": null
+      "owner_pr": "PR 15.3"
     },
     {
       "id": "abomasnow",
@@ -48355,17 +48434,17 @@
         "total": 215,
         "implementation": {
           "unsupported": 0,
-          "partial": 94,
-          "implemented": 121
+          "partial": 92,
+          "implemented": 123
         },
         "verification": {
-          "not_tested": 85,
-          "unit_tested": 79,
+          "not_tested": 84,
+          "unit_tested": 80,
           "differential_verified": 51
         },
         "interaction_verification": {
-          "not_tested": 137,
-          "unit_tested": 78,
+          "not_tested": 135,
+          "unit_tested": 80,
           "differential_verified": 0
         },
         "reachability": {
@@ -48424,8 +48503,8 @@
         "total": 166,
         "implementation": {
           "unsupported": 0,
-          "partial": 109,
-          "implemented": 57
+          "partial": 107,
+          "implemented": 59
         },
         "verification": {
           "not_tested": 1,
@@ -48433,8 +48512,8 @@
           "differential_verified": 0
         },
         "interaction_verification": {
-          "not_tested": 155,
-          "unit_tested": 11,
+          "not_tested": 153,
+          "unit_tested": 13,
           "differential_verified": 0
         },
         "reachability": {
@@ -48446,13 +48525,13 @@
       "move": {
         "total": 510,
         "implementation": {
-          "unsupported": 287,
+          "unsupported": 272,
           "partial": 0,
-          "implemented": 223
+          "implemented": 238
         },
         "verification": {
-          "not_tested": 287,
-          "unit_tested": 200,
+          "not_tested": 272,
+          "unit_tested": 215,
           "differential_verified": 23
         },
         "interaction_verification": {

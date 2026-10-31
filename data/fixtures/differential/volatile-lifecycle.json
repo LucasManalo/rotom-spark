@@ -1,0 +1,36 @@
+{
+  "showdown_commit": "b79ce06d06b8f0dc8de8bb348bc9cab5d931553f",
+  "format": "gen9championsvgc2026regmc",
+  "methodology": {
+    "source": "complete pinned Showdown doubles turns with forced successful secondary rolls",
+    "move_execution": true,
+    "full_transition_comparison": true
+  },
+  "cases": [
+    {
+      "id": "air-slash-steadfast",
+      "ability": "steadfast",
+      "target_moved": false,
+      "flinch_remaining": false,
+      "speed_stage": 1
+    },
+    {
+      "id": "air-slash-inner-focus",
+      "ability": "innerfocus",
+      "target_moved": true,
+      "flinch_remaining": false,
+      "speed_stage": 0
+    },
+    {
+      "id": "kings-rock-flinch",
+      "target_moved": false,
+      "item_retained": true
+    },
+    {
+      "id": "mental-herb-taunt",
+      "target_moved": true,
+      "item": null,
+      "taunt_remaining": false
+    }
+  ]
+}

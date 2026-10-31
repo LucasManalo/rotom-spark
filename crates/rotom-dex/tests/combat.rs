@@ -129,6 +129,13 @@ fn forced_switch_fixture() -> serde_json::Value {
     .expect("forced-switch lifecycle fixture")
 }
 
+fn volatile_lifecycle_fixture() -> serde_json::Value {
+    serde_json::from_str(include_str!(
+        "../../../data/fixtures/differential/volatile-lifecycle.json"
+    ))
+    .expect("volatile lifecycle fixture")
+}
+
 fn single_move_action(move_slot: u8, target: ActionTarget) -> JointAction {
     JointAction::Turn {
         p1: TurnChoice {
@@ -216,6 +223,216 @@ fn forced_switch_action(side: SideId, slot: ActiveSlot, pokemon: PokemonIndex) -
             p2: replacement,
         },
     }
+}
+
+#[test]
+fn flinch_uses_the_shared_volatile_lifecycle_and_ability_hooks() {
+    let dex = champions_reg_mc().unwrap();
+    let source = set_with_moves(&dex, "togekiss", "hustle", &["airslash"]);
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let flinch = mechanics.field_effects().flinch.unwrap();
+    let action = single_move_action(0, ActionTarget::Foe(ActiveSlot::Left));
+    let fixture = volatile_lifecycle_fixture();
+    let build = |ability: &str, seed| {
+        let target = set_with_moves(&dex, "blissey", ability, &["swordsdance"]);
+        let base = selected_primary_battle(&dex, &source, &target, seed);
+        let mut builder = BattleStateBuilder::from_state(base).unwrap();
+        builder
+            .edit_pokemon(
+                PokemonRef::new(SideId::P1, PokemonIndex::new(0)),
+                |pokemon| {
+                    pokemon.stats.spe = 200;
+                },
+            )
+            .unwrap();
+        builder
+            .edit_pokemon(
+                PokemonRef::new(SideId::P2, PokemonIndex::new(0)),
+                |pokemon| {
+                    pokemon.stats.spe = 100;
+                },
+            )
+            .unwrap();
+        builder.build().unwrap()
+    };
+    let (seed, battle, result) = (0_u64..128)
+        .find_map(|seed| {
+            let battle = build("steadfast", seed);
+            let result = step(&battle, &action, &mechanics).unwrap();
+            let skipped = result
+                .diagnostics
+                .turn
+                .as_ref()
+                .unwrap()
+                .actions
+                .iter()
+                .any(|resolved| {
+                    matches!(
+                        resolved,
+                        ResolvedAction::Skipped {
+                            side: SideId::P2,
+                            slot: ActiveSlot::Left
+                        }
+                    )
+                });
+            skipped.then_some((seed, battle, result))
+        })
+        .expect("one deterministic seed should roll Air Slash flinch");
+    assert_eq!(result, step(&battle, &action, &mechanics).unwrap());
+    let steadfast = result
+        .state
+        .side(SideId::P2)
+        .pokemon(PokemonIndex::new(0))
+        .unwrap();
+    assert_eq!(steadfast.stat_stages.spe, 1);
+    assert!(!steadfast.has_volatile(flinch));
+    assert_eq!(fixture["cases"][0]["target_moved"], false);
+    assert_eq!(fixture["cases"][0]["speed_stage"], 1);
+
+    let immune = step(&build("innerfocus", seed), &action, &mechanics).unwrap();
+    let immune_target = immune
+        .state
+        .side(SideId::P2)
+        .pokemon(PokemonIndex::new(0))
+        .unwrap();
+    assert_eq!(immune_target.stat_stages.atk, 2);
+    assert!(!immune_target.has_volatile(flinch));
+    assert_eq!(fixture["cases"][1]["target_moved"], true);
+}
+
+#[test]
+fn kings_rock_adds_one_canonical_flinch_secondary() {
+    let dex = champions_reg_mc().unwrap();
+    let kings_rock = dex.resolve_item("kingsrock").unwrap().0;
+    let mut source = set_with_moves(&dex, "metagross", "clearbody", &["tackle"]);
+    source.item = Some(kings_rock);
+    let target = set_with_moves(&dex, "blissey", "naturalcure", &["swordsdance"]);
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let action = single_move_action(0, ActionTarget::Foe(ActiveSlot::Left));
+    let fixture = volatile_lifecycle_fixture();
+    let (battle, result) = (0_u64..512)
+        .find_map(|seed| {
+            let base = selected_primary_battle(&dex, &source, &target, seed);
+            let mut builder = BattleStateBuilder::from_state(base).unwrap();
+            builder
+                .edit_pokemon(
+                    PokemonRef::new(SideId::P1, PokemonIndex::new(0)),
+                    |pokemon| {
+                        pokemon.stats.spe = 200;
+                    },
+                )
+                .unwrap();
+            builder
+                .edit_pokemon(
+                    PokemonRef::new(SideId::P2, PokemonIndex::new(0)),
+                    |pokemon| {
+                        pokemon.stats.spe = 100;
+                    },
+                )
+                .unwrap();
+            let battle = builder.build().unwrap();
+            let result = step(&battle, &action, &mechanics).unwrap();
+            let skipped = result
+                .diagnostics
+                .turn
+                .as_ref()
+                .unwrap()
+                .actions
+                .iter()
+                .any(|resolved| {
+                    matches!(
+                        resolved,
+                        ResolvedAction::Skipped {
+                            side: SideId::P2,
+                            slot: ActiveSlot::Left
+                        }
+                    )
+                });
+            skipped.then_some((battle, result))
+        })
+        .expect("one deterministic seed should roll King's Rock flinch");
+    assert_eq!(result, step(&battle, &action, &mechanics).unwrap());
+    assert_eq!(
+        result
+            .state
+            .side(SideId::P1)
+            .pokemon(PokemonIndex::new(0))
+            .unwrap()
+            .item,
+        Some(kings_rock)
+    );
+    assert_eq!(fixture["cases"][2]["target_moved"], false);
+    assert_eq!(fixture["cases"][2]["item_retained"], true);
+}
+
+#[test]
+fn mental_herb_cures_its_complete_volatile_set_through_the_kernel() {
+    let dex = champions_reg_mc().unwrap();
+    let mental_herb = dex.resolve_item("mentalherb").unwrap().0;
+    let source = set_with_moves(&dex, "blissey", "naturalcure", &["swordsdance"]);
+    let mut target = source.clone();
+    target.item = Some(mental_herb);
+    let base = selected_primary_battle(&dex, &source, &target, 0x15_03);
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let fixture = volatile_lifecycle_fixture();
+    let conditions = mechanics.field_effects().mental_herb_conditions();
+    assert!(conditions.iter().all(Option::is_some));
+    let mut builder = BattleStateBuilder::from_state(base).unwrap();
+    builder
+        .edit_pokemon(
+            PokemonRef::new(SideId::P2, PokemonIndex::new(0)),
+            |pokemon| {
+                for condition in conditions.into_iter().flatten() {
+                    pokemon
+                        .add_volatile(ConditionState::new(condition, None))
+                        .unwrap();
+                }
+            },
+        )
+        .unwrap();
+    let battle = builder.build().unwrap();
+    let mut suppressed_builder = BattleStateBuilder::from_state(battle.clone()).unwrap();
+    suppressed_builder.edit_field(|field| {
+        field.conditions.push(ConditionState::new(
+            mechanics.field_effects().magic_room.unwrap(),
+            Some(5),
+        ));
+    });
+    let suppressed = step(
+        &suppressed_builder.build().unwrap(),
+        &single_move_action(0, ActionTarget::Automatic),
+        &mechanics,
+    )
+    .unwrap();
+    let suppressed_holder = suppressed
+        .state
+        .side(SideId::P2)
+        .pokemon(PokemonIndex::new(0))
+        .unwrap();
+    assert_eq!(suppressed_holder.item, Some(mental_herb));
+    assert!(conditions
+        .into_iter()
+        .flatten()
+        .all(|condition| suppressed_holder.has_volatile(condition)));
+
+    let result = step(
+        &battle,
+        &single_move_action(0, ActionTarget::Automatic),
+        &mechanics,
+    )
+    .unwrap();
+    let holder = result
+        .state
+        .side(SideId::P2)
+        .pokemon(PokemonIndex::new(0))
+        .unwrap();
+    assert_eq!(holder.item, None);
+    assert!(conditions
+        .into_iter()
+        .flatten()
+        .all(|condition| !holder.has_volatile(condition)));
+    assert_eq!(fixture["cases"][3]["item"], serde_json::Value::Null);
+    assert_eq!(fixture["cases"][3]["taunt_remaining"], false);
 }
 
 #[test]
@@ -6410,8 +6627,8 @@ fn mechanics_manifest_drives_every_move_capability_and_execution_smoke_case() {
         .iter()
         .filter(|entry| entry.implementation == "unsupported")
         .count();
-    assert_eq!(implemented, 223);
-    assert_eq!(unsupported, 287);
+    assert_eq!(implemented, 238);
+    assert_eq!(unsupported, 272);
 
     for entry in moves {
         let move_id = dex

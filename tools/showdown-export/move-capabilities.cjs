@@ -121,8 +121,9 @@ function structuredEffectsSupported(move) {
 	const secondaries = move.secondaries || (move.secondary ? [move.secondary] : []);
 	for (const secondary of secondaries) {
 		const keys = Object.keys(secondary);
-		if (keys.some(key => !['chance', 'status', 'boosts', 'self', 'dust'].includes(key))) return false;
-		if (!secondary.status && !secondary.boosts && !secondary.self?.boosts) return false;
+		if (keys.some(key => !['chance', 'status', 'volatileStatus', 'boosts', 'self', 'dust'].includes(key))) return false;
+		if (!secondary.status && !secondary.volatileStatus && !secondary.boosts && !secondary.self?.boosts) return false;
+		if (secondary.volatileStatus && secondary.volatileStatus !== 'flinch') return false;
 		if (secondary.self && Object.keys(secondary.self).some(key => key !== 'boosts')) return false;
 	}
 	return true;
@@ -204,6 +205,8 @@ function moveExecutionRequirements(move) {
 		capabilities.add('volatile');
 		if (move.volatileStatus !== 'magnetrise') capabilities.add('special_behavior');
 	}
+	if ((move.secondaries || (move.secondary ? [move.secondary] : []))
+		.some(secondary => secondary.volatileStatus)) capabilities.add('volatile');
 	const unsupportedCondition =
 		(move.sideCondition && !['reflect', 'lightscreen', 'tailwind'].includes(move.sideCondition)) ||
 		(move.pseudoWeather && !['trickroom', 'gravity', 'magicroom', 'wonderroom'].includes(move.pseudoWeather));

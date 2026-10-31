@@ -13,7 +13,7 @@ const CAPABILITIES = {
 	drain: implemented('Declarative drain', ['damage-based healing'], 'Liquid Ooze and exceptional drain rules remain separate.', ['showdown:sim/battle-actions.ts:BattleActions.moveHit']),
 	recoil: implemented('Declarative recoil', ['damage-based recoil', 'fixed maximum-HP recoil'], 'Crash damage and exceptional recoil rules remain separate.', ['showdown:sim/battle-actions.ts:BattleActions.moveHit']),
 	major_status: implemented('Major-status application', ['eligibility', 'status state'], 'Status cure, reflection, and move-specific status rules remain separate.', ['showdown:sim/pokemon.ts:Pokemon.setStatus']),
-	volatile: partial('Shared volatile lifecycle', ['activation', 'duration', 'expiry', 'switch cleanup', 'prevention and cure'], 'Only selected volatiles are executable; confusion, flinch, Taunt, Encore, Disable, Substitute, trapping, recharge, and invulnerability are incomplete.', ['showdown:sim/pokemon.ts:Pokemon.addVolatile', 'showdown:sim/pokemon.ts:Pokemon.removeVolatile']),
+	volatile: partial('Shared volatile lifecycle', ['activation', 'duration', 'expiry', 'switch cleanup', 'prevention and cure'], 'Flinch and selected existing conditions use the shared lifecycle; confusion, Taunt, Encore, Disable, Substitute, trapping, recharge, and invulnerability remain incomplete.', ['showdown:sim/pokemon.ts:Pokemon.addVolatile', 'showdown:sim/pokemon.ts:Pokemon.removeVolatile']),
 	stat_stage: implemented('Stat-stage application', ['bounds', 'multi-stat changes'], 'Reflection, prevention, restoration, and event timing remain separate.', ['showdown:sim/battle.ts:Battle.boost']),
 	healing: implemented('Ordinary direct healing', ['fractional healing', 'full-HP failure'], 'Weather-dependent and delayed healing remain separate.', ['showdown:sim/battle.ts:Battle.heal']),
 	field_or_side_condition: partial('Field, side, and slot condition lifecycle', ['weather', 'terrain', 'side conditions', 'durations'], 'Hazards, delayed effects, screens with special removal, and several side conditions are incomplete.', ['showdown:sim/field.ts:Field.addPseudoWeather', 'showdown:sim/side.ts:Side.addSideCondition']),
@@ -43,9 +43,10 @@ const CAPABILITIES = {
 	ability_transition: unsupported('Ability replacement and activation transition', ['deactivation', 'replacement', 'start hooks', 'suppression'], 'Ability changes are not represented by a shared lifecycle.', ['showdown:sim/pokemon.ts:Pokemon.setAbility']),
 	item_lifecycle: partial('Held-item mutation lifecycle', ['remove', 'consume', 'steal', 'exchange', 'restore', 'suppress'], 'Theft, exchange, restoration, suppression, and consumed-item history are incomplete.', ['showdown:sim/pokemon.ts:Pokemon.takeItem', 'showdown:sim/pokemon.ts:Pokemon.setItem']),
 	ability_lifecycle: partial('Ability mutation lifecycle', ['copy', 'replace', 'suppress', 'ignore', 'entry', 'exit'], 'Copying, replacement, suppression, and activation ordering are incomplete.', ['showdown:sim/pokemon.ts:Pokemon.setAbility', 'showdown:sim/pokemon.ts:Pokemon.ignoringAbility']),
-	volatile_cure: unsupported('Volatile prevention and cure', ['Mental Herb cure set', 'prevention', 'event timing'], 'Mental Herb-related volatiles do not use one canonical lifecycle.', ['showdown:data/items.ts:Items.mentalherb']),
+	mental_herb_cure: implemented('Mental Herb cure lifecycle', ['complete cure set', 'item suppression', 'consumption', 'update timing'], 'The six Mental Herb conditions are cured canonically; their individual move restrictions remain separate.', ['showdown:data/items.ts:Items.mentalherb']),
+	volatile_cure: partial('Other volatile prevention and cure', ['ability prevention', 'Berry cure', 'event timing'], 'Mental Herb and flinch prevention are implemented, but confusion cures and other ability-driven volatile rules remain incomplete.', ['showdown:sim/pokemon.ts:Pokemon.removeVolatile']),
 	confusion: unsupported('Confusion lifecycle', ['application', 'duration', 'before-move check', 'self-hit', 'cure'], 'Confusion is not end-to-end.', ['showdown:data/conditions.ts:Conditions.confusion']),
-	flinch: unsupported('Flinch lifecycle', ['application', 'before-move interruption', 'turn cleanup', 'immunity'], 'Flinch is not represented by the canonical volatile lifecycle.', ['showdown:data/conditions.ts:Conditions.flinch']),
+	flinch: implemented('Flinch lifecycle', ['application', 'before-move interruption', 'turn cleanup', 'immunity'], 'Ordinary flinch secondaries, King\'s Rock, Inner Focus, and Steadfast use the canonical lifecycle; move-specific flinch predicates remain separate callbacks.', ['showdown:data/conditions.ts:Conditions.flinch', 'showdown:data/items.ts:Items.kingsrock']),
 	residual_trapping: unsupported('Partial-trapping lifecycle', ['duration', 'residual damage', 'switch restriction', 'Binding Band modifier'], 'Binding moves and Binding Band are incomplete.', ['showdown:data/conditions.ts:Conditions.partiallytrapped', 'showdown:data/items.ts:Items.bindingband']),
 	move_history: partial('Canonical move and action history', ['last move', 'last successful move', 'last damage source', 'consecutive use', 'turn reset'], 'Several predicates and consecutive-use effects lack one authoritative history lifecycle.', ['showdown:sim/pokemon.ts:Pokemon.moveThisTurnResult', 'showdown:sim/pokemon.ts:Pokemon.lastMove']),
 	action_order_modifier: partial('Dynamic action-order modifiers', ['random priority activation', 'same-bracket ordering', 'diagnostic RNG'], 'Quick Claw-style bracket modification is not integrated with the canonical queue.', ['showdown:data/items.ts:Items.quickclaw']),
@@ -81,7 +82,8 @@ function verified(...args) { return capability('verified', ...args); }
 const ABILITY_GROUPS = [
 	[['aerilate', 'dragonize', 'eelevate', 'pixilate', 'refrigerate'], ['move_type_conversion']],
 	[['aftermath', 'cutecharm', 'effectspore', 'flamebody', 'poisonpoint', 'poisontouch', 'roughskin', 'static', 'stench'], ['contact_effects']],
-	[['aromaveil', 'flowerveil', 'innerfocus', 'oblivious', 'owntempo', 'tangledfeet'], ['volatile', 'volatile_cure']],
+	[['aromaveil', 'flowerveil', 'oblivious', 'owntempo', 'tangledfeet'], ['volatile', 'volatile_cure']],
+	[['innerfocus'], ['flinch']],
 	[['cheekpouch', 'harvest', 'ripen', 'unnerve'], ['berry_effect_coverage']],
 	[['cudchew'], ['berry_effect_coverage', 'end_turn_effects']],
 	[['gluttony'], ['pinch_berry_thresholds']],
@@ -140,8 +142,8 @@ const ITEM_GROUPS = [
 	[['bindingband'], ['residual_trapping']],
 	[['choicescarf'], ['choice_lock']],
 	[['ejectbutton', 'redcard'], ['forced_switch']],
-	[['kingsrock'], ['contact_effects', 'flinch']],
-	[['mentalherb'], ['volatile', 'volatile_cure']],
+	[['kingsrock'], ['flinch']],
+	[['mentalherb'], ['mental_herb_cure']],
 	[['metronome'], ['move_history']],
 	[['quickclaw'], ['action_order_modifier']],
 	[['shedshell'], ['switch_restriction']],
@@ -193,12 +195,27 @@ Object.assign(CAPABILITIES.forced_switch, {
 	],
 });
 
+Object.assign(CAPABILITIES.flinch, {
+	tests: [
+		'unit:crates/rotom-dex/tests/combat.rs#flinch_uses_the_shared_volatile_lifecycle_and_ability_hooks',
+		'unit:crates/rotom-dex/tests/combat.rs#kings_rock_adds_one_canonical_flinch_secondary',
+	],
+	differential_fixtures: ['differential:data/fixtures/differential/volatile-lifecycle.json#air-slash-steadfast'],
+});
+
+Object.assign(CAPABILITIES.mental_herb_cure, {
+	tests: ['unit:crates/rotom-dex/tests/combat.rs#mental_herb_cures_its_complete_volatile_set_through_the_kernel'],
+	differential_fixtures: ['differential:data/fixtures/differential/volatile-lifecycle.json#mental-herb-taunt'],
+});
+
 const UNLOCKED_IDENTITIES = {
 	berry_lifecycle: [
 		'item:aspearberry', 'item:cheriberry', 'item:chestoberry', 'item:leppaberry',
 		'item:oranberry', 'item:pechaberry', 'item:rawstberry', 'item:sitrusberry',
 	],
 	forced_switch: ['ability:suctioncups', 'item:ejectbutton', 'item:redcard'],
+	flinch: ['ability:innerfocus', 'ability:steadfast', 'item:kingsrock'],
+	mental_herb_cure: ['item:mentalherb'],
 };
 
 function dependenciesFromGroups(kind, groups) {

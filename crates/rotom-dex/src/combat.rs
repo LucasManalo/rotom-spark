@@ -218,6 +218,14 @@ impl CombatData for DexData {
                         delta: boost.value,
                     })
                 }));
+                if secondary.volatile_status.as_deref() == Some("flinch") {
+                    if let Some(condition) = self.field_effect_ids().flinch {
+                        effects.push(PrimaryMoveEffect::AddVolatile {
+                            condition,
+                            duration: Some(1),
+                        });
+                    }
+                }
                 // Self-targeted secondary boosts are kept separate from target
                 // effects by applying them through the move's self-effect path.
                 SecondaryMoveEffect {
@@ -324,6 +332,20 @@ impl CombatData for DexData {
             stall: Some(ConditionId::new(
                 u32::try_from(self.moves.len()).unwrap_or(u32::MAX),
             )),
+            confusion: condition("confusion"),
+            // `flinch` has no move identity in the generated Dex. Keep it in
+            // the same reserved condition-ID domain as `stall`.
+            flinch: Some(ConditionId::new(
+                u32::try_from(self.moves.len())
+                    .unwrap_or(u32::MAX)
+                    .saturating_add(1),
+            )),
+            attract: condition("attract"),
+            taunt: condition("taunt"),
+            encore: condition("encore"),
+            torment: condition("torment"),
+            disable: condition("disable"),
+            heal_block: condition("healblock"),
             overcoat: self.resolve_ability("overcoat").map(|(id, _)| id),
             safety_goggles: self.resolve_item("safetygoggles").map(|(id, _)| id),
         }
@@ -1302,6 +1324,11 @@ const IMPLEMENTED_ABILITY_BEHAVIORS: &[(&str, AbilityBehavior, AbilitySuppressio
         AbilitySuppression::Unbreakable,
     ),
     (
+        "innerfocus",
+        AbilityBehavior::FlinchImmunity,
+        AbilitySuppression::Breakable,
+    ),
+    (
         "intimidate",
         AbilityBehavior::Intimidate,
         AbilitySuppression::Unbreakable,
@@ -1628,7 +1655,7 @@ const IMPLEMENTED_ABILITY_BEHAVIORS: &[(&str, AbilityBehavior, AbilitySuppressio
     ),
     (
         "steadfast",
-        AbilityBehavior::DeferredVolatileInteraction,
+        AbilityBehavior::FlinchSpeedBoost,
         AbilitySuppression::Unbreakable,
     ),
     (
@@ -1761,6 +1788,13 @@ fn move_execution_requirements(data: &MoveData) -> (MoveOperation, MoveCapabilit
         required = required.with(MoveCapability::MajorStatus);
     }
     if data.volatile_status.is_some() {
+        required = required.with(MoveCapability::Volatile);
+    }
+    if data
+        .secondaries
+        .iter()
+        .any(|secondary| secondary.volatile_status.is_some())
+    {
         required = required.with(MoveCapability::Volatile);
     }
     (operation, behavior_capabilities(data, required))

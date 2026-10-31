@@ -414,11 +414,15 @@ function entryWithCoverage(base, claims) {
 	const key = `${base.kind}:${base.id}`;
 	const claim = claims.get(key);
 	const manifestMoveSmoke = base.kind === 'move' && pr134Supported;
+	const pr153FlinchMove = manifestMoveSmoke &&
+		base.required_capabilities?.includes('secondary_effect') &&
+		base.required_capabilities?.includes('volatile');
 	const automatic = pr134Supported ? {
 		implementation: 'implemented',
 		verification: manifestMoveSmoke ? 'unit_tested' : 'not_tested',
 		interaction_verification: 'not_tested',
-		owner_pr: pr131Supported ? 'PR 13.1' : pr132Supported ? 'PR 13.2' : pr133Supported ? 'PR 13.3' : 'PR 13.4',
+		owner_pr: pr153FlinchMove ? 'PR 15.3' :
+			pr131Supported ? 'PR 13.1' : pr132Supported ? 'PR 13.2' : pr133Supported ? 'PR 13.3' : 'PR 13.4',
 	} : defaultCoverage();
 	const coverage = claim ? {
 		implementation: claim.implementation,
@@ -434,6 +438,7 @@ function entryWithCoverage(base, claims) {
 				'file:crates/rotom-core/src/combat.rs',
 				'file:crates/rotom-dex/src/combat.rs',
 			] : []),
+			...(pr153FlinchMove ? ['file:docs/research/pr-15-3-volatile-lifecycle.md'] : []),
 			...(manifestMoveSmoke ? [
 				'unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case',
 			] : []),

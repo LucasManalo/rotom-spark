@@ -47,14 +47,17 @@ pub struct Mechanics<'a, D: CombatData> {
 impl<'a, D: CombatData> Mechanics<'a, D> {
     #[must_use]
     pub fn new(data: &'a D, effects: &EffectRegistry) -> Self {
+        let field_effects = data.field_effect_ids();
+        let mut effects = crate::conditions::composed_registry_with_items(
+            effects,
+            data.ability_handlers(),
+            data.item_handlers(),
+        );
+        crate::conditions::register_volatile_conditions(&mut effects, &field_effects);
         Self {
             data,
-            effects: crate::conditions::composed_registry_with_items(
-                effects,
-                data.ability_handlers(),
-                data.item_handlers(),
-            ),
-            field_effects: data.field_effect_ids(),
+            effects,
+            field_effects,
         }
     }
 

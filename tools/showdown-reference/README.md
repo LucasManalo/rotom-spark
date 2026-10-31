@@ -92,3 +92,11 @@ dragging, and Suction Cups prevention using complete pinned Showdown turns:
 node tools/showdown-reference/forced-switch-lifecycle.cjs
 node tools/showdown-reference/forced-switch-lifecycle.cjs --check
 ```
+
+PR 15.3 records complete-turn flinch, King's Rock, Inner Focus, Steadfast,
+and Mental Herb timing:
+
+```text
+node tools/showdown-reference/volatile-lifecycle.cjs
+node tools/showdown-reference/volatile-lifecycle.cjs --check
+```

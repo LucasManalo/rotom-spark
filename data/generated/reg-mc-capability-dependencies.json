@@ -20,33 +20,33 @@
       "ability": {
         "reachable": 215,
         "unsupported": 0,
-        "partial": 94,
-        "implemented": 121
+        "partial": 92,
+        "implemented": 123
       },
       "item": {
         "reachable": 166,
         "unsupported": 0,
-        "partial": 109,
-        "implemented": 57
+        "partial": 107,
+        "implemented": 59
       },
       "move": {
         "reachable": 510,
-        "unsupported": 287,
+        "unsupported": 272,
         "partial": 0,
-        "implemented": 223
+        "implemented": 238
       }
     },
     "executable_capability_coverage": {
-      "total": 66,
-      "unsupported": 22,
-      "partial": 20,
-      "implemented": 19,
+      "total": 67,
+      "unsupported": 20,
+      "partial": 21,
+      "implemented": 21,
       "verified": 5
     },
     "dependency_targets": {
-      "ability": 94,
-      "item": 109,
-      "move": 287
+      "ability": 92,
+      "item": 107,
+      "move": 272
     }
   },
   "capabilities": [
@@ -580,8 +580,7 @@
         "ability:poisontouch",
         "ability:roughskin",
         "ability:static",
-        "ability:stench",
-        "item:kingsrock"
+        "ability:stench"
       ],
       "unlocked_identities": [],
       "would_unlock_if_completed": [
@@ -1190,7 +1189,7 @@
     },
     {
       "id": "flinch",
-      "status": "unsupported",
+      "status": "implemented",
       "title": "Flinch lifecycle",
       "sub_capabilities": [
         "application",
@@ -1205,18 +1204,25 @@
         "immunity"
       ],
       "known_gaps": [
-        "Flinch is not represented by the canonical volatile lifecycle."
+        "Ordinary flinch secondaries, King's Rock, Inner Focus, and Steadfast use the canonical lifecycle; move-specific flinch predicates remain separate callbacks."
       ],
-      "tests": [],
-      "differential_fixtures": [],
+      "tests": [
+        "unit:crates/rotom-dex/tests/combat.rs#flinch_uses_the_shared_volatile_lifecycle_and_ability_hooks",
+        "unit:crates/rotom-dex/tests/combat.rs#kings_rock_adds_one_canonical_flinch_secondary"
+      ],
+      "differential_fixtures": [
+        "differential:data/fixtures/differential/volatile-lifecycle.json#air-slash-steadfast"
+      ],
       "pinned_reference_evidence": [
-        "showdown:data/conditions.ts:Conditions.flinch"
+        "showdown:data/conditions.ts:Conditions.flinch",
+        "showdown:data/items.ts:Items.kingsrock"
       ],
-      "blocked_identities": [
+      "blocked_identities": [],
+      "unlocked_identities": [
+        "ability:innerfocus",
         "ability:steadfast",
         "item:kingsrock"
       ],
-      "unlocked_identities": [],
       "would_unlock_if_completed": []
     },
     {
@@ -1796,6 +1802,40 @@
       "would_unlock_if_completed": []
     },
     {
+      "id": "mental_herb_cure",
+      "status": "implemented",
+      "title": "Mental Herb cure lifecycle",
+      "sub_capabilities": [
+        "complete cure set",
+        "item suppression",
+        "consumption",
+        "update timing"
+      ],
+      "lifecycle_and_ordering": [
+        "complete cure set",
+        "item suppression",
+        "consumption",
+        "update timing"
+      ],
+      "known_gaps": [
+        "The six Mental Herb conditions are cured canonically; their individual move restrictions remain separate."
+      ],
+      "tests": [
+        "unit:crates/rotom-dex/tests/combat.rs#mental_herb_cures_its_complete_volatile_set_through_the_kernel"
+      ],
+      "differential_fixtures": [
+        "differential:data/fixtures/differential/volatile-lifecycle.json#mental-herb-taunt"
+      ],
+      "pinned_reference_evidence": [
+        "showdown:data/items.ts:Items.mentalherb"
+      ],
+      "blocked_identities": [],
+      "unlocked_identities": [
+        "item:mentalherb"
+      ],
+      "would_unlock_if_completed": []
+    },
+    {
       "id": "move_history",
       "status": "partial",
       "title": "Canonical move and action history",
@@ -2285,7 +2325,6 @@
         "showdown:data/moves.ts:Moves"
       ],
       "blocked_identities": [
-        "move:airslash",
         "move:alluringvoice",
         "move:aquaring",
         "move:attract",
@@ -2294,7 +2333,6 @@
         "move:banefulbunker",
         "move:batonpass",
         "move:bind",
-        "move:bite",
         "move:blastburn",
         "move:bodyslam",
         "move:bounce",
@@ -2307,7 +2345,6 @@
         "move:cottonspore",
         "move:counter",
         "move:darkestlariat",
-        "move:darkpulse",
         "move:destinybond",
         "move:detect",
         "move:dig",
@@ -2325,11 +2362,8 @@
         "move:encore",
         "move:endure",
         "move:explosion",
-        "move:extrasensory",
         "move:fairylock",
-        "move:fakeout",
         "move:finalgambit",
-        "move:firefang",
         "move:firespin",
         "move:fissure",
         "move:flareblitz",
@@ -2357,12 +2391,9 @@
         "move:hurricane",
         "move:hydrocannon",
         "move:hyperbeam",
-        "move:icefang",
-        "move:iciclecrash",
         "move:imprison",
         "move:infestation",
         "move:ingrain",
-        "move:ironhead",
         "move:kingsshield",
         "move:leechseed",
         "move:magicpowder",
@@ -2376,7 +2407,6 @@
         "move:mistyexplosion",
         "move:moonlight",
         "move:morningsun",
-        "move:mountaingale",
         "move:noretreat",
         "move:octolock",
         "move:outrage",
@@ -2390,7 +2420,6 @@
         "move:ragingfury",
         "move:rest",
         "move:revivalblessing",
-        "move:rockslide",
         "move:rockwrecker",
         "move:roost",
         "move:sacredsword",
@@ -2433,43 +2462,30 @@
         "move:teeterdance",
         "move:thrash",
         "move:throatchop",
-        "move:thunderfang",
         "move:torment",
         "move:toxic",
         "move:toxicspikes",
         "move:triattack",
-        "move:triplearrows",
-        "move:upperhand",
         "move:uproar",
-        "move:waterfall",
         "move:waterpulse",
         "move:whirlpool",
         "move:wideguard",
         "move:wish",
         "move:wrap",
-        "move:yawn",
-        "move:zenheadbutt",
-        "move:zingzap"
+        "move:yawn"
       ],
       "unlocked_identities": [],
       "would_unlock_if_completed": [
-        "move:airslash",
         "move:alluringvoice",
-        "move:bite",
         "move:blastburn",
         "move:bodyslam",
         "move:burningjealousy",
         "move:cottonspore",
         "move:darkestlariat",
-        "move:darkpulse",
         "move:direclaw",
         "move:dragondarts",
-        "move:dragonrush",
-        "move:dynamicpunch",
         "move:eeriespell",
         "move:explosion",
-        "move:extrasensory",
-        "move:firefang",
         "move:fissure",
         "move:flareblitz",
         "move:flowertrick",
@@ -2483,24 +2499,17 @@
         "move:horndrill",
         "move:hydrocannon",
         "move:hyperbeam",
-        "move:icefang",
-        "move:iciclecrash",
-        "move:ironhead",
         "move:matchagotcha",
         "move:memento",
         "move:meteorassault",
-        "move:mountaingale",
         "move:outrage",
         "move:petaldance",
         "move:poisonpowder",
-        "move:psychicnoise",
         "move:pyroball",
         "move:ragingfury",
-        "move:rockslide",
         "move:rockwrecker",
         "move:roost",
         "move:sacredsword",
-        "move:saltcure",
         "move:scald",
         "move:scorchingsands",
         "move:selfdestruct",
@@ -2510,17 +2519,10 @@
         "move:spiritshackle",
         "move:stormthrow",
         "move:stunspore",
-        "move:syrupbomb",
         "move:thrash",
         "move:throatchop",
-        "move:thunderfang",
         "move:toxic",
-        "move:triattack",
-        "move:triplearrows",
-        "move:waterfall",
-        "move:waterpulse",
-        "move:zenheadbutt",
-        "move:zingzap"
+        "move:triattack"
       ]
     },
     {
@@ -2605,7 +2607,6 @@
         "ability:opportunist",
         "ability:rattled",
         "ability:spicyspray",
-        "ability:steadfast",
         "ability:supersweetsyrup"
       ],
       "unlocked_identities": [],
@@ -2928,7 +2929,7 @@
         "prevention and cure"
       ],
       "known_gaps": [
-        "Only selected volatiles are executable; confusion, flinch, Taunt, Encore, Disable, Substitute, trapping, recharge, and invulnerability are incomplete."
+        "Flinch and selected existing conditions use the shared lifecycle; confusion, Taunt, Encore, Disable, Substitute, trapping, recharge, and invulnerability remain incomplete."
       ],
       "tests": [],
       "differential_fixtures": [],
@@ -2942,13 +2943,12 @@
         "ability:electromorphosis",
         "ability:flowerveil",
         "ability:infiltrator",
-        "ability:innerfocus",
         "ability:oblivious",
         "ability:owntempo",
         "ability:tangledfeet",
-        "item:mentalherb",
         "move:aquaring",
         "move:attract",
+        "move:axekick",
         "move:banefulbunker",
         "move:bind",
         "move:charge",
@@ -2957,14 +2957,18 @@
         "move:detect",
         "move:disable",
         "move:dragoncheer",
+        "move:dragonrush",
+        "move:dynamicpunch",
         "move:electrify",
         "move:encore",
         "move:endure",
+        "move:fakeout",
         "move:firespin",
         "move:flatter",
         "move:focusenergy",
         "move:gastroacid",
         "move:helpinghand",
+        "move:hurricane",
         "move:imprison",
         "move:infestation",
         "move:ingrain",
@@ -2974,18 +2978,26 @@
         "move:noretreat",
         "move:octolock",
         "move:powertrick",
+        "move:psychicnoise",
+        "move:saltcure",
         "move:sandtomb",
         "move:shedtail",
+        "move:skyattack",
         "move:smackdown",
         "move:snaptrap",
+        "move:snore",
+        "move:sparklingaria",
         "move:spikyshield",
         "move:stockpile",
         "move:substitute",
         "move:swagger",
         "move:sweetkiss",
+        "move:syrupbomb",
         "move:taunt",
         "move:teeterdance",
         "move:torment",
+        "move:upperhand",
+        "move:waterpulse",
         "move:whirlpool",
         "move:wrap",
         "move:yawn"
@@ -2999,34 +3011,32 @@
     },
     {
       "id": "volatile_cure",
-      "status": "unsupported",
-      "title": "Volatile prevention and cure",
+      "status": "partial",
+      "title": "Other volatile prevention and cure",
       "sub_capabilities": [
-        "Mental Herb cure set",
-        "prevention",
+        "ability prevention",
+        "Berry cure",
         "event timing"
       ],
       "lifecycle_and_ordering": [
-        "Mental Herb cure set",
-        "prevention",
+        "ability prevention",
+        "Berry cure",
         "event timing"
       ],
       "known_gaps": [
-        "Mental Herb-related volatiles do not use one canonical lifecycle."
+        "Mental Herb and flinch prevention are implemented, but confusion cures and other ability-driven volatile rules remain incomplete."
       ],
       "tests": [],
       "differential_fixtures": [],
       "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.mentalherb"
+        "showdown:sim/pokemon.ts:Pokemon.removeVolatile"
       ],
       "blocked_identities": [
         "ability:aromaveil",
         "ability:flowerveil",
-        "ability:innerfocus",
         "ability:oblivious",
         "ability:owntempo",
-        "ability:tangledfeet",
-        "item:mentalherb"
+        "ability:tangledfeet"
       ],
       "unlocked_identities": [],
       "would_unlock_if_completed": []
@@ -3706,28 +3716,6 @@
       "differential_fixtures": [],
       "pinned_reference_evidence": [
         "showdown:data/abilities.ts:Abilities.innardsout"
-      ]
-    },
-    {
-      "kind": "ability",
-      "id": "innerfocus",
-      "name": "Inner Focus",
-      "identity_status": "partial",
-      "capabilities": [
-        "volatile",
-        "volatile_cure"
-      ],
-      "outstanding_blockers": [
-        "volatile",
-        "volatile_cure"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-core/src/abilities.rs#analytic_damp_lightning_rod_and_intimidate_guards_use_typed_relays"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/abilities.ts:Abilities.innerfocus"
       ]
     },
     {
@@ -4584,26 +4572,6 @@
       "differential_fixtures": [],
       "pinned_reference_evidence": [
         "showdown:data/abilities.ts:Abilities.static"
-      ]
-    },
-    {
-      "kind": "ability",
-      "id": "steadfast",
-      "name": "Steadfast",
-      "identity_status": "partial",
-      "capabilities": [
-        "flinch",
-        "stat_event_lifecycle"
-      ],
-      "outstanding_blockers": [
-        "flinch",
-        "stat_event_lifecycle"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/abilities.ts:Abilities.steadfast"
       ]
     },
     {
@@ -6366,28 +6334,6 @@
     },
     {
       "kind": "item",
-      "id": "kingsrock",
-      "name": "King's Rock",
-      "identity_status": "partial",
-      "capabilities": [
-        "contact_effects",
-        "flinch"
-      ],
-      "outstanding_blockers": [
-        "contact_effects",
-        "flinch"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.kingsrock"
-      ]
-    },
-    {
-      "kind": "item",
       "id": "lopunnite",
       "name": "Lopunnite",
       "identity_status": "partial",
@@ -6616,28 +6562,6 @@
       "differential_fixtures": [],
       "pinned_reference_evidence": [
         "showdown:data/items.ts:Items.meganiumite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "mentalherb",
-      "name": "Mental Herb",
-      "identity_status": "partial",
-      "capabilities": [
-        "volatile",
-        "volatile_cure"
-      ],
-      "outstanding_blockers": [
-        "volatile",
-        "volatile_cure"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.mentalherb"
       ]
     },
     {
@@ -7620,24 +7544,6 @@
     },
     {
       "kind": "move",
-      "id": "airslash",
-      "name": "Air Slash",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "special_behavior"
-      ],
-      "outstanding_blockers": [
-        "special_behavior"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.airslash"
-      ]
-    },
-    {
-      "kind": "move",
       "id": "alluringvoice",
       "name": "Alluring Voice",
       "identity_status": "unsupported",
@@ -7797,11 +7703,13 @@
       "identity_status": "unsupported",
       "capabilities": [
         "custom_callback",
-        "special_behavior"
+        "special_behavior",
+        "volatile"
       ],
       "outstanding_blockers": [
         "custom_callback",
-        "special_behavior"
+        "special_behavior",
+        "volatile"
       ],
       "unlocked": false,
       "tests": [],
@@ -7962,24 +7870,6 @@
       "differential_fixtures": [],
       "pinned_reference_evidence": [
         "showdown:data/moves.ts:Moves.bind"
-      ]
-    },
-    {
-      "kind": "move",
-      "id": "bite",
-      "name": "Bite",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "special_behavior"
-      ],
-      "outstanding_blockers": [
-        "special_behavior"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.bite"
       ]
     },
     {
@@ -8454,24 +8344,6 @@
     },
     {
       "kind": "move",
-      "id": "darkpulse",
-      "name": "Dark Pulse",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "special_behavior"
-      ],
-      "outstanding_blockers": [
-        "special_behavior"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.darkpulse"
-      ]
-    },
-    {
-      "kind": "move",
       "id": "defog",
       "name": "Defog",
       "identity_status": "unsupported",
@@ -8676,10 +8548,12 @@
       "name": "Dragon Rush",
       "identity_status": "unsupported",
       "capabilities": [
-        "special_behavior"
+        "special_behavior",
+        "volatile"
       ],
       "outstanding_blockers": [
-        "special_behavior"
+        "special_behavior",
+        "volatile"
       ],
       "unlocked": false,
       "tests": [],
@@ -8712,10 +8586,12 @@
       "name": "Dynamic Punch",
       "identity_status": "unsupported",
       "capabilities": [
-        "special_behavior"
+        "special_behavior",
+        "volatile"
       ],
       "outstanding_blockers": [
-        "special_behavior"
+        "special_behavior",
+        "volatile"
       ],
       "unlocked": false,
       "tests": [],
@@ -8936,24 +8812,6 @@
     },
     {
       "kind": "move",
-      "id": "extrasensory",
-      "name": "Extrasensory",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "special_behavior"
-      ],
-      "outstanding_blockers": [
-        "special_behavior"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.extrasensory"
-      ]
-    },
-    {
-      "kind": "move",
       "id": "fairylock",
       "name": "Fairy Lock",
       "identity_status": "unsupported",
@@ -8979,11 +8837,11 @@
       "identity_status": "unsupported",
       "capabilities": [
         "custom_callback",
-        "special_behavior"
+        "volatile"
       ],
       "outstanding_blockers": [
         "custom_callback",
-        "special_behavior"
+        "volatile"
       ],
       "unlocked": false,
       "tests": [],
@@ -9046,24 +8904,6 @@
       "differential_fixtures": [],
       "pinned_reference_evidence": [
         "showdown:data/moves.ts:Moves.finalgambit"
-      ]
-    },
-    {
-      "kind": "move",
-      "id": "firefang",
-      "name": "Fire Fang",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "special_behavior"
-      ],
-      "outstanding_blockers": [
-        "special_behavior"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.firefang"
       ]
     },
     {
@@ -9861,11 +9701,13 @@
       "identity_status": "unsupported",
       "capabilities": [
         "custom_callback",
-        "special_behavior"
+        "special_behavior",
+        "volatile"
       ],
       "outstanding_blockers": [
         "custom_callback",
-        "special_behavior"
+        "special_behavior",
+        "volatile"
       ],
       "unlocked": false,
       "tests": [],
@@ -9912,24 +9754,6 @@
     },
     {
       "kind": "move",
-      "id": "icefang",
-      "name": "Ice Fang",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "special_behavior"
-      ],
-      "outstanding_blockers": [
-        "special_behavior"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.icefang"
-      ]
-    },
-    {
-      "kind": "move",
       "id": "icespinner",
       "name": "Ice Spinner",
       "identity_status": "unsupported",
@@ -9944,24 +9768,6 @@
       "differential_fixtures": [],
       "pinned_reference_evidence": [
         "showdown:data/moves.ts:Moves.icespinner"
-      ]
-    },
-    {
-      "kind": "move",
-      "id": "iciclecrash",
-      "name": "Icicle Crash",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "special_behavior"
-      ],
-      "outstanding_blockers": [
-        "special_behavior"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.iciclecrash"
       ]
     },
     {
@@ -10058,24 +9864,6 @@
       "differential_fixtures": [],
       "pinned_reference_evidence": [
         "showdown:data/moves.ts:Moves.instruct"
-      ]
-    },
-    {
-      "kind": "move",
-      "id": "ironhead",
-      "name": "Iron Head",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "special_behavior"
-      ],
-      "outstanding_blockers": [
-        "special_behavior"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.ironhead"
       ]
     },
     {
@@ -10518,24 +10306,6 @@
     },
     {
       "kind": "move",
-      "id": "mountaingale",
-      "name": "Mountain Gale",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "special_behavior"
-      ],
-      "outstanding_blockers": [
-        "special_behavior"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.mountaingale"
-      ]
-    },
-    {
-      "kind": "move",
       "id": "noretreat",
       "name": "No Retreat",
       "identity_status": "unsupported",
@@ -10878,10 +10648,12 @@
       "name": "Psychic Noise",
       "identity_status": "unsupported",
       "capabilities": [
-        "special_behavior"
+        "special_behavior",
+        "volatile"
       ],
       "outstanding_blockers": [
-        "special_behavior"
+        "special_behavior",
+        "volatile"
       ],
       "unlocked": false,
       "tests": [],
@@ -11174,24 +10946,6 @@
     },
     {
       "kind": "move",
-      "id": "rockslide",
-      "name": "Rock Slide",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "special_behavior"
-      ],
-      "outstanding_blockers": [
-        "special_behavior"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.rockslide"
-      ]
-    },
-    {
-      "kind": "move",
       "id": "rockwrecker",
       "name": "Rock Wrecker",
       "identity_status": "unsupported",
@@ -11306,10 +11060,12 @@
       "name": "Salt Cure",
       "identity_status": "unsupported",
       "capabilities": [
-        "special_behavior"
+        "special_behavior",
+        "volatile"
       ],
       "outstanding_blockers": [
-        "special_behavior"
+        "special_behavior",
+        "volatile"
       ],
       "unlocked": false,
       "tests": [],
@@ -11495,11 +11251,13 @@
       "identity_status": "unsupported",
       "capabilities": [
         "custom_callback",
-        "special_behavior"
+        "special_behavior",
+        "volatile"
       ],
       "outstanding_blockers": [
         "custom_callback",
-        "special_behavior"
+        "special_behavior",
+        "volatile"
       ],
       "unlocked": false,
       "tests": [],
@@ -11613,11 +11371,13 @@
       "identity_status": "unsupported",
       "capabilities": [
         "custom_callback",
-        "special_behavior"
+        "special_behavior",
+        "volatile"
       ],
       "outstanding_blockers": [
         "custom_callback",
-        "special_behavior"
+        "special_behavior",
+        "volatile"
       ],
       "unlocked": false,
       "tests": [],
@@ -11691,11 +11451,13 @@
       "identity_status": "unsupported",
       "capabilities": [
         "custom_callback",
-        "special_behavior"
+        "special_behavior",
+        "volatile"
       ],
       "outstanding_blockers": [
         "custom_callback",
-        "special_behavior"
+        "special_behavior",
+        "volatile"
       ],
       "unlocked": false,
       "tests": [],
@@ -12228,10 +11990,12 @@
       "name": "Syrup Bomb",
       "identity_status": "unsupported",
       "capabilities": [
-        "special_behavior"
+        "special_behavior",
+        "volatile"
       ],
       "outstanding_blockers": [
-        "special_behavior"
+        "special_behavior",
+        "volatile"
       ],
       "unlocked": false,
       "tests": [],
@@ -12408,24 +12172,6 @@
     },
     {
       "kind": "move",
-      "id": "thunderfang",
-      "name": "Thunder Fang",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "special_behavior"
-      ],
-      "outstanding_blockers": [
-        "special_behavior"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.thunderfang"
-      ]
-    },
-    {
-      "kind": "move",
       "id": "tidyup",
       "name": "Tidy Up",
       "identity_status": "unsupported",
@@ -12592,24 +12338,6 @@
     },
     {
       "kind": "move",
-      "id": "triplearrows",
-      "name": "Triple Arrows",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "special_behavior"
-      ],
-      "outstanding_blockers": [
-        "special_behavior"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.triplearrows"
-      ]
-    },
-    {
-      "kind": "move",
       "id": "tripleaxel",
       "name": "Triple Axel",
       "identity_status": "unsupported",
@@ -12633,11 +12361,11 @@
       "identity_status": "unsupported",
       "capabilities": [
         "custom_callback",
-        "special_behavior"
+        "volatile"
       ],
       "outstanding_blockers": [
         "custom_callback",
-        "special_behavior"
+        "volatile"
       ],
       "unlocked": false,
       "tests": [],
@@ -12722,32 +12450,16 @@
     },
     {
       "kind": "move",
-      "id": "waterfall",
-      "name": "Waterfall",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "special_behavior"
-      ],
-      "outstanding_blockers": [
-        "special_behavior"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.waterfall"
-      ]
-    },
-    {
-      "kind": "move",
       "id": "waterpulse",
       "name": "Water Pulse",
       "identity_status": "unsupported",
       "capabilities": [
-        "special_behavior"
+        "special_behavior",
+        "volatile"
       ],
       "outstanding_blockers": [
-        "special_behavior"
+        "special_behavior",
+        "volatile"
       ],
       "unlocked": false,
       "tests": [],
@@ -12948,42 +12660,6 @@
       "differential_fixtures": [],
       "pinned_reference_evidence": [
         "showdown:data/moves.ts:Moves.yawn"
-      ]
-    },
-    {
-      "kind": "move",
-      "id": "zenheadbutt",
-      "name": "Zen Headbutt",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "special_behavior"
-      ],
-      "outstanding_blockers": [
-        "special_behavior"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.zenheadbutt"
-      ]
-    },
-    {
-      "kind": "move",
-      "id": "zingzap",
-      "name": "Zing Zap",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "special_behavior"
-      ],
-      "outstanding_blockers": [
-        "special_behavior"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.zingzap"
       ]
     }
   ]

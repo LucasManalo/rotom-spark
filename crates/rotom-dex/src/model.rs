@@ -302,6 +302,8 @@ pub struct MoveData {
 pub struct MoveSecondaryData {
     pub chance: u8,
     pub status: Option<String>,
+    #[serde(default)]
+    pub volatile_status: Option<String>,
     pub boosts: Vec<KeyValue<i8>>,
     pub self_boosts: Vec<KeyValue<i8>>,
 }

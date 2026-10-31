@@ -810,7 +810,7 @@ impl BattleState {
         field_effects: &FieldEffectIds,
     ) -> Result<TurnResolution, BattleError> {
         let mut resolution = TurnResolution::default();
-        self.activate_update_berries(data, field_effects)?;
+        self.activate_update_items(data, field_effects)?;
         resolution.events.push(effects.dispatch(
             self,
             BattleEvent::BeforeTurn,
@@ -942,7 +942,7 @@ impl BattleState {
         resolution.events.push(residual);
         self.process_residual_faints(effects, &residual_invocations, resolution)?;
         if self.phase != BattlePhase::BattleEnd {
-            self.activate_update_berries(data, field_effects)?;
+            self.activate_update_items(data, field_effects)?;
             self.process_delayed_berry_abilities(data, field_effects)?;
             self.tick_side_durations(resolution);
             self.tick_late_field_durations(field_effects, resolution);
@@ -1079,11 +1079,12 @@ impl BattleState {
         Ok(())
     }
 
-    fn activate_update_berries<D: CombatData>(
+    fn activate_update_items<D: CombatData>(
         &mut self,
         data: &D,
         field_effects: &FieldEffectIds,
     ) -> Result<(), BattleError> {
+        self.activate_mental_herbs(data, field_effects)?;
         let holders = [SideId::P1, SideId::P2]
             .into_iter()
             .flat_map(|side| {
@@ -1142,6 +1143,66 @@ impl BattleState {
             self.finish_direct_berry(berry_context, holder)?;
         }
         Ok(())
+    }
+
+    fn activate_mental_herbs<D: CombatData>(
+        &mut self,
+        data: &D,
+        field_effects: &FieldEffectIds,
+    ) -> Result<(), BattleError> {
+        let holders = [SideId::P1, SideId::P2]
+            .into_iter()
+            .flat_map(|side| {
+                self.side(side)
+                    .active
+                    .into_iter()
+                    .flatten()
+                    .map(move |pokemon| PokemonRef::new(side, pokemon))
+            })
+            .collect::<Vec<_>>();
+        for holder in holders {
+            self.activate_mental_herb(data, field_effects, holder)?;
+        }
+        Ok(())
+    }
+
+    fn activate_mental_herb<D: CombatData>(
+        &mut self,
+        data: &D,
+        field_effects: &FieldEffectIds,
+        holder: PokemonRef,
+    ) -> Result<bool, BattleError> {
+        if !field_effects.item_is_active_for(self, data, holder) {
+            return Ok(false);
+        }
+        let Some(item) = self
+            .side(holder.side)
+            .pokemon(holder.pokemon)
+            .and_then(|pokemon| pokemon.item)
+        else {
+            return Ok(false);
+        };
+        if !data.item_has_behavior(item, crate::ItemBehavior::MentalHerb) {
+            return Ok(false);
+        }
+        let conditions = field_effects.mental_herb_conditions();
+        let eligible = self
+            .side(holder.side)
+            .pokemon(holder.pokemon)
+            .is_some_and(|pokemon| {
+                conditions
+                    .iter()
+                    .flatten()
+                    .any(|condition| pokemon.has_volatile(*condition))
+            });
+        if !eligible {
+            return Ok(false);
+        }
+        StateKernel::new(self).set_item(holder, None)?;
+        for condition in conditions.into_iter().flatten() {
+            StateKernel::new(self).remove_volatile(holder, condition)?;
+        }
+        Ok(true)
     }
 
     fn apply_eaten_berry_effect<D: CombatData>(
@@ -1394,6 +1455,7 @@ impl BattleState {
             move_id: Some(move_context.move_id),
             suppress_target_ability: move_context.suppress_target_ability,
             critical: false,
+            flinch_condition: field_effects.flinch,
             ..EventContext::default()
         };
         let before_move =
@@ -1486,6 +1548,14 @@ impl BattleState {
         let primary_effects = data.primary_move_effects(move_id);
         let mut secondary_effects = data.secondary_move_effects(move_id);
         let mut self_effect = data.self_move_effect(move_id);
+        let source_ref = PokemonRef::new(queued.side, source_index);
+        self.append_flinch_item_secondary(
+            data,
+            field_effects,
+            source_ref,
+            move_data.category,
+            &mut secondary_effects,
+        );
         let sheer_force_boosted = data
             .ability_has_behavior(source_ability, crate::AbilityBehavior::SheerForce)
             && !secondary_effects.is_empty();
@@ -1529,6 +1599,46 @@ impl BattleState {
             sheer_force_boosted,
             later_actors,
         })
+    }
+
+    fn append_flinch_item_secondary<D: CombatData>(
+        &self,
+        data: &D,
+        field_effects: &FieldEffectIds,
+        source: PokemonRef,
+        category: MoveCategory,
+        secondaries: &mut Vec<SecondaryMoveEffect>,
+    ) {
+        let Some(flinch) = field_effects.flinch else {
+            return;
+        };
+        let already_flinches = secondaries.iter().any(|secondary| {
+            secondary.effects.iter().any(|effect| {
+                matches!(
+                    effect,
+                    PrimaryMoveEffect::AddVolatile { condition, .. } if *condition == flinch
+                )
+            })
+        });
+        let holder_has_item = self
+            .side(source.side)
+            .pokemon(source.pokemon)
+            .and_then(|pokemon| pokemon.item)
+            .is_some_and(|item| data.item_has_behavior(item, crate::ItemBehavior::FlinchItem));
+        if category != MoveCategory::Status
+            && field_effects.item_is_active_for(self, data, source)
+            && holder_has_item
+            && !already_flinches
+        {
+            secondaries.push(SecondaryMoveEffect {
+                chance: 10,
+                effects: vec![PrimaryMoveEffect::AddVolatile {
+                    condition: flinch,
+                    duration: Some(1),
+                }],
+                self_effects: Vec::new(),
+            });
+        }
     }
 
     fn execute_primary_operation<D: CombatData>(
@@ -2971,11 +3081,18 @@ impl BattleState {
                         || field_effects
                             .smack_down
                             .is_some_and(|id| target_state.has_volatile(id)));
-                if target_state.has_volatile(condition) || magnet_rise_blocked {
+                let flinch_blocked = field_effects.flinch == Some(condition)
+                    && !context.suppress_target_ability
+                    && data.ability_has_behavior(
+                        target_state.ability,
+                        crate::AbilityBehavior::FlinchImmunity,
+                    );
+                if target_state.has_volatile(condition) || magnet_rise_blocked || flinch_blocked {
                     return Ok(false);
                 }
                 StateKernel::new(self)
                     .add_volatile(target, ConditionState::new(condition, duration))?;
+                self.activate_mental_herb(data, field_effects, target)?;
                 Ok(true)
             }
             PrimaryMoveEffect::SetWeather {
@@ -4046,7 +4163,7 @@ impl BattleState {
             },
             EventValue::None,
         )?);
-        self.activate_update_berries(data, field_effects)?;
+        self.activate_update_items(data, field_effects)?;
         Ok(true)
     }
 
@@ -4134,7 +4251,7 @@ impl BattleState {
             },
             EventValue::None,
         )?);
-        self.activate_update_berries(data, field_effects)?;
+        self.activate_update_items(data, field_effects)?;
         self.settle_switch_phase()
     }
 

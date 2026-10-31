@@ -63,11 +63,32 @@ pub struct FieldEffectIds {
     pub follow_me: Option<ConditionId>,
     pub rage_powder: Option<ConditionId>,
     pub stall: Option<ConditionId>,
+    pub confusion: Option<ConditionId>,
+    pub flinch: Option<ConditionId>,
+    pub attract: Option<ConditionId>,
+    pub taunt: Option<ConditionId>,
+    pub encore: Option<ConditionId>,
+    pub torment: Option<ConditionId>,
+    pub disable: Option<ConditionId>,
+    pub heal_block: Option<ConditionId>,
     pub overcoat: Option<AbilityId>,
     pub safety_goggles: Option<ItemId>,
 }
 
 impl FieldEffectIds {
+    /// Conditions removed together when an active Mental Herb is consumed.
+    #[must_use]
+    pub const fn mental_herb_conditions(&self) -> [Option<ConditionId>; 6] {
+        [
+            self.attract,
+            self.taunt,
+            self.encore,
+            self.torment,
+            self.disable,
+            self.heal_block,
+        ]
+    }
+
     pub(crate) fn weather_environment(&self, battle: &BattleState) -> Option<WeatherEnvironment> {
         let weather = battle.field.weather?.id;
         [

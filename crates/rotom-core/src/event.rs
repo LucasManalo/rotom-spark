@@ -298,6 +298,9 @@ pub struct EventContext {
     /// Total HP damage applied by the move before its `AfterMove` callbacks.
     #[serde(default, skip_serializing_if = "is_zero_u32")]
     pub move_total_damage: u32,
+    /// Canonical flinch identity for ordered `BeforeMove` handlers.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub flinch_condition: Option<ConditionId>,
     /// Whether this stat-stage request was caused by Intimidate.
     #[serde(default, skip_serializing_if = "is_false")]
     pub intimidate: bool,

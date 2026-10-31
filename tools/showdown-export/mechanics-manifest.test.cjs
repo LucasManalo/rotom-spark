@@ -112,7 +112,7 @@ test('ability batches keep isolated and interaction verification separate', () =
 	}
 	assert.deepEqual(
 		manifest.summary.by_kind.ability.interaction_verification,
-		{not_tested: 137, unit_tested: 78, differential_verified: 0}
+		{not_tested: 135, unit_tested: 80, differential_verified: 0}
 	);
 });
 
@@ -128,10 +128,10 @@ test('move support is derived from complete executor capabilities', () => {
 	);
 	assert.equal(dragonClaw.implementation, 'implemented');
 	assert.equal(dragonClaw.owner_pr, 'PR 13.1');
-	assert.equal(manifest.summary.by_kind.move.implementation.implemented, 223);
+	assert.equal(manifest.summary.by_kind.move.implementation.implemented, 238);
 	assert.deepEqual(
 		manifest.summary.by_kind.move.verification,
-		{not_tested: 287, unit_tested: 200, differential_verified: 23}
+		{not_tested: 272, unit_tested: 215, differential_verified: 23}
 	);
 	const implementedMoves = manifest.entries.filter(candidate =>
 		candidate.kind === 'move' && candidate.implementation === 'implemented'
