@@ -115,6 +115,8 @@ impl CombatData for DexData {
             Some("protect") => MoveIntrinsic::Protect,
             Some("followme") => MoveIntrinsic::FollowMe,
             Some("ragepowder") => MoveIntrinsic::RagePowder,
+            Some("knockoff") => MoveIntrinsic::KnockOff,
+            Some("trick" | "switcheroo") => MoveIntrinsic::ItemSwap,
             _ => MoveIntrinsic::Ordinary,
         }
     }
@@ -1665,7 +1667,7 @@ const IMPLEMENTED_ABILITY_BEHAVIORS: &[(&str, AbilityBehavior, AbilitySuppressio
     ),
     (
         "stickyhold",
-        AbilityBehavior::DeferredItemInteraction,
+        AbilityBehavior::StickyHold,
         AbilitySuppression::Breakable,
     ),
     (
@@ -1872,7 +1874,10 @@ fn behavior_capabilities(data: &MoveData, mut required: MoveCapabilities) -> Mov
     }
     let has_unsupported_callback = data.behavior.callbacks.iter().any(|callback| {
         !((data.id == "magnetrise" && callback == "onTry")
-            || (data.id == "facade" && callback == "onBasePower"))
+            || (data.id == "facade" && callback == "onBasePower")
+            || (data.id == "knockoff" && matches!(callback.as_str(), "onBasePower" | "onAfterHit"))
+            || (matches!(data.id.as_str(), "trick" | "switcheroo")
+                && matches!(callback.as_str(), "onHit" | "onTryImmunity")))
     });
     if has_unsupported_callback {
         required = required.with(MoveCapability::CustomCallback);
@@ -1983,7 +1988,12 @@ impl DexData {
             stats,
             current_hp: stats.hp,
             ability: set.ability,
+            ability_restore: None,
+            ability_suppressed: false,
             item: set.item,
+            last_item: None,
+            item_used_this_turn: false,
+            unburden_active: false,
             last_consumed_berry: None,
             cud_chew_berry: None,
             cud_chew_turns: 0,

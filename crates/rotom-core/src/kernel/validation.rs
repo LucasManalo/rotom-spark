@@ -270,6 +270,18 @@ fn validate_pokemon(
             index.get()
         ));
     }
+    if pokemon.item_used_this_turn && pokemon.last_item.is_none() {
+        return invalid(format!(
+            "{side:?} Pokémon {} consumed an item without item history",
+            index.get()
+        ));
+    }
+    if pokemon.ability_restore == Some(pokemon.ability) {
+        return invalid(format!(
+            "{side:?} Pokémon {} has redundant ability restoration state",
+            index.get()
+        ));
+    }
     if pokemon
         .mega_evolution
         .is_some_and(|mega| mega.stats.hp == 0 || pokemon.form == Some(mega.form))
@@ -435,7 +447,12 @@ mod tests {
             },
             current_hp: 100,
             ability: AbilityId::new(1),
+            ability_restore: None,
+            ability_suppressed: false,
             item: None,
+            last_item: None,
+            item_used_this_turn: false,
+            unburden_active: false,
             last_consumed_berry: None,
             cud_chew_berry: None,
             cud_chew_turns: 0,

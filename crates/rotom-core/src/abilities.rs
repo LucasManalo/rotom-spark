@@ -155,6 +155,7 @@ pub enum AbilityBehavior {
     Synchronize,
     Trace,
     Unburden,
+    StickyHold,
     Klutz,
     Ripen,
     BerryPrevention,
@@ -3027,25 +3028,36 @@ fn opportunist(
     Ok(())
 }
 
+#[allow(clippy::unnecessary_wraps)] // Effect callbacks share one fallible signature.
 fn mummy(
-    state: &mut EffectState<'_>,
+    _state: &mut EffectState<'_>,
     invocation: &EffectInvocation,
     context: &EventContext,
     dispatch: &mut EventDispatch,
 ) -> Result<(), BattleError> {
-    if context.move_flags.contact() && damaged_holder(invocation, context, dispatch).is_some() {
+    if context.move_flags.contact()
+        && context.source_ability_replaceable
+        && damaged_holder(invocation, context, dispatch).is_some()
+    {
         if let (Some(source), EffectSource::Ability(ability)) = (context.source, invocation.source)
         {
             if Some(source) != context.target {
-                state.set_ability(source, ability)?;
+                dispatch
+                    .ability_changes
+                    .push(crate::AbilityChangeRequest::Replace {
+                        target: source,
+                        ability,
+                        temporary: true,
+                    });
             }
         }
     }
     Ok(())
 }
 
+#[allow(clippy::unnecessary_wraps)] // Effect callbacks share one fallible signature.
 fn wandering_spirit(
-    state: &mut EffectState<'_>,
+    _state: &mut EffectState<'_>,
     invocation: &EffectInvocation,
     context: &EventContext,
     dispatch: &mut EventDispatch,
@@ -3056,11 +3068,16 @@ fn wandering_spirit(
     let Some(source) = context.source.filter(|source| *source != owner) else {
         return Ok(());
     };
-    if context.move_flags.contact() {
-        let owner_ability = pokemon(state, owner)?.ability;
-        let source_ability = pokemon(state, source)?.ability;
-        state.set_ability(owner, source_ability)?;
-        state.set_ability(source, owner_ability)?;
+    if context.move_flags.contact()
+        && context.source_ability_replaceable
+        && context.target_ability_replaceable
+    {
+        dispatch
+            .ability_changes
+            .push(crate::AbilityChangeRequest::Swap {
+                left: owner,
+                right: source,
+            });
     }
     Ok(())
 }
@@ -3241,11 +3258,12 @@ fn magician(
     let Some(target) = context.target.filter(|target| *target != owner) else {
         return Ok(());
     };
-    if integer(dispatch)? > 0 && pokemon(state, owner)?.item.is_none() {
-        if let Some(item) = pokemon(state, target)?.item {
-            state.set_item(target, None)?;
-            state.set_item(owner, Some(item))?;
-        }
+    if integer(dispatch)? > 0
+        && context.target_item_removable
+        && pokemon(state, owner)?.item.is_none()
+        && pokemon(state, target)?.item.is_some()
+    {
+        state.transfer_item(target, owner, context.target_unburden)?;
     }
     Ok(())
 }
@@ -3262,11 +3280,12 @@ fn pickpocket(
     let Some(source) = context.source.filter(|source| *source != owner) else {
         return Ok(());
     };
-    if context.move_flags.contact() && pokemon(state, owner)?.item.is_none() {
-        if let Some(item) = pokemon(state, source)?.item {
-            state.set_item(source, None)?;
-            state.set_item(owner, Some(item))?;
-        }
+    if context.move_flags.contact()
+        && context.source_item_removable
+        && pokemon(state, owner)?.item.is_none()
+        && pokemon(state, source)?.item.is_some()
+    {
+        state.transfer_item(source, owner, context.source_unburden)?;
     }
     Ok(())
 }
@@ -3392,7 +3411,7 @@ fn trace(
     state: &mut EffectState<'_>,
     invocation: &EffectInvocation,
     context: &EventContext,
-    _: &mut EventDispatch,
+    dispatch: &mut EventDispatch,
 ) -> Result<(), BattleError> {
     let Some(owner) = matching_source(invocation, context) else {
         return Ok(());
@@ -3413,7 +3432,13 @@ fn trace(
     )?)
     .unwrap_or(0);
     let ability = pokemon(state, PokemonRef::new(owner.side.opponent(), foes[index]))?.ability;
-    state.set_ability(owner, ability)?;
+    dispatch
+        .ability_changes
+        .push(crate::AbilityChangeRequest::Replace {
+            target: owner,
+            ability,
+            temporary: true,
+        });
     Ok(())
 }
 
@@ -3426,7 +3451,7 @@ fn unburden(
     let Some(owner) = matching_source(invocation, context) else {
         return Ok(());
     };
-    if pokemon(state, owner)?.item.is_none() {
+    if pokemon(state, owner)?.item.is_none() && pokemon(state, owner)?.unburden_active {
         modify_integer(dispatch, 2, 1)?;
     }
     Ok(())
@@ -3900,7 +3925,12 @@ mod tests {
             },
             current_hp: 100,
             ability,
+            ability_restore: None,
+            ability_suppressed: false,
             item: None,
+            last_item: None,
+            item_used_this_turn: false,
+            unburden_active: false,
             last_consumed_berry: None,
             cud_chew_berry: None,
             cud_chew_turns: 0,
@@ -5435,11 +5465,13 @@ mod tests {
         );
         let hit = EventContext {
             move_flags: crate::MoveInteractionFlags::default().with_contact(true),
+            source_ability_replaceable: true,
+            target_ability_replaceable: true,
             ..context()
         };
 
         let mut mummy_battle = battle(attacker, mummy_ability);
-        registry
+        let mummy = registry
             .dispatch(
                 &mut mummy_battle,
                 BattleEvent::AfterDamage,
@@ -5448,16 +5480,16 @@ mod tests {
             )
             .unwrap();
         assert_eq!(
-            mummy_battle
-                .side(SideId::P1)
-                .pokemon(PokemonIndex::new(0))
-                .unwrap()
-                .ability,
-            mummy_ability
+            mummy.ability_changes,
+            [crate::AbilityChangeRequest::Replace {
+                target: PokemonRef::new(SideId::P1, PokemonIndex::new(0)),
+                ability: mummy_ability,
+                temporary: true,
+            }]
         );
 
         let mut wandering_battle = battle(attacker, wandering);
-        registry
+        let wandering_dispatch = registry
             .dispatch(
                 &mut wandering_battle,
                 BattleEvent::AfterDamage,
@@ -5466,20 +5498,11 @@ mod tests {
             )
             .unwrap();
         assert_eq!(
-            wandering_battle
-                .side(SideId::P1)
-                .pokemon(PokemonIndex::new(0))
-                .unwrap()
-                .ability,
-            wandering
-        );
-        assert_eq!(
-            wandering_battle
-                .side(SideId::P2)
-                .pokemon(PokemonIndex::new(0))
-                .unwrap()
-                .ability,
-            attacker
+            wandering_dispatch.ability_changes,
+            [crate::AbilityChangeRequest::Swap {
+                left: PokemonRef::new(SideId::P2, PokemonIndex::new(0)),
+                right: PokemonRef::new(SideId::P1, PokemonIndex::new(0)),
+            }]
         );
     }
 
@@ -5609,7 +5632,10 @@ mod tests {
             .dispatch(
                 &mut magician_battle,
                 BattleEvent::AfterDamage,
-                context(),
+                EventContext {
+                    target_item_removable: true,
+                    ..context()
+                },
                 EventValue::Integer(10),
             )
             .unwrap();
@@ -5642,6 +5668,7 @@ mod tests {
                 BattleEvent::AfterDamage,
                 EventContext {
                     move_flags: crate::MoveInteractionFlags::default().with_contact(true),
+                    source_item_removable: true,
                     ..context()
                 },
                 EventValue::Integer(10),
@@ -5657,7 +5684,7 @@ mod tests {
         );
 
         let mut trace_battle = battle(trace_ability, donor_ability);
-        registry
+        let trace_dispatch = registry
             .dispatch(
                 &mut trace_battle,
                 BattleEvent::SwitchIn,
@@ -5669,12 +5696,12 @@ mod tests {
             )
             .unwrap();
         assert_eq!(
-            trace_battle
-                .side(SideId::P1)
-                .pokemon(PokemonIndex::new(0))
-                .unwrap()
-                .ability,
-            donor_ability
+            trace_dispatch.ability_changes,
+            [crate::AbilityChangeRequest::Replace {
+                target: PokemonRef::new(SideId::P1, PokemonIndex::new(0)),
+                ability: donor_ability,
+                temporary: true,
+            }]
         );
 
         let mut receiver_battle = battle(AbilityId::new(1), receiver_ability);
@@ -5705,6 +5732,11 @@ mod tests {
         );
 
         let mut unburden_battle = battle(unburden_ability, AbilityId::new(1));
+        unburden_battle
+            .side_mut(SideId::P1)
+            .pokemon_mut(PokemonIndex::new(0))
+            .unwrap()
+            .unburden_active = true;
         assert_eq!(
             dispatch_integer(
                 &registry,

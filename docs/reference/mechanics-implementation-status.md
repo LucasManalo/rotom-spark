@@ -20,7 +20,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | --- | ---: | ---: | ---: | ---: |
 | Abilities | 215 | 123 | 92 | 0 |
 | Items | 166 | 140 | 26 | 0 |
-| Moves | 510 | 238 | 0 | 272 |
+| Moves | 510 | 241 | 0 | 269 |
 
 ## Abilities
 
@@ -659,7 +659,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Jaw Lock | `jawlock` | unsupported | not_tested | not_tested | — |
 | Jet Punch | `jetpunch` | implemented | unit_tested | not_tested | PR 13.2 |
 | King's Shield | `kingsshield` | unsupported | not_tested | not_tested | — |
-| Knock Off | `knockoff` | unsupported | not_tested | not_tested | — |
+| Knock Off | `knockoff` | implemented | unit_tested | unit_tested | PR 15.5 |
 | Kowtow Cleave | `kowtowcleave` | implemented | unit_tested | not_tested | PR 13.2 |
 | Lash Out | `lashout` | unsupported | not_tested | not_tested | — |
 | Last Resort | `lastresort` | unsupported | not_tested | not_tested | — |
@@ -861,7 +861,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Swallow | `swallow` | unsupported | not_tested | not_tested | — |
 | Sweet Kiss | `sweetkiss` | unsupported | not_tested | not_tested | — |
 | Sweet Scent | `sweetscent` | implemented | unit_tested | not_tested | PR 13.3 |
-| Switcheroo | `switcheroo` | unsupported | not_tested | not_tested | — |
+| Switcheroo | `switcheroo` | implemented | unit_tested | unit_tested | PR 15.5 |
 | Swords Dance | `swordsdance` | implemented | differential_verified | not_tested | PR 13.3.1 |
 | Synthesis | `synthesis` | unsupported | not_tested | not_tested | — |
 | Syrup Bomb | `syrupbomb` | unsupported | not_tested | not_tested | — |
@@ -892,7 +892,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Trailblaze | `trailblaze` | implemented | unit_tested | not_tested | PR 13.4 |
 | Transform | `transform` | unsupported | not_tested | not_tested | — |
 | Tri Attack | `triattack` | unsupported | not_tested | not_tested | — |
-| Trick | `trick` | unsupported | not_tested | not_tested | — |
+| Trick | `trick` | implemented | unit_tested | unit_tested | PR 15.5 |
 | Trick-or-Treat | `trickortreat` | unsupported | not_tested | not_tested | — |
 | Trick Room | `trickroom` | implemented | differential_verified | differential_verified | PR 13.3.1 |
 | Triple Arrows | `triplearrows` | implemented | unit_tested | not_tested | PR 15.3 |

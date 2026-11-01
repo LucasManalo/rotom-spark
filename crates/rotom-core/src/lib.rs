@@ -35,9 +35,9 @@ pub use combat::{
 };
 pub use error::BattleError;
 pub use event::{
-    BattleEvent, EffectCallback, EffectInvocation, EffectOrder, EffectOwner, EffectRegistry,
-    EffectSource, EffectState, EventContext, EventContract, EventDispatch, EventRelay, EventValue,
-    PokemonRef,
+    AbilityChangeRequest, BattleEvent, EffectCallback, EffectInvocation, EffectOrder, EffectOwner,
+    EffectRegistry, EffectSource, EffectState, EventContext, EventContract, EventDispatch,
+    EventRelay, EventValue, PokemonRef,
 };
 pub use field_effects::{FieldEffectIds, TerrainEnvironment, WeatherEnvironment};
 pub use id::{AbilityId, ConditionId, FormId, ItemId, MoveId, NatureId, SpeciesId};

@@ -340,6 +340,45 @@
       ]
     },
     {
+      "id": "knockoff",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "unit_tested",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.5",
+      "evidence": [
+        "file:docs/research/pr-15-5-item-ability-lifecycles.md",
+        "unit:crates/rotom-dex/tests/combat.rs#knock_off_uses_item_removal_history_sticky_hold_and_unburden",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#knock_off_uses_item_removal_history_sticky_hold_and_unburden"
+      ]
+    },
+    {
+      "id": "switcheroo",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "unit_tested",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.5",
+      "evidence": [
+        "file:docs/research/pr-15-5-item-ability-lifecycles.md",
+        "unit:crates/rotom-dex/tests/combat.rs#trick_swaps_items_atomically_and_sticky_hold_blocks_the_exchange",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#trick_swaps_items_atomically_and_sticky_hold_blocks_the_exchange"
+      ]
+    },
+    {
+      "id": "trick",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "unit_tested",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.5",
+      "evidence": [
+        "file:docs/research/pr-15-5-item-ability-lifecycles.md",
+        "unit:crates/rotom-dex/tests/combat.rs#trick_swaps_items_atomically_and_sticky_hold_blocks_the_exchange",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#trick_swaps_items_atomically_and_sticky_hold_blocks_the_exchange"
+      ]
+    },
+    {
       "id": "battlearmor",
       "kind": "ability",
       "implementation": "implemented",

@@ -357,7 +357,7 @@ fn eject_button(
     {
         return Ok(());
     }
-    state.set_item(owner, None)?;
+    state.consume_item(owner, false)?;
     let _ = state.request_switch(owner, crate::SwitchRequestKind::PlayerChoice)?;
     Ok(())
 }
@@ -388,7 +388,7 @@ fn red_card(
     {
         return Ok(());
     }
-    state.set_item(owner, None)?;
+    state.consume_item(owner, false)?;
     if !context.source_forced_switch_blocked {
         let _ = state.request_switch(source, crate::SwitchRequestKind::Random)?;
     }
@@ -496,16 +496,14 @@ fn finish_berry(
             .side(consumption.holder.side)
             .pokemon(consumption.holder.pokemon)
             .is_some_and(|holder| holder.item.is_none())
-        {
-            if let Some(item) = state
+            && state
                 .battle()
                 .side(ally.side)
                 .pokemon(ally.pokemon)
                 .and_then(|pokemon| pokemon.item)
-            {
-                state.set_item(ally, None)?;
-                state.set_item(consumption.holder, Some(item))?;
-            }
+                .is_some()
+        {
+            state.transfer_item(ally, consumption.holder, false)?;
         }
     }
     Ok(())
@@ -899,7 +897,7 @@ fn focus_sash(
         && integer(dispatch)? >= i64::from(holder.current_hp)
     {
         dispatch.value = EventValue::Integer(i64::from(holder.current_hp.saturating_sub(1)));
-        state.set_item(owner, None)?;
+        state.consume_item(owner, false)?;
     }
     Ok(())
 }
@@ -918,7 +916,7 @@ fn air_balloon(
         && integer(dispatch)? > 0
         && held_item_matches(state, invocation, owner)
     {
-        state.set_item(owner, None)?;
+        state.consume_item(owner, false)?;
     }
     Ok(())
 }
@@ -1062,7 +1060,7 @@ fn normal_gem_consume(
         && !context.suppress_source_item
         && held_item_matches(state, invocation, owner)
     {
-        state.set_item(owner, None)?;
+        state.consume_item(owner, false)?;
     }
     Ok(())
 }
@@ -1174,7 +1172,7 @@ fn white_herb(
         }
     }
     if changed {
-        state.set_item(owner, None)?;
+        state.consume_item(owner, false)?;
     }
     Ok(())
 }
@@ -1351,7 +1349,12 @@ mod tests {
             },
             current_hp: 100,
             ability: AbilityId::new(1),
+            ability_restore: None,
+            ability_suppressed: false,
             item,
+            last_item: None,
+            item_used_this_turn: false,
+            unburden_active: false,
             last_consumed_berry: None,
             cud_chew_berry: None,
             cud_chew_turns: 0,

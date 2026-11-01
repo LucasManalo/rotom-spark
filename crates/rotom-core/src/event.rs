@@ -235,12 +235,24 @@ pub struct EventContext {
     /// Whether the current move ignores suppressible defensive handlers on its target's side.
     #[serde(default, skip_serializing_if = "is_false")]
     pub suppress_target_ability: bool,
+    /// Whether the source ability may be replaced by the current effect.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub source_ability_replaceable: bool,
+    /// Whether the target ability may be replaced by the current effect.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub target_ability_replaceable: bool,
     /// Whether Magic Room or Klutz suppresses the move source's held item.
     #[serde(default, skip_serializing_if = "is_false")]
     pub suppress_source_item: bool,
     /// Whether a species-restricted source item matches its current holder.
     #[serde(default, skip_serializing_if = "is_false")]
     pub source_item_species_match: bool,
+    /// Whether the source's item passed removal restrictions for this effect.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub source_item_removable: bool,
+    /// Whether removal of the source item activates its current Unburden.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub source_unburden: bool,
     /// Whether an opposing active Unnerve holder prevents the source eating a Berry.
     #[serde(default, skip_serializing_if = "is_false")]
     pub source_berry_blocked: bool,
@@ -259,6 +271,12 @@ pub struct EventContext {
     /// Whether Magic Room or Klutz suppresses the move target's held item.
     #[serde(default, skip_serializing_if = "is_false")]
     pub suppress_target_item: bool,
+    /// Whether the target's item passed removal restrictions for this effect.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub target_item_removable: bool,
+    /// Whether removal of the target item activates its current Unburden.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub target_unburden: bool,
     /// Whether an opposing active Unnerve holder prevents the target eating a Berry.
     #[serde(default, skip_serializing_if = "is_false")]
     pub target_berry_blocked: bool,
@@ -378,7 +396,25 @@ pub struct EventDispatch {
     /// Whether `ModifyPriority` marked this move as Prankster-boosted.
     #[serde(default, skip_serializing_if = "is_false")]
     pub prankster_boosted: bool,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ability_changes: Vec<AbilityChangeRequest>,
     pub invocations: Vec<EffectInvocation>,
+}
+
+/// Mechanics-approved ability changes requested by event handlers and applied
+/// after the current dispatch completes.
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(tag = "kind", rename_all = "snake_case")]
+pub enum AbilityChangeRequest {
+    Replace {
+        target: PokemonRef,
+        ability: AbilityId,
+        temporary: bool,
+    },
+    Swap {
+        left: PokemonRef,
+        right: PokemonRef,
+    },
 }
 
 impl EventDispatch {
@@ -391,6 +427,7 @@ impl EventDispatch {
             cancelled: false,
             immune: false,
             prankster_boosted: false,
+            ability_changes: Vec::new(),
             invocations: Vec::new(),
         }
     }
@@ -597,6 +634,46 @@ impl EffectState<'_> {
         item: Option<ItemId>,
     ) -> Result<Option<ItemId>, BattleError> {
         StateKernel::new(self.battle).set_item(target, item)
+    }
+
+    /// Transfers a held item through the atomic kernel lifecycle.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error for invalid holders or a nonempty receiver.
+    pub fn transfer_item(
+        &mut self,
+        from: PokemonRef,
+        to: PokemonRef,
+        activate_unburden: bool,
+    ) -> Result<Option<ItemId>, BattleError> {
+        StateKernel::new(self.battle).transfer_item(from, to, activate_unburden)
+    }
+
+    /// Consumes the current held item and records generic item history.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the holder is invalid.
+    pub fn consume_item(
+        &mut self,
+        target: PokemonRef,
+        activate_unburden: bool,
+    ) -> Result<Option<ItemId>, BattleError> {
+        StateKernel::new(self.battle).remove_item(target, true, activate_unburden)
+    }
+
+    /// Changes persistent ability suppression through the kernel.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the target is invalid.
+    pub fn set_ability_suppressed(
+        &mut self,
+        target: PokemonRef,
+        suppressed: bool,
+    ) -> Result<bool, BattleError> {
+        StateKernel::new(self.battle).set_ability_suppressed(target, suppressed)
     }
 
     /// Consumes a held Berry and records its reusable history.
@@ -937,8 +1014,16 @@ impl EffectRegistry {
                     continue;
                 }
                 let speed = state.effective_speed();
-                if let Some(handlers) = registrations.abilities.get(&state.ability) {
-                    collect_ability_registrations(&mut collected, handlers, owner, speed, context);
+                if !state.ability_suppressed {
+                    if let Some(handlers) = registrations.abilities.get(&state.ability) {
+                        collect_ability_registrations(
+                            &mut collected,
+                            handlers,
+                            owner,
+                            speed,
+                            context,
+                        );
+                    }
                 }
                 if let Some(handlers) = state.item.and_then(|item| registrations.items.get(&item)) {
                     collect_registrations(&mut collected, handlers, owner, speed);

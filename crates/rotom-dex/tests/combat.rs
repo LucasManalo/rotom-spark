@@ -143,6 +143,170 @@ fn mega_evolution_fixture() -> serde_json::Value {
     .expect("Mega Evolution lifecycle fixture")
 }
 
+fn item_ability_lifecycle_fixture() -> serde_json::Value {
+    serde_json::from_str(include_str!(
+        "../../../data/fixtures/differential/item-ability-lifecycle.json"
+    ))
+    .expect("item and ability lifecycle fixture")
+}
+
+fn lifecycle_case<'a>(fixture: &'a serde_json::Value, id: &str) -> &'a serde_json::Value {
+    fixture["cases"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|case| case["id"] == id)
+        .unwrap()
+}
+
+#[test]
+fn knock_off_uses_item_removal_history_sticky_hold_and_unburden() {
+    let dex = champions_reg_mc().unwrap();
+    let fixture = item_ability_lifecycle_fixture();
+    assert!(lifecycle_case(&fixture, "knock-off-unburden")["unburden"]
+        .as_bool()
+        .unwrap());
+    let leftovers = dex.resolve_item("leftovers").unwrap().0;
+    let source = set_with_moves(&dex, "goodra", "sapsipper", &["knockoff"]);
+    let mut target = set_with_moves(&dex, "hawlucha", "unburden", &["recover"]);
+    target.item = Some(leftovers);
+    let battle = selected_primary_battle(&dex, &source, &target, 0x15_05_01);
+    let result = execute_single_move(&dex, &battle, 0, ActionTarget::Foe(ActiveSlot::Left));
+    let target = result
+        .state
+        .side(SideId::P2)
+        .pokemon(PokemonIndex::new(0))
+        .unwrap();
+    assert_eq!(target.item, None);
+    assert_eq!(target.last_item, None);
+    assert!(
+        !target.item_used_this_turn,
+        "Knock Off removes rather than consumes"
+    );
+    assert!(target.unburden_active);
+
+    let mut sticky = set_with_moves(&dex, "muk", "stickyhold", &["recover"]);
+    sticky.item = Some(leftovers);
+    let battle = selected_primary_battle(&dex, &source, &sticky, 0x15_05_02);
+    let result = execute_single_move(&dex, &battle, 0, ActionTarget::Foe(ActiveSlot::Left));
+    assert_eq!(
+        result
+            .state
+            .side(SideId::P2)
+            .pokemon(PokemonIndex::new(0))
+            .unwrap()
+            .item,
+        Some(leftovers)
+    );
+}
+
+#[test]
+fn trick_swaps_items_atomically_and_sticky_hold_blocks_the_exchange() {
+    let dex = champions_reg_mc().unwrap();
+    let fixture = item_ability_lifecycle_fixture();
+    assert_eq!(
+        lifecycle_case(&fixture, "trick-exchange")["source_item"],
+        "leftovers"
+    );
+    let muscle_band = dex.resolve_item("muscleband").unwrap().0;
+    let leftovers = dex.resolve_item("leftovers").unwrap().0;
+    let mut source = set_with_moves(&dex, "reuniclus", "magicguard", &["trick"]);
+    source.item = Some(muscle_band);
+    let mut target = set_with_moves(&dex, "blastoise", "torrent", &["recover"]);
+    target.item = Some(leftovers);
+    let battle = selected_primary_battle(&dex, &source, &target, 0x15_05_03);
+    let result = execute_single_move(&dex, &battle, 0, ActionTarget::Foe(ActiveSlot::Left));
+    let source_state = result
+        .state
+        .side(SideId::P1)
+        .pokemon(PokemonIndex::new(0))
+        .unwrap();
+    let target_state = result
+        .state
+        .side(SideId::P2)
+        .pokemon(PokemonIndex::new(0))
+        .unwrap();
+    assert_eq!(source_state.item, Some(leftovers));
+    assert_eq!(target_state.item, Some(muscle_band));
+    assert_eq!(source_state.last_item, None);
+    assert_eq!(target_state.last_item, None);
+
+    let mut sticky = set_with_moves(&dex, "muk", "stickyhold", &["recover"]);
+    sticky.item = Some(leftovers);
+    let battle = selected_primary_battle(&dex, &source, &sticky, 0x15_05_04);
+    let result = execute_single_move(&dex, &battle, 0, ActionTarget::Foe(ActiveSlot::Left));
+    assert_eq!(
+        result
+            .state
+            .side(SideId::P1)
+            .pokemon(PokemonIndex::new(0))
+            .unwrap()
+            .item,
+        Some(muscle_band)
+    );
+    assert_eq!(
+        result
+            .state
+            .side(SideId::P2)
+            .pokemon(PokemonIndex::new(0))
+            .unwrap()
+            .item,
+        Some(leftovers)
+    );
+}
+
+#[test]
+fn contact_ability_changes_run_end_replace_start_and_restore_metadata() {
+    let dex = champions_reg_mc().unwrap();
+    let fixture = item_ability_lifecycle_fixture();
+    assert_eq!(
+        lifecycle_case(&fixture, "mummy-replacement")["source_ability"],
+        "mummy"
+    );
+    let mummy = dex.resolve_ability("mummy").unwrap().0;
+    let wandering = dex.resolve_ability("wanderingspirit").unwrap().0;
+    let original = dex.resolve_ability("sapsipper").unwrap().0;
+    let source = set_with_moves(&dex, "goodra", "sapsipper", &["aerialace"]);
+
+    for (species, ability, expected_source, expected_target) in [
+        ("cofagrigus", "mummy", mummy, mummy),
+        ("runerigus", "wanderingspirit", wandering, original),
+    ] {
+        let target = set_with_moves(&dex, species, ability, &["recover"]);
+        let battle = selected_primary_battle(&dex, &source, &target, 0x15_05_05);
+        let result = execute_single_move(&dex, &battle, 0, ActionTarget::Foe(ActiveSlot::Left));
+        let source_state = result
+            .state
+            .side(SideId::P1)
+            .pokemon(PokemonIndex::new(0))
+            .unwrap();
+        let target_state = result
+            .state
+            .side(SideId::P2)
+            .pokemon(PokemonIndex::new(0))
+            .unwrap();
+        assert_eq!(source_state.ability, expected_source, "{ability}");
+        assert_eq!(source_state.ability_restore, Some(original), "{ability}");
+        assert_eq!(target_state.ability, expected_target, "{ability}");
+        assert!(result
+            .diagnostics
+            .turn
+            .as_ref()
+            .unwrap()
+            .events
+            .iter()
+            .any(|event| event.event == BattleEvent::AbilityEnd));
+        assert!(result
+            .diagnostics
+            .turn
+            .as_ref()
+            .unwrap()
+            .events
+            .iter()
+            .any(|event| event.event == BattleEvent::AbilityStart));
+    }
+}
+
 fn single_move_action(move_slot: u8, target: ActionTarget) -> JointAction {
     JointAction::Turn {
         p1: TurnChoice {
@@ -6881,6 +7045,20 @@ fn manifest_move_battle(dex: &rotom_dex::DexData, move_name: &str, seed: u64) ->
     let target = set_with_moves(dex, "blastoise", "torrent", &["recover"]);
     let state = selected_primary_battle(dex, &source, &target, seed);
     let mut builder = BattleStateBuilder::from_state(state).unwrap();
+    if matches!(move_name, "trick" | "switcheroo") {
+        let source_item = dex.resolve_item("muscleband").unwrap().0;
+        let target_item = dex.resolve_item("leftovers").unwrap().0;
+        builder
+            .edit_pokemon(PokemonRef::new(SideId::P1, PokemonIndex::new(0)), |state| {
+                state.item = Some(source_item);
+            })
+            .unwrap();
+        builder
+            .edit_pokemon(PokemonRef::new(SideId::P2, PokemonIndex::new(0)), |state| {
+                state.item = Some(target_item);
+            })
+            .unwrap();
+    }
     for side in [SideId::P1, SideId::P2] {
         for pokemon in [PokemonIndex::new(0), PokemonIndex::new(1)] {
             builder
@@ -6937,8 +7115,8 @@ fn mechanics_manifest_drives_every_move_capability_and_execution_smoke_case() {
         .iter()
         .filter(|entry| entry.implementation == "unsupported")
         .count();
-    assert_eq!(implemented, 238);
-    assert_eq!(unsupported, 272);
+    assert_eq!(implemented, 241);
+    assert_eq!(unsupported, 269);
 
     for entry in moves {
         let move_id = dex

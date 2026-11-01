@@ -31,22 +31,22 @@
       },
       "move": {
         "reachable": 510,
-        "unsupported": 272,
+        "unsupported": 269,
         "partial": 0,
-        "implemented": 238
+        "implemented": 241
       }
     },
     "executable_capability_coverage": {
-      "total": 69,
+      "total": 71,
       "unsupported": 17,
       "partial": 22,
       "implemented": 21,
-      "verified": 9
+      "verified": 11
     },
     "dependency_targets": {
       "ability": 92,
       "item": 26,
-      "move": 272
+      "move": 269
     }
   },
   "capabilities": [
@@ -88,7 +88,7 @@
     },
     {
       "id": "ability_lifecycle",
-      "status": "partial",
+      "status": "verified",
       "title": "Ability mutation lifecycle",
       "sub_capabilities": [
         "copy",
@@ -107,13 +107,47 @@
         "exit"
       ],
       "known_gaps": [
-        "Copying, replacement, suppression, and activation ordering are incomplete."
+        "The generic lifecycle is complete; identity-specific copy restrictions and Neutralizing Gas field behavior remain tracked by their dependent mechanics."
+      ],
+      "tests": [
+        "unit:crates/rotom-dex/tests/combat.rs#contact_ability_changes_run_end_replace_start_and_restore_metadata"
+      ],
+      "differential_fixtures": [
+        "differential:data/fixtures/differential/item-ability-lifecycle.json#mummy-replacement",
+        "differential:data/fixtures/differential/item-ability-lifecycle.json#wandering-spirit-swap"
+      ],
+      "pinned_reference_evidence": [
+        "showdown:sim/pokemon.ts:Pokemon.setAbility",
+        "showdown:sim/pokemon.ts:Pokemon.ignoringAbility"
+      ],
+      "blocked_identities": [],
+      "unlocked_identities": [],
+      "would_unlock_if_completed": []
+    },
+    {
+      "id": "ability_lifecycle_restrictions",
+      "status": "partial",
+      "title": "Identity-specific ability transition restrictions",
+      "sub_capabilities": [
+        "immutable flags",
+        "copy filters",
+        "Ability Shield",
+        "field suppression"
+      ],
+      "lifecycle_and_ordering": [
+        "immutable flags",
+        "copy filters",
+        "Ability Shield",
+        "field suppression"
+      ],
+      "known_gaps": [
+        "Trace/Receiver filters, immutable ability flags, Ability Shield, and Neutralizing Gas remain identity-specific blockers."
       ],
       "tests": [],
       "differential_fixtures": [],
       "pinned_reference_evidence": [
-        "showdown:sim/pokemon.ts:Pokemon.setAbility",
-        "showdown:sim/pokemon.ts:Pokemon.ignoringAbility"
+        "showdown:data/abilities.ts:Abilities",
+        "showdown:sim/pokemon.ts:Pokemon.setAbility"
       ],
       "blocked_identities": [
         "ability:mummy",
@@ -622,7 +656,6 @@
         "move:instruct",
         "move:jawlock",
         "move:kingsshield",
-        "move:knockoff",
         "move:lashout",
         "move:lastresort",
         "move:lastrespects",
@@ -695,7 +728,6 @@
         "move:supercellslam",
         "move:superfang",
         "move:swallow",
-        "move:switcheroo",
         "move:synthesis",
         "move:teatime",
         "move:temperflare",
@@ -705,7 +737,6 @@
         "move:tidyup",
         "move:topsyturvy",
         "move:transform",
-        "move:trick",
         "move:trickortreat",
         "move:tripleaxel",
         "move:upperhand",
@@ -771,7 +802,6 @@
         "move:infernalparade",
         "move:instruct",
         "move:jawlock",
-        "move:knockoff",
         "move:lashout",
         "move:lastresort",
         "move:lastrespects",
@@ -815,7 +845,6 @@
         "move:stuffcheeks",
         "move:suckerpunch",
         "move:superfang",
-        "move:switcheroo",
         "move:teatime",
         "move:temperflare",
         "move:terrainpulse",
@@ -824,7 +853,6 @@
         "move:tidyup",
         "move:topsyturvy",
         "move:transform",
-        "move:trick",
         "move:trickortreat",
         "move:tripleaxel",
         "move:venoshock",
@@ -1351,7 +1379,7 @@
     },
     {
       "id": "item_lifecycle",
-      "status": "partial",
+      "status": "verified",
       "title": "Held-item mutation lifecycle",
       "sub_capabilities": [
         "remove",
@@ -1370,13 +1398,46 @@
         "suppress"
       ],
       "known_gaps": [
-        "Theft, exchange, restoration, suppression, and consumed-item history are incomplete."
+        "The generic lifecycle is complete; identity-specific trigger timing such as Pickup remains tracked by the dependent ability or move capability."
+      ],
+      "tests": [
+        "unit:crates/rotom-dex/tests/combat.rs#knock_off_uses_item_removal_history_sticky_hold_and_unburden",
+        "unit:crates/rotom-dex/tests/combat.rs#trick_swaps_items_atomically_and_sticky_hold_blocks_the_exchange"
+      ],
+      "differential_fixtures": [
+        "differential:data/fixtures/differential/item-ability-lifecycle.json#knock-off-unburden",
+        "differential:data/fixtures/differential/item-ability-lifecycle.json#trick-exchange"
+      ],
+      "pinned_reference_evidence": [
+        "showdown:sim/pokemon.ts:Pokemon.takeItem",
+        "showdown:sim/pokemon.ts:Pokemon.setItem"
+      ],
+      "blocked_identities": [],
+      "unlocked_identities": [],
+      "would_unlock_if_completed": []
+    },
+    {
+      "id": "item_lifecycle_consumers",
+      "status": "partial",
+      "title": "Identity-specific item lifecycle consumers",
+      "sub_capabilities": [
+        "trigger predicates",
+        "multi-target ordering",
+        "future removal moves"
+      ],
+      "lifecycle_and_ordering": [
+        "trigger predicates",
+        "multi-target ordering",
+        "future removal moves"
+      ],
+      "known_gaps": [
+        "Pickup, Magician, Pickpocket, Symbiosis, and future removal moves still require identity-specific timing coverage."
       ],
       "tests": [],
       "differential_fixtures": [],
       "pinned_reference_evidence": [
-        "showdown:sim/pokemon.ts:Pokemon.takeItem",
-        "showdown:sim/pokemon.ts:Pokemon.setItem"
+        "showdown:data/abilities.ts:Abilities",
+        "showdown:data/moves.ts:Moves"
       ],
       "blocked_identities": [
         "ability:klutz",
@@ -3582,10 +3643,11 @@
       "name": "Klutz",
       "identity_status": "partial",
       "capabilities": [
-        "item_lifecycle"
+        "item_lifecycle",
+        "item_lifecycle_consumers"
       ],
       "outstanding_blockers": [
-        "item_lifecycle"
+        "item_lifecycle_consumers"
       ],
       "unlocked": false,
       "tests": [],
@@ -3735,10 +3797,11 @@
       "name": "Magician",
       "identity_status": "partial",
       "capabilities": [
-        "item_lifecycle"
+        "item_lifecycle",
+        "item_lifecycle_consumers"
       ],
       "outstanding_blockers": [
-        "item_lifecycle"
+        "item_lifecycle_consumers"
       ],
       "unlocked": false,
       "tests": [
@@ -3791,10 +3854,11 @@
       "name": "Mummy",
       "identity_status": "partial",
       "capabilities": [
-        "ability_lifecycle"
+        "ability_lifecycle",
+        "ability_lifecycle_restrictions"
       ],
       "outstanding_blockers": [
-        "ability_lifecycle"
+        "ability_lifecycle_restrictions"
       ],
       "unlocked": false,
       "tests": [
@@ -3907,10 +3971,11 @@
       "name": "Pickpocket",
       "identity_status": "partial",
       "capabilities": [
-        "item_lifecycle"
+        "item_lifecycle",
+        "item_lifecycle_consumers"
       ],
       "outstanding_blockers": [
-        "item_lifecycle"
+        "item_lifecycle_consumers"
       ],
       "unlocked": false,
       "tests": [
@@ -3927,10 +3992,11 @@
       "name": "Pickup",
       "identity_status": "partial",
       "capabilities": [
-        "item_lifecycle"
+        "item_lifecycle",
+        "item_lifecycle_consumers"
       ],
       "outstanding_blockers": [
-        "item_lifecycle"
+        "item_lifecycle_consumers"
       ],
       "unlocked": false,
       "tests": [],
@@ -4093,10 +4159,11 @@
       "name": "Receiver",
       "identity_status": "partial",
       "capabilities": [
-        "ability_lifecycle"
+        "ability_lifecycle",
+        "ability_lifecycle_restrictions"
       ],
       "outstanding_blockers": [
-        "ability_lifecycle"
+        "ability_lifecycle_restrictions"
       ],
       "unlocked": false,
       "tests": [
@@ -4435,10 +4502,11 @@
       "name": "Sticky Hold",
       "identity_status": "partial",
       "capabilities": [
-        "item_lifecycle"
+        "item_lifecycle",
+        "item_lifecycle_consumers"
       ],
       "outstanding_blockers": [
-        "item_lifecycle"
+        "item_lifecycle_consumers"
       ],
       "unlocked": false,
       "tests": [],
@@ -4493,10 +4561,11 @@
       "name": "Symbiosis",
       "identity_status": "partial",
       "capabilities": [
-        "item_lifecycle"
+        "item_lifecycle",
+        "item_lifecycle_consumers"
       ],
       "outstanding_blockers": [
-        "item_lifecycle"
+        "item_lifecycle_consumers"
       ],
       "unlocked": false,
       "tests": [],
@@ -4567,10 +4636,11 @@
       "name": "Trace",
       "identity_status": "partial",
       "capabilities": [
-        "ability_lifecycle"
+        "ability_lifecycle",
+        "ability_lifecycle_restrictions"
       ],
       "outstanding_blockers": [
-        "ability_lifecycle"
+        "ability_lifecycle_restrictions"
       ],
       "unlocked": false,
       "tests": [
@@ -4587,10 +4657,11 @@
       "name": "Unburden",
       "identity_status": "partial",
       "capabilities": [
-        "item_lifecycle"
+        "item_lifecycle",
+        "item_lifecycle_consumers"
       ],
       "outstanding_blockers": [
-        "item_lifecycle"
+        "item_lifecycle_consumers"
       ],
       "unlocked": false,
       "tests": [
@@ -4625,10 +4696,11 @@
       "name": "Wandering Spirit",
       "identity_status": "partial",
       "capabilities": [
-        "ability_lifecycle"
+        "ability_lifecycle",
+        "ability_lifecycle_restrictions"
       ],
       "outstanding_blockers": [
-        "ability_lifecycle"
+        "ability_lifecycle_restrictions"
       ],
       "unlocked": false,
       "tests": [
@@ -7639,24 +7711,6 @@
     },
     {
       "kind": "move",
-      "id": "knockoff",
-      "name": "Knock Off",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "custom_callback"
-      ],
-      "outstanding_blockers": [
-        "custom_callback"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.knockoff"
-      ]
-    },
-    {
-      "kind": "move",
       "id": "lashout",
       "name": "Lash Out",
       "identity_status": "unsupported",
@@ -9679,24 +9733,6 @@
     },
     {
       "kind": "move",
-      "id": "switcheroo",
-      "name": "Switcheroo",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "custom_callback"
-      ],
-      "outstanding_blockers": [
-        "custom_callback"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.switcheroo"
-      ]
-    },
-    {
-      "kind": "move",
       "id": "synthesis",
       "name": "Synthesis",
       "identity_status": "unsupported",
@@ -10029,24 +10065,6 @@
       "differential_fixtures": [],
       "pinned_reference_evidence": [
         "showdown:data/moves.ts:Moves.triattack"
-      ]
-    },
-    {
-      "kind": "move",
-      "id": "trick",
-      "name": "Trick",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "custom_callback"
-      ],
-      "outstanding_blockers": [
-        "custom_callback"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.trick"
       ]
     },
     {

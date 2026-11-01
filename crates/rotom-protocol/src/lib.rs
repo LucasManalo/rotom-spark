@@ -75,6 +75,7 @@ pub struct SideSnapshot {
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
+#[allow(clippy::struct_excessive_bools)]
 pub struct PokemonSnapshot {
     pub species: u32,
     pub form: Option<u32>,
@@ -82,7 +83,12 @@ pub struct PokemonSnapshot {
     pub stats: StatsSnapshot,
     pub current_hp: u16,
     pub ability: u32,
+    pub ability_restore: Option<u32>,
+    pub ability_suppressed: bool,
     pub item: Option<u32>,
+    pub last_item: Option<u32>,
+    pub item_used_this_turn: bool,
+    pub unburden_active: bool,
     pub last_consumed_berry: Option<u32>,
     pub cud_chew_berry: Option<u32>,
     pub cud_chew_turns: u8,
@@ -264,7 +270,12 @@ impl From<&rotom_core::PokemonState> for PokemonSnapshot {
             },
             current_hp: state.current_hp,
             ability: state.ability.get(),
+            ability_restore: state.ability_restore.map(rotom_core::AbilityId::get),
+            ability_suppressed: state.ability_suppressed,
             item: state.item.map(rotom_core::ItemId::get),
+            last_item: state.last_item.map(rotom_core::ItemId::get),
+            item_used_this_turn: state.item_used_this_turn,
+            unburden_active: state.unburden_active,
             last_consumed_berry: state.last_consumed_berry.map(rotom_core::ItemId::get),
             cud_chew_berry: state.cud_chew_berry.map(rotom_core::ItemId::get),
             cud_chew_turns: state.cud_chew_turns,

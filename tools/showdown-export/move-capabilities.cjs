@@ -214,6 +214,8 @@ function moveExecutionRequirements(move) {
 	const supportedCallbacks = new Set([
 		...(move.id === 'magnetrise' ? ['onTry'] : []),
 		...(move.id === 'facade' ? ['onBasePower'] : []),
+		...(move.id === 'knockoff' ? ['onBasePower', 'onAfterHit'] : []),
+		...(['trick', 'switcheroo'].includes(move.id) ? ['onTryImmunity', 'onHit'] : []),
 	]);
 	if (behavior.callbacks.some(callback => !supportedCallbacks.has(callback))) {
 		capabilities.add('custom_callback');

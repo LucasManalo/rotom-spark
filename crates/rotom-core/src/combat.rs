@@ -563,6 +563,8 @@ pub enum MoveIntrinsic {
     Protect,
     FollowMe,
     RagePowder,
+    KnockOff,
+    ItemSwap,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -964,12 +966,11 @@ impl BattleState {
         )?);
         let change = StateKernel::new(self).apply_mega_evolution(source, evolution)?;
         self.apply_ability_start_effects(data, effects, field_effects, source, resolution)?;
-        resolution.events.push(effects.dispatch(
-            self,
-            BattleEvent::AbilityStart,
-            context,
-            EventValue::None,
-        )?);
+        let ability_start =
+            effects.dispatch(self, BattleEvent::AbilityStart, context, EventValue::None)?;
+        let changes = ability_start.ability_changes.clone();
+        resolution.events.push(ability_start);
+        self.apply_ability_change_requests(data, effects, field_effects, changes, resolution)?;
         self.refresh_remaining_move_order(data, effects, field_effects, resolution)?;
         Ok(ResolvedAction::MegaEvolved {
             side: action.side,
@@ -1125,6 +1126,7 @@ impl BattleState {
             self.tick_side_durations(resolution);
             self.tick_late_field_durations(field_effects, resolution);
         }
+        StateKernel::new(self).reset_item_turn_history();
         Ok(())
     }
 
@@ -1243,15 +1245,13 @@ impl BattleState {
                 .side(holder.side)
                 .pokemon(holder.pokemon)
                 .is_some_and(|pokemon| pokemon.item.is_none())
-            {
-                if let Some(item) = self
+                && self
                     .side(ally.side)
                     .pokemon(ally.pokemon)
                     .and_then(|pokemon| pokemon.item)
-                {
-                    StateKernel::new(self).set_item(ally, None)?;
-                    StateKernel::new(self).set_item(holder, Some(item))?;
-                }
+                    .is_some()
+            {
+                StateKernel::new(self).transfer_item(ally, holder, false)?;
             }
         }
         Ok(())
@@ -1376,7 +1376,8 @@ impl BattleState {
         if !eligible {
             return Ok(false);
         }
-        StateKernel::new(self).set_item(holder, None)?;
+        let activate = self.unburden_on_item_loss(data, holder);
+        StateKernel::new(self).remove_item(holder, true, activate)?;
         for condition in conditions.into_iter().flatten() {
             StateKernel::new(self).remove_volatile(holder, condition)?;
         }
@@ -1608,10 +1609,56 @@ impl BattleState {
             let Some(stat) = stat else { continue };
             let change = StateKernel::new(self).change_stat_stage(holder, stat, 1)?;
             if change.applied_delta != 0 {
-                StateKernel::new(self).set_item(holder, None)?;
+                let activate = self.unburden_on_item_loss(data, holder);
+                StateKernel::new(self).remove_item(holder, true, activate)?;
             }
         }
         Ok(())
+    }
+
+    fn has_active_ability<D: CombatData>(
+        &self,
+        data: &D,
+        target: PokemonRef,
+        behavior: crate::AbilityBehavior,
+    ) -> bool {
+        self.side(target.side)
+            .pokemon(target.pokemon)
+            .is_some_and(|pokemon| {
+                !pokemon.ability_suppressed && data.ability_has_behavior(pokemon.ability, behavior)
+            })
+    }
+
+    fn item_can_be_taken<D: CombatData>(
+        &self,
+        data: &D,
+        holder: PokemonRef,
+        ignore_holder_ability: bool,
+    ) -> bool {
+        let Some(pokemon) = self.side(holder.side).pokemon(holder.pokemon) else {
+            return false;
+        };
+        let Some(item) = pokemon.item else {
+            return false;
+        };
+        if data.item_has_behavior(item, crate::ItemBehavior::MegaStone) {
+            return false;
+        }
+        ignore_holder_ability
+            || !self.has_active_ability(data, holder, crate::AbilityBehavior::StickyHold)
+    }
+
+    fn unburden_on_item_loss<D: CombatData>(&self, data: &D, holder: PokemonRef) -> bool {
+        self.has_active_ability(data, holder, crate::AbilityBehavior::Unburden)
+    }
+
+    fn remove_held_item<D: CombatData>(
+        &mut self,
+        data: &D,
+        holder: PokemonRef,
+    ) -> Result<Option<ItemId>, BattleError> {
+        let activate = self.unburden_on_item_loss(data, holder);
+        StateKernel::new(self).remove_item(holder, false, activate)
     }
 
     /// Executes every supported move action through the shared move lifecycle.
@@ -1898,6 +1945,14 @@ impl BattleState {
                 move_category: Some(move_context.move_data.category),
                 move_type: Some(move_context.move_data.move_type),
                 move_flags: move_context.move_data.interaction_flags,
+                source_ability_replaceable: true,
+                target_ability_replaceable: true,
+                source_item_removable: self.item_can_be_taken(data, move_context.source, false),
+                target_item_removable: data.move_intrinsic(move_context.move_id)
+                    != MoveIntrinsic::KnockOff
+                    && self.item_can_be_taken(data, target, move_context.suppress_target_ability),
+                source_unburden: self.unburden_on_item_loss(data, move_context.source),
+                target_unburden: self.unburden_on_item_loss(data, target),
                 move_type_converted: move_context.move_type_converted,
                 sheer_force_boosted: move_context.sheer_force_boosted,
                 type_effectiveness: self.target_type_effectiveness(
@@ -1965,7 +2020,9 @@ impl BattleState {
                     damage,
                 });
                 let (applied_hp_loss, fainted) = self.apply_hp_damage(
+                    data,
                     effects,
+                    field_effects,
                     DamageApplication {
                         context,
                         side: target.side,
@@ -2024,6 +2081,11 @@ impl BattleState {
                     target,
                     resolution,
                 )?;
+                if data.move_intrinsic(move_context.move_id) == MoveIntrinsic::KnockOff
+                    && self.item_can_be_taken(data, target, move_context.suppress_target_ability)
+                {
+                    self.remove_held_item(data, target)?;
+                }
                 if fainted {
                     self.settle_faint(
                         effects,
@@ -2046,6 +2108,7 @@ impl BattleState {
         resolution.target_outcomes.extend(hit_outcomes);
         self.apply_recoil(
             data,
+            field_effects,
             move_context,
             total_applied_damage,
             effects,
@@ -2208,6 +2271,7 @@ impl BattleState {
     fn apply_recoil<D: CombatData>(
         &mut self,
         data: &D,
+        field_effects: &FieldEffectIds,
         context: &MoveExecutionContext,
         applied_damage: u32,
         effects: &EffectRegistry,
@@ -2267,7 +2331,9 @@ impl BattleState {
             ..EventContext::default()
         };
         let _ = self.apply_damage(
+            data,
             effects,
+            field_effects,
             DamageApplication {
                 context: event_context,
                 side: context.source.side,
@@ -2432,7 +2498,8 @@ impl BattleState {
                 requested
             };
             if focus_sash {
-                StateKernel::new(self).set_item(target_context.target, None)?;
+                let activate = self.unburden_on_item_loss(data, target_context.target);
+                StateKernel::new(self).remove_item(target_context.target, true, activate)?;
             }
             let berry = self.berry_ability_context(data, target_context.target)?;
             let event_context = EventContext {
@@ -2490,7 +2557,9 @@ impl BattleState {
                 damage,
             });
             let (applied_hp_loss, fainted) = self.apply_hp_damage(
+                data,
                 effects,
+                field_effects,
                 DamageApplication {
                     context: event_context,
                     side: target_context.target.side,
@@ -2554,7 +2623,14 @@ impl BattleState {
         resolution
             .target_outcomes
             .extend(outcomes.into_iter().flatten());
-        self.apply_recoil(data, context, total_applied, effects, resolution)?;
+        self.apply_recoil(
+            data,
+            field_effects,
+            context,
+            total_applied,
+            effects,
+            resolution,
+        )?;
         for (target, damage) in after_move_damage {
             self.dispatch_after_move_secondary(
                 data,
@@ -2828,6 +2904,9 @@ impl BattleState {
                 resolution,
             );
         }
+        if data.move_intrinsic(move_context.move_id) == MoveIntrinsic::ItemSwap {
+            return self.execute_item_swap(data, move_context, effects, field_effects, resolution);
+        }
         let context = EventContext {
             source: Some(move_context.source),
             target: Some(move_context.source),
@@ -2884,7 +2963,10 @@ impl BattleState {
                 let condition = match data.move_intrinsic(move_context.move_id) {
                     MoveIntrinsic::FollowMe => field_effects.follow_me,
                     MoveIntrinsic::RagePowder => field_effects.rage_powder,
-                    MoveIntrinsic::Ordinary | MoveIntrinsic::Protect => None,
+                    MoveIntrinsic::Ordinary
+                    | MoveIntrinsic::Protect
+                    | MoveIntrinsic::KnockOff
+                    | MoveIntrinsic::ItemSwap => None,
                 }
                 .ok_or_else(|| {
                     BattleError::DataMismatch(
@@ -2906,7 +2988,7 @@ impl BattleState {
                 }
                 doubles_active
             }
-            MoveIntrinsic::Ordinary => {
+            MoveIntrinsic::Ordinary | MoveIntrinsic::KnockOff | MoveIntrinsic::ItemSwap => {
                 return Err(BattleError::UnsupportedMechanic(format!(
                     "move {} has no supported non-damage intrinsic",
                     move_context.move_id
@@ -2951,6 +3033,108 @@ impl BattleState {
             self,
             BattleEvent::AfterMove,
             context,
+            EventValue::None,
+        )?);
+        Ok(())
+    }
+
+    fn execute_item_swap<D: CombatData>(
+        &mut self,
+        data: &D,
+        move_context: &MoveExecutionContext,
+        effects: &EffectRegistry,
+        field_effects: &FieldEffectIds,
+        resolution: &mut TurnResolution,
+    ) -> Result<(), BattleError> {
+        let HitLifecycle {
+            eligible,
+            mut outcomes,
+        } = self.resolve_hit_lifecycle(
+            data,
+            move_context,
+            effects,
+            field_effects,
+            false,
+            resolution,
+        )?;
+        let mut applied = false;
+        for (index, target_context) in eligible {
+            let source = move_context.source;
+            let target = target_context.target;
+            let source_item = self
+                .side(source.side)
+                .pokemon(source.pokemon)
+                .and_then(|p| p.item);
+            let target_item = self
+                .side(target.side)
+                .pokemon(target.pokemon)
+                .and_then(|p| p.item);
+            let source_allowed =
+                source_item.is_none() || self.item_can_be_taken(data, source, true);
+            let target_allowed = target_item.is_none()
+                || self.item_can_be_taken(data, target, move_context.suppress_target_ability);
+            let source_unburden = self.unburden_on_item_loss(data, source);
+            let target_unburden = self.unburden_on_item_loss(data, target);
+            let swapped = source_allowed
+                && target_allowed
+                && StateKernel::new(self).swap_items(
+                    source,
+                    target,
+                    source_unburden,
+                    target_unburden,
+                )?;
+            let result = if swapped {
+                TargetResult::Hit
+            } else {
+                TargetResult::Cancelled
+            };
+            outcomes[index] = Some(Self::empty_target_outcome(
+                move_context,
+                target_context,
+                result,
+            ));
+            if swapped {
+                let context = EventContext {
+                    source: Some(source),
+                    target: Some(target),
+                    move_id: Some(move_context.move_id),
+                    suppress_target_ability: move_context.suppress_target_ability,
+                    ..EventContext::default()
+                };
+                resolution.events.push(effects.dispatch(
+                    self,
+                    BattleEvent::Hit,
+                    context,
+                    EventValue::None,
+                )?);
+                applied = true;
+            }
+        }
+        resolution
+            .target_outcomes
+            .extend(outcomes.into_iter().flatten());
+        resolution.actions.push(if applied {
+            ResolvedAction::Used {
+                side: move_context.queued.side,
+                slot: move_context.queued.slot,
+                move_slot: move_context.queued.move_slot,
+            }
+        } else {
+            ResolvedAction::Skipped {
+                side: move_context.queued.side,
+                slot: move_context.queued.slot,
+            }
+        });
+        resolution.events.push(effects.dispatch(
+            self,
+            BattleEvent::AfterMove,
+            EventContext {
+                source: Some(move_context.source),
+                target: move_context.targets.last().map(|target| target.target),
+                move_id: Some(move_context.move_id),
+                suppress_target_ability: move_context.suppress_target_ability,
+                ..EventContext::default()
+            },
             EventValue::None,
         )?);
         Ok(())
@@ -3887,6 +4071,11 @@ impl BattleState {
         if adjusted_move.prior_effect == PriorMoveEffect::Facade && facade_active {
             adjusted_move.base_power = adjusted_move.base_power.saturating_mul(2);
         }
+        if data.move_intrinsic(move_id) == MoveIntrinsic::KnockOff
+            && self.item_can_be_taken(data, target, move_context.suppress_target_ability)
+        {
+            adjusted_move.base_power = adjusted_move.base_power.saturating_mul(3) / 2;
+        }
         let base_power = effects.dispatch(
             self,
             BattleEvent::ModifyBasePower,
@@ -3977,9 +4166,11 @@ impl BattleState {
         Ok(damage)
     }
 
-    fn apply_hp_damage(
+    fn apply_hp_damage<D: CombatData>(
         &mut self,
+        data: &D,
         effects: &EffectRegistry,
+        field_effects: &FieldEffectIds,
         application: DamageApplication,
         resolution: &mut TurnResolution,
     ) -> Result<(u16, bool), BattleError> {
@@ -3993,12 +4184,21 @@ impl BattleState {
         let applied = StateKernel::new(self)
             .damage_hp(PokemonRef::new(side, pokemon), damage)?
             .applied;
-        resolution.events.push(effects.dispatch(
+        let after_damage = effects.dispatch(
             self,
             BattleEvent::AfterDamage,
             context,
             EventValue::Integer(i64::from(applied)),
-        )?);
+        )?;
+        let ability_changes = after_damage.ability_changes.clone();
+        resolution.events.push(after_damage);
+        self.apply_ability_change_requests(
+            data,
+            effects,
+            field_effects,
+            ability_changes,
+            resolution,
+        )?;
         let fainted = self
             .side(side)
             .pokemon(pokemon)
@@ -4035,13 +4235,16 @@ impl BattleState {
         Ok(())
     }
 
-    fn apply_damage(
+    fn apply_damage<D: CombatData>(
         &mut self,
+        data: &D,
         effects: &EffectRegistry,
+        field_effects: &FieldEffectIds,
         application: DamageApplication,
         resolution: &mut TurnResolution,
     ) -> Result<(u16, bool), BattleError> {
-        let (applied, fainted) = self.apply_hp_damage(effects, application, resolution)?;
+        let (applied, fainted) =
+            self.apply_hp_damage(data, effects, field_effects, application, resolution)?;
         if fainted {
             self.settle_faint(effects, application, resolution)?;
         }
@@ -4319,6 +4522,7 @@ impl BattleState {
         if cancelled {
             return Ok(false);
         }
+        StateKernel::new(self).restore_ability(PokemonRef::new(side, outgoing))?;
         StateKernel::new(self).switch_active_position(side, slot, incoming)?;
         self.apply_ability_start_effects(
             data,
@@ -4330,7 +4534,7 @@ impl BattleState {
         if let Some(terrain) = field_effects.terrain_environment(self) {
             self.activate_terrain_seeds(data, field_effects, terrain)?;
         }
-        resolution.events.push(effects.dispatch(
+        let switch_in = effects.dispatch(
             self,
             BattleEvent::SwitchIn,
             EventContext {
@@ -4340,7 +4544,10 @@ impl BattleState {
                 ..EventContext::default()
             },
             EventValue::None,
-        )?);
+        )?;
+        let changes = switch_in.ability_changes.clone();
+        resolution.events.push(switch_in);
+        self.apply_ability_change_requests(data, effects, field_effects, changes, resolution)?;
         self.activate_update_items(data, field_effects)?;
         Ok(true)
     }
@@ -4414,7 +4621,7 @@ impl BattleState {
         if let Some(terrain) = field_effects.terrain_environment(self) {
             self.activate_terrain_seeds(data, field_effects, terrain)?;
         }
-        resolution.events.push(effects.dispatch(
+        let switch_in = effects.dispatch(
             self,
             BattleEvent::SwitchIn,
             EventContext {
@@ -4422,7 +4629,10 @@ impl BattleState {
                 ..EventContext::default()
             },
             EventValue::None,
-        )?);
+        )?;
+        let changes = switch_in.ability_changes.clone();
+        resolution.events.push(switch_in);
+        self.apply_ability_change_requests(data, effects, field_effects, changes, resolution)?;
         self.activate_update_items(data, field_effects)?;
         self.settle_switch_phase()
     }
@@ -4563,6 +4773,92 @@ impl BattleState {
                 .collect::<Vec<_>>()
             {
                 StateKernel::new(self).change_stat_stage(target, BattleStat::Evasion, -1)?;
+            }
+        }
+        Ok(())
+    }
+
+    fn apply_ability_change_requests<D: CombatData>(
+        &mut self,
+        data: &D,
+        effects: &EffectRegistry,
+        field_effects: &FieldEffectIds,
+        requests: Vec<crate::AbilityChangeRequest>,
+        resolution: &mut TurnResolution,
+    ) -> Result<(), BattleError> {
+        let mut pending = requests;
+        let mut applied = 0_u8;
+        while let Some(request) = pending.pop() {
+            applied = applied.saturating_add(1);
+            if applied > 16 {
+                return Err(BattleError::InvalidState(
+                    "ability transition chain exceeded its structural limit".to_owned(),
+                ));
+            }
+            let targets: Vec<_> = match request {
+                crate::AbilityChangeRequest::Replace {
+                    target,
+                    ability,
+                    temporary,
+                } => {
+                    let current = self
+                        .side(target.side)
+                        .pokemon(target.pokemon)
+                        .ok_or_else(|| {
+                            BattleError::InvalidState(
+                                "ability replacement target is invalid".to_owned(),
+                            )
+                        })?
+                        .ability;
+                    if current == ability {
+                        continue;
+                    }
+                    resolution.events.push(effects.dispatch(
+                        self,
+                        BattleEvent::AbilityEnd,
+                        EventContext {
+                            source: Some(target),
+                            target: Some(target),
+                            ..EventContext::default()
+                        },
+                        EventValue::None,
+                    )?);
+                    StateKernel::new(self).replace_ability(target, ability, temporary)?;
+                    vec![target]
+                }
+                crate::AbilityChangeRequest::Swap { left, right } => {
+                    for target in [left, right] {
+                        resolution.events.push(effects.dispatch(
+                            self,
+                            BattleEvent::AbilityEnd,
+                            EventContext {
+                                source: Some(target),
+                                target: Some(target),
+                                ..EventContext::default()
+                            },
+                            EventValue::None,
+                        )?);
+                    }
+                    if !StateKernel::new(self).swap_abilities(left, right)? {
+                        continue;
+                    }
+                    vec![left, right]
+                }
+            };
+            for target in targets {
+                self.apply_ability_start_effects(data, effects, field_effects, target, resolution)?;
+                let start = effects.dispatch(
+                    self,
+                    BattleEvent::AbilityStart,
+                    EventContext {
+                        source: Some(target),
+                        target: Some(target),
+                        ..EventContext::default()
+                    },
+                    EventValue::None,
+                )?;
+                pending.extend(start.ability_changes.iter().copied());
+                resolution.events.push(start);
             }
         }
         Ok(())

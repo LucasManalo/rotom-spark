@@ -108,3 +108,11 @@ and incompatible-stone behavior:
 node tools/showdown-reference/mega-evolution-lifecycle.cjs
 node tools/showdown-reference/mega-evolution-lifecycle.cjs --check
 ```
+
+PR 15.5 records complete-turn Knock Off, Trick, Sticky Hold, Unburden, Mummy,
+and Wandering Spirit behavior:
+
+```text
+node tools/showdown-reference/item-ability-lifecycle.cjs
+node tools/showdown-reference/item-ability-lifecycle.cjs --check
+```

@@ -199,6 +199,7 @@ impl StatStages {
 /// Mutable state for one Pokémon after it enters a battle.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
+#[allow(clippy::struct_excessive_bools)] // Independent serialized battle flags are orthogonal.
 pub struct PokemonState {
     pub species: SpeciesId,
     pub form: Option<FormId>,
@@ -206,7 +207,22 @@ pub struct PokemonState {
     pub stats: BattleStats,
     pub current_hp: u16,
     pub ability: AbilityId,
+    /// Ability restored when a temporary replacement ends on switch-out.
+    #[serde(default)]
+    pub ability_restore: Option<AbilityId>,
+    /// Persistent suppression state. Move-scoped ignoring remains event context.
+    #[serde(default)]
+    pub ability_suppressed: bool,
     pub item: Option<ItemId>,
+    /// Most recently consumed held item, matching Showdown's `lastItem`.
+    #[serde(default)]
+    pub last_item: Option<ItemId>,
+    /// Whether `last_item` was consumed during the current turn.
+    #[serde(default)]
+    pub item_used_this_turn: bool,
+    /// Whether this Pokémon has lost an item while Unburden was active.
+    #[serde(default)]
+    pub unburden_active: bool,
     /// Most recent Berry consumed through the authoritative item lifecycle.
     /// Harvest may restore this value while the holder has no item.
     #[serde(default)]

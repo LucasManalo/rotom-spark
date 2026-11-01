@@ -1,0 +1,40 @@
+{
+  "showdown_commit": "b79ce06d06b8f0dc8de8bb348bc9cab5d931553f",
+  "format": "gen9championsvgc2026regmc",
+  "methodology": {
+    "source": "complete pinned Showdown doubles turns with deterministic successful hits",
+    "move_execution": true,
+    "full_transition_comparison": true
+  },
+  "cases": [
+    {
+      "id": "knock-off-unburden",
+      "item": null,
+      "last_item": null,
+      "unburden": true
+    },
+    {
+      "id": "knock-off-sticky-hold",
+      "item": "leftovers"
+    },
+    {
+      "id": "trick-exchange",
+      "source_item": "leftovers",
+      "target_item": "muscleband"
+    },
+    {
+      "id": "trick-sticky-hold",
+      "source_item": "muscleband",
+      "target_item": "leftovers"
+    },
+    {
+      "id": "mummy-replacement",
+      "source_ability": "mummy"
+    },
+    {
+      "id": "wandering-spirit-swap",
+      "source_ability": "wanderingspirit",
+      "target_ability": "limber"
+    }
+  ]
+}

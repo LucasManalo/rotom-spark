@@ -139,6 +139,81 @@ impl<'a> StateKernel<'a> {
         Ok(std::mem::replace(&mut pokemon.item, item))
     }
 
+    /// Removes an item while preserving authoritative item history.
+    pub(crate) fn remove_item(
+        &mut self,
+        target: PokemonRef,
+        consumed: bool,
+        activate_unburden: bool,
+    ) -> Result<Option<ItemId>, BattleError> {
+        let pokemon = self.pokemon_mut(target)?;
+        let item = pokemon.item.take();
+        if let Some(item) = item {
+            if consumed {
+                pokemon.last_item = Some(item);
+                pokemon.item_used_this_turn = true;
+            }
+            pokemon.unburden_active |= activate_unburden;
+        }
+        Ok(item)
+    }
+
+    /// Transfers one held item atomically between two Pokémon.
+    pub(crate) fn transfer_item(
+        &mut self,
+        from: PokemonRef,
+        to: PokemonRef,
+        activate_unburden: bool,
+    ) -> Result<Option<ItemId>, BattleError> {
+        if from == to {
+            return Ok(None);
+        }
+        if self.pokemon(to)?.item.is_some() {
+            return Err(BattleError::InvalidState(
+                "item transfer target already holds an item".to_owned(),
+            ));
+        }
+        let Some(item) = self.pokemon(from)?.item else {
+            return Ok(None);
+        };
+        {
+            let source = self.pokemon_mut(from)?;
+            source.item = None;
+            source.unburden_active |= activate_unburden;
+        }
+        self.pokemon_mut(to)?.item = Some(item);
+        Ok(Some(item))
+    }
+
+    /// Exchanges held items atomically and records holders left itemless.
+    pub(crate) fn swap_items(
+        &mut self,
+        left: PokemonRef,
+        right: PokemonRef,
+        left_unburden: bool,
+        right_unburden: bool,
+    ) -> Result<bool, BattleError> {
+        if left == right {
+            return Ok(false);
+        }
+        let left_item = self.pokemon(left)?.item;
+        let right_item = self.pokemon(right)?.item;
+        if left_item.is_none() && right_item.is_none() {
+            return Ok(false);
+        }
+        {
+            let pokemon = self.pokemon_mut(left)?;
+            pokemon.item = right_item;
+            pokemon.unburden_active |= left_unburden && right_item.is_none();
+        }
+        {
+            let pokemon = self.pokemon_mut(right)?;
+            pokemon.item = left_item;
+            pokemon.unburden_active |= right_unburden && left_item.is_none();
+        }
+        Ok(true)
+    }
+
     pub(crate) fn request_switch(
         &mut self,
         target: PokemonRef,
@@ -204,6 +279,8 @@ impl<'a> StateKernel<'a> {
             ));
         }
         pokemon.item = None;
+        pokemon.last_item = Some(berry);
+        pokemon.item_used_this_turn = true;
         pokemon.last_consumed_berry = Some(berry);
         if schedule_cud_chew {
             pokemon.cud_chew_berry = Some(berry);
@@ -249,6 +326,85 @@ impl<'a> StateKernel<'a> {
     ) -> Result<AbilityId, BattleError> {
         let pokemon = self.pokemon_mut(target)?;
         Ok(std::mem::replace(&mut pokemon.ability, ability))
+    }
+
+    pub(crate) fn replace_ability(
+        &mut self,
+        target: PokemonRef,
+        ability: AbilityId,
+        temporary: bool,
+    ) -> Result<AbilityId, BattleError> {
+        let pokemon = self.pokemon_mut(target)?;
+        let previous = pokemon.ability;
+        if temporary && pokemon.ability_restore.is_none() {
+            pokemon.ability_restore = Some(previous);
+        }
+        pokemon.ability = ability;
+        pokemon.ability_suppressed = false;
+        pokemon.unburden_active = false;
+        Ok(previous)
+    }
+
+    pub(crate) fn swap_abilities(
+        &mut self,
+        left: PokemonRef,
+        right: PokemonRef,
+    ) -> Result<bool, BattleError> {
+        if left == right {
+            return Ok(false);
+        }
+        let left_ability = self.pokemon(left)?.ability;
+        let right_ability = self.pokemon(right)?.ability;
+        if left_ability == right_ability {
+            return Ok(false);
+        }
+        {
+            let pokemon = self.pokemon_mut(left)?;
+            pokemon.ability_restore.get_or_insert(left_ability);
+            pokemon.ability = right_ability;
+            pokemon.ability_suppressed = false;
+            pokemon.unburden_active = false;
+        }
+        {
+            let pokemon = self.pokemon_mut(right)?;
+            pokemon.ability_restore.get_or_insert(right_ability);
+            pokemon.ability = left_ability;
+            pokemon.ability_suppressed = false;
+            pokemon.unburden_active = false;
+        }
+        Ok(true)
+    }
+
+    pub(crate) fn set_ability_suppressed(
+        &mut self,
+        target: PokemonRef,
+        suppressed: bool,
+    ) -> Result<bool, BattleError> {
+        let pokemon = self.pokemon_mut(target)?;
+        let changed = pokemon.ability_suppressed != suppressed;
+        pokemon.ability_suppressed = suppressed;
+        Ok(changed)
+    }
+
+    pub(crate) fn restore_ability(&mut self, target: PokemonRef) -> Result<bool, BattleError> {
+        let pokemon = self.pokemon_mut(target)?;
+        let Some(ability) = pokemon.ability_restore.take() else {
+            pokemon.ability_suppressed = false;
+            pokemon.unburden_active = false;
+            return Ok(false);
+        };
+        pokemon.ability = ability;
+        pokemon.ability_suppressed = false;
+        pokemon.unburden_active = false;
+        Ok(true)
+    }
+
+    pub(crate) fn reset_item_turn_history(&mut self) {
+        for side in [SideId::P1, SideId::P2] {
+            for pokemon in &mut self.battle.side_mut(side).team.members {
+                pokemon.item_used_this_turn = false;
+            }
+        }
     }
 
     /// Applies a mechanics-approved Mega transformation atomically.
@@ -298,6 +454,9 @@ impl<'a> StateKernel<'a> {
         pokemon.stats = evolution.stats;
         pokemon.current_hp = current_hp;
         pokemon.ability = evolution.ability;
+        pokemon.ability_restore = None;
+        pokemon.ability_suppressed = false;
+        pokemon.unburden_active = false;
         side.mega_evolution_used = true;
         for ally in &mut side.team.members {
             ally.mega_evolution = None;
@@ -772,7 +931,12 @@ mod tests {
             },
             current_hp: 100,
             ability: AbilityId::new(1),
+            ability_restore: None,
+            ability_suppressed: false,
             item: None,
+            last_item: None,
+            item_used_this_turn: false,
+            unburden_active: false,
             last_consumed_berry: None,
             cud_chew_berry: None,
             cud_chew_turns: 0,

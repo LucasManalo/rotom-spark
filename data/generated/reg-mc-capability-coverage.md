@@ -11,13 +11,13 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | --- | ---: | ---: | ---: | ---: |
 | ability | 215 | 123 | 92 | 0 |
 | item | 166 | 140 | 26 | 0 |
-| move | 510 | 238 | 0 | 272 |
+| move | 510 | 241 | 0 | 269 |
 
 ## Executable capability coverage
 
 | Total | Verified | Implemented | Partial | Unsupported |
 | ---: | ---: | ---: | ---: | ---: |
-| 69 | 9 | 21 | 22 | 17 |
+| 71 | 11 | 21 | 22 | 17 |
 
 `implemented` means the shared capability executes in its stated scope. `verified` additionally has qualifying pinned-reference evidence. Partial and unsupported capabilities continue to block dependent identities.
 
@@ -25,7 +25,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 
 | Capability | Status | Blocked identities | Sole remaining blocker | Known gap |
 | --- | --- | ---: | ---: | --- |
-| `custom_callback` | unsupported | 181 | 112 | Resolved Showdown callbacks are recognized but not generically executable. |
+| `custom_callback` | unsupported | 178 | 109 | Resolved Showdown callbacks are recognized but not generically executable. |
 | `special_behavior` | unsupported | 148 | 47 | The move requires semantics outside the currently supported declarative executor. |
 | `volatile` | partial | 63 | 3 | Flinch and selected existing conditions use the shared lifecycle; confusion, Taunt, Encore, Disable, Substitute, trapping, recharge, and invulnerability remain incomplete. |
 | `substitute_damage_routing` | unsupported | 18 | 18 | Resistance Berries cannot be promoted until damage and item activation distinguish Substitute damage from direct HP damage. |
@@ -37,11 +37,11 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | `contact_effects` | partial | 9 | 9 | Several abilities and items depend on unimplemented volatile/status/faint consequences. |
 | `field_activation` | partial | 9 | 9 | Several setters exist, but entry and damage-triggered activation is not uniformly sequenced. |
 | `stat_event_lifecycle` | partial | 8 | 8 | Intimidate and other reactive boosts/drops are not complete across interactions. |
-| `item_lifecycle` | partial | 7 | 7 | Theft, exchange, restoration, suppression, and consumed-item history are incomplete. |
+| `item_lifecycle_consumers` | partial | 7 | 7 | Pickup, Magician, Pickpocket, Symbiosis, and future removal moves still require identity-specific timing coverage. |
 | `berry_effect_coverage` | partial | 5 | 4 | Confusion-curing and pinch-stat berries remain incomplete, so berry-dependent abilities are not interaction-complete for every reachable berry. |
 | `move_type_conversion` | partial | 5 | 5 | Aerilate-family and Champions conversion abilities are not interaction-complete. |
 | `volatile_cure` | partial | 5 | 0 | Mental Herb and flinch prevention are implemented, but confusion cures and other ability-driven volatile rules remain incomplete. |
-| `ability_lifecycle` | partial | 4 | 4 | Copying, replacement, suppression, and activation ordering are incomplete. |
+| `ability_lifecycle_restrictions` | partial | 4 | 4 | Trace/Receiver filters, immutable ability flags, Ability Shield, and Neutralizing Gas remain identity-specific blockers. |
 | `status_event_lifecycle` | partial | 3 | 3 | Synchronize, Leaf Guard, Purifying Salt, and related interactions are incomplete. |
 | `calls_move` | unsupported | 2 | 0 | Copycat, Sleep Talk, and other callers are not executable. |
 | `confusion` | unsupported | 2 | 0 | Confusion is not end-to-end. |
@@ -74,7 +74,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 
 - ability: 92 partial identities mapped; 0 currently unlocked.
 - item: 26 partial identities mapped; 0 currently unlocked.
-- move: 272 unsupported identities mapped; 0 currently unlocked.
+- move: 269 unsupported identities mapped; 0 currently unlocked.
 
 Mega Stones are reported as a **metadata foundation**. They remain partial until `mega_eligibility`, `mega_timing`, `form_change`, and `ability_transition` are complete.
 

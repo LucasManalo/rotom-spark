@@ -43,8 +43,10 @@ const CAPABILITIES = {
 	mega_ability_transition: verified('Mega ability transition', ['deactivation', 'replacement', 'start hooks'], 'Mega ability replacement and Start hooks are implemented; arbitrary ability replacement remains incomplete.', ['showdown:sim/pokemon.ts:Pokemon.setAbility']),
 	form_change: unsupported('Other battle form transformations', ['species/form', 'typing', 'stats', 'HP preservation', 'persistence'], 'Mega Evolution uses its verified dedicated capability; Stance Change, Hunger Switch, Zero to Hero, Transform, and other forms remain PR 18 scope.', ['showdown:sim/pokemon.ts:Pokemon.formeChange']),
 	ability_transition: partial('General ability replacement and activation transition', ['deactivation', 'replacement', 'start hooks', 'suppression'], 'Mega Evolution uses a verified transition, but arbitrary ability replacement and suppression interactions remain incomplete.', ['showdown:sim/pokemon.ts:Pokemon.setAbility']),
-	item_lifecycle: partial('Held-item mutation lifecycle', ['remove', 'consume', 'steal', 'exchange', 'restore', 'suppress'], 'Theft, exchange, restoration, suppression, and consumed-item history are incomplete.', ['showdown:sim/pokemon.ts:Pokemon.takeItem', 'showdown:sim/pokemon.ts:Pokemon.setItem']),
-	ability_lifecycle: partial('Ability mutation lifecycle', ['copy', 'replace', 'suppress', 'ignore', 'entry', 'exit'], 'Copying, replacement, suppression, and activation ordering are incomplete.', ['showdown:sim/pokemon.ts:Pokemon.setAbility', 'showdown:sim/pokemon.ts:Pokemon.ignoringAbility']),
+	item_lifecycle: verified('Held-item mutation lifecycle', ['remove', 'consume', 'steal', 'exchange', 'restore', 'suppress'], 'The generic lifecycle is complete; identity-specific trigger timing such as Pickup remains tracked by the dependent ability or move capability.', ['showdown:sim/pokemon.ts:Pokemon.takeItem', 'showdown:sim/pokemon.ts:Pokemon.setItem']),
+	ability_lifecycle: verified('Ability mutation lifecycle', ['copy', 'replace', 'suppress', 'ignore', 'entry', 'exit'], 'The generic lifecycle is complete; identity-specific copy restrictions and Neutralizing Gas field behavior remain tracked by their dependent mechanics.', ['showdown:sim/pokemon.ts:Pokemon.setAbility', 'showdown:sim/pokemon.ts:Pokemon.ignoringAbility']),
+	item_lifecycle_consumers: partial('Identity-specific item lifecycle consumers', ['trigger predicates', 'multi-target ordering', 'future removal moves'], 'Pickup, Magician, Pickpocket, Symbiosis, and future removal moves still require identity-specific timing coverage.', ['showdown:data/abilities.ts:Abilities', 'showdown:data/moves.ts:Moves']),
+	ability_lifecycle_restrictions: partial('Identity-specific ability transition restrictions', ['immutable flags', 'copy filters', 'Ability Shield', 'field suppression'], 'Trace/Receiver filters, immutable ability flags, Ability Shield, and Neutralizing Gas remain identity-specific blockers.', ['showdown:data/abilities.ts:Abilities', 'showdown:sim/pokemon.ts:Pokemon.setAbility']),
 	mental_herb_cure: implemented('Mental Herb cure lifecycle', ['complete cure set', 'item suppression', 'consumption', 'update timing'], 'The six Mental Herb conditions are cured canonically; their individual move restrictions remain separate.', ['showdown:data/items.ts:Items.mentalherb']),
 	volatile_cure: partial('Other volatile prevention and cure', ['ability prevention', 'Berry cure', 'event timing'], 'Mental Herb and flinch prevention are implemented, but confusion cures and other ability-driven volatile rules remain incomplete.', ['showdown:sim/pokemon.ts:Pokemon.removeVolatile']),
 	confusion: unsupported('Confusion lifecycle', ['application', 'duration', 'before-move check', 'self-hit', 'cure'], 'Confusion is not end-to-end.', ['showdown:data/conditions.ts:Conditions.confusion']),
@@ -101,11 +103,11 @@ const ABILITY_GROUPS = [
 	[['flashfire', 'heatproof', 'heavymetal', 'lightmetal', 'liquidooze', 'parentalbond', 'rivalry', 'stakeout', 'sturdy'], ['ability_damage_modifiers', 'damage_event_lifecycle']],
 	[['infiltrator'], ['volatile']],
 	[['innardsout', 'magicguard', 'poisonheal'], ['damage_event_lifecycle']],
-	[['klutz', 'magician', 'pickpocket', 'pickup', 'stickyhold', 'symbiosis', 'unburden'], ['item_lifecycle']],
+	[['klutz', 'magician', 'pickpocket', 'pickup', 'stickyhold', 'symbiosis', 'unburden'], ['item_lifecycle', 'item_lifecycle_consumers']],
 	[['leafguard', 'purifyingsalt', 'synchronize'], ['status_event_lifecycle']],
 	[['lightningrod'], ['redirection_ability']],
 	[['magicbounce'], ['move_reflection']],
-	[['mummy', 'receiver', 'trace', 'wanderingspirit'], ['ability_lifecycle']],
+	[['mummy', 'receiver', 'trace', 'wanderingspirit'], ['ability_lifecycle', 'ability_lifecycle_restrictions']],
 	[['noguard'], ['accuracy_override']],
 	[['scrappy'], ['immunity_override']],
 	[['screencleaner'], ['field_or_side_condition']],
@@ -209,6 +211,25 @@ for (const id of ['mega_eligibility', 'mega_timing', 'mega_form_change', 'mega_a
 		differential_fixtures: ['differential:data/fixtures/differential/mega-evolution-lifecycle.json#charizard-mega-x-damage-and-item'],
 	});
 }
+
+Object.assign(CAPABILITIES.item_lifecycle, {
+	tests: [
+		'unit:crates/rotom-dex/tests/combat.rs#knock_off_uses_item_removal_history_sticky_hold_and_unburden',
+		'unit:crates/rotom-dex/tests/combat.rs#trick_swaps_items_atomically_and_sticky_hold_blocks_the_exchange',
+	],
+	differential_fixtures: [
+		'differential:data/fixtures/differential/item-ability-lifecycle.json#knock-off-unburden',
+		'differential:data/fixtures/differential/item-ability-lifecycle.json#trick-exchange',
+	],
+});
+
+Object.assign(CAPABILITIES.ability_lifecycle, {
+	tests: ['unit:crates/rotom-dex/tests/combat.rs#contact_ability_changes_run_end_replace_start_and_restore_metadata'],
+	differential_fixtures: [
+		'differential:data/fixtures/differential/item-ability-lifecycle.json#mummy-replacement',
+		'differential:data/fixtures/differential/item-ability-lifecycle.json#wandering-spirit-swap',
+	],
+});
 
 const UNLOCKED_IDENTITIES = {
 	berry_lifecycle: [
