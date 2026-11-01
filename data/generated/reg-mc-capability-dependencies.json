@@ -26,8 +26,8 @@
       "item": {
         "reachable": 166,
         "unsupported": 0,
-        "partial": 107,
-        "implemented": 59
+        "partial": 26,
+        "implemented": 140
       },
       "move": {
         "reachable": 510,
@@ -37,15 +37,15 @@
       }
     },
     "executable_capability_coverage": {
-      "total": 67,
-      "unsupported": 20,
-      "partial": 21,
+      "total": 69,
+      "unsupported": 17,
+      "partial": 22,
       "implemented": 21,
-      "verified": 5
+      "verified": 9
     },
     "dependency_targets": {
       "ability": 92,
-      "item": 107,
+      "item": 26,
       "move": 272
     }
   },
@@ -131,8 +131,8 @@
     },
     {
       "id": "ability_transition",
-      "status": "unsupported",
-      "title": "Ability replacement and activation transition",
+      "status": "partial",
+      "title": "General ability replacement and activation transition",
       "sub_capabilities": [
         "deactivation",
         "replacement",
@@ -146,96 +146,14 @@
         "suppression"
       ],
       "known_gaps": [
-        "Ability changes are not represented by a shared lifecycle."
+        "Mega Evolution uses a verified transition, but arbitrary ability replacement and suppression interactions remain incomplete."
       ],
       "tests": [],
       "differential_fixtures": [],
       "pinned_reference_evidence": [
         "showdown:sim/pokemon.ts:Pokemon.setAbility"
       ],
-      "blocked_identities": [
-        "item:abomasite",
-        "item:absolite",
-        "item:absolitez",
-        "item:aerodactylite",
-        "item:aggronite",
-        "item:alakazite",
-        "item:altarianite",
-        "item:ampharosite",
-        "item:audinite",
-        "item:banettite",
-        "item:barbaracite",
-        "item:baxcalibrite",
-        "item:beedrillite",
-        "item:blastoisinite",
-        "item:blazikenite",
-        "item:cameruptite",
-        "item:chandelurite",
-        "item:charizarditex",
-        "item:charizarditey",
-        "item:chesnaughtite",
-        "item:chimechite",
-        "item:clefablite",
-        "item:crabominite",
-        "item:delphoxite",
-        "item:dragalgite",
-        "item:dragoninite",
-        "item:drampanite",
-        "item:eelektrossite",
-        "item:emboarite",
-        "item:excadrite",
-        "item:falinksite",
-        "item:feraligite",
-        "item:floettite",
-        "item:froslassite",
-        "item:galladite",
-        "item:garchompite",
-        "item:garchompitez",
-        "item:gardevoirite",
-        "item:gengarite",
-        "item:glalitite",
-        "item:glimmoranite",
-        "item:golisopite",
-        "item:golurkite",
-        "item:greninjite",
-        "item:gyaradosite",
-        "item:hawluchanite",
-        "item:heracronite",
-        "item:houndoominite",
-        "item:kangaskhanite",
-        "item:lopunnite",
-        "item:lucarionite",
-        "item:lucarionitez",
-        "item:malamarite",
-        "item:manectite",
-        "item:mawilite",
-        "item:medichamite",
-        "item:meganiumite",
-        "item:meowsticite",
-        "item:metagrossite",
-        "item:pidgeotite",
-        "item:pinsirite",
-        "item:pyroarite",
-        "item:raichunitex",
-        "item:raichunitey",
-        "item:sablenite",
-        "item:salamencite",
-        "item:sceptilite",
-        "item:scizorite",
-        "item:scolipite",
-        "item:scovillainite",
-        "item:scraftinite",
-        "item:sharpedonite",
-        "item:skarmorite",
-        "item:slowbronite",
-        "item:staraptite",
-        "item:starminite",
-        "item:steelixite",
-        "item:swampertite",
-        "item:tyranitarite",
-        "item:venusaurite",
-        "item:victreebelite"
-      ],
+      "blocked_identities": [],
       "unlocked_identities": [],
       "would_unlock_if_completed": []
     },
@@ -1270,7 +1188,7 @@
     {
       "id": "form_change",
       "status": "unsupported",
-      "title": "Battle form transformation",
+      "title": "Other battle form transformations",
       "sub_capabilities": [
         "species/form",
         "typing",
@@ -1286,7 +1204,7 @@
         "persistence"
       ],
       "known_gaps": [
-        "Mega and other battle transformations are not kernel-mediated end-to-end."
+        "Mega Evolution uses its verified dedicated capability; Stance Change, Hunger Switch, Zero to Hero, Transform, and other forms remain PR 18 scope."
       ],
       "tests": [],
       "differential_fixtures": [],
@@ -1303,88 +1221,7 @@
         "ability:mimicry",
         "ability:protean",
         "ability:stancechange",
-        "ability:zerotohero",
-        "item:abomasite",
-        "item:absolite",
-        "item:absolitez",
-        "item:aerodactylite",
-        "item:aggronite",
-        "item:alakazite",
-        "item:altarianite",
-        "item:ampharosite",
-        "item:audinite",
-        "item:banettite",
-        "item:barbaracite",
-        "item:baxcalibrite",
-        "item:beedrillite",
-        "item:blastoisinite",
-        "item:blazikenite",
-        "item:cameruptite",
-        "item:chandelurite",
-        "item:charizarditex",
-        "item:charizarditey",
-        "item:chesnaughtite",
-        "item:chimechite",
-        "item:clefablite",
-        "item:crabominite",
-        "item:delphoxite",
-        "item:dragalgite",
-        "item:dragoninite",
-        "item:drampanite",
-        "item:eelektrossite",
-        "item:emboarite",
-        "item:excadrite",
-        "item:falinksite",
-        "item:feraligite",
-        "item:floettite",
-        "item:froslassite",
-        "item:galladite",
-        "item:garchompite",
-        "item:garchompitez",
-        "item:gardevoirite",
-        "item:gengarite",
-        "item:glalitite",
-        "item:glimmoranite",
-        "item:golisopite",
-        "item:golurkite",
-        "item:greninjite",
-        "item:gyaradosite",
-        "item:hawluchanite",
-        "item:heracronite",
-        "item:houndoominite",
-        "item:kangaskhanite",
-        "item:lopunnite",
-        "item:lucarionite",
-        "item:lucarionitez",
-        "item:malamarite",
-        "item:manectite",
-        "item:mawilite",
-        "item:medichamite",
-        "item:meganiumite",
-        "item:meowsticite",
-        "item:metagrossite",
-        "item:pidgeotite",
-        "item:pinsirite",
-        "item:pyroarite",
-        "item:raichunitex",
-        "item:raichunitey",
-        "item:sablenite",
-        "item:salamencite",
-        "item:sceptilite",
-        "item:scizorite",
-        "item:scolipite",
-        "item:scovillainite",
-        "item:scraftinite",
-        "item:sharpedonite",
-        "item:skarmorite",
-        "item:slowbronite",
-        "item:staraptite",
-        "item:starminite",
-        "item:steelixite",
-        "item:swampertite",
-        "item:tyranitarite",
-        "item:venusaurite",
-        "item:victreebelite"
+        "ability:zerotohero"
       ],
       "unlocked_identities": [],
       "would_unlock_if_completed": [
@@ -1586,8 +1423,40 @@
       "would_unlock_if_completed": []
     },
     {
+      "id": "mega_ability_transition",
+      "status": "verified",
+      "title": "Mega ability transition",
+      "sub_capabilities": [
+        "deactivation",
+        "replacement",
+        "start hooks"
+      ],
+      "lifecycle_and_ordering": [
+        "deactivation",
+        "replacement",
+        "start hooks"
+      ],
+      "known_gaps": [
+        "Mega ability replacement and Start hooks are implemented; arbitrary ability replacement remains incomplete."
+      ],
+      "tests": [
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_starts_the_new_ability_and_reorders_moves_with_transformed_speed"
+      ],
+      "differential_fixtures": [
+        "differential:data/fixtures/differential/mega-evolution-lifecycle.json#charizard-mega-x-damage-and-item"
+      ],
+      "pinned_reference_evidence": [
+        "showdown:sim/pokemon.ts:Pokemon.setAbility"
+      ],
+      "blocked_identities": [],
+      "unlocked_identities": [],
+      "would_unlock_if_completed": []
+    },
+    {
       "id": "mega_eligibility",
-      "status": "unsupported",
+      "status": "verified",
       "title": "Mega Evolution eligibility",
       "sub_capabilities": [
         "species/stone compatibility",
@@ -1600,14 +1469,21 @@
         "request validation"
       ],
       "known_gaps": [
-        "Mega Stones are metadata-only."
+        "All generated stone mappings are covered; move-based Mega Rayquaza is not reachable in this format."
       ],
-      "tests": [],
-      "differential_fixtures": [],
+      "tests": [
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_starts_the_new_ability_and_reorders_moves_with_transformed_speed"
+      ],
+      "differential_fixtures": [
+        "differential:data/fixtures/differential/mega-evolution-lifecycle.json#charizard-mega-x-damage-and-item"
+      ],
       "pinned_reference_evidence": [
         "showdown:sim/battle-actions.ts:BattleActions.canMegaEvo"
       ],
-      "blocked_identities": [
+      "blocked_identities": [],
+      "unlocked_identities": [
         "item:abomasite",
         "item:absolite",
         "item:absolitez",
@@ -1690,12 +1566,48 @@
         "item:venusaurite",
         "item:victreebelite"
       ],
+      "would_unlock_if_completed": []
+    },
+    {
+      "id": "mega_form_change",
+      "status": "verified",
+      "title": "Mega form transformation",
+      "sub_capabilities": [
+        "species/form",
+        "typing",
+        "stats",
+        "HP preservation",
+        "persistence"
+      ],
+      "lifecycle_and_ordering": [
+        "species/form",
+        "typing",
+        "stats",
+        "HP preservation",
+        "persistence"
+      ],
+      "known_gaps": [
+        "This capability is intentionally Mega-specific; other form changes remain PR 18 scope."
+      ],
+      "tests": [
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_starts_the_new_ability_and_reorders_moves_with_transformed_speed"
+      ],
+      "differential_fixtures": [
+        "differential:data/fixtures/differential/mega-evolution-lifecycle.json#charizard-mega-x-damage-and-item"
+      ],
+      "pinned_reference_evidence": [
+        "showdown:sim/pokemon.ts:Pokemon.formeChange",
+        "showdown:sim/pokemon.ts:Pokemon.updateMaxHp"
+      ],
+      "blocked_identities": [],
       "unlocked_identities": [],
       "would_unlock_if_completed": []
     },
     {
       "id": "mega_timing",
-      "status": "unsupported",
+      "status": "verified",
       "title": "Mega Evolution action timing",
       "sub_capabilities": [
         "choice validation",
@@ -1708,96 +1620,21 @@
         "order recalculation"
       ],
       "known_gaps": [
-        "No canonical Mega action lifecycle exists."
+        "The order-104 action and Gen 9 transformed-Speed queue refresh are implemented."
       ],
-      "tests": [],
-      "differential_fixtures": [],
+      "tests": [
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_starts_the_new_ability_and_reorders_moves_with_transformed_speed"
+      ],
+      "differential_fixtures": [
+        "differential:data/fixtures/differential/mega-evolution-lifecycle.json#charizard-mega-x-damage-and-item"
+      ],
       "pinned_reference_evidence": [
-        "showdown:sim/battle-actions.ts:BattleActions.runMegaEvo"
+        "showdown:sim/battle-queue.ts:BattleQueue.resolveAction",
+        "showdown:sim/battle.ts:Battle.runAction"
       ],
-      "blocked_identities": [
-        "item:abomasite",
-        "item:absolite",
-        "item:absolitez",
-        "item:aerodactylite",
-        "item:aggronite",
-        "item:alakazite",
-        "item:altarianite",
-        "item:ampharosite",
-        "item:audinite",
-        "item:banettite",
-        "item:barbaracite",
-        "item:baxcalibrite",
-        "item:beedrillite",
-        "item:blastoisinite",
-        "item:blazikenite",
-        "item:cameruptite",
-        "item:chandelurite",
-        "item:charizarditex",
-        "item:charizarditey",
-        "item:chesnaughtite",
-        "item:chimechite",
-        "item:clefablite",
-        "item:crabominite",
-        "item:delphoxite",
-        "item:dragalgite",
-        "item:dragoninite",
-        "item:drampanite",
-        "item:eelektrossite",
-        "item:emboarite",
-        "item:excadrite",
-        "item:falinksite",
-        "item:feraligite",
-        "item:floettite",
-        "item:froslassite",
-        "item:galladite",
-        "item:garchompite",
-        "item:garchompitez",
-        "item:gardevoirite",
-        "item:gengarite",
-        "item:glalitite",
-        "item:glimmoranite",
-        "item:golisopite",
-        "item:golurkite",
-        "item:greninjite",
-        "item:gyaradosite",
-        "item:hawluchanite",
-        "item:heracronite",
-        "item:houndoominite",
-        "item:kangaskhanite",
-        "item:lopunnite",
-        "item:lucarionite",
-        "item:lucarionitez",
-        "item:malamarite",
-        "item:manectite",
-        "item:mawilite",
-        "item:medichamite",
-        "item:meganiumite",
-        "item:meowsticite",
-        "item:metagrossite",
-        "item:pidgeotite",
-        "item:pinsirite",
-        "item:pyroarite",
-        "item:raichunitex",
-        "item:raichunitey",
-        "item:sablenite",
-        "item:salamencite",
-        "item:sceptilite",
-        "item:scizorite",
-        "item:scolipite",
-        "item:scovillainite",
-        "item:scraftinite",
-        "item:sharpedonite",
-        "item:skarmorite",
-        "item:slowbronite",
-        "item:staraptite",
-        "item:starminite",
-        "item:steelixite",
-        "item:swampertite",
-        "item:tyranitarite",
-        "item:venusaurite",
-        "item:victreebelite"
-      ],
+      "blocked_identities": [],
       "unlocked_identities": [],
       "would_unlock_if_completed": []
     },
@@ -4822,240 +4659,6 @@
     },
     {
       "kind": "item",
-      "id": "abomasite",
-      "name": "Abomasite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.abomasite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "absolite",
-      "name": "Absolite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.absolite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "absolitez",
-      "name": "Absolite Z",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.absolitez"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "aerodactylite",
-      "name": "Aerodactylite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.aerodactylite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "aggronite",
-      "name": "Aggronite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.aggronite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "alakazite",
-      "name": "Alakazite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.alakazite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "altarianite",
-      "name": "Altarianite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.altarianite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "ampharosite",
-      "name": "Ampharosite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.ampharosite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "audinite",
-      "name": "Audinite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.audinite"
-      ]
-    },
-    {
-      "kind": "item",
       "id": "babiriberry",
       "name": "Babiri Berry",
       "identity_status": "partial",
@@ -5078,110 +4681,6 @@
     },
     {
       "kind": "item",
-      "id": "banettite",
-      "name": "Banettite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.banettite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "barbaracite",
-      "name": "Barbaracite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.barbaracite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "baxcalibrite",
-      "name": "Baxcalibrite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.baxcalibrite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "beedrillite",
-      "name": "Beedrillite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.beedrillite"
-      ]
-    },
-    {
-      "kind": "item",
       "id": "bindingband",
       "name": "Binding Band",
       "identity_status": "partial",
@@ -5198,162 +4697,6 @@
       "differential_fixtures": [],
       "pinned_reference_evidence": [
         "showdown:data/items.ts:Items.bindingband"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "blastoisinite",
-      "name": "Blastoisinite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.blastoisinite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "blazikenite",
-      "name": "Blazikenite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.blazikenite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "cameruptite",
-      "name": "Cameruptite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.cameruptite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "chandelurite",
-      "name": "Chandelurite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.chandelurite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "charizarditex",
-      "name": "Charizardite X",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.charizarditex"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "charizarditey",
-      "name": "Charizardite Y",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.charizarditey"
       ]
     },
     {
@@ -5380,32 +4723,6 @@
     },
     {
       "kind": "item",
-      "id": "chesnaughtite",
-      "name": "Chesnaughtite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.chesnaughtite"
-      ]
-    },
-    {
-      "kind": "item",
       "id": "chilanberry",
       "name": "Chilan Berry",
       "identity_status": "partial",
@@ -5424,32 +4741,6 @@
       "differential_fixtures": [],
       "pinned_reference_evidence": [
         "showdown:data/items.ts:Items.chilanberry"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "chimechite",
-      "name": "Chimechite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.chimechite"
       ]
     },
     {
@@ -5492,32 +4783,6 @@
       "differential_fixtures": [],
       "pinned_reference_evidence": [
         "showdown:data/items.ts:Items.chopleberry"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "clefablite",
-      "name": "Clefablite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.clefablite"
       ]
     },
     {
@@ -5566,604 +4831,6 @@
     },
     {
       "kind": "item",
-      "id": "crabominite",
-      "name": "Crabominite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.crabominite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "delphoxite",
-      "name": "Delphoxite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.delphoxite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "dragalgite",
-      "name": "Dragalgite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.dragalgite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "dragoninite",
-      "name": "Dragoninite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.dragoninite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "drampanite",
-      "name": "Drampanite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.drampanite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "eelektrossite",
-      "name": "Eelektrossite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.eelektrossite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "emboarite",
-      "name": "Emboarite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.emboarite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "excadrite",
-      "name": "Excadrite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.excadrite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "falinksite",
-      "name": "Falinksite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.falinksite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "feraligite",
-      "name": "Feraligite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.feraligite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "floettite",
-      "name": "Floettite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.floettite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "froslassite",
-      "name": "Froslassite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.froslassite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "galladite",
-      "name": "Galladite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.galladite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "garchompite",
-      "name": "Garchompite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.garchompite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "garchompitez",
-      "name": "Garchompite Z",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.garchompitez"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "gardevoirite",
-      "name": "Gardevoirite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.gardevoirite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "gengarite",
-      "name": "Gengarite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.gengarite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "glalitite",
-      "name": "Glalitite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.glalitite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "glimmoranite",
-      "name": "Glimmoranite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.glimmoranite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "golisopite",
-      "name": "Golisopite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.golisopite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "golurkite",
-      "name": "Golurkite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.golurkite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "greninjite",
-      "name": "Greninjite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.greninjite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "gyaradosite",
-      "name": "Gyaradosite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.gyaradosite"
-      ]
-    },
-    {
-      "kind": "item",
       "id": "habanberry",
       "name": "Haban Berry",
       "identity_status": "partial",
@@ -6182,110 +4849,6 @@
       "differential_fixtures": [],
       "pinned_reference_evidence": [
         "showdown:data/items.ts:Items.habanberry"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "hawluchanite",
-      "name": "Hawluchanite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.hawluchanite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "heracronite",
-      "name": "Heracronite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.heracronite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "houndoominite",
-      "name": "Houndoominite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.houndoominite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "kangaskhanite",
-      "name": "Kangaskhanite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.kangaskhanite"
       ]
     },
     {
@@ -6334,84 +4897,6 @@
     },
     {
       "kind": "item",
-      "id": "lopunnite",
-      "name": "Lopunnite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.lopunnite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "lucarionite",
-      "name": "Lucarionite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.lucarionite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "lucarionitez",
-      "name": "Lucarionite Z",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.lucarionitez"
-      ]
-    },
-    {
-      "kind": "item",
       "id": "lumberry",
       "name": "Lum Berry",
       "identity_status": "partial",
@@ -6432,188 +4917,6 @@
       "differential_fixtures": [],
       "pinned_reference_evidence": [
         "showdown:data/items.ts:Items.lumberry"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "malamarite",
-      "name": "Malamarite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.malamarite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "manectite",
-      "name": "Manectite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.manectite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "mawilite",
-      "name": "Mawilite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.mawilite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "medichamite",
-      "name": "Medichamite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.medichamite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "meganiumite",
-      "name": "Meganiumite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.meganiumite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "meowsticite",
-      "name": "Meowsticite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.meowsticite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "metagrossite",
-      "name": "Metagrossite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.metagrossite"
       ]
     },
     {
@@ -6725,84 +5028,6 @@
     },
     {
       "kind": "item",
-      "id": "pidgeotite",
-      "name": "Pidgeotite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.pidgeotite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "pinsirite",
-      "name": "Pinsirite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.pinsirite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "pyroarite",
-      "name": "Pyroarite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.pyroarite"
-      ]
-    },
-    {
-      "kind": "item",
       "id": "quickclaw",
       "name": "Quick Claw",
       "identity_status": "partial",
@@ -6819,58 +5044,6 @@
       "differential_fixtures": [],
       "pinned_reference_evidence": [
         "showdown:data/items.ts:Items.quickclaw"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "raichunitex",
-      "name": "Raichunite X",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.raichunitex"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "raichunitey",
-      "name": "Raichunite Y",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.raichunitey"
       ]
     },
     {
@@ -6919,214 +5092,6 @@
     },
     {
       "kind": "item",
-      "id": "sablenite",
-      "name": "Sablenite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.sablenite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "salamencite",
-      "name": "Salamencite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.salamencite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "sceptilite",
-      "name": "Sceptilite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.sceptilite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "scizorite",
-      "name": "Scizorite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.scizorite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "scolipite",
-      "name": "Scolipite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.scolipite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "scovillainite",
-      "name": "Scovillainite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.scovillainite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "scraftinite",
-      "name": "Scraftinite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.scraftinite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "sharpedonite",
-      "name": "Sharpedonite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.sharpedonite"
-      ]
-    },
-    {
-      "kind": "item",
       "id": "shedshell",
       "name": "Shed Shell",
       "identity_status": "partial",
@@ -7170,162 +5135,6 @@
     },
     {
       "kind": "item",
-      "id": "skarmorite",
-      "name": "Skarmorite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.skarmorite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "slowbronite",
-      "name": "Slowbronite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.slowbronite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "staraptite",
-      "name": "Staraptite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.staraptite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "starminite",
-      "name": "Starminite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.starminite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "steelixite",
-      "name": "Steelixite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.steelixite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "swampertite",
-      "name": "Swampertite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.swampertite"
-      ]
-    },
-    {
-      "kind": "item",
       "id": "tangaberry",
       "name": "Tanga Berry",
       "identity_status": "partial",
@@ -7344,84 +5153,6 @@
       "differential_fixtures": [],
       "pinned_reference_evidence": [
         "showdown:data/items.ts:Items.tangaberry"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "tyranitarite",
-      "name": "Tyranitarite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.tyranitarite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "venusaurite",
-      "name": "Venusaurite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.venusaurite"
-      ]
-    },
-    {
-      "kind": "item",
-      "id": "victreebelite",
-      "name": "Victreebelite",
-      "identity_status": "partial",
-      "capabilities": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "outstanding_blockers": [
-        "ability_transition",
-        "form_change",
-        "mega_eligibility",
-        "mega_timing"
-      ],
-      "unlocked": false,
-      "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
-      ],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/items.ts:Items.victreebelite"
       ]
     },
     {

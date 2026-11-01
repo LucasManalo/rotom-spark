@@ -74,7 +74,7 @@ impl BattleState {
             )));
         }
 
-        let can_mega = pokemon.can_mega_evolve && !side_state.mega_evolution_used;
+        let can_mega = pokemon.mega_evolution.is_some() && !side_state.mega_evolution_used;
         let mut actions = Vec::new();
         for (raw_index, move_slot) in pokemon.moves.iter().enumerate() {
             if move_slot.disabled || move_slot.pp == 0 {

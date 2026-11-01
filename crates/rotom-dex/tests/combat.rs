@@ -136,6 +136,13 @@ fn volatile_lifecycle_fixture() -> serde_json::Value {
     .expect("volatile lifecycle fixture")
 }
 
+fn mega_evolution_fixture() -> serde_json::Value {
+    serde_json::from_str(include_str!(
+        "../../../data/fixtures/differential/mega-evolution-lifecycle.json"
+    ))
+    .expect("Mega Evolution lifecycle fixture")
+}
+
 fn single_move_action(move_slot: u8, target: ActionTarget) -> JointAction {
     JointAction::Turn {
         p1: TurnChoice {
@@ -4863,6 +4870,309 @@ fn remaining_mega_stones_are_registered_from_generated_metadata() {
             "missing Mega Stone behavior query for {name}"
         );
     }
+}
+
+fn fixture_id(value: &str) -> String {
+    value
+        .chars()
+        .filter(char::is_ascii_alphanumeric)
+        .flat_map(char::to_lowercase)
+        .collect()
+}
+
+#[test]
+fn every_generated_mega_stone_pair_builds_a_complete_transformation() {
+    let dex = champions_reg_mc().unwrap();
+    let fixture = mega_evolution_fixture();
+    assert_eq!(fixture["showdown_commit"], SHOWDOWN_COMMIT);
+    assert_eq!(fixture["format"], "gen9championsvgc2026regmc");
+    let mut pairs = 0_usize;
+    for item in dex
+        .items
+        .iter()
+        .filter(|item| item.legal && !item.mega_stone.is_empty())
+    {
+        for mapping in &item.mega_stone {
+            pairs += 1;
+            let source_id = fixture_id(&mapping.key);
+            let (_, source_data) = dex
+                .resolve_species(&source_id)
+                .unwrap_or_else(|| panic!("{} source {} is missing", item.id, mapping.key));
+            let source_ability = source_data
+                .abilities
+                .iter()
+                .find(|entry| entry.key == "0")
+                .or_else(|| source_data.abilities.first())
+                .expect("source primary ability");
+            let mut source = set_with_moves(
+                &dex,
+                &source_id,
+                &fixture_id(&source_ability.value),
+                &["swordsdance"],
+            );
+            source.item = Some(dex.resolve_item(&item.id).unwrap().0);
+            let state = dex
+                .pokemon_state(&source)
+                .unwrap_or_else(|error| panic!("{} -> {} failed: {error}", item.id, mapping.value));
+            let mega = state
+                .mega_evolution
+                .unwrap_or_else(|| panic!("{} did not unlock {}", item.id, mapping.value));
+
+            let target_id = fixture_id(&mapping.value);
+            let expected_form = dex.resolve_form(&target_id).expect("Mega form identity").0;
+            let (_, target_data) = dex.resolve_species(&target_id).expect("Mega species data");
+            let target_ability = target_data
+                .abilities
+                .iter()
+                .find(|entry| entry.key == "0")
+                .or_else(|| target_data.abilities.first())
+                .expect("Mega primary ability");
+            assert_eq!(mega.form, expected_form, "{} target form", item.id);
+            assert_eq!(
+                mega.ability,
+                dex.resolve_ability(&fixture_id(&target_ability.value))
+                    .expect("Mega ability identity")
+                    .0,
+                "{} target ability",
+                item.id
+            );
+
+            let mut transformed_set = source.clone();
+            transformed_set.species = dex.resolve_species(&target_id).unwrap().0;
+            transformed_set.form = None;
+            transformed_set.item = None;
+            transformed_set.ability = mega.ability;
+            assert_eq!(
+                mega.stats,
+                dex.pokemon_state(&transformed_set).unwrap().stats,
+                "{} transformed stats",
+                item.id
+            );
+        }
+    }
+    assert!(pairs > 0, "generated Dex must contain Mega mappings");
+}
+
+fn mega_turn() -> JointAction {
+    JointAction::Turn {
+        p1: TurnChoice {
+            actions: [
+                PokemonAction::Move {
+                    move_slot: MoveSlotIndex::new(0),
+                    target: ActionTarget::Automatic,
+                    mega: true,
+                },
+                PokemonAction::Move {
+                    move_slot: MoveSlotIndex::new(0),
+                    target: ActionTarget::Automatic,
+                    mega: false,
+                },
+            ],
+        },
+        p2: TurnChoice {
+            actions: [
+                PokemonAction::Move {
+                    move_slot: MoveSlotIndex::new(0),
+                    target: ActionTarget::Automatic,
+                    mega: false,
+                },
+                PokemonAction::Move {
+                    move_slot: MoveSlotIndex::new(0),
+                    target: ActionTarget::Automatic,
+                    mega: false,
+                },
+            ],
+        },
+    }
+}
+
+#[test]
+fn mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility() {
+    let dex = champions_reg_mc().unwrap();
+    let mut charizard = set_with_moves(&dex, "charizard", "blaze", &["swordsdance"]);
+    charizard.item = Some(dex.resolve_item("charizarditex").unwrap().0);
+    charizard.stat_points = StatAllocation {
+        hp: 12,
+        atk: 28,
+        def: 4,
+        spa: 8,
+        spd: 6,
+        spe: 22,
+    };
+    let mut gyarados = set_with_moves(&dex, "gyarados", "intimidate", &["swordsdance"]);
+    gyarados.item = Some(dex.resolve_item("gyaradosite").unwrap().0);
+    let filler = set_with_moves(&dex, "shuckle", "sturdy", &["swordsdance"]);
+    let foe = set_with_moves(&dex, "granbull", "intimidate", &["swordsdance"]);
+    let battle = selected_battle_for_teams(
+        &dex,
+        &[charizard, gyarados, filler.clone(), filler.clone()],
+        &[foe, filler.clone(), filler.clone(), filler],
+        0x15_04_01,
+    );
+    let source = PokemonRef::new(SideId::P1, PokemonIndex::new(0));
+    let prepared = battle
+        .side(SideId::P1)
+        .pokemon(PokemonIndex::new(0))
+        .unwrap();
+    let mega = prepared.mega_evolution.expect("Charizard X eligibility");
+    let held_item = prepared.item;
+    let missing_hp = 17;
+    let mut builder = BattleStateBuilder::from_state(battle).unwrap();
+    builder
+        .edit_pokemon(source, |pokemon| {
+            pokemon.current_hp -= missing_hp;
+        })
+        .unwrap();
+    let battle = builder.build().unwrap();
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let result = step(&battle, &mega_turn(), &mechanics).unwrap();
+    assert_eq!(
+        result,
+        step(&round_trip_state(&battle), &mega_turn(), &mechanics).unwrap()
+    );
+
+    let transformed = result
+        .state
+        .side(SideId::P1)
+        .pokemon(PokemonIndex::new(0))
+        .unwrap();
+    assert_eq!(transformed.form, Some(mega.form));
+    assert_eq!(transformed.stats, mega.stats);
+    assert_eq!(transformed.current_hp, mega.stats.hp - missing_hp);
+    assert_eq!(transformed.ability, mega.ability);
+    assert_eq!(transformed.item, held_item, "Mega Stone remains attached");
+    let reference = &mega_evolution_fixture()["cases"][0];
+    assert_eq!(reference["id"], "charizard-mega-x-damage-and-item");
+    assert_eq!(
+        dex.form(transformed.form.unwrap()).unwrap().id,
+        reference["after"]["species"].as_str().unwrap()
+    );
+    assert_eq!(
+        dex.ability(transformed.ability).unwrap().id,
+        reference["after"]["ability"].as_str().unwrap()
+    );
+    assert_eq!(
+        dex.item(transformed.item.unwrap()).unwrap().id,
+        reference["after"]["item"].as_str().unwrap()
+    );
+    assert!(result.state.side(SideId::P1).mega_evolution_used);
+    assert!(result
+        .state
+        .side(SideId::P1)
+        .team
+        .members
+        .iter()
+        .all(|pokemon| pokemon.mega_evolution.is_none()));
+    assert!(matches!(
+        result.diagnostics.turn.as_ref().unwrap().actions.first(),
+        Some(ResolvedAction::MegaEvolved {
+            side: SideId::P1,
+            slot: ActiveSlot::Left,
+            ..
+        })
+    ));
+    assert!(result
+        .state
+        .legal_actions(SideId::P1)
+        .unwrap()
+        .slots
+        .iter()
+        .flat_map(|slot| &slot.actions)
+        .all(|action| !matches!(action, PokemonAction::Move { mega: true, .. })));
+}
+
+#[test]
+fn mega_evolution_starts_the_new_ability_and_reorders_moves_with_transformed_speed() {
+    let dex = champions_reg_mc().unwrap();
+    let mut abomasnow = set_with_moves(&dex, "abomasnow", "snowwarning", &["swordsdance"]);
+    abomasnow.item = Some(dex.resolve_item("abomasite").unwrap().0);
+    let shuckle = set_with_moves(&dex, "shuckle", "sturdy", &["swordsdance"]);
+    let middle = set_with_moves(&dex, "granbull", "intimidate", &["swordsdance"]);
+    let battle = selected_battle_for_teams(
+        &dex,
+        &[abomasnow, shuckle.clone(), shuckle.clone(), shuckle.clone()],
+        &[middle, shuckle.clone(), shuckle.clone(), shuckle],
+        0x15_04_02,
+    );
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let result = step(&battle, &mega_turn(), &mechanics).unwrap();
+    let snow = dex
+        .resolve_move("snowscape")
+        .map(|(id, _)| rotom_core::ConditionId::new(id.get()))
+        .unwrap();
+    assert_eq!(
+        result.state.field().weather.map(|weather| weather.id),
+        Some(snow)
+    );
+    let reference = &mega_evolution_fixture()["cases"][1];
+    assert_eq!(reference["id"], "abomasnow-mega-speed-and-ability-start");
+    assert_eq!(reference["weather"], "snowscape");
+    assert_eq!(reference["move_order"][0], "p2a: Granbull");
+    let used = result
+        .diagnostics
+        .turn
+        .as_ref()
+        .unwrap()
+        .actions
+        .iter()
+        .filter_map(|action| match action {
+            ResolvedAction::Used { side, slot, .. } => Some((*side, *slot)),
+            _ => None,
+        })
+        .collect::<Vec<_>>();
+    let foe_position = used
+        .iter()
+        .position(|entry| *entry == (SideId::P2, ActiveSlot::Left))
+        .unwrap();
+    let mega_position = used
+        .iter()
+        .position(|entry| *entry == (SideId::P1, ActiveSlot::Left))
+        .unwrap();
+    assert!(
+        foe_position < mega_position,
+        "Mega Abomasnow's transformed Speed must reorder its queued move"
+    );
+    assert!(result
+        .diagnostics
+        .turn
+        .as_ref()
+        .unwrap()
+        .events
+        .iter()
+        .any(|event| event.event == BattleEvent::AbilityStart));
+}
+
+#[test]
+fn incompatible_mega_request_is_illegal_and_error_atomic() {
+    let dex = champions_reg_mc().unwrap();
+    let mut charizard = set_with_moves(&dex, "charizard", "blaze", &["swordsdance"]);
+    charizard.item = Some(dex.resolve_item("gyaradosite").unwrap().0);
+    let filler = set_with_moves(&dex, "shuckle", "sturdy", &["swordsdance"]);
+    let battle = selected_battle_for_teams(
+        &dex,
+        &[charizard, filler.clone(), filler.clone(), filler.clone()],
+        &[filler.clone(), filler.clone(), filler.clone(), filler],
+        0x15_04_03,
+    );
+    assert!(battle
+        .side(SideId::P1)
+        .pokemon(PokemonIndex::new(0))
+        .unwrap()
+        .mega_evolution
+        .is_none());
+    let reference = &mega_evolution_fixture()["cases"][2];
+    assert_eq!(reference["id"], "incompatible-stone");
+    assert!(reference["can_mega"].is_null());
+    let before = battle.clone();
+    assert!(matches!(
+        step(
+            &battle,
+            &mega_turn(),
+            &Mechanics::new(&dex, &EffectRegistry::new())
+        ),
+        Err(rotom_core::BattleError::IllegalChoice(_))
+    ));
+    assert_eq!(battle, before);
 }
 
 #[test]

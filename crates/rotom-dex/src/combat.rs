@@ -2,11 +2,11 @@ use crate::{Accuracy, DexData, MoveBehaviorKind, MoveData, SpeciesData, Stats};
 use rotom_core::{
     AbilityBehavior, AbilityHandler, AbilityId, AbilitySuppression, BattleError, BattleStat,
     BattleStats, CombatData, CombatMove, ConditionId, EffectFraction, FieldEffectIds, HitSequence,
-    ItemBehavior, ItemHandler, ItemId, MajorStatus, MoveAccuracy, MoveCapabilities, MoveCapability,
-    MoveCategory, MoveId, MoveIntrinsic, MoveOperation, MoveSlot, MoveTarget, PokemonPosition,
-    PokemonSet, PokemonState, PokemonType, PokemonTypes, PrimaryMoveEffect, PriorMoveEffect,
-    SecondaryMoveEffect, SelfMoveEffect, SpeciesId, StatAllocation, StatStages, StatusState,
-    TerrainEnvironment, WeatherEnvironment,
+    ItemBehavior, ItemHandler, ItemId, MajorStatus, MegaEvolution, MoveAccuracy, MoveCapabilities,
+    MoveCapability, MoveCategory, MoveId, MoveIntrinsic, MoveOperation, MoveSlot, MoveTarget,
+    PokemonPosition, PokemonSet, PokemonState, PokemonType, PokemonTypes, PrimaryMoveEffect,
+    PriorMoveEffect, SecondaryMoveEffect, SelfMoveEffect, SpeciesId, StatAllocation, StatStages,
+    StatusState, TerrainEnvironment, WeatherEnvironment,
 };
 
 impl CombatData for DexData {
@@ -1975,6 +1975,7 @@ impl DexData {
             .copied()
             .map(|move_id| self.move_slot(move_id))
             .collect::<Result<Vec<_>, _>>()?;
+        let mega_evolution = self.mega_evolution(set, species)?;
         Ok(PokemonState {
             species: set.species,
             form: set.form,
@@ -1991,7 +1992,7 @@ impl DexData {
             status_state: StatusState::default(),
             stat_stages: StatStages::default(),
             volatiles: Vec::new(),
-            can_mega_evolve: false,
+            mega_evolution,
             trapped: false,
             position: PokemonPosition::Team,
         })
@@ -2011,6 +2012,100 @@ impl DexData {
             disabled: false,
         })
     }
+
+    fn mega_evolution(
+        &self,
+        set: &PokemonSet,
+        current: &SpeciesData,
+    ) -> Result<Option<MegaEvolution>, BattleError> {
+        let Some(item_id) = set.item else {
+            return Ok(None);
+        };
+        let item = self.item(item_id).ok_or_else(|| {
+            BattleError::DataMismatch("held item is missing from the Dex".to_owned())
+        })?;
+        if item.mega_stone.is_empty() {
+            return Ok(None);
+        }
+
+        let exact = item
+            .mega_stone
+            .iter()
+            .find(|entry| entry.key == current.name)
+            .and_then(|entry| {
+                self.resolve_species(&dex_id(&entry.value))
+                    .filter(|(_, target)| target.gen >= 9)
+                    .map(|_| entry.value.as_str())
+            });
+        let target_name = exact.or_else(|| {
+            item.mega_stone
+                .iter()
+                .find(|entry| entry.key == current.base_species)
+                .map(|entry| entry.value.as_str())
+        });
+        let Some(target_name) = target_name else {
+            return Ok(None);
+        };
+        let target_id = dex_id(target_name);
+        if target_id == current.id {
+            return Ok(None);
+        }
+        let (_, target) = self.resolve_species(&target_id).ok_or_else(|| {
+            BattleError::DataMismatch(format!(
+                "Mega Stone `{}` targets missing species `{target_name}`",
+                item.id
+            ))
+        })?;
+        if !target.is_mega {
+            return Err(BattleError::DataMismatch(format!(
+                "Mega Stone `{}` targets non-Mega species `{target_name}`",
+                item.id
+            )));
+        }
+        let (form, _) = self.resolve_form(&target_id).ok_or_else(|| {
+            BattleError::DataMismatch(format!(
+                "Mega species `{target_name}` is missing its generated form identity"
+            ))
+        })?;
+        let ability_name = target
+            .abilities
+            .iter()
+            .find(|entry| entry.key == "0")
+            .or_else(|| target.abilities.first())
+            .map(|entry| entry.value.as_str())
+            .ok_or_else(|| {
+                BattleError::DataMismatch(format!(
+                    "Mega species `{target_name}` has no primary ability"
+                ))
+            })?;
+        let (ability, _) = self.resolve_ability(&dex_id(ability_name)).ok_or_else(|| {
+            BattleError::DataMismatch(format!(
+                "Mega species `{target_name}` references missing ability `{ability_name}`"
+            ))
+        })?;
+        let nature = self.nature(set.nature).ok_or_else(|| {
+            BattleError::DataMismatch("set nature is missing from the Dex".to_owned())
+        })?;
+        Ok(Some(MegaEvolution {
+            form,
+            stats: champions_stats(
+                target.base_stats,
+                set.stat_points,
+                set.level,
+                nature.plus.as_deref(),
+                nature.minus.as_deref(),
+            ),
+            ability,
+        }))
+    }
+}
+
+fn dex_id(value: &str) -> String {
+    value
+        .chars()
+        .filter(char::is_ascii_alphanumeric)
+        .flat_map(char::to_lowercase)
+        .collect()
 }
 
 fn selected_species(

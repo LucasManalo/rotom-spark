@@ -54,6 +54,10 @@ pub enum BattleEvent {
     /// Runs once per successfully damaged target after the complete move effect.
     AfterMoveSecondary,
     AfterMove,
+    /// Ends the previous ability during a permanent form transformation.
+    AbilityEnd,
+    /// Starts only the transformed Pokémon's new ability.
+    AbilityStart,
     SwitchIn,
     SwitchOut,
     Faint,
@@ -94,6 +98,8 @@ impl BattleEvent {
             | Self::AfterSetStatus
             | Self::AfterMoveSecondary
             | Self::AfterMove
+            | Self::AbilityEnd
+            | Self::AbilityStart
             | Self::SwitchIn
             | Self::Faint
             | Self::Residual => EventContract::new(EventRelay::None, false, false),
@@ -925,6 +931,11 @@ impl EffectRegistry {
                 let owner = EffectOwner::Pokemon {
                     pokemon: PokemonRef::new(side, pokemon),
                 };
+                if event == BattleEvent::AbilityStart
+                    && context.source != Some(PokemonRef::new(side, pokemon))
+                {
+                    continue;
+                }
                 let speed = state.effective_speed();
                 if let Some(handlers) = registrations.abilities.get(&state.ability) {
                     collect_ability_registrations(&mut collected, handlers, owner, speed, context);

@@ -10,14 +10,14 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Kind | Reachable | Implemented | Partial | Unsupported |
 | --- | ---: | ---: | ---: | ---: |
 | ability | 215 | 123 | 92 | 0 |
-| item | 166 | 59 | 107 | 0 |
+| item | 166 | 140 | 26 | 0 |
 | move | 510 | 238 | 0 | 272 |
 
 ## Executable capability coverage
 
 | Total | Verified | Implemented | Partial | Unsupported |
 | ---: | ---: | ---: | ---: | ---: |
-| 67 | 5 | 21 | 21 | 20 |
+| 69 | 9 | 21 | 22 | 17 |
 
 `implemented` means the shared capability executes in its stated scope. `verified` additionally has qualifying pinned-reference evidence. Partial and unsupported capabilities continue to block dependent identities.
 
@@ -27,15 +27,12 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | --- | --- | ---: | ---: | --- |
 | `custom_callback` | unsupported | 181 | 112 | Resolved Showdown callbacks are recognized but not generically executable. |
 | `special_behavior` | unsupported | 148 | 47 | The move requires semantics outside the currently supported declarative executor. |
-| `form_change` | unsupported | 91 | 10 | Mega and other battle transformations are not kernel-mediated end-to-end. |
-| `ability_transition` | unsupported | 81 | 0 | Ability changes are not represented by a shared lifecycle. |
-| `mega_eligibility` | unsupported | 81 | 0 | Mega Stones are metadata-only. |
-| `mega_timing` | unsupported | 81 | 0 | No canonical Mega action lifecycle exists. |
 | `volatile` | partial | 63 | 3 | Flinch and selected existing conditions use the shared lifecycle; confusion, Taunt, Encore, Disable, Substitute, trapping, recharge, and invulnerability remain incomplete. |
 | `substitute_damage_routing` | unsupported | 18 | 18 | Resistance Berries cannot be promoted until damage and item activation distinguish Substitute damage from direct HP damage. |
 | `field_or_side_condition` | partial | 14 | 1 | Hazards, delayed effects, screens with special removal, and several side conditions are incomplete. |
 | `damage_event_lifecycle` | partial | 13 | 4 | Sturdy, Innards Out, Magic Guard, Liquid Ooze, and related effects need canonical event history. |
 | `switch_control` | unsupported | 12 | 7 | Pivoting, phazing, item-driven switches, and ability-driven switches do not share an end-to-end lifecycle. |
+| `form_change` | unsupported | 10 | 10 | Mega Evolution uses its verified dedicated capability; Stance Change, Hunger Switch, Zero to Hero, Transform, and other forms remain PR 18 scope. |
 | `ability_damage_modifiers` | partial | 9 | 0 | Several modifier identities are registered but not interaction-complete. |
 | `contact_effects` | partial | 9 | 9 | Several abilities and items depend on unimplemented volatile/status/faint consequences. |
 | `field_activation` | partial | 9 | 9 | Several setters exist, but entry and damage-triggered activation is not uniformly sequenced. |
@@ -70,12 +67,13 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 - `berry_lifecycle`: `item:aspearberry`, `item:cheriberry`, `item:chestoberry`, `item:leppaberry`, `item:oranberry`, `item:pechaberry`, `item:rawstberry`, `item:sitrusberry`
 - `flinch`: `ability:innerfocus`, `ability:steadfast`, `item:kingsrock`
 - `forced_switch`: `ability:suctioncups`, `item:ejectbutton`, `item:redcard`
+- `mega_eligibility`: `item:abomasite`, `item:absolite`, `item:absolitez`, `item:aerodactylite`, `item:aggronite`, `item:alakazite`, `item:altarianite`, `item:ampharosite`, `item:audinite`, `item:banettite`, `item:barbaracite`, `item:baxcalibrite`, `item:beedrillite`, `item:blastoisinite`, `item:blazikenite`, `item:cameruptite`, `item:chandelurite`, `item:charizarditex`, `item:charizarditey`, `item:chesnaughtite`, `item:chimechite`, `item:clefablite`, `item:crabominite`, `item:delphoxite`, `item:dragalgite`, `item:dragoninite`, `item:drampanite`, `item:eelektrossite`, `item:emboarite`, `item:excadrite`, `item:falinksite`, `item:feraligite`, `item:floettite`, `item:froslassite`, `item:galladite`, `item:garchompite`, `item:garchompitez`, `item:gardevoirite`, `item:gengarite`, `item:glalitite`, `item:glimmoranite`, `item:golisopite`, `item:golurkite`, `item:greninjite`, `item:gyaradosite`, `item:hawluchanite`, `item:heracronite`, `item:houndoominite`, `item:kangaskhanite`, `item:lopunnite`, `item:lucarionite`, `item:lucarionitez`, `item:malamarite`, `item:manectite`, `item:mawilite`, `item:medichamite`, `item:meganiumite`, `item:meowsticite`, `item:metagrossite`, `item:pidgeotite`, `item:pinsirite`, `item:pyroarite`, `item:raichunitex`, `item:raichunitey`, `item:sablenite`, `item:salamencite`, `item:sceptilite`, `item:scizorite`, `item:scolipite`, `item:scovillainite`, `item:scraftinite`, `item:sharpedonite`, `item:skarmorite`, `item:slowbronite`, `item:staraptite`, `item:starminite`, `item:steelixite`, `item:swampertite`, `item:tyranitarite`, `item:venusaurite`, `item:victreebelite`
 - `mental_herb_cure`: `item:mentalherb`
 
 ## Dependency audit
 
 - ability: 92 partial identities mapped; 0 currently unlocked.
-- item: 107 partial identities mapped; 0 currently unlocked.
+- item: 26 partial identities mapped; 0 currently unlocked.
 - move: 272 unsupported identities mapped; 0 currently unlocked.
 
 Mega Stones are reported as a **metadata foundation**. They remain partial until `mega_eligibility`, `mega_timing`, `form_change`, and `ability_transition` are complete.

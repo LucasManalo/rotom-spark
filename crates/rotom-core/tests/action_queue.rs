@@ -1,7 +1,7 @@
 use rotom_core::{
     AbilityId, ActionOrder, ActionTarget, ActiveSlot, BattleError, BattleState, BattleStateBuilder,
-    BattleStats, CombatData, CombatMove, EffectRegistry, FormId, Mechanics, MoveId, MoveSlot,
-    MoveSlotIndex, MoveTarget, PokemonAction, PokemonIndex, PokemonPosition, PokemonRef,
+    BattleStats, CombatData, CombatMove, EffectRegistry, FormId, Mechanics, MegaEvolution, MoveId,
+    MoveSlot, MoveSlotIndex, MoveTarget, PokemonAction, PokemonIndex, PokemonPosition, PokemonRef,
     PokemonState, PokemonType, PokemonTypes, SideId, SideState, SpeciesId, StatStages, StatusState,
     TeamState, TurnChoice,
 };
@@ -60,7 +60,7 @@ fn pokemon(species: u32, speed: u16, priority: i8) -> PokemonState {
         status_state: StatusState::default(),
         stat_stages: StatStages::default(),
         volatiles: Vec::new(),
-        can_mega_evolve: false,
+        mega_evolution: None,
         trapped: false,
         position: PokemonPosition::Team,
     }
@@ -108,6 +108,21 @@ fn move_choice() -> PokemonAction {
         move_slot: MoveSlotIndex::new(0),
         target: ActionTarget::Foe(ActiveSlot::Left),
         mega: false,
+    }
+}
+
+fn mega_evolution(speed: u16) -> MegaEvolution {
+    MegaEvolution {
+        form: FormId::new(1),
+        stats: BattleStats {
+            hp: 100,
+            atk: 120,
+            def: 110,
+            spa: 120,
+            spd: 110,
+            spe: speed,
+        },
+        ability: AbilityId::new(2),
     }
 }
 
@@ -202,12 +217,12 @@ fn invalid_choices_do_not_change_phase_queue_or_rng() {
 }
 
 #[test]
-fn deferred_mega_queue_expansion_fails_explicitly_and_atomically() {
+fn mega_queue_expansion_precedes_the_selected_move_without_mutating_input() {
     let mut builder = BattleStateBuilder::from_state(battle(29, [(100, 0); 4], [(100, 0); 4]))
         .expect("fixture should be stable");
     builder
         .edit_pokemon(PokemonRef::new(SideId::P1, index(0)), |pokemon| {
-            pokemon.can_mega_evolve = true;
+            pokemon.mega_evolution = Some(mega_evolution(140));
         })
         .expect("left lead should exist");
     let state = builder.build().expect("fixture edit should be stable");
@@ -223,10 +238,20 @@ fn deferred_mega_queue_expansion_fails_explicitly_and_atomically() {
     };
     let rng_before = state.rng().clone();
 
+    let queue = state
+        .inspect_turn_queue(mega, both_moves(), &mechanics())
+        .expect("Mega choice should expand into transformation and move actions");
+    assert_eq!(queue.actions.len(), 5);
+    assert_eq!(queue.actions[0].order, ActionOrder::MegaEvolution);
     assert!(matches!(
-        state.inspect_turn_queue(mega, both_moves(), &mechanics()),
-        Err(BattleError::UnsupportedMechanic(_))
+        queue.actions[0].choice,
+        PokemonAction::Move { mega: true, .. }
     ));
+    assert!(queue.actions.iter().any(|action| matches!(
+        action.choice,
+        PokemonAction::Move { mega: false, .. }
+    ) && action.side == SideId::P1
+        && action.slot == ActiveSlot::Left));
     assert_eq!(state.queue().actions, Vec::new());
     assert_eq!(state.rng(), &rng_before);
 }

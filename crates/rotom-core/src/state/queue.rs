@@ -12,6 +12,7 @@ use std::cmp::Ordering;
 #[serde(rename_all = "snake_case")]
 pub enum ActionOrder {
     Switch = 103,
+    MegaEvolution = 104,
     Move = 200,
 }
 
@@ -112,100 +113,142 @@ impl BattleState {
             if action == PokemonAction::Pass {
                 continue;
             }
-            let pokemon = self.side(side).active[slot.index()].ok_or_else(|| {
-                BattleError::InvalidState(format!(
-                    "{side:?}'s {slot:?} queued action has no active Pokémon"
-                ))
-            })?;
-            let (order, priority, speed, move_id) = {
-                let pokemon_state = self.side(side).pokemon(pokemon).ok_or_else(|| {
-                    BattleError::InvalidState(
-                        "queued active Pokémon index is out of bounds".to_owned(),
-                    )
-                })?;
-                if pokemon_state.position != (PokemonPosition::Active { slot })
-                    || pokemon_state.current_hp == 0
-                    || pokemon_state.is_fainted()
-                {
-                    return Err(BattleError::InvalidState(format!(
-                        "{side:?}'s {slot:?} queued Pokémon is inconsistent"
-                    )));
-                }
-                base_action_ordering(pokemon_state, action)?
+            let expanded = match action {
+                PokemonAction::Move {
+                    move_slot,
+                    target,
+                    mega: true,
+                } => vec![
+                    action,
+                    PokemonAction::Move {
+                        move_slot,
+                        target,
+                        mega: false,
+                    },
+                ],
+                _ => vec![action],
             };
-            let context = EventContext {
-                source: Some(PokemonRef::new(side, pokemon)),
-                target: action_target(self, side, slot, action),
-                move_id,
-                suppress_source_item: !mechanics.field_effects().item_is_active_for(
-                    self,
-                    mechanics.data(),
-                    PokemonRef::new(side, pokemon),
-                ),
-                move_category: move_id
-                    .and_then(|move_id| mechanics.data().move_data(move_id))
-                    .map(|move_data| move_data.category),
-                move_type: move_id
-                    .and_then(|move_id| mechanics.data().move_data(move_id))
-                    .map(|move_data| move_data.move_type),
-                weather: mechanics
-                    .field_effects()
-                    .effective_weather_environment(self, mechanics.data()),
-                terrain: mechanics.field_effects().terrain_environment(self),
-                ..EventContext::default()
-            };
-            let (priority, prankster_boosted) = if order == ActionOrder::Move {
-                let priority_event = mechanics.effects().dispatch(
-                    self,
-                    BattleEvent::ModifyPriority,
-                    context,
-                    EventValue::Integer(i64::from(priority)),
-                )?;
-                let priority = event_i8(&priority_event, BattleEvent::ModifyPriority)?;
-                let prankster_boosted = priority_event.prankster_boosted;
-                events.push(priority_event);
-                (priority, prankster_boosted)
-            } else {
-                (priority, false)
-            };
-            let fractional_priority = if order == ActionOrder::Move {
-                let event = mechanics.effects().dispatch(
-                    self,
-                    BattleEvent::ModifyFractionalPriority,
-                    context,
-                    EventValue::Integer(0),
-                )?;
-                let value = event_i8(&event, BattleEvent::ModifyFractionalPriority)?;
-                events.push(event);
-                value
-            } else {
-                0
-            };
-            let speed_event = mechanics.effects().dispatch(
-                self,
-                BattleEvent::ModifySpeed,
-                context,
-                EventValue::Integer(i64::from(speed)),
-            )?;
-            let speed = mechanics.field_effects().action_speed(
-                self,
-                side,
-                event_u16(&speed_event, BattleEvent::ModifySpeed)?,
-            );
-            events.push(speed_event);
-            output.push(QueuedAction {
-                side,
-                slot,
-                pokemon,
-                choice: action,
-                order,
-                priority,
-                fractional_priority,
-                speed,
-                prankster_boosted,
-            });
+            for action in expanded {
+                self.expand_action(side, slot, action, mechanics, output, events)?;
+            }
         }
         Ok(())
+    }
+
+    fn expand_action<D: CombatData>(
+        &mut self,
+        side: SideId,
+        slot: ActiveSlot,
+        action: PokemonAction,
+        mechanics: &Mechanics<'_, D>,
+        output: &mut Vec<QueuedAction>,
+        events: &mut Vec<EventDispatch>,
+    ) -> Result<(), BattleError> {
+        let pokemon = self.side(side).active[slot.index()].ok_or_else(|| {
+            BattleError::InvalidState(format!(
+                "{side:?}'s {slot:?} queued action has no active Pokémon"
+            ))
+        })?;
+        let (order, priority, speed, move_id) = {
+            let pokemon_state = self.side(side).pokemon(pokemon).ok_or_else(|| {
+                BattleError::InvalidState("queued active Pokémon index is out of bounds".to_owned())
+            })?;
+            if pokemon_state.position != (PokemonPosition::Active { slot })
+                || pokemon_state.current_hp == 0
+                || pokemon_state.is_fainted()
+            {
+                return Err(BattleError::InvalidState(format!(
+                    "{side:?}'s {slot:?} queued Pokémon is inconsistent"
+                )));
+            }
+            base_action_ordering(pokemon_state, action)?
+        };
+        let context = EventContext {
+            source: Some(PokemonRef::new(side, pokemon)),
+            target: action_target(self, side, slot, action),
+            move_id,
+            suppress_source_item: !mechanics.field_effects().item_is_active_for(
+                self,
+                mechanics.data(),
+                PokemonRef::new(side, pokemon),
+            ),
+            move_category: move_id
+                .and_then(|move_id| mechanics.data().move_data(move_id))
+                .map(|move_data| move_data.category),
+            move_type: move_id
+                .and_then(|move_id| mechanics.data().move_data(move_id))
+                .map(|move_data| move_data.move_type),
+            weather: mechanics
+                .field_effects()
+                .effective_weather_environment(self, mechanics.data()),
+            terrain: mechanics.field_effects().terrain_environment(self),
+            ..EventContext::default()
+        };
+        let (priority, fractional_priority, speed, prankster_boosted) = self
+            .modified_action_ordering(side, (order, priority, speed), context, mechanics, events)?;
+        output.push(QueuedAction {
+            side,
+            slot,
+            pokemon,
+            choice: action,
+            order,
+            priority,
+            fractional_priority,
+            speed,
+            prankster_boosted,
+        });
+        Ok(())
+    }
+
+    fn modified_action_ordering<D: CombatData>(
+        &mut self,
+        side: SideId,
+        base: (ActionOrder, i8, u16),
+        context: EventContext,
+        mechanics: &Mechanics<'_, D>,
+        events: &mut Vec<EventDispatch>,
+    ) -> Result<(i8, i8, u16, bool), BattleError> {
+        let (order, priority, speed) = base;
+        let (priority, prankster_boosted) = if order == ActionOrder::Move {
+            let event = mechanics.effects().dispatch(
+                self,
+                BattleEvent::ModifyPriority,
+                context,
+                EventValue::Integer(i64::from(priority)),
+            )?;
+            let priority = event_i8(&event, BattleEvent::ModifyPriority)?;
+            let prankster_boosted = event.prankster_boosted;
+            events.push(event);
+            (priority, prankster_boosted)
+        } else {
+            (priority, false)
+        };
+        let fractional_priority = if order == ActionOrder::Move {
+            let event = mechanics.effects().dispatch(
+                self,
+                BattleEvent::ModifyFractionalPriority,
+                context,
+                EventValue::Integer(0),
+            )?;
+            let value = event_i8(&event, BattleEvent::ModifyFractionalPriority)?;
+            events.push(event);
+            value
+        } else {
+            0
+        };
+        let event = mechanics.effects().dispatch(
+            self,
+            BattleEvent::ModifySpeed,
+            context,
+            EventValue::Integer(i64::from(speed)),
+        )?;
+        let speed = mechanics.field_effects().action_speed(
+            self,
+            side,
+            event_u16(&event, BattleEvent::ModifySpeed)?,
+        );
+        events.push(event);
+        Ok((priority, fractional_priority, speed, prankster_boosted))
     }
 
     fn shuffle_speed_ties(&mut self, actions: &mut [QueuedAction]) -> Result<(), BattleError> {
@@ -246,9 +289,7 @@ fn base_action_ordering(
 ) -> Result<(ActionOrder, i8, u16, Option<crate::MoveId>), BattleError> {
     let speed = pokemon.staged_speed();
     match action {
-        PokemonAction::Move { mega: true, .. } => Err(BattleError::UnsupportedMechanic(
-            "Mega Evolution queue expansion is deferred".to_owned(),
-        )),
+        PokemonAction::Move { mega: true, .. } => Ok((ActionOrder::MegaEvolution, 0, speed, None)),
         PokemonAction::Move {
             move_slot,
             mega: false,

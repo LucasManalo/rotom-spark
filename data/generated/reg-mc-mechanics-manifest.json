@@ -8962,17 +8962,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/abomasnow",
-        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.4"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "absolite",
@@ -8980,17 +8982,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/absol",
-        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.4"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "absolitez",
@@ -8998,17 +9002,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/absol",
-        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.4"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "aerodactylite",
@@ -9016,17 +9022,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/aerodactyl",
-        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.4"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "aggronite",
@@ -9034,17 +9042,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/aggron",
-        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.4"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "airballoon",
@@ -9070,17 +9080,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/alakazam",
-        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.4"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "altarianite",
@@ -9088,17 +9100,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/altaria",
-        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.4"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "ampharosite",
@@ -9106,17 +9120,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/ampharos",
-        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.4"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "aspearberry",
@@ -9143,17 +9159,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/audino",
-        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.4"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "babiriberry",
@@ -9181,17 +9199,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/banette",
-        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.4"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "barbaracite",
@@ -9199,17 +9219,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/barbaracle",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "baxcalibrite",
@@ -9217,17 +9239,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/baxcalibur",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "beedrillite",
@@ -9235,17 +9259,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/beedrill",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "bigroot",
@@ -9330,17 +9356,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/blastoise",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "blazikenite",
@@ -9348,17 +9376,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/blaziken",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "brightpowder",
@@ -9384,17 +9414,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/camerupt",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "chandelurite",
@@ -9402,17 +9434,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/chandelure",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "charcoal",
@@ -9439,17 +9473,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/charizard",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "charizarditey",
@@ -9457,17 +9493,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/charizard",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "chartiberry",
@@ -9515,17 +9553,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/chesnaught",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "chestoberry",
@@ -9571,17 +9611,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/chimecho",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "choicescarf",
@@ -9627,17 +9669,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/clefable",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "cobaberry",
@@ -9685,17 +9729,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/crabominable",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "damprock",
@@ -9722,17 +9768,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/delphox",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "dragalgite",
@@ -9740,17 +9788,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/dragalge",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "dragonfang",
@@ -9778,17 +9828,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/dragonite",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "drampanite",
@@ -9796,17 +9848,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/drampa",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "eelektrossite",
@@ -9814,17 +9868,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/eelektross",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "ejectbutton",
@@ -9871,17 +9927,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/emboar",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "excadrite",
@@ -9889,17 +9947,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/excadrill",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "expertbelt",
@@ -9946,17 +10006,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/falinks",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "feraligite",
@@ -9964,17 +10026,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/feraligatr",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "floettite",
@@ -9982,17 +10046,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/floetteeternal",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "focusband",
@@ -10036,17 +10102,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/froslass",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "galladite",
@@ -10054,17 +10122,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/gallade",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "garchompite",
@@ -10072,17 +10142,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/garchomp",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "garchompitez",
@@ -10090,17 +10162,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/garchomp",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "gardevoirite",
@@ -10108,17 +10182,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/gardevoir",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "gengarite",
@@ -10126,17 +10202,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/gengar",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "glalitite",
@@ -10144,17 +10222,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/glalie",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "glimmoranite",
@@ -10162,17 +10242,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/glimmora",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "golisopite",
@@ -10180,17 +10262,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/golisopod",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "golurkite",
@@ -10198,17 +10282,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/golurk",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "grassyseed",
@@ -10234,17 +10320,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/greninja",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "gyaradosite",
@@ -10252,17 +10340,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/gyarados",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "habanberry",
@@ -10310,17 +10400,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/hawlucha",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "heatrock",
@@ -10346,17 +10438,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/heracross",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "houndoominite",
@@ -10364,17 +10458,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/houndoom",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "icyrock",
@@ -10418,17 +10514,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/kangaskhan",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "kasibberry",
@@ -10606,17 +10704,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/lopunny",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "lucarionite",
@@ -10624,17 +10724,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/lucario",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "lucarionitez",
@@ -10642,17 +10744,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/lucario",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "lumberry",
@@ -10699,17 +10803,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/malamar",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "manectite",
@@ -10717,17 +10823,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/manectric",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "mawilite",
@@ -10735,17 +10843,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/mawile",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "medichamite",
@@ -10753,17 +10863,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/medicham",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "meganiumite",
@@ -10771,17 +10883,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/meganium",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "mentalherb",
@@ -10809,17 +10923,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/meowstic",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "metagrossite",
@@ -10827,17 +10943,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/metagross",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "metalcoat",
@@ -11113,17 +11231,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/pidgeot",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "pinsirite",
@@ -11131,17 +11251,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/pinsir",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "poisonbarb",
@@ -11187,17 +11309,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/pyroar",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "quickclaw",
@@ -11223,17 +11347,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/raichu",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "raichunitey",
@@ -11241,17 +11367,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/raichu",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "rawstberry",
@@ -11356,17 +11484,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/sableye",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "salamencite",
@@ -11374,17 +11504,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/salamence",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "sceptilite",
@@ -11392,17 +11524,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/sceptile",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "scizorite",
@@ -11410,17 +11544,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/scizor",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "scolipite",
@@ -11428,17 +11564,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/scolipede",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "scopelens",
@@ -11464,17 +11602,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/scovillain",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "scraftinite",
@@ -11482,17 +11622,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/scrafty",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "sharpbeak",
@@ -11520,17 +11662,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/sharpedo",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "shedshell",
@@ -11655,17 +11799,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/skarmory",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "slowbronite",
@@ -11673,17 +11819,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/slowbro",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "smoothrock",
@@ -11749,17 +11897,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/staraptor",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "starminite",
@@ -11767,17 +11917,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/starmie",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "steelixite",
@@ -11785,17 +11937,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/steelix",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "swampertite",
@@ -11803,17 +11957,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/swampert",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "tangaberry",
@@ -11878,17 +12034,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/tyranitar",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "venusaurite",
@@ -11896,17 +12054,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/venusaur",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "victreebelite",
@@ -11914,17 +12074,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-mega-stone-foundation.md",
+        "file:docs/research/pr-15-4-mega-evolution.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "species/victreebel",
-        "unit:crates/rotom-dex/tests/combat.rs#remaining_mega_stones_are_registered_from_generated_metadata"
+        "unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation",
+        "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.5"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.4"
     },
     {
       "id": "wacanberry",
@@ -48503,8 +48665,8 @@
         "total": 166,
         "implementation": {
           "unsupported": 0,
-          "partial": 107,
-          "implemented": 59
+          "partial": 26,
+          "implemented": 140
         },
         "verification": {
           "not_tested": 1,
@@ -48512,8 +48674,8 @@
           "differential_verified": 0
         },
         "interaction_verification": {
-          "not_tested": 153,
-          "unit_tested": 13,
+          "not_tested": 72,
+          "unit_tested": 94,
           "differential_verified": 0
         },
         "reachability": {

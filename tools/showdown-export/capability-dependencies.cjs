@@ -37,10 +37,12 @@ const CAPABILITIES = {
 	choice_lock: unsupported('Choice-item move locking', ['lock acquisition', 'legal-action filtering', 'switch cleanup'], 'Choice Scarf modifies Speed but does not enforce a complete choice lock.', ['showdown:data/items.ts:Items.choicescarf', 'showdown:data/conditions.ts:Conditions.choicelock']),
 	forced_switch: implemented('Forced-switch lifecycle', ['request', 'queue preservation', 'replacement choice', 'random replacement', 'entry/exit hooks'], 'The shared lifecycle is implemented; individual pivot, phazing, and ability trigger predicates remain separate capabilities.', ['showdown:data/items.ts:Items.ejectbutton', 'showdown:data/items.ts:Items.redcard', 'showdown:sim/battle-actions.ts:BattleActions.switchIn']),
 	emergency_exit_trigger: unsupported('Emergency Exit trigger', ['half-HP crossing', 'damage-source timing', 'switch request'], 'Emergency Exit has not yet been connected to the shared forced-switch lifecycle.', ['showdown:data/abilities.ts:Abilities.emergencyexit']),
-	mega_eligibility: unsupported('Mega Evolution eligibility', ['species/stone compatibility', 'once-per-battle rule', 'request validation'], 'Mega Stones are metadata-only.', ['showdown:sim/battle-actions.ts:BattleActions.canMegaEvo']),
-	mega_timing: unsupported('Mega Evolution action timing', ['choice validation', 'queue timing', 'order recalculation'], 'No canonical Mega action lifecycle exists.', ['showdown:sim/battle-actions.ts:BattleActions.runMegaEvo']),
-	form_change: unsupported('Battle form transformation', ['species/form', 'typing', 'stats', 'HP preservation', 'persistence'], 'Mega and other battle transformations are not kernel-mediated end-to-end.', ['showdown:sim/pokemon.ts:Pokemon.formeChange']),
-	ability_transition: unsupported('Ability replacement and activation transition', ['deactivation', 'replacement', 'start hooks', 'suppression'], 'Ability changes are not represented by a shared lifecycle.', ['showdown:sim/pokemon.ts:Pokemon.setAbility']),
+	mega_eligibility: verified('Mega Evolution eligibility', ['species/stone compatibility', 'once-per-battle rule', 'request validation'], 'All generated stone mappings are covered; move-based Mega Rayquaza is not reachable in this format.', ['showdown:sim/battle-actions.ts:BattleActions.canMegaEvo']),
+	mega_timing: verified('Mega Evolution action timing', ['choice validation', 'queue timing', 'order recalculation'], 'The order-104 action and Gen 9 transformed-Speed queue refresh are implemented.', ['showdown:sim/battle-queue.ts:BattleQueue.resolveAction', 'showdown:sim/battle.ts:Battle.runAction']),
+	mega_form_change: verified('Mega form transformation', ['species/form', 'typing', 'stats', 'HP preservation', 'persistence'], 'This capability is intentionally Mega-specific; other form changes remain PR 18 scope.', ['showdown:sim/pokemon.ts:Pokemon.formeChange', 'showdown:sim/pokemon.ts:Pokemon.updateMaxHp']),
+	mega_ability_transition: verified('Mega ability transition', ['deactivation', 'replacement', 'start hooks'], 'Mega ability replacement and Start hooks are implemented; arbitrary ability replacement remains incomplete.', ['showdown:sim/pokemon.ts:Pokemon.setAbility']),
+	form_change: unsupported('Other battle form transformations', ['species/form', 'typing', 'stats', 'HP preservation', 'persistence'], 'Mega Evolution uses its verified dedicated capability; Stance Change, Hunger Switch, Zero to Hero, Transform, and other forms remain PR 18 scope.', ['showdown:sim/pokemon.ts:Pokemon.formeChange']),
+	ability_transition: partial('General ability replacement and activation transition', ['deactivation', 'replacement', 'start hooks', 'suppression'], 'Mega Evolution uses a verified transition, but arbitrary ability replacement and suppression interactions remain incomplete.', ['showdown:sim/pokemon.ts:Pokemon.setAbility']),
 	item_lifecycle: partial('Held-item mutation lifecycle', ['remove', 'consume', 'steal', 'exchange', 'restore', 'suppress'], 'Theft, exchange, restoration, suppression, and consumed-item history are incomplete.', ['showdown:sim/pokemon.ts:Pokemon.takeItem', 'showdown:sim/pokemon.ts:Pokemon.setItem']),
 	ability_lifecycle: partial('Ability mutation lifecycle', ['copy', 'replace', 'suppress', 'ignore', 'entry', 'exit'], 'Copying, replacement, suppression, and activation ordering are incomplete.', ['showdown:sim/pokemon.ts:Pokemon.setAbility', 'showdown:sim/pokemon.ts:Pokemon.ignoringAbility']),
 	mental_herb_cure: implemented('Mental Herb cure lifecycle', ['complete cure set', 'item suppression', 'consumption', 'update timing'], 'The six Mental Herb conditions are cured canonically; their individual move restrictions remain separate.', ['showdown:data/items.ts:Items.mentalherb']),
@@ -113,27 +115,16 @@ const ABILITY_GROUPS = [
 	[['toxicdebris'], ['hazard_lifecycle']],
 ];
 
-const MEGA_STONES = [
-	'abomasite', 'absolite', 'absolitez', 'aerodactylite', 'aggronite', 'alakazite', 'altarianite',
-	'ampharosite', 'audinite', 'banettite', 'barbaracite', 'baxcalibrite', 'beedrillite',
-	'blastoisinite', 'blazikenite', 'cameruptite', 'chandelurite', 'charizarditex', 'charizarditey',
-	'chesnaughtite', 'chimechite', 'clefablite', 'crabominite', 'delphoxite', 'dragalgite',
-	'dragoninite', 'drampanite', 'eelektrossite', 'emboarite', 'excadrite', 'falinksite',
-	'feraligite', 'floettite', 'froslassite', 'galladite', 'garchompite', 'garchompitez',
-	'gardevoirite', 'gengarite', 'glalitite', 'glimmoranite', 'golisopite', 'golurkite',
-	'greninjite', 'gyaradosite', 'hawluchanite', 'heracronite', 'houndoominite', 'kangaskhanite',
-	'lopunnite', 'lucarionite', 'lucarionitez', 'malamarite', 'manectite', 'mawilite',
-	'medichamite', 'meganiumite', 'meowsticite', 'metagrossite', 'pidgeotite', 'pinsirite',
-	'pyroarite', 'raichunitex', 'raichunitey', 'sablenite', 'salamencite', 'sceptilite',
-	'scizorite', 'scolipite', 'scovillainite', 'scraftinite', 'sharpedonite', 'skarmorite',
-	'slowbronite', 'staraptite', 'starminite', 'steelixite', 'swampertite', 'tyranitarite',
-	'venusaurite', 'victreebelite',
-];
+const GENERATED_DEX = require('../../data/generated/champions-reg-mc.json');
+const MEGA_STONES = GENERATED_DEX.items
+	.filter(item => item.legal && item.mega_stone.length > 0)
+	.map(item => item.id)
+	.sort();
 const RESIST_BERRIES = ['babiriberry', 'chartiberry', 'chilanberry', 'chopleberry', 'cobaberry', 'colburberry', 'habanberry', 'kasibberry', 'kebiaberry', 'occaberry', 'passhoberry', 'payapaberry', 'rindoberry', 'roseliberry', 'shucaberry', 'tangaberry', 'wacanberry', 'yacheberry'];
 const STATUS_BERRIES = ['aspearberry', 'cheriberry', 'chestoberry', 'lumberry', 'pechaberry', 'persimberry', 'rawstberry'];
 
 const ITEM_GROUPS = [
-	[MEGA_STONES, ['mega_eligibility', 'mega_timing', 'form_change', 'ability_transition']],
+	[MEGA_STONES, ['mega_eligibility', 'mega_timing', 'mega_form_change', 'mega_ability_transition']],
 	[RESIST_BERRIES, ['berry_lifecycle', 'substitute_damage_routing']],
 	[['oranberry', 'sitrusberry'], ['berry_lifecycle']],
 	[STATUS_BERRIES, ['berry_lifecycle', 'status_cure']],
@@ -208,6 +199,17 @@ Object.assign(CAPABILITIES.mental_herb_cure, {
 	differential_fixtures: ['differential:data/fixtures/differential/volatile-lifecycle.json#mental-herb-taunt'],
 });
 
+for (const id of ['mega_eligibility', 'mega_timing', 'mega_form_change', 'mega_ability_transition']) {
+	Object.assign(CAPABILITIES[id], {
+		tests: [
+			'unit:crates/rotom-dex/tests/combat.rs#every_generated_mega_stone_pair_builds_a_complete_transformation',
+			'unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility',
+			'unit:crates/rotom-dex/tests/combat.rs#mega_evolution_starts_the_new_ability_and_reorders_moves_with_transformed_speed',
+		],
+		differential_fixtures: ['differential:data/fixtures/differential/mega-evolution-lifecycle.json#charizard-mega-x-damage-and-item'],
+	});
+}
+
 const UNLOCKED_IDENTITIES = {
 	berry_lifecycle: [
 		'item:aspearberry', 'item:cheriberry', 'item:chestoberry', 'item:leppaberry',
@@ -216,6 +218,7 @@ const UNLOCKED_IDENTITIES = {
 	forced_switch: ['ability:suctioncups', 'item:ejectbutton', 'item:redcard'],
 	flinch: ['ability:innerfocus', 'ability:steadfast', 'item:kingsrock'],
 	mental_herb_cure: ['item:mentalherb'],
+	mega_eligibility: MEGA_STONES.map(id => `item:${id}`),
 };
 
 function dependenciesFromGroups(kind, groups) {

@@ -1,8 +1,8 @@
 use rotom_core::{
     AbilityId, ActionTarget, ActiveSlot, BattleError, BattleState, BattleStateBuilder, BattleStats,
-    FaintTarget, MoveId, MoveSlot, MoveSlotIndex, MoveTarget, PokemonAction, PokemonIndex,
-    PokemonPosition, PokemonRef, PokemonState, SideId, SideState, SpeciesId, StatStages,
-    StatusState, TeamState, TurnChoice,
+    FaintTarget, FormId, MegaEvolution, MoveId, MoveSlot, MoveSlotIndex, MoveTarget, PokemonAction,
+    PokemonIndex, PokemonPosition, PokemonRef, PokemonState, SideId, SideState, SpeciesId,
+    StatStages, StatusState, TeamState, TurnChoice,
 };
 
 fn index(value: u8) -> PokemonIndex {
@@ -40,7 +40,7 @@ fn pokemon(species: u32) -> PokemonState {
         status_state: StatusState::default(),
         stat_stages: StatStages::default(),
         volatiles: Vec::new(),
-        can_mega_evolve: false,
+        mega_evolution: None,
         trapped: false,
         position: PokemonPosition::Team,
     }
@@ -66,6 +66,21 @@ fn select(state: BattleState, size: u8) -> BattleState {
     builder.build().expect("selected fixture should be stable")
 }
 
+fn mega_evolution() -> MegaEvolution {
+    MegaEvolution {
+        form: FormId::new(1),
+        stats: BattleStats {
+            hp: 100,
+            atk: 120,
+            def: 110,
+            spa: 120,
+            spd: 110,
+            spe: 120,
+        },
+        ability: AbilityId::new(2),
+    }
+}
+
 #[test]
 fn ordinary_actions_include_targets_switches_and_single_mega_combinations() {
     let state = select(battle(4), 4);
@@ -73,7 +88,7 @@ fn ordinary_actions_include_targets_switches_and_single_mega_combinations() {
     for active in [index(0), index(1)] {
         builder
             .edit_pokemon(PokemonRef::new(SideId::P1, active), |pokemon| {
-                pokemon.can_mega_evolve = true;
+                pokemon.mega_evolution = Some(mega_evolution());
             })
             .unwrap();
     }
@@ -109,7 +124,12 @@ fn ordinary_actions_include_targets_switches_and_single_mega_combinations() {
     }));
 
     let mut builder = BattleStateBuilder::from_state(state).unwrap();
-    builder.edit_side(SideId::P1, |side| side.mega_evolution_used = true);
+    builder.edit_side(SideId::P1, |side| {
+        side.mega_evolution_used = true;
+        for pokemon in &mut side.team.members {
+            pokemon.mega_evolution = None;
+        }
+    });
     let state = builder.build().unwrap();
     let after_mega = state
         .legal_actions(SideId::P1)
@@ -127,7 +147,7 @@ fn disabled_and_empty_moves_fall_back_to_struggle_while_trapping_blocks_switches
     builder
         .edit_pokemon(PokemonRef::new(SideId::P1, index(0)), |pokemon| {
             pokemon.moves[0].pp = 0;
-            pokemon.can_mega_evolve = true;
+            pokemon.mega_evolution = Some(mega_evolution());
             pokemon.trapped = true;
         })
         .expect("left lead should exist");
@@ -147,7 +167,7 @@ fn duplicate_switch_targets_and_double_mega_are_rejected() {
     for active in [index(0), index(1)] {
         builder
             .edit_pokemon(PokemonRef::new(SideId::P1, active), |pokemon| {
-                pokemon.can_mega_evolve = true;
+                pokemon.mega_evolution = Some(mega_evolution());
             })
             .expect("active should exist");
     }

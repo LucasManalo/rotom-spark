@@ -6,6 +6,7 @@ const path = require('node:path');
 const test = require('node:test');
 const {generatedContents} = require('./generate-capability-report.cjs');
 const {rustTestExists} = require('./generate-mechanics-manifest.cjs');
+const {MEGA_STONES} = require('./capability-dependencies.cjs');
 
 const repositoryRoot = path.resolve(__dirname, '..', '..');
 
@@ -15,8 +16,8 @@ function identity(audit, kind, id) {
 
 test('dependency graph covers every partial ability and item and every unsupported move', () => {
 	const {audit} = generatedContents();
-	assert.deepEqual(audit.summary.dependency_targets, {ability: 92, item: 107, move: 272});
-	assert.equal(audit.identity_dependencies.length, 471);
+	assert.deepEqual(audit.summary.dependency_targets, {ability: 92, item: 26, move: 272});
+	assert.equal(audit.identity_dependencies.length, 390);
 	assert.ok(audit.identity_dependencies.every(entry => entry.outstanding_blockers.length > 0));
 	assert.ok(audit.identity_dependencies.every(entry => entry.unlocked === false));
 });
@@ -24,7 +25,7 @@ test('dependency graph covers every partial ability and item and every unsupport
 test('headline separates identity labels from executable capability coverage', () => {
 	const {audit, markdown} = generatedContents();
 	assert.deepEqual(audit.summary.identity_coverage.ability, {reachable: 215, unsupported: 0, partial: 92, implemented: 123});
-	assert.deepEqual(audit.summary.identity_coverage.item, {reachable: 166, unsupported: 0, partial: 107, implemented: 59});
+	assert.deepEqual(audit.summary.identity_coverage.item, {reachable: 166, unsupported: 0, partial: 26, implemented: 140});
 	assert.deepEqual(audit.summary.identity_coverage.move, {reachable: 510, unsupported: 272, partial: 0, implemented: 238});
 	assert.match(markdown, /## Identity coverage/);
 	assert.match(markdown, /## Executable capability coverage/);
@@ -38,9 +39,7 @@ test('roadmap examples expose their actual remaining blockers', () => {
 	assert.equal(identity(audit, 'item', 'ejectbutton'), undefined);
 	assert.equal(identity(audit, 'item', 'kingsrock'), undefined);
 	assert.equal(identity(audit, 'item', 'mentalherb'), undefined);
-	assert.deepEqual(identity(audit, 'item', 'charizarditex').outstanding_blockers, [
-		'ability_transition', 'form_change', 'mega_eligibility', 'mega_timing',
-	]);
+	assert.equal(identity(audit, 'item', 'charizarditex'), undefined);
 	const berryLifecycle = audit.capabilities.find(entry => entry.id === 'berry_lifecycle');
 	assert.equal(berryLifecycle.status, 'implemented');
 	assert.deepEqual(berryLifecycle.unlocked_identities, [
@@ -60,6 +59,13 @@ test('roadmap examples expose their actual remaining blockers', () => {
 	const mentalHerb = audit.capabilities.find(entry => entry.id === 'mental_herb_cure');
 	assert.equal(mentalHerb.status, 'implemented');
 	assert.deepEqual(mentalHerb.unlocked_identities, ['item:mentalherb']);
+	for (const id of ['mega_eligibility', 'mega_timing', 'mega_form_change', 'mega_ability_transition']) {
+		assert.equal(audit.capabilities.find(entry => entry.id === id).status, 'verified');
+	}
+	assert.deepEqual(
+		audit.capabilities.find(entry => entry.id === 'mega_eligibility').unlocked_identities,
+		MEGA_STONES.map(id => `item:${id}`)
+	);
 });
 
 test('every dependency and capability carries pinned-reference evidence', () => {

@@ -100,3 +100,11 @@ and Mental Herb timing:
 node tools/showdown-reference/volatile-lifecycle.cjs
 node tools/showdown-reference/volatile-lifecycle.cjs --check
 ```
+
+PR 15.4 records complete-turn Mega form, stat, ability, item, transformed-Speed,
+and incompatible-stone behavior:
+
+```text
+node tools/showdown-reference/mega-evolution-lifecycle.cjs
+node tools/showdown-reference/mega-evolution-lifecycle.cjs --check
+```

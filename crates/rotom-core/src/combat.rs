@@ -596,6 +596,12 @@ pub struct DamageResult {
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum ResolvedAction {
+    MegaEvolved {
+        side: SideId,
+        slot: ActiveSlot,
+        form: FormId,
+        ability: AbilityId,
+    },
     Used {
         side: SideId,
         slot: ActiveSlot,
@@ -879,9 +885,14 @@ impl BattleState {
                     )?;
                 }
                 PokemonAction::Move { mega: true, .. } => {
-                    return Err(BattleError::UnsupportedMechanic(
-                        "Mega Evolution resolution is deferred".to_owned(),
-                    ));
+                    let resolved = self.resolve_mega_evolution(
+                        data,
+                        effects,
+                        field_effects,
+                        action,
+                        &mut resolution,
+                    )?;
+                    resolution.actions.push(resolved);
                 }
                 PokemonAction::Struggle => {
                     return Err(BattleError::UnsupportedMechanic(
@@ -896,8 +907,19 @@ impl BattleState {
             }
         }
 
+        self.finish_resolved_turn(data, effects, field_effects, &mut resolution)?;
+        Ok(resolution)
+    }
+
+    fn finish_resolved_turn<D: CombatData>(
+        &mut self,
+        data: &D,
+        effects: &EffectRegistry,
+        field_effects: &FieldEffectIds,
+        resolution: &mut TurnResolution,
+    ) -> Result<(), BattleError> {
         if self.phase != BattlePhase::BattleEnd {
-            self.finish_residual_phase(data, effects, field_effects, &mut resolution)?;
+            self.finish_residual_phase(data, effects, field_effects, resolution)?;
         }
         self.queue.actions.clear();
         self.queue.events.clear();
@@ -909,7 +931,163 @@ impl BattleState {
                 self.phase = BattlePhase::TurnSelection;
             }
         }
-        Ok(resolution)
+        Ok(())
+    }
+
+    fn resolve_mega_evolution<D: CombatData>(
+        &mut self,
+        data: &D,
+        effects: &EffectRegistry,
+        field_effects: &FieldEffectIds,
+        action: QueuedAction,
+        resolution: &mut TurnResolution,
+    ) -> Result<ResolvedAction, BattleError> {
+        let source = PokemonRef::new(action.side, action.pokemon);
+        let evolution = self
+            .side(action.side)
+            .pokemon(action.pokemon)
+            .and_then(|pokemon| pokemon.mega_evolution)
+            .ok_or_else(|| {
+                BattleError::InvalidState("queued Mega Evolution is no longer eligible".to_owned())
+            })?;
+        let context = EventContext {
+            source: Some(source),
+            weather: field_effects.effective_weather_environment(self, data),
+            terrain: field_effects.terrain_environment(self),
+            ..EventContext::default()
+        };
+        resolution.events.push(effects.dispatch(
+            self,
+            BattleEvent::AbilityEnd,
+            context,
+            EventValue::None,
+        )?);
+        let change = StateKernel::new(self).apply_mega_evolution(source, evolution)?;
+        self.apply_ability_start_effects(data, effects, field_effects, source, resolution)?;
+        resolution.events.push(effects.dispatch(
+            self,
+            BattleEvent::AbilityStart,
+            context,
+            EventValue::None,
+        )?);
+        self.refresh_remaining_move_order(data, effects, field_effects, resolution)?;
+        Ok(ResolvedAction::MegaEvolved {
+            side: action.side,
+            slot: action.slot,
+            form: change.current_form,
+            ability: change.current_ability,
+        })
+    }
+
+    fn refresh_remaining_move_order<D: CombatData>(
+        &mut self,
+        data: &D,
+        effects: &EffectRegistry,
+        field_effects: &FieldEffectIds,
+        resolution: &mut TurnResolution,
+    ) -> Result<(), BattleError> {
+        let queued = self.queue.actions.clone();
+        let mut refreshed = Vec::with_capacity(queued.len());
+        for mut action in queued {
+            if action.order != crate::ActionOrder::Move {
+                refreshed.push(action);
+                continue;
+            }
+            let PokemonAction::Move { move_slot, .. } = action.choice else {
+                refreshed.push(action);
+                continue;
+            };
+            let source = PokemonRef::new(action.side, action.pokemon);
+            let (move_id, base_priority, base_speed) = {
+                let pokemon = self
+                    .side(action.side)
+                    .pokemon(action.pokemon)
+                    .ok_or_else(|| {
+                        BattleError::InvalidState("queued actor is out of bounds".to_owned())
+                    })?;
+                let move_state =
+                    pokemon
+                        .moves
+                        .get(usize::from(move_slot.get()))
+                        .ok_or_else(|| {
+                            BattleError::InvalidState("queued move is out of bounds".to_owned())
+                        })?;
+                (
+                    move_state.move_id,
+                    move_state.priority,
+                    pokemon.staged_speed(),
+                )
+            };
+            let move_data = data.move_data(move_id).ok_or_else(|| {
+                BattleError::DataMismatch(format!("move {move_id} is missing from combat data"))
+            })?;
+            let context = EventContext {
+                source: Some(source),
+                target: self.queued_action_target(action),
+                move_id: Some(move_id),
+                suppress_source_item: !field_effects.item_is_active_for(self, data, source),
+                move_category: Some(move_data.category),
+                move_type: Some(move_data.move_type),
+                weather: field_effects.effective_weather_environment(self, data),
+                terrain: field_effects.terrain_environment(self),
+                ..EventContext::default()
+            };
+            let priority = effects.dispatch(
+                self,
+                BattleEvent::ModifyPriority,
+                context,
+                EventValue::Integer(i64::from(base_priority)),
+            )?;
+            let EventValue::Integer(priority_value) = priority.value else {
+                return Err(BattleError::InvalidState(
+                    "priority refresh produced a non-integer relay".to_owned(),
+                ));
+            };
+            action.priority = i8::try_from(priority_value).map_err(|_| {
+                BattleError::InvalidState("refreshed priority is out of range".to_owned())
+            })?;
+            action.prankster_boosted = priority.prankster_boosted;
+            resolution.events.push(priority);
+            let speed = effects.dispatch(
+                self,
+                BattleEvent::ModifySpeed,
+                context,
+                EventValue::Integer(i64::from(base_speed)),
+            )?;
+            let EventValue::Integer(speed_value) = speed.value else {
+                return Err(BattleError::InvalidState(
+                    "speed refresh produced a non-integer relay".to_owned(),
+                ));
+            };
+            let speed_value = u16::try_from(speed_value).map_err(|_| {
+                BattleError::InvalidState("refreshed Speed is out of range".to_owned())
+            })?;
+            action.speed = field_effects.action_speed(self, action.side, speed_value);
+            resolution.events.push(speed);
+            refreshed.push(action);
+        }
+        refreshed.sort_by(|left, right| {
+            left.order
+                .cmp(&right.order)
+                .then_with(|| right.priority.cmp(&left.priority))
+                .then_with(|| right.fractional_priority.cmp(&left.fractional_priority))
+                .then_with(|| right.speed.cmp(&left.speed))
+        });
+        self.queue.actions = refreshed;
+        Ok(())
+    }
+
+    fn queued_action_target(&self, action: QueuedAction) -> Option<PokemonRef> {
+        let PokemonAction::Move { target, .. } = action.choice else {
+            return None;
+        };
+        let (side, slot) = match target {
+            ActionTarget::Self_ => (action.side, action.slot),
+            ActionTarget::Ally(slot) => (action.side, slot),
+            ActionTarget::Foe(slot) => (action.side.opponent(), slot),
+            ActionTarget::Automatic => return None,
+        };
+        self.side(side).active[slot.index()].map(|pokemon| PokemonRef::new(side, pokemon))
     }
 
     fn finish_residual_phase<D: CombatData>(
@@ -4142,7 +4320,7 @@ impl BattleState {
             return Ok(false);
         }
         StateKernel::new(self).switch_active_position(side, slot, incoming)?;
-        self.apply_direct_switch_in_abilities(
+        self.apply_ability_start_effects(
             data,
             effects,
             field_effects,
@@ -4232,13 +4410,7 @@ impl BattleState {
         }
         StateKernel::new(self).fill_active_position(side, slot, incoming)?;
         let incoming_ref = PokemonRef::new(side, incoming);
-        self.apply_direct_switch_in_abilities(
-            data,
-            effects,
-            field_effects,
-            incoming_ref,
-            resolution,
-        )?;
+        self.apply_ability_start_effects(data, effects, field_effects, incoming_ref, resolution)?;
         if let Some(terrain) = field_effects.terrain_environment(self) {
             self.activate_terrain_seeds(data, field_effects, terrain)?;
         }
@@ -4315,7 +4487,7 @@ impl BattleState {
         self.settle_switch_phase()
     }
 
-    fn apply_direct_switch_in_abilities<D: CombatData>(
+    fn apply_ability_start_effects<D: CombatData>(
         &mut self,
         data: &D,
         effects: &EffectRegistry,

@@ -146,6 +146,17 @@ fn validate_side(battle: &BattleState, side: SideId) -> Result<(), BattleError> 
         }
     }
     validate_conditions(&side_state.side_conditions, "side conditions")?;
+    if side_state.mega_evolution_used
+        && side_state
+            .team
+            .members
+            .iter()
+            .any(|pokemon| pokemon.mega_evolution.is_some())
+    {
+        return invalid(format!(
+            "{side:?} retains Mega eligibility after using Mega Evolution"
+        ));
+    }
 
     let mut active = HashSet::new();
     for slot in crate::ActiveSlot::ALL {
@@ -256,6 +267,15 @@ fn validate_pokemon(
     if pokemon.cud_chew_berry.is_some() != (pokemon.cud_chew_turns > 0) {
         return invalid(format!(
             "{side:?} Pokémon {} has inconsistent Cud Chew state",
+            index.get()
+        ));
+    }
+    if pokemon
+        .mega_evolution
+        .is_some_and(|mega| mega.stats.hp == 0 || pokemon.form == Some(mega.form))
+    {
+        return invalid(format!(
+            "{side:?} Pokémon {} has an invalid Mega transformation descriptor",
             index.get()
         ));
     }
@@ -431,7 +451,7 @@ mod tests {
             status_state: StatusState::default(),
             stat_stages: StatStages::default(),
             volatiles: Vec::new(),
-            can_mega_evolve: false,
+            mega_evolution: None,
             trapped: false,
             position: PokemonPosition::Team,
         }

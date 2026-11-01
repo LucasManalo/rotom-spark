@@ -1,0 +1,49 @@
+{
+  "showdown_commit": "b79ce06d06b8f0dc8de8bb348bc9cab5d931553f",
+  "format": "gen9championsvgc2026regmc",
+  "methodology": {
+    "source": "complete pinned Showdown doubles turns using move-plus-Mega requests",
+    "move_execution": true,
+    "full_transition_comparison": true
+  },
+  "cases": [
+    {
+      "id": "charizard-mega-x-damage-and-item",
+      "before": {
+        "hp": 136,
+        "max_hp": 153
+      },
+      "after": {
+        "species": "charizardmegax",
+        "ability": "toughclaws",
+        "item": "charizarditex",
+        "hp": 136,
+        "max_hp": 153
+      },
+      "move_order": [
+        "p1a: Charizard",
+        "p2a: Granbull",
+        "p1b: Shuckle",
+        "p2b: Shuckle"
+      ]
+    },
+    {
+      "id": "abomasnow-mega-speed-and-ability-start",
+      "species": "abomasnowmega",
+      "ability": "snowwarning",
+      "weather": "snowscape",
+      "move_order": [
+        "p2a: Granbull",
+        "p1a: Abomasnow",
+        "p2b: Shuckle",
+        "p1b: Shuckle"
+      ]
+    },
+    {
+      "id": "incompatible-stone",
+      "can_mega": null,
+      "species": "charizard",
+      "item": "gyaradosite"
+    }
+  ]
+}

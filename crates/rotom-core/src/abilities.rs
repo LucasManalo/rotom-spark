@@ -238,6 +238,11 @@ fn register_handler(registry: &mut EffectRegistry, handler: AbilityHandler) {
         .filter(|registration| registration.behavior == handler.behavior)
     {
         register_callback(registry, handler, *registration);
+        if registration.event == BattleEvent::SwitchIn {
+            let mut ability_start = *registration;
+            ability_start.event = BattleEvent::AbilityStart;
+            register_callback(registry, handler, ability_start);
+        }
     }
 }
 
@@ -3911,7 +3916,7 @@ mod tests {
             status_state: StatusState::default(),
             stat_stages: StatStages::default(),
             volatiles: Vec::new(),
-            can_mega_evolve: false,
+            mega_evolution: None,
             trapped: false,
             position: PokemonPosition::Team,
         }

@@ -222,10 +222,25 @@ pub struct PokemonState {
     pub stat_stages: StatStages,
     pub volatiles: Vec<ConditionState>,
     /// Whether this Pokémon's current form/item combination can Mega Evolve.
-    pub can_mega_evolve: bool,
+    /// Complete prevalidated Mega transformation, when the current set and
+    /// held item form an eligible generated-Dex pair.
+    #[serde(default)]
+    pub mega_evolution: Option<MegaEvolution>,
     /// Authoritative trapping state used to reject voluntary switches.
     pub trapped: bool,
     pub position: PokemonPosition,
+}
+
+/// Immutable result of one eligible Mega Evolution request.
+///
+/// The Dex layer precomputes transformed stats from the original set so the
+/// runtime never needs to reconstruct nature or stat-point inputs.
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct MegaEvolution {
+    pub form: FormId,
+    pub stats: BattleStats,
+    pub ability: AbilityId,
 }
 
 impl PokemonState {

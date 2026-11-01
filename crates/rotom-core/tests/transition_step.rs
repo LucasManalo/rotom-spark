@@ -100,7 +100,7 @@ fn pokemon(species: u32, speed: u16) -> PokemonState {
         status_state: StatusState::default(),
         stat_stages: StatStages::default(),
         volatiles: Vec::new(),
-        can_mega_evolve: false,
+        mega_evolution: None,
         trapped: false,
         position: PokemonPosition::Team,
     }

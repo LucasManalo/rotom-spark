@@ -301,7 +301,7 @@ impl From<&rotom_core::PokemonState> for PokemonSnapshot {
                 .copied()
                 .map(ConditionSnapshot::from)
                 .collect(),
-            can_mega_evolve: state.can_mega_evolve,
+            can_mega_evolve: state.mega_evolution.is_some(),
             trapped: state.trapped,
             position: PositionSnapshot::from(state.position),
         }

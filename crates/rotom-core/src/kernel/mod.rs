@@ -2,9 +2,22 @@ mod validation;
 
 use crate::{
     AbilityId, ActiveSlot, BattleError, BattleStat, BattleState, ConditionId, ConditionState,
-    ItemId, MajorStatus, MoveSlotIndex, PokemonPosition, PokemonRef, SideId, StatStageChange,
-    StatusState, SwitchRequest, SwitchRequestKind,
+    FormId, ItemId, MajorStatus, MegaEvolution, MoveSlotIndex, PokemonPosition, PokemonRef, SideId,
+    StatStageChange, StatusState, SwitchRequest, SwitchRequestKind,
 };
+
+/// Atomic result of a form transformation applied by the kernel.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) struct MegaEvolutionChange {
+    pub(crate) previous_form: Option<FormId>,
+    pub(crate) current_form: FormId,
+    pub(crate) previous_ability: AbilityId,
+    pub(crate) current_ability: AbilityId,
+    pub(crate) previous_max_hp: u16,
+    pub(crate) current_max_hp: u16,
+    pub(crate) previous_hp: u16,
+    pub(crate) current_hp: u16,
+}
 
 /// The actual bounded result of one HP mutation.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -236,6 +249,70 @@ impl<'a> StateKernel<'a> {
     ) -> Result<AbilityId, BattleError> {
         let pokemon = self.pokemon_mut(target)?;
         Ok(std::mem::replace(&mut pokemon.ability, ability))
+    }
+
+    /// Applies a mechanics-approved Mega transformation atomically.
+    ///
+    /// Compatibility, timing, and once-per-battle eligibility are decided by
+    /// mechanics. The kernel only validates the local representation, updates
+    /// coupled form/stat/ability/HP fields, and consumes the side's prepared
+    /// Mega descriptors without touching the held item.
+    pub(crate) fn apply_mega_evolution(
+        &mut self,
+        target: PokemonRef,
+        evolution: MegaEvolution,
+    ) -> Result<MegaEvolutionChange, BattleError> {
+        let side = self.battle.side(target.side);
+        if side.mega_evolution_used {
+            return Err(BattleError::InvalidState(
+                "a side cannot Mega Evolve more than once".to_owned(),
+            ));
+        }
+        let pokemon = self.pokemon(target)?;
+        if !matches!(pokemon.position, PokemonPosition::Active { .. })
+            || pokemon.current_hp == 0
+            || pokemon.is_fainted()
+        {
+            return Err(BattleError::InvalidState(
+                "Mega Evolution requires a living active Pokémon".to_owned(),
+            ));
+        }
+        if pokemon.mega_evolution != Some(evolution) {
+            return Err(BattleError::InvalidState(
+                "Mega Evolution descriptor is stale or missing".to_owned(),
+            ));
+        }
+
+        let previous_form = pokemon.form;
+        let previous_ability = pokemon.ability;
+        let previous_max_hp = pokemon.stats.hp;
+        let previous_hp = pokemon.current_hp;
+        let missing_hp = previous_max_hp.saturating_sub(previous_hp);
+        let current_hp = evolution.stats.hp.saturating_sub(missing_hp).max(1);
+
+        let side = self.battle.side_mut(target.side);
+        let pokemon = side.pokemon_mut(target.pokemon).ok_or_else(|| {
+            BattleError::InvalidState("Mega Evolution target is out of bounds".to_owned())
+        })?;
+        pokemon.form = Some(evolution.form);
+        pokemon.stats = evolution.stats;
+        pokemon.current_hp = current_hp;
+        pokemon.ability = evolution.ability;
+        side.mega_evolution_used = true;
+        for ally in &mut side.team.members {
+            ally.mega_evolution = None;
+        }
+
+        Ok(MegaEvolutionChange {
+            previous_form,
+            current_form: evolution.form,
+            previous_ability,
+            current_ability: evolution.ability,
+            previous_max_hp,
+            current_max_hp: evolution.stats.hp,
+            previous_hp,
+            current_hp,
+        })
     }
 
     pub(crate) fn change_stat_stage(
@@ -671,8 +748,8 @@ fn remove_condition(
 mod tests {
     use super::*;
     use crate::{
-        AbilityId, BattlePhase, BattleStats, MoveId, MoveSlot, MoveTarget, PokemonIndex,
-        PokemonState, SideState, SpeciesId, StatStages, TeamState,
+        AbilityId, BattlePhase, BattleStats, FormId, MegaEvolution, MoveId, MoveSlot, MoveTarget,
+        PokemonIndex, PokemonState, SideState, SpeciesId, StatStages, TeamState,
     };
     use proptest::prelude::*;
 
@@ -711,7 +788,7 @@ mod tests {
             status_state: StatusState::default(),
             stat_stages: StatStages::default(),
             volatiles: Vec::new(),
-            can_mega_evolve: false,
+            mega_evolution: None,
             trapped: false,
             position: PokemonPosition::Team,
         }
@@ -944,6 +1021,53 @@ mod tests {
         assert_eq!(battle.side(SideId::P1).active[1], Some(index(3)));
         assert!(battle.active_effect_orders[0][1].unwrap() > original_right_order);
         assert_eq!(battle.phase, BattlePhase::TurnSelection);
+    }
+
+    #[test]
+    fn mega_evolution_updates_coupled_form_stats_hp_ability_and_side_state_atomically() {
+        let mut battle = battle();
+        let target = PokemonRef::new(SideId::P1, index(0));
+        let evolution = MegaEvolution {
+            form: FormId::new(7),
+            stats: BattleStats {
+                hp: 120,
+                atk: 140,
+                def: 110,
+                spa: 90,
+                spd: 100,
+                spe: 130,
+            },
+            ability: AbilityId::new(9),
+        };
+        {
+            let pokemon = battle.side_mut(SideId::P1).pokemon_mut(index(0)).unwrap();
+            pokemon.current_hp = 83;
+            pokemon.mega_evolution = Some(evolution);
+        }
+
+        let change = StateKernel::new(&mut battle)
+            .apply_mega_evolution(target, evolution)
+            .unwrap();
+        assert_eq!(change.previous_form, None);
+        assert_eq!(change.current_form, evolution.form);
+        assert_eq!(change.previous_ability, AbilityId::new(1));
+        assert_eq!(change.current_ability, evolution.ability);
+        assert_eq!(change.previous_max_hp, 100);
+        assert_eq!(change.current_max_hp, 120);
+        assert_eq!(change.previous_hp, 83);
+        assert_eq!(change.current_hp, 103);
+        let transformed = battle.side(SideId::P1).pokemon(index(0)).unwrap();
+        assert_eq!(transformed.form, Some(evolution.form));
+        assert_eq!(transformed.stats, evolution.stats);
+        assert_eq!(transformed.current_hp, 103);
+        assert_eq!(transformed.ability, evolution.ability);
+        assert!(battle.side(SideId::P1).mega_evolution_used);
+        assert!(battle
+            .side(SideId::P1)
+            .team
+            .members
+            .iter()
+            .all(|pokemon| pokemon.mega_evolution.is_none()));
     }
 
     proptest! {
