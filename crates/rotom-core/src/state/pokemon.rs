@@ -223,6 +223,9 @@ pub struct PokemonState {
     /// Whether this Pokémon has lost an item while Unburden was active.
     #[serde(default)]
     pub unburden_active: bool,
+    /// Canonical move-attempt, success, and incoming-hit bookkeeping.
+    #[serde(default)]
+    pub move_history: MoveHistory,
     /// Most recent Berry consumed through the authoritative item lifecycle.
     /// Harvest may restore this value while the holder has no item.
     #[serde(default)]
@@ -245,6 +248,59 @@ pub struct PokemonState {
     /// Authoritative trapping state used to reject voluntary switches.
     pub trapped: bool,
     pub position: PokemonPosition,
+}
+
+/// Result of a completed move action.
+///
+/// Absence in [`MoveHistory`] means the Pokémon did not complete a move
+/// attempt during that turn. `Skipped` is reserved for effects such as
+/// recharge which do not count as a failed attempt.
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum MoveActionResult {
+    Skipped,
+    Failed,
+    Succeeded,
+}
+
+/// Most recent move hit received by a Pokémon.
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct MoveHitRecord {
+    pub source: crate::PokemonRef,
+    pub move_id: MoveId,
+    pub damage: u16,
+    pub this_turn: bool,
+}
+
+/// Authoritative move lifecycle history used by mechanics predicates.
+#[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct MoveHistory {
+    /// Most recent move which passed `BeforeMove` and consumed PP.
+    pub last_move: Option<MoveId>,
+    /// Most recent move which successfully affected at least one target.
+    pub last_successful_move: Option<MoveId>,
+    /// Move currently/most recently attempted during this turn.
+    pub move_this_turn: Option<MoveId>,
+    /// Completed result for the current turn.
+    pub move_this_turn_result: Option<MoveActionResult>,
+    /// Result rolled over from the previous active turn.
+    pub move_last_turn_result: Option<MoveActionResult>,
+    /// Prior consecutive successful repeats of `last_move`, capped by consumers.
+    pub consecutive_uses: u16,
+    /// Actual damage dealt by the user's most recent move hit.
+    pub last_damage_dealt: u16,
+    /// Most recent incoming move hit, including zero-damage hits.
+    pub last_hit_by: Option<MoveHitRecord>,
+    /// Most recent incoming move hit which dealt positive HP damage.
+    pub last_damaged_by: Option<MoveHitRecord>,
+    /// Number of damaging hits received during the current turn.
+    pub damaging_hits_this_turn: u16,
+    /// Move hits received since entering the field (Rage Fist-style history).
+    pub times_attacked: u16,
+    /// Move actions begun since the Pokémon entered the field.
+    pub active_move_actions: u16,
 }
 
 /// Immutable result of one eligible Mega Evolution request.
@@ -371,6 +427,7 @@ impl PokemonState {
         self.trapped = false;
         self.cud_chew_berry = None;
         self.cud_chew_turns = 0;
+        self.move_history = MoveHistory::default();
         for move_slot in &mut self.moves {
             move_slot.disabled = false;
         }

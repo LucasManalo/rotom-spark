@@ -220,6 +220,7 @@ fn validate_side(battle: &BattleState, side: SideId) -> Result<(), BattleError> 
     Ok(())
 }
 
+#[allow(clippy::too_many_lines)] // Keeps the complete per-Pokémon invariant audit together.
 fn validate_pokemon(
     pokemon: &crate::PokemonState,
     side: SideId,
@@ -279,6 +280,28 @@ fn validate_pokemon(
     if pokemon.ability_restore == Some(pokemon.ability) {
         return invalid(format!(
             "{side:?} Pokémon {} has redundant ability restoration state",
+            index.get()
+        ));
+    }
+    let history = pokemon.move_history;
+    if history.consecutive_uses > 0 && history.last_move.is_none() {
+        return invalid(format!(
+            "{side:?} Pokémon {} has a consecutive-use count without a last move",
+            index.get()
+        ));
+    }
+    if history
+        .last_damaged_by
+        .is_some_and(|record| record.damage == 0)
+    {
+        return invalid(format!(
+            "{side:?} Pokémon {} has a zero-damage last-damaged record",
+            index.get()
+        ));
+    }
+    if history.damaging_hits_this_turn > 0 && history.last_damaged_by.is_none() {
+        return invalid(format!(
+            "{side:?} Pokémon {} counts damaging hits without a damage source",
             index.get()
         ));
     }
@@ -453,6 +476,7 @@ mod tests {
             last_item: None,
             item_used_this_turn: false,
             unburden_active: false,
+            move_history: crate::MoveHistory::default(),
             last_consumed_berry: None,
             cud_chew_berry: None,
             cud_chew_turns: 0,

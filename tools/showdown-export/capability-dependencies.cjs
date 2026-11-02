@@ -52,7 +52,7 @@ const CAPABILITIES = {
 	confusion: unsupported('Confusion lifecycle', ['application', 'duration', 'before-move check', 'self-hit', 'cure'], 'Confusion is not end-to-end.', ['showdown:data/conditions.ts:Conditions.confusion']),
 	flinch: implemented('Flinch lifecycle', ['application', 'before-move interruption', 'turn cleanup', 'immunity'], 'Ordinary flinch secondaries, King\'s Rock, Inner Focus, and Steadfast use the canonical lifecycle; move-specific flinch predicates remain separate callbacks.', ['showdown:data/conditions.ts:Conditions.flinch', 'showdown:data/items.ts:Items.kingsrock']),
 	residual_trapping: unsupported('Partial-trapping lifecycle', ['duration', 'residual damage', 'switch restriction', 'Binding Band modifier'], 'Binding moves and Binding Band are incomplete.', ['showdown:data/conditions.ts:Conditions.partiallytrapped', 'showdown:data/items.ts:Items.bindingband']),
-	move_history: partial('Canonical move and action history', ['last move', 'last successful move', 'last damage source', 'consecutive use', 'turn reset'], 'Several predicates and consecutive-use effects lack one authoritative history lifecycle.', ['showdown:sim/pokemon.ts:Pokemon.moveThisTurnResult', 'showdown:sim/pokemon.ts:Pokemon.lastMove']),
+	move_history: verified('Canonical move and action history', ['last move', 'last successful move', 'last hit and damage source', 'consecutive use', 'turn reset'], 'Called moves and two-turn/recharge identities retain their own unsupported execution-family blockers.', ['showdown:sim/pokemon.ts:Pokemon.moveUsed', 'showdown:sim/pokemon.ts:Pokemon.gotAttacked', 'showdown:sim/battle.ts:Battle.endTurn']),
 	action_order_modifier: partial('Dynamic action-order modifiers', ['random priority activation', 'same-bracket ordering', 'diagnostic RNG'], 'Quick Claw-style bracket modification is not integrated with the canonical queue.', ['showdown:data/items.ts:Items.quickclaw']),
 	accuracy_override: partial('Exceptional accuracy overrides', ['source and target scope', 'semi-invulnerable targets', 'always-hit semantics'], 'No Guard and move-specific accuracy overrides are not interaction-complete.', ['showdown:data/abilities.ts:Abilities.noguard']),
 	status_cure: partial('Status cure lifecycle', ['major-status cure', 'entry/update timing', 'ability and item hooks'], 'Status berries, Heal Bell, Shed Skin, and related interactions are not unified.', ['showdown:sim/pokemon.ts:Pokemon.cureStatus']),
@@ -137,7 +137,6 @@ const ITEM_GROUPS = [
 	[['ejectbutton', 'redcard'], ['forced_switch']],
 	[['kingsrock'], ['flinch']],
 	[['mentalherb'], ['mental_herb_cure']],
-	[['metronome'], ['move_history']],
 	[['quickclaw'], ['action_order_modifier']],
 	[['shedshell'], ['switch_restriction']],
 	[['whiteherb'], ['stat_restore']],
@@ -201,6 +200,15 @@ Object.assign(CAPABILITIES.mental_herb_cure, {
 	differential_fixtures: ['differential:data/fixtures/differential/volatile-lifecycle.json#mental-herb-taunt'],
 });
 
+Object.assign(CAPABILITIES.move_history, {
+	tests: [
+		'unit:crates/rotom-core/src/kernel/mod.rs#move_history_operations_are_atomic_and_roll_turn_state_forward',
+		'unit:crates/rotom-dex/tests/combat.rs#canonical_move_history_tracks_success_damage_sources_rollover_and_repetition',
+		'unit:crates/rotom-dex/tests/combat.rs#failed_move_history_is_recorded_without_promoting_last_successful_move',
+	],
+	differential_fixtures: ['differential:data/fixtures/differential/move-lifecycle-history.json#multi-hit-success-history'],
+});
+
 for (const id of ['mega_eligibility', 'mega_timing', 'mega_form_change', 'mega_ability_transition']) {
 	Object.assign(CAPABILITIES[id], {
 		tests: [
@@ -239,6 +247,7 @@ const UNLOCKED_IDENTITIES = {
 	forced_switch: ['ability:suctioncups', 'item:ejectbutton', 'item:redcard'],
 	flinch: ['ability:innerfocus', 'ability:steadfast', 'item:kingsrock'],
 	mental_herb_cure: ['item:mentalherb'],
+	move_history: ['item:metronome'],
 	mega_eligibility: MEGA_STONES.map(id => `item:${id}`),
 };
 

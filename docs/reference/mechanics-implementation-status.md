@@ -19,7 +19,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Kind | Total | Implemented | Partial | Unsupported |
 | --- | ---: | ---: | ---: | ---: |
 | Abilities | 215 | 123 | 92 | 0 |
-| Items | 166 | 140 | 26 | 0 |
+| Items | 166 | 141 | 25 | 0 |
 | Moves | 510 | 241 | 0 | 269 |
 
 ## Abilities
@@ -349,7 +349,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Meowsticite | `meowsticite` | implemented | unit_tested | unit_tested | PR 15.4 |
 | Metagrossite | `metagrossite` | implemented | unit_tested | unit_tested | PR 15.4 |
 | Metal Coat | `metalcoat` | implemented | unit_tested | not_tested | PR 13.6.2 |
-| Metronome | `metronome` | partial | unit_tested | not_tested | PR 13.6.4 |
+| Metronome | `metronome` | implemented | unit_tested | unit_tested | PR 15.6 |
 | Miracle Seed | `miracleseed` | implemented | unit_tested | not_tested | PR 13.6.2 |
 | Misty Seed | `mistyseed` | implemented | unit_tested | not_tested | PR 13.6.3 |
 | Muscle Band | `muscleband` | implemented | unit_tested | unit_tested | PR 13.6.1 |

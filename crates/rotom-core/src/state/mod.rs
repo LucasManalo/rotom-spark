@@ -10,8 +10,9 @@ mod transition;
 pub use battle::{BattlePhase, BattleState};
 pub use field::{ConditionState, FieldState};
 pub use pokemon::{
-    ActiveSlot, BattleStat, BattleStats, MajorStatus, MegaEvolution, MoveSlot, PokemonIndex,
-    PokemonPosition, PokemonState, StatStageChange, StatStages, StatusState, TeamState,
+    ActiveSlot, BattleStat, BattleStats, MajorStatus, MegaEvolution, MoveActionResult, MoveHistory,
+    MoveHitRecord, MoveSlot, PokemonIndex, PokemonPosition, PokemonState, StatStageChange,
+    StatStages, StatusState, TeamState,
 };
 pub use queue::{ActionOrder, ActionQueue, QueuedAction};
 pub use scenario::BattleStateBuilder;

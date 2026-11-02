@@ -2,8 +2,8 @@ use crate::{
     kernel::StateKernel, AbilityId, ActionTarget, ActiveSlot, BattleError, BattleEvent,
     BattlePhase, BattleStat, BattleState, ConditionId, ConditionState, EffectRegistry,
     EventContext, EventDispatch, EventValue, FaintTarget, FieldEffectIds, FormId, ItemId,
-    MajorStatus, MoveId, MoveSlotIndex, MoveTarget, PokemonAction, PokemonIndex, PokemonRef,
-    PokemonState, QueuedAction, RngReason, SideId, SpeciesId, TerrainEnvironment,
+    MajorStatus, MoveActionResult, MoveId, MoveSlotIndex, MoveTarget, PokemonAction, PokemonIndex,
+    PokemonRef, PokemonState, QueuedAction, RngReason, SideId, SpeciesId, TerrainEnvironment,
     WeatherEnvironment,
 };
 use serde::{Deserialize, Serialize};
@@ -1127,6 +1127,7 @@ impl BattleState {
             self.tick_late_field_durations(field_effects, resolution);
         }
         StateKernel::new(self).reset_item_turn_history();
+        StateKernel::new(self).reset_move_turn_history();
         Ok(())
     }
 
@@ -1674,6 +1675,7 @@ impl BattleState {
         let move_context =
             self.prepare_move_execution(data, queued, later_actors, field_effects)?;
         let source_index = move_context.source.pokemon;
+        StateKernel::new(self).begin_move_action(move_context.source)?;
         let context = EventContext {
             source: Some(move_context.source),
             target: move_context.original_target.map(|target| target.target),
@@ -1688,6 +1690,11 @@ impl BattleState {
         let cancelled = before_move.cancelled;
         resolution.events.push(before_move);
         if cancelled {
+            StateKernel::new(self).finish_move_action(
+                move_context.source,
+                move_context.move_id,
+                MoveActionResult::Failed,
+            )?;
             resolution.actions.push(ResolvedAction::Skipped {
                 side: queued.side,
                 slot: queued.slot,
@@ -1720,8 +1727,89 @@ impl BattleState {
             .pp
             .saturating_sub(pp_cost);
         StateKernel::new(self).set_pp(move_context.source, queued.move_slot, remaining_pp)?;
+        StateKernel::new(self).record_move_used(move_context.source, move_context.move_id)?;
 
-        self.execute_primary_operation(data, &move_context, effects, field_effects, resolution)
+        let action_start = resolution.actions.len();
+        let outcome_start = resolution.target_outcomes.len();
+        self.execute_primary_operation(data, &move_context, effects, field_effects, resolution)?;
+        let succeeded = resolution.target_outcomes[outcome_start..]
+            .iter()
+            .any(|outcome| outcome.result == TargetResult::Hit)
+            || resolution.actions[action_start..].iter().any(|action| {
+                matches!(
+                    action,
+                    ResolvedAction::Used {
+                        side,
+                        slot,
+                        move_slot
+                    } if *side == queued.side
+                        && *slot == queued.slot
+                        && *move_slot == queued.move_slot
+                )
+            });
+        let protected = resolution.target_outcomes[outcome_start..]
+            .iter()
+            .any(|outcome| outcome.result == TargetResult::Protected);
+        StateKernel::new(self).finish_move_action(
+            move_context.source,
+            move_context.move_id,
+            if succeeded {
+                MoveActionResult::Succeeded
+            } else if protected {
+                MoveActionResult::Skipped
+            } else {
+                MoveActionResult::Failed
+            },
+        )?;
+        let total_damage = resolution.target_outcomes[outcome_start..]
+            .iter()
+            .map(|outcome| u32::from(outcome.applied_hp_loss))
+            .sum();
+        self.dispatch_after_move(
+            data,
+            effects,
+            field_effects,
+            &move_context,
+            total_damage,
+            resolution,
+        )
+    }
+
+    fn dispatch_after_move<D: CombatData>(
+        &mut self,
+        data: &D,
+        effects: &EffectRegistry,
+        field_effects: &FieldEffectIds,
+        context: &MoveExecutionContext,
+        total_damage: u32,
+        resolution: &mut TurnResolution,
+    ) -> Result<(), BattleError> {
+        let berry = self.berry_ability_context(data, context.source)?;
+        resolution.events.push(effects.dispatch(
+            self,
+            BattleEvent::AfterMove,
+            EventContext {
+                source: Some(context.source),
+                target: context.targets.last().map(|target| target.target),
+                move_id: Some(context.move_id),
+                suppress_target_ability: context.suppress_target_ability,
+                suppress_source_item: !field_effects.item_is_active_for(self, data, context.source),
+                source_berry_blocked: berry.blocked,
+                source_ripen: berry.ripen(),
+                source_cheek_pouch: berry.cheek_pouch,
+                source_cud_chew: berry.cud_chew,
+                source_symbiosis_ally: berry.symbiosis_ally,
+                move_category: Some(context.move_data.category),
+                move_type: Some(context.move_data.move_type),
+                move_flags: context.move_data.interaction_flags,
+                sheer_force_boosted: context.sheer_force_boosted,
+                move_total_damage: total_damage,
+                critical: false,
+                ..EventContext::default()
+            },
+            EventValue::None,
+        )?);
+        Ok(())
     }
 
     fn prepare_move_execution<D: CombatData>(
@@ -2032,6 +2120,12 @@ impl BattleState {
                     },
                     resolution,
                 )?;
+                StateKernel::new(self).record_move_hit(
+                    move_context.source,
+                    target,
+                    move_context.move_id,
+                    applied_hp_loss,
+                )?;
                 self.apply_reactive_field_abilities(data, field_effects, target, applied_hp_loss)?;
                 total_applied_damage =
                     total_applied_damage.saturating_add(u32::from(applied_hp_loss));
@@ -2131,36 +2225,6 @@ impl BattleState {
                 slot: move_context.queued.slot,
             });
         }
-        let berry = self.berry_ability_context(data, move_context.source)?;
-        let after_context = EventContext {
-            source: Some(move_context.source),
-            target: move_context.targets.last().map(|target| target.target),
-            move_id: Some(move_context.move_id),
-            suppress_target_ability: move_context.suppress_target_ability,
-            suppress_source_item: !field_effects.item_is_active_for(
-                self,
-                data,
-                move_context.source,
-            ),
-            source_berry_blocked: berry.blocked,
-            source_ripen: berry.ripen(),
-            source_cheek_pouch: berry.cheek_pouch,
-            source_cud_chew: berry.cud_chew,
-            source_symbiosis_ally: berry.symbiosis_ally,
-            move_category: Some(move_context.move_data.category),
-            move_type: Some(move_context.move_data.move_type),
-            move_flags: move_context.move_data.interaction_flags,
-            sheer_force_boosted: move_context.sheer_force_boosted,
-            move_total_damage: total_applied_damage,
-            critical: false,
-            ..EventContext::default()
-        };
-        resolution.events.push(effects.dispatch(
-            self,
-            BattleEvent::AfterMove,
-            after_context,
-            EventValue::None,
-        )?);
         Ok(())
     }
 
@@ -2569,6 +2633,12 @@ impl BattleState {
                 },
                 resolution,
             )?;
+            StateKernel::new(self).record_move_hit(
+                context.source,
+                target_context.target,
+                context.move_id,
+                applied_hp_loss,
+            )?;
             self.apply_reactive_field_abilities(
                 data,
                 field_effects,
@@ -2654,31 +2724,6 @@ impl BattleState {
                 slot: context.queued.slot,
             }
         });
-        let berry = self.berry_ability_context(data, context.source)?;
-        resolution.events.push(effects.dispatch(
-            self,
-            BattleEvent::AfterMove,
-            EventContext {
-                source: Some(context.source),
-                target: context.targets.last().map(|target| target.target),
-                move_id: Some(context.move_id),
-                suppress_target_ability: context.suppress_target_ability,
-                suppress_source_item: !field_effects.item_is_active_for(self, data, context.source),
-                source_berry_blocked: berry.blocked,
-                source_ripen: berry.ripen(),
-                source_cheek_pouch: berry.cheek_pouch,
-                source_cud_chew: berry.cud_chew,
-                source_symbiosis_ally: berry.symbiosis_ally,
-                move_category: Some(context.move_data.category),
-                move_type: Some(context.move_data.move_type),
-                move_flags: context.move_data.interaction_flags,
-                sheer_force_boosted: context.sheer_force_boosted,
-                move_total_damage: total_applied,
-                critical: false,
-                ..EventContext::default()
-            },
-            EventValue::None,
-        )?);
         Ok(())
     }
 
@@ -3029,12 +3074,6 @@ impl BattleState {
             applied_hp_loss: 0,
             fainted: false,
         });
-        resolution.events.push(effects.dispatch(
-            self,
-            BattleEvent::AfterMove,
-            context,
-            EventValue::None,
-        )?);
         Ok(())
     }
 
@@ -3125,18 +3164,6 @@ impl BattleState {
                 slot: move_context.queued.slot,
             }
         });
-        resolution.events.push(effects.dispatch(
-            self,
-            BattleEvent::AfterMove,
-            EventContext {
-                source: Some(move_context.source),
-                target: move_context.targets.last().map(|target| target.target),
-                move_id: Some(move_context.move_id),
-                suppress_target_ability: move_context.suppress_target_ability,
-                ..EventContext::default()
-            },
-            EventValue::None,
-        )?);
         Ok(())
     }
 
@@ -3237,19 +3264,6 @@ impl BattleState {
                 slot: move_context.queued.slot,
             }
         });
-        resolution.events.push(effects.dispatch(
-            self,
-            BattleEvent::AfterMove,
-            EventContext {
-                source: Some(move_context.source),
-                target: move_context.targets.last().map(|target| target.target),
-                move_id: Some(move_context.move_id),
-                suppress_target_ability: move_context.suppress_target_ability,
-                critical: false,
-                ..EventContext::default()
-            },
-            EventValue::None,
-        )?);
         Ok(())
     }
 

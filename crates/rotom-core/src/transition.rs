@@ -357,6 +357,7 @@ mod tests {
             last_item: None,
             item_used_this_turn: false,
             unburden_active: false,
+            move_history: crate::MoveHistory::default(),
             last_consumed_berry: None,
             cud_chew_berry: None,
             cud_chew_turns: 0,

@@ -3,8 +3,8 @@ use rotom_core::{
     BattleState, BattleStateBuilder, CombatData, CombatMove, ConditionState, EffectFraction,
     EffectInvocation, EffectOrder, EffectRegistry, EffectSource, EffectState, EventContext,
     EventDispatch, FaintTarget, FormId, Gender, JointAction, MajorStatus, Mechanics,
-    MoveCapabilities, MoveCapability, MoveId, MoveOperation, MoveSlotIndex, MoveTarget,
-    PokemonAction, PokemonIndex, PokemonPosition, PokemonRef, PokemonSet, PokemonTypes,
+    MoveActionResult, MoveCapabilities, MoveCapability, MoveId, MoveOperation, MoveSlotIndex,
+    MoveTarget, PokemonAction, PokemonIndex, PokemonPosition, PokemonRef, PokemonSet, PokemonTypes,
     ResolvedAction, RngOperation, RngReason, SideId, SideState, SpeciesId, StatAllocation,
     StatStages, StatusState, TargetResult, TeamState, TurnChoice, WeatherEnvironment,
 };
@@ -148,6 +148,13 @@ fn item_ability_lifecycle_fixture() -> serde_json::Value {
         "../../../data/fixtures/differential/item-ability-lifecycle.json"
     ))
     .expect("item and ability lifecycle fixture")
+}
+
+fn move_lifecycle_history_fixture() -> serde_json::Value {
+    serde_json::from_str(include_str!(
+        "../../../data/fixtures/differential/move-lifecycle-history.json"
+    ))
+    .expect("move lifecycle history fixture")
 }
 
 fn lifecycle_case<'a>(fixture: &'a serde_json::Value, id: &str) -> &'a serde_json::Value {
@@ -10172,4 +10179,162 @@ fn skill_link_long_reach_scrappy_and_liquid_voice_shape_moves_before_hit_resolut
             event.context.source == Some(PokemonRef::new(SideId::P1, PokemonIndex::new(0)))
                 && event.context.move_type == Some(rotom_core::PokemonType::Water)
         }));
+}
+
+#[test]
+fn canonical_move_history_tracks_success_damage_sources_rollover_and_repetition() {
+    let dex = champions_reg_mc().unwrap();
+    let fixture = move_lifecycle_history_fixture();
+    let reference = lifecycle_case(&fixture, "multi-hit-success-history");
+    assert_eq!(reference["source_move_last_turn_result"], true);
+    assert!(reference["source_move_this_turn"].is_null());
+    assert_eq!(reference["target_last_attacked_by"]["this_turn"], false);
+    let attacker = set_with_moves(&dex, "magikarp", "skilllink", &["scaleshot"]);
+    let bulky = set_with_moves(&dex, "snorlax", "pressure", &["recover"]);
+    let state = selected_primary_battle(&dex, &attacker, &bulky, 0x15_06_01);
+    let action = single_move_action(0, ActionTarget::Foe(ActiveSlot::Left));
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let source = PokemonRef::new(SideId::P1, PokemonIndex::new(0));
+    let target = PokemonRef::new(SideId::P2, PokemonIndex::new(0));
+    let move_id = dex.resolve_move("scaleshot").unwrap().0;
+
+    let first = step(&state, &action, &mechanics).unwrap();
+    let outcomes = &first.diagnostics.turn.as_ref().unwrap().target_outcomes;
+    let hits = outcomes
+        .iter()
+        .filter(|outcome| {
+            outcome.source == source
+                && outcome.target == target
+                && outcome.result == TargetResult::Hit
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(hits.len(), 5);
+    let source_history = first
+        .state
+        .side(source.side)
+        .pokemon(source.pokemon)
+        .unwrap()
+        .move_history;
+    assert_eq!(source_history.last_move, Some(move_id));
+    assert_eq!(source_history.last_successful_move, Some(move_id));
+    assert_eq!(
+        source_history.move_last_turn_result,
+        Some(MoveActionResult::Succeeded)
+    );
+    assert_eq!(source_history.move_this_turn, None);
+    assert_eq!(source_history.move_this_turn_result, None);
+    assert_eq!(source_history.consecutive_uses, 0);
+    assert_eq!(
+        source_history.last_damage_dealt,
+        hits.last().unwrap().applied_hp_loss
+    );
+    assert_eq!(source_history.active_move_actions, 1);
+
+    let target_history = first
+        .state
+        .side(target.side)
+        .pokemon(target.pokemon)
+        .unwrap()
+        .move_history;
+    let last_hit = target_history.last_hit_by.unwrap();
+    assert_eq!(last_hit.source, source);
+    assert_eq!(last_hit.move_id, move_id);
+    assert_eq!(last_hit.damage, hits.last().unwrap().applied_hp_loss);
+    assert!(!last_hit.this_turn);
+    assert_eq!(target_history.last_damaged_by, Some(last_hit));
+    assert_eq!(target_history.damaging_hits_this_turn, 0);
+    assert_eq!(target_history.times_attacked, 5);
+    assert_eq!(first.state.last_successful_move_this_turn(), None);
+
+    let second = step(&first.state, &action, &mechanics).unwrap();
+    let second_history = second
+        .state
+        .side(source.side)
+        .pokemon(source.pokemon)
+        .unwrap()
+        .move_history;
+    assert_eq!(second_history.consecutive_uses, 1);
+    assert_eq!(second_history.active_move_actions, 2);
+    assert_eq!(step(&first.state, &action, &mechanics).unwrap(), second);
+
+    let mut metronome_user = set_with_moves(&dex, "medicham", "purepower", &["dragonclaw"]);
+    metronome_user.item = Some(dex.resolve_item("metronome").unwrap().0);
+    let state = selected_primary_battle(&dex, &metronome_user, &bulky, 0x15_06_04);
+    let action = single_move_action(0, ActionTarget::Foe(ActiveSlot::Left));
+    let first = step(&state, &action, &mechanics).unwrap();
+    let first_damage = first
+        .diagnostics
+        .turn
+        .as_ref()
+        .unwrap()
+        .target_outcomes
+        .iter()
+        .find(|outcome| outcome.source == source && outcome.target == target)
+        .unwrap()
+        .calculated_damage;
+    let second = step(&first.state, &action, &mechanics).unwrap();
+    let second_damage = second
+        .diagnostics
+        .turn
+        .as_ref()
+        .unwrap()
+        .target_outcomes
+        .iter()
+        .find(|outcome| outcome.source == source && outcome.target == target)
+        .unwrap()
+        .calculated_damage;
+    assert!(second_damage > first_damage);
+}
+
+#[test]
+fn failed_move_history_is_recorded_without_promoting_last_successful_move() {
+    let dex = champions_reg_mc().unwrap();
+    let fixture = move_lifecycle_history_fixture();
+    assert_eq!(
+        lifecycle_case(&fixture, "priority-blocked-failure-history")
+            ["source_move_last_turn_result"],
+        false
+    );
+    assert!(
+        lifecycle_case(&fixture, "protected-success-history")["source_move_last_turn_result"]
+            .is_null()
+    );
+    let attacker = set_with_moves(&dex, "medicham", "telepathy", &["aquajet"]);
+    let blocker = set_with_moves(&dex, "snorlax", "armortail", &["recover"]);
+    let state = selected_primary_battle(&dex, &attacker, &blocker, 0x15_06_02);
+    let source = PokemonRef::new(SideId::P1, PokemonIndex::new(0));
+    let move_id = dex.resolve_move("aquajet").unwrap().0;
+    let result = execute_single_move(&dex, &state, 0, ActionTarget::Foe(ActiveSlot::Left));
+    let history = result
+        .state
+        .side(source.side)
+        .pokemon(source.pokemon)
+        .unwrap()
+        .move_history;
+    assert_eq!(history.last_move, Some(move_id));
+    assert_eq!(history.last_successful_move, None);
+    assert_eq!(
+        history.move_last_turn_result,
+        Some(MoveActionResult::Failed)
+    );
+    assert_eq!(history.consecutive_uses, 0);
+    assert_eq!(history.last_damage_dealt, 0);
+
+    let attacker = set_with_moves(&dex, "medicham", "purepower", &["aquatail"]);
+    let protector = set_with_moves(&dex, "snorlax", "thickfat", &["protect"]);
+    let state = selected_primary_battle(&dex, &attacker, &protector, 0x15_06_03);
+    let move_id = dex.resolve_move("aquatail").unwrap().0;
+    let result = execute_single_move(&dex, &state, 0, ActionTarget::Foe(ActiveSlot::Left));
+    let history = result
+        .state
+        .side(source.side)
+        .pokemon(source.pokemon)
+        .unwrap()
+        .move_history;
+    assert_eq!(history.last_move, Some(move_id));
+    assert_eq!(history.last_successful_move, None);
+    assert_eq!(
+        history.move_last_turn_result,
+        Some(MoveActionResult::Skipped)
+    );
 }

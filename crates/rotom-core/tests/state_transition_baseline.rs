@@ -77,6 +77,7 @@ fn pokemon(species: u32, speed: u16) -> PokemonState {
         last_item: None,
         item_used_this_turn: false,
         unburden_active: false,
+        move_history: rotom_core::MoveHistory::default(),
         last_consumed_berry: None,
         cud_chew_berry: None,
         cud_chew_turns: 0,

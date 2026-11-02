@@ -2,8 +2,9 @@ mod validation;
 
 use crate::{
     AbilityId, ActiveSlot, BattleError, BattleStat, BattleState, ConditionId, ConditionState,
-    FormId, ItemId, MajorStatus, MegaEvolution, MoveSlotIndex, PokemonPosition, PokemonRef, SideId,
-    StatStageChange, StatusState, SwitchRequest, SwitchRequestKind,
+    FormId, ItemId, MajorStatus, MegaEvolution, MoveActionResult, MoveHitRecord, MoveId,
+    MoveSlotIndex, PokemonPosition, PokemonRef, SideId, StatStageChange, StatusState,
+    SwitchRequest, SwitchRequestKind,
 };
 
 /// Atomic result of a form transformation applied by the kernel.
@@ -403,6 +404,101 @@ impl<'a> StateKernel<'a> {
         for side in [SideId::P1, SideId::P2] {
             for pokemon in &mut self.battle.side_mut(side).team.members {
                 pokemon.item_used_this_turn = false;
+            }
+        }
+    }
+
+    /// Begins one queued move action before `BeforeMove` checks run.
+    pub(crate) fn begin_move_action(&mut self, source: PokemonRef) -> Result<(), BattleError> {
+        let history = &mut self.pokemon_mut(source)?.move_history;
+        history.active_move_actions = history.active_move_actions.saturating_add(1);
+        history.move_this_turn = None;
+        history.move_this_turn_result = None;
+        history.last_damage_dealt = 0;
+        Ok(())
+    }
+
+    /// Records a move after it passes `BeforeMove` and pays PP.
+    pub(crate) fn record_move_used(
+        &mut self,
+        source: PokemonRef,
+        move_id: MoveId,
+    ) -> Result<(), BattleError> {
+        let history = &mut self.pokemon_mut(source)?.move_history;
+        let repeated_success = history.last_move == Some(move_id)
+            && history.move_last_turn_result == Some(MoveActionResult::Succeeded);
+        history.last_move = Some(move_id);
+        history.move_this_turn = Some(move_id);
+        history.consecutive_uses = if repeated_success {
+            history.consecutive_uses.saturating_add(1)
+        } else {
+            0
+        };
+        Ok(())
+    }
+
+    /// Completes the current move attempt and updates success predicates.
+    pub(crate) fn finish_move_action(
+        &mut self,
+        source: PokemonRef,
+        move_id: MoveId,
+        result: MoveActionResult,
+    ) -> Result<(), BattleError> {
+        let history = &mut self.pokemon_mut(source)?.move_history;
+        history.move_this_turn_result = Some(result);
+        if result == MoveActionResult::Succeeded {
+            history.last_successful_move = Some(move_id);
+            self.battle.last_successful_move_this_turn = Some(move_id);
+        } else {
+            history.consecutive_uses = 0;
+        }
+        Ok(())
+    }
+
+    /// Records one resolved incoming move hit and its actual HP loss.
+    pub(crate) fn record_move_hit(
+        &mut self,
+        source: PokemonRef,
+        target: PokemonRef,
+        move_id: MoveId,
+        damage: u16,
+    ) -> Result<(), BattleError> {
+        let record = MoveHitRecord {
+            source,
+            move_id,
+            damage,
+            this_turn: true,
+        };
+        {
+            let history = &mut self.pokemon_mut(target)?.move_history;
+            history.last_hit_by = Some(record);
+            history.times_attacked = history.times_attacked.saturating_add(1);
+            if damage > 0 {
+                history.last_damaged_by = Some(record);
+                history.damaging_hits_this_turn = history.damaging_hits_this_turn.saturating_add(1);
+            }
+        }
+        let source_history = &mut self.pokemon_mut(source)?.move_history;
+        source_history.last_damage_dealt = damage;
+        Ok(())
+    }
+
+    /// Rolls current-turn move state into previous-turn predicates.
+    pub(crate) fn reset_move_turn_history(&mut self) {
+        self.battle.last_successful_move_this_turn = None;
+        for side in [SideId::P1, SideId::P2] {
+            for pokemon in &mut self.battle.side_mut(side).team.members {
+                let history = &mut pokemon.move_history;
+                history.move_last_turn_result = history.move_this_turn_result;
+                history.move_this_turn = None;
+                history.move_this_turn_result = None;
+                history.damaging_hits_this_turn = 0;
+                if let Some(record) = &mut history.last_hit_by {
+                    record.this_turn = false;
+                }
+                if let Some(record) = &mut history.last_damaged_by {
+                    record.this_turn = false;
+                }
             }
         }
     }
@@ -937,6 +1033,7 @@ mod tests {
             last_item: None,
             item_used_this_turn: false,
             unburden_active: false,
+            move_history: crate::MoveHistory::default(),
             last_consumed_berry: None,
             cud_chew_berry: None,
             cud_chew_turns: 0,
@@ -1011,6 +1108,69 @@ mod tests {
             .unwrap();
         assert_eq!(stage.current, 6);
         assert_eq!(stage.applied_delta, 6);
+    }
+
+    #[test]
+    fn move_history_operations_are_atomic_and_roll_turn_state_forward() {
+        let mut battle = battle();
+        let source = PokemonRef::new(SideId::P1, index(0));
+        let target = PokemonRef::new(SideId::P2, index(0));
+        let move_id = MoveId::new(1);
+        let mut kernel = StateKernel::new(&mut battle);
+
+        kernel.begin_move_action(source).unwrap();
+        kernel.record_move_used(source, move_id).unwrap();
+        kernel.record_move_hit(source, target, move_id, 17).unwrap();
+        kernel
+            .finish_move_action(source, move_id, MoveActionResult::Succeeded)
+            .unwrap();
+
+        let source_history = kernel.pokemon(source).unwrap().move_history;
+        assert_eq!(source_history.last_move, Some(move_id));
+        assert_eq!(source_history.last_successful_move, Some(move_id));
+        assert_eq!(source_history.move_this_turn, Some(move_id));
+        assert_eq!(
+            source_history.move_this_turn_result,
+            Some(MoveActionResult::Succeeded)
+        );
+        assert_eq!(source_history.last_damage_dealt, 17);
+        assert_eq!(source_history.consecutive_uses, 0);
+        assert_eq!(kernel.battle.last_successful_move_this_turn, Some(move_id));
+        let hit = kernel
+            .pokemon(target)
+            .unwrap()
+            .move_history
+            .last_damaged_by
+            .unwrap();
+        assert_eq!(hit.damage, 17);
+        assert!(hit.this_turn);
+        assert_eq!(
+            kernel.pokemon(target).unwrap().move_history.times_attacked,
+            1
+        );
+
+        kernel.reset_move_turn_history();
+        let source_history = kernel.pokemon(source).unwrap().move_history;
+        assert_eq!(source_history.move_this_turn, None);
+        assert_eq!(source_history.move_this_turn_result, None);
+        assert_eq!(
+            source_history.move_last_turn_result,
+            Some(MoveActionResult::Succeeded)
+        );
+        assert_eq!(kernel.battle.last_successful_move_this_turn, None);
+        assert!(
+            !kernel
+                .pokemon(target)
+                .unwrap()
+                .move_history
+                .last_damaged_by
+                .unwrap()
+                .this_turn
+        );
+        assert_eq!(
+            kernel.pokemon(target).unwrap().move_history.times_attacked,
+            1
+        );
     }
 
     #[test]

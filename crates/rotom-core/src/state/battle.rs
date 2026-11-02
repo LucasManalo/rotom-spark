@@ -1,5 +1,5 @@
 use super::{ActionQueue, FieldState, SideState, SwitchRequest};
-use crate::{BattleError, BattleRng, PokemonPosition, SideId};
+use crate::{BattleError, BattleRng, MoveId, PokemonPosition, SideId};
 use serde::{Deserialize, Serialize};
 
 /// The explicit point in the battle lifecycle at which choices or resolution occur.
@@ -47,6 +47,9 @@ pub struct BattleState {
     /// state. Redirect events use this only after priority and Speed tie.
     pub(crate) active_effect_orders: [[Option<u32>; 2]; 2],
     pub(crate) next_effect_order: u32,
+    /// Last move to successfully affect a target during the current turn.
+    #[serde(default)]
+    pub(crate) last_successful_move_this_turn: Option<MoveId>,
 }
 
 impl BattleState {
@@ -118,6 +121,7 @@ impl BattleState {
             winner: None,
             active_effect_orders: [[None; 2]; 2],
             next_effect_order: 0,
+            last_successful_move_this_turn: None,
         };
         battle.validate_stable_state()?;
         Ok(battle)
@@ -166,6 +170,11 @@ impl BattleState {
     #[must_use]
     pub const fn winner(&self) -> Option<SideId> {
         self.winner
+    }
+
+    #[must_use]
+    pub const fn last_successful_move_this_turn(&self) -> Option<MoveId> {
+        self.last_successful_move_this_turn
     }
 
     /// Enables diagnostic RNG tracing without exposing mutable RNG state.

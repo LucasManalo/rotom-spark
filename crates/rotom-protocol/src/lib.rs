@@ -5,8 +5,8 @@
 //! replay or differential-testing contract.
 
 use rotom_core::{
-    ActionOrder, ActiveSlot, BattlePhase, BattleState, MajorStatus, MoveTarget, PokemonAction,
-    PokemonIndex, PokemonPosition, SideId, SwitchRequestKind,
+    ActionOrder, ActiveSlot, BattlePhase, BattleState, MajorStatus, MoveActionResult, MoveTarget,
+    PokemonAction, PokemonIndex, PokemonPosition, SideId, SwitchRequestKind,
 };
 use serde::{Deserialize, Serialize};
 
@@ -24,6 +24,7 @@ pub struct BattleSnapshot {
     pub switch_requests: Vec<SwitchRequestSnapshot>,
     pub sides: [SideSnapshot; 2],
     pub winner: Option<SideId>,
+    pub last_successful_move_this_turn: Option<u32>,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -89,6 +90,7 @@ pub struct PokemonSnapshot {
     pub last_item: Option<u32>,
     pub item_used_this_turn: bool,
     pub unburden_active: bool,
+    pub move_history: MoveHistorySnapshot,
     pub last_consumed_berry: Option<u32>,
     pub cud_chew_berry: Option<u32>,
     pub cud_chew_turns: u8,
@@ -100,6 +102,33 @@ pub struct PokemonSnapshot {
     pub can_mega_evolve: bool,
     pub trapped: bool,
     pub position: PositionSnapshot,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct MoveHistorySnapshot {
+    pub last_move: Option<u32>,
+    pub last_successful_move: Option<u32>,
+    pub move_this_turn: Option<u32>,
+    pub move_this_turn_result: Option<MoveActionResult>,
+    pub move_last_turn_result: Option<MoveActionResult>,
+    pub consecutive_uses: u16,
+    pub last_damage_dealt: u16,
+    pub last_hit_by: Option<MoveHitSnapshot>,
+    pub last_damaged_by: Option<MoveHitSnapshot>,
+    pub damaging_hits_this_turn: u16,
+    pub times_attacked: u16,
+    pub active_move_actions: u16,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct MoveHitSnapshot {
+    pub source_side: SideId,
+    pub source_pokemon: u8,
+    pub move_id: u32,
+    pub damage: u16,
+    pub this_turn: bool,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -212,6 +241,9 @@ pub fn snapshot(state: &BattleState) -> BattleSnapshot {
             SideSnapshot::from_state(SideId::P2, &state.sides()[1]),
         ],
         winner: state.winner(),
+        last_successful_move_this_turn: state
+            .last_successful_move_this_turn()
+            .map(rotom_core::MoveId::get),
     }
 }
 
@@ -276,6 +308,29 @@ impl From<&rotom_core::PokemonState> for PokemonSnapshot {
             last_item: state.last_item.map(rotom_core::ItemId::get),
             item_used_this_turn: state.item_used_this_turn,
             unburden_active: state.unburden_active,
+            move_history: MoveHistorySnapshot {
+                last_move: state.move_history.last_move.map(rotom_core::MoveId::get),
+                last_successful_move: state
+                    .move_history
+                    .last_successful_move
+                    .map(rotom_core::MoveId::get),
+                move_this_turn: state
+                    .move_history
+                    .move_this_turn
+                    .map(rotom_core::MoveId::get),
+                move_this_turn_result: state.move_history.move_this_turn_result,
+                move_last_turn_result: state.move_history.move_last_turn_result,
+                consecutive_uses: state.move_history.consecutive_uses,
+                last_damage_dealt: state.move_history.last_damage_dealt,
+                last_hit_by: state.move_history.last_hit_by.map(MoveHitSnapshot::from),
+                last_damaged_by: state
+                    .move_history
+                    .last_damaged_by
+                    .map(MoveHitSnapshot::from),
+                damaging_hits_this_turn: state.move_history.damaging_hits_this_turn,
+                times_attacked: state.move_history.times_attacked,
+                active_move_actions: state.move_history.active_move_actions,
+            },
             last_consumed_berry: state.last_consumed_berry.map(rotom_core::ItemId::get),
             cud_chew_berry: state.cud_chew_berry.map(rotom_core::ItemId::get),
             cud_chew_turns: state.cud_chew_turns,
@@ -315,6 +370,18 @@ impl From<&rotom_core::PokemonState> for PokemonSnapshot {
             can_mega_evolve: state.mega_evolution.is_some(),
             trapped: state.trapped,
             position: PositionSnapshot::from(state.position),
+        }
+    }
+}
+
+impl From<rotom_core::MoveHitRecord> for MoveHitSnapshot {
+    fn from(record: rotom_core::MoveHitRecord) -> Self {
+        Self {
+            source_side: record.source.side,
+            source_pokemon: record.source.pokemon.get(),
+            move_id: record.move_id.get(),
+            damage: record.damage,
+            this_turn: record.this_turn,
         }
     }
 }

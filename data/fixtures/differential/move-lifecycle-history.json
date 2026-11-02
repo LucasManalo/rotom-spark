@@ -1,0 +1,39 @@
+{
+  "showdown_commit": "b79ce06d06b8f0dc8de8bb348bc9cab5d931553f",
+  "format": "gen9championsvgc2026regmc",
+  "methodology": {
+    "source": "complete pinned Showdown doubles turns with controlled hit and damage outcomes",
+    "move_execution": true,
+    "full_transition_comparison": true
+  },
+  "cases": [
+    {
+      "id": "multi-hit-success-history",
+      "source_last_move": "tailslap",
+      "source_move_this_turn": null,
+      "source_move_last_turn_result": true,
+      "source_last_damage": 36,
+      "target_last_attacked_by": {
+        "move": "tailslap",
+        "damage": 36,
+        "this_turn": false
+      }
+    },
+    {
+      "id": "priority-blocked-failure-history",
+      "source_last_move": "aquajet",
+      "source_move_this_turn": null,
+      "source_move_last_turn_result": false,
+      "source_last_damage": 0,
+      "target_last_attacked_by": null
+    },
+    {
+      "id": "protected-success-history",
+      "source_last_move": "aquatail",
+      "source_move_this_turn": null,
+      "source_move_last_turn_result": null,
+      "source_last_damage": 0,
+      "target_last_attacked_by": null
+    }
+  ]
+}

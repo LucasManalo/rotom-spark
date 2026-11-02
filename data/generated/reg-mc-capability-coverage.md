@@ -10,14 +10,14 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Kind | Reachable | Implemented | Partial | Unsupported |
 | --- | ---: | ---: | ---: | ---: |
 | ability | 215 | 123 | 92 | 0 |
-| item | 166 | 140 | 26 | 0 |
+| item | 166 | 141 | 25 | 0 |
 | move | 510 | 241 | 0 | 269 |
 
 ## Executable capability coverage
 
 | Total | Verified | Implemented | Partial | Unsupported |
 | ---: | ---: | ---: | ---: | ---: |
-| 71 | 11 | 21 | 22 | 17 |
+| 71 | 12 | 21 | 21 | 17 |
 
 `implemented` means the shared capability executes in its stated scope. `verified` additionally has qualifying pinned-reference evidence. Partial and unsupported capabilities continue to block dependent identities.
 
@@ -54,7 +54,6 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | `emergency_exit_trigger` | unsupported | 1 | 1 | Emergency Exit has not yet been connected to the shared forced-switch lifecycle. |
 | `hazard_lifecycle` | unsupported | 1 | 1 | Spikes, Toxic Spikes, Sticky Web, Stealth Rock, and reactive hazard setters are incomplete. |
 | `immunity_override` | partial | 1 | 1 | Exceptional immunity and suppression interactions remain incomplete. |
-| `move_history` | partial | 1 | 1 | Several predicates and consecutive-use effects lack one authoritative history lifecycle. |
 | `move_reflection` | unsupported | 1 | 1 | Magic Bounce is incomplete. |
 | `pinch_berry_thresholds` | unsupported | 1 | 1 | Stat-boosting pinch Berries and Gluttony threshold changes are not executable. |
 | `redirection_ability` | unsupported | 1 | 1 | Lightning Rod-style redirection is incomplete. |
@@ -69,11 +68,12 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 - `forced_switch`: `ability:suctioncups`, `item:ejectbutton`, `item:redcard`
 - `mega_eligibility`: `item:abomasite`, `item:absolite`, `item:absolitez`, `item:aerodactylite`, `item:aggronite`, `item:alakazite`, `item:altarianite`, `item:ampharosite`, `item:audinite`, `item:banettite`, `item:barbaracite`, `item:baxcalibrite`, `item:beedrillite`, `item:blastoisinite`, `item:blazikenite`, `item:cameruptite`, `item:chandelurite`, `item:charizarditex`, `item:charizarditey`, `item:chesnaughtite`, `item:chimechite`, `item:clefablite`, `item:crabominite`, `item:delphoxite`, `item:dragalgite`, `item:dragoninite`, `item:drampanite`, `item:eelektrossite`, `item:emboarite`, `item:excadrite`, `item:falinksite`, `item:feraligite`, `item:floettite`, `item:froslassite`, `item:galladite`, `item:garchompite`, `item:garchompitez`, `item:gardevoirite`, `item:gengarite`, `item:glalitite`, `item:glimmoranite`, `item:golisopite`, `item:golurkite`, `item:greninjite`, `item:gyaradosite`, `item:hawluchanite`, `item:heracronite`, `item:houndoominite`, `item:kangaskhanite`, `item:lopunnite`, `item:lucarionite`, `item:lucarionitez`, `item:malamarite`, `item:manectite`, `item:mawilite`, `item:medichamite`, `item:meganiumite`, `item:meowsticite`, `item:metagrossite`, `item:pidgeotite`, `item:pinsirite`, `item:pyroarite`, `item:raichunitex`, `item:raichunitey`, `item:sablenite`, `item:salamencite`, `item:sceptilite`, `item:scizorite`, `item:scolipite`, `item:scovillainite`, `item:scraftinite`, `item:sharpedonite`, `item:skarmorite`, `item:slowbronite`, `item:staraptite`, `item:starminite`, `item:steelixite`, `item:swampertite`, `item:tyranitarite`, `item:venusaurite`, `item:victreebelite`
 - `mental_herb_cure`: `item:mentalherb`
+- `move_history`: `item:metronome`
 
 ## Dependency audit
 
 - ability: 92 partial identities mapped; 0 currently unlocked.
-- item: 26 partial identities mapped; 0 currently unlocked.
+- item: 25 partial identities mapped; 0 currently unlocked.
 - move: 269 unsupported identities mapped; 0 currently unlocked.
 
 Mega Stones are reported as a **metadata foundation**. They remain partial until `mega_eligibility`, `mega_timing`, `form_change`, and `ability_transition` are complete.

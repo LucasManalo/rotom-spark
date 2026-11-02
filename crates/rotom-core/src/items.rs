@@ -263,6 +263,12 @@ pub(crate) fn register(
                 EffectOrder::new(0, -1, 0),
                 shell_bell,
             ),
+            ItemBehavior::Metronome => registry.register(
+                BattleEvent::ModifyDamage,
+                source,
+                EffectOrder::default(),
+                metronome_damage,
+            ),
             ItemBehavior::WhiteHerb => registry.register(
                 BattleEvent::AfterStatStageChange,
                 source,
@@ -285,7 +291,6 @@ pub(crate) fn register(
             | ItemBehavior::FlinchItem
             | ItemBehavior::LightClay
             | ItemBehavior::MentalHerb
-            | ItemBehavior::Metronome
             | ItemBehavior::ShedShell
             | ItemBehavior::MegaStone => {}
         }
@@ -998,6 +1003,31 @@ fn life_orb_damage(
     Ok(())
 }
 
+fn metronome_damage(
+    state: &mut EffectState<'_>,
+    invocation: &EffectInvocation,
+    context: &EventContext,
+    dispatch: &mut EventDispatch,
+) -> Result<(), BattleError> {
+    const MODIFIERS: [i64; 6] = [4096, 4915, 5734, 6553, 7372, 8192];
+
+    let Some(owner) = owner_pokemon(invocation) else {
+        return Ok(());
+    };
+    if Some(owner) != context.source || context.suppress_source_item {
+        return Ok(());
+    }
+    let consecutive = state
+        .battle()
+        .side(owner.side)
+        .pokemon(owner.pokemon)
+        .ok_or_else(|| BattleError::InvalidState("Metronome holder is invalid".to_owned()))?
+        .move_history
+        .consecutive_uses
+        .min(5);
+    modify_integer(dispatch, MODIFIERS[usize::from(consecutive)], 4096)
+}
+
 fn life_orb_recoil(
     state: &mut EffectState<'_>,
     invocation: &EffectInvocation,
@@ -1355,6 +1385,7 @@ mod tests {
             last_item: None,
             item_used_this_turn: false,
             unburden_active: false,
+            move_history: crate::MoveHistory::default(),
             last_consumed_berry: None,
             cud_chew_berry: None,
             cud_chew_turns: 0,

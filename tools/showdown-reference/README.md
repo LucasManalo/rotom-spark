@@ -116,3 +116,11 @@ and Wandering Spirit behavior:
 node tools/showdown-reference/item-ability-lifecycle.cjs
 node tools/showdown-reference/item-ability-lifecycle.cjs --check
 ```
+
+PR 15.6 records complete-turn successful multi-hit, priority-blocked, and
+protected move history and damage-source behavior:
+
+```text
+node tools/showdown-reference/move-lifecycle-history.cjs
+node tools/showdown-reference/move-lifecycle-history.cjs --check
+```

@@ -10983,17 +10983,19 @@
       "kind": "item",
       "reachability": "direct_legal_set",
       "evidence": [
-        "file:docs/research/pr-13-6-third-thirty-item-batch.md",
+        "file:data/fixtures/differential/move-lifecycle-history.json",
+        "file:docs/research/pr-15-6-canonical-move-lifecycle.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#canonical_move_history_tracks_success_damage_sources_rollover_and_repetition",
         "species/abomasnow",
-        "unit:crates/rotom-dex/tests/combat.rs#third_thirty_items_resolve_to_explicit_behavior_families"
+        "unit:crates/rotom-dex/tests/combat.rs#canonical_move_history_tracks_success_damage_sources_rollover_and_repetition"
       ],
       "effect_families": [
         "held_item_behavior"
       ],
-      "implementation": "partial",
+      "implementation": "implemented",
       "verification": "unit_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": "PR 13.6.4"
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 15.6"
     },
     {
       "id": "miracleseed",
@@ -48680,8 +48682,8 @@
         "total": 166,
         "implementation": {
           "unsupported": 0,
-          "partial": 26,
-          "implemented": 140
+          "partial": 25,
+          "implemented": 141
         },
         "verification": {
           "not_tested": 1,
@@ -48689,8 +48691,8 @@
           "differential_verified": 0
         },
         "interaction_verification": {
-          "not_tested": 72,
-          "unit_tested": 94,
+          "not_tested": 71,
+          "unit_tested": 95,
           "differential_verified": 0
         },
         "reachability": {
