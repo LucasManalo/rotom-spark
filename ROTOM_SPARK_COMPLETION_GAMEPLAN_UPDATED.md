@@ -1,14 +1,15 @@
 # Rotom Spark — Battle Engine Completion Gameplan
 
 **Repository:** [LucasManalo/rotom-spark](https://github.com/LucasManalo/rotom-spark)  
-**Review baseline:** `master` at `9d9f45d` (October 30, 2026)  
+**Historical review baseline:** `master` at `9d9f45d` (October 30, 2026)  
+**Planning update:** PR 15.7 at `65207f8` (November 2026); refresh generated counts after each implementation batch.  
 **Target:** Complete, correct, deterministic Regulation M-C battle simulation suitable for Rotom Brawl training.
 
 ## Executive summary
 
 Rotom Spark has a strong foundation: an explicit battle state, a mutation kernel, deterministic RNG, event/effect dispatch, generated Regulation M-C mechanics reachability, and broad initial move, ability, and item support. The remaining challenge is **closing engine capabilities**, rather than merely adding more mechanic identities.
 
-At the review baseline, the generated mechanics-status report recorded:
+At the historical PR 14.4 review baseline, the generated mechanics-status report recorded (historical numbers, not current progress):
 
 | Kind | Reachable | Implemented | Partial | Unsupported |
 | --- | ---: | ---: | ---: | ---: |
@@ -18,19 +19,23 @@ At the review baseline, the generated mechanics-status report recorded:
 
 These are implementation labels, **not** complete verification or interaction-parity guarantees. The recent PR 14.0–14.4 commits expanded held-item behaviors and Mega Stone identities; Mega Stone identity mapping does not by itself complete Mega Evolution in live battles.
 
-**Main strategy:** Complete shared mechanics capabilities before counting individual identities as complete. Start with a dependency/coverage audit, berry activation, mid-turn forced switching, volatile lifecycles, and a Mega Evolution vertical slice; then implement missing moves by family, close remaining ability/item gaps, finish other forms, verify whole battles against pinned Showdown, and optimize batched RL simulation.
+**Current strategy:** PR 15.0–15.7 established shared lifecycle foundations and reporting; freeze PR 15. Begin PR 16 with a small, behavior-preserving architecture pass, then implement missing moves by capability family with incremental reference-backed testing. Close remaining abilities/items and forms, execute broad differential comparisons in PR 19, and optimize batched RL simulation in PR 20. Do not reopen PR 15 for nonblocking polish.
 
 **Coverage reporting rule:** PR 14.4 should be described historically as **“Mega Stone metadata foundation”**, not “71 items implemented.” PR 15.4 subsequently verified the dedicated Mega eligibility, timing, form-change, and ability-transition capabilities and unlocked those identities; generic non-Mega `form_change` remains unsupported. `0 unsupported identities` only means every reachable identity has at least some recognized handling; it does **not** mean the engine is complete. Report identity status **and** capability status separately.
+
+## Current planning snapshot (after PR 15.7)
+
+Read `data/generated/reg-mc-capability-coverage.md` as the authoritative generated snapshot, not the historical PR 14.4 table above. At PR 15.7, it reports 123/215 abilities implemented (92 partial), 141/166 items implemented (25 partial), and 241/510 moves implemented (269 unsupported). Capability coverage is 12 verified, 21 implemented, 21 partial, and 17 unsupported out of 71. **These counts are a dated snapshot, never hard-coded acceptance thresholds:** regenerate before every batch and report both identity and capability deltas. Pinned-reference behavioral assertions are not full-state differential parity.
 
 ## Roadmap
 
 | Milestone | Objective | Definition of done |
 | --- | --- | --- |
-| **PR 15** | Capability-driven closure (berries, forced switches, volatiles, Mega foundation) | Shared lifecycles work end-to-end; capability blockers, unlocked identities, and verification are reported explicitly |
-| **PR 16** | Finish reachable moves | All 510 reachable moves have executable implementations with appropriate tests |
+| **PR 15 (freeze)** | Capability-driven closure and hardening | PR 15.7 completes reporting, representative lifecycle tests, and architectural ownership guardrails; remaining capability gaps are explicit |
+| **PR 16** | Prepare move architecture, then finish reachable moves | PR 16.0 preserves behavior while extracting cohesive modules; move families pass unit, interaction, and pinned-reference tests; all 510 reachable moves become executable without unresolved required capability blockers |
 | **PR 17** | Close abilities and items | All 215 reachable abilities and 166 reachable items are fully implemented, with known gaps resolved rather than relabeled |
 | **PR 18** | Finish remaining forms and Champions-specific transformation behavior | Build on the PR 15 Mega vertical slice; all other reachable form paths work end-to-end |
-| **PR 19** | Differential correctness campaign | Broad deterministic fixtures, interaction tests, and full-battle comparisons agree with pinned Showdown within documented format differences |
+| **PR 19** | Full-state differential correctness campaign | Independent-engine normalized state comparisons, generated interactions, and full-battle replays agree with pinned Showdown within documented format differences |
 | **PR 20** | Production-grade RL interface and performance | Deterministic battle stepping, legal-action queries, observations, and measured high-throughput batching |
 
 The milestones are capability-oriented; exact PR boundaries can change as dependency evidence accumulates.
@@ -142,29 +147,62 @@ A PR must state: **(a)** capability/sub-capability completed, **(b)** identities
 
 ---
 
-## PR 16 — Implement the 287 unsupported moves
+## PR 16 — Prepare the architecture and close the remaining move families
 
-**Do not approach this as 287 unrelated callbacks.** Generate a report grouping unsupported moves by missing mechanic family. Illustrative families include direct damage with secondary effects, recoil/drain, fixed or variable damage, multi-hit, Protect, redirection, pivoting, forced switching, two-turn execution, item/ability changes, field/side conditions, and move-copy/call effects. Family counts must be **generated from the actual manifest**, not guessed.
+**Starting snapshot:** 269 unsupported of 510 reachable Regulation M-C moves after PR 15.7. Always regenerate the reachable-mechanics and capability reports before reporting progress; 269 is not a permanent task count. **Do not implement 269 independent callbacks.** Group moves by missing *capability* and its prerequisite dependencies, with family counts generated from the actual manifest.
+
+### PR 16.0 — Behavior-preserving move architecture preparation
+
+Before large move batches, perform **one bounded extraction** from the approximately 6,190-line `combat.rs` into cohesive modules. Separate canonical move execution and damage from switching, transformation, and item lifecycle orchestration where doing so materially improves navigation. Suggested layout (illustrative; do not manufacture empty files or unnecessary abstraction):
+
+```text
+rotom-core/src/combat/
+  mod.rs              # Single canonical orchestration surface
+  move_execution.rs   # BeforeMove -> PP/history -> target/hit -> AfterMove
+  damage.rs           # Shared damage/hit execution
+  switching.rs        # Interruption/resumption and entry/exit ordering
+  transformation.rs   # Mega and reusable form-change orchestration
+  item_lifecycle.rs   # Shared activation/removal/transfer
+```
+
+Maintain `StateKernel` as the only owner of **mechanical** state mutation. Keep the PR 15.7 exception explicit: canonical transition/resolution code may manage turn, phase, private queue, pending switch requests, and terminal settlement on the cloned working state. Move/ability/item/condition handlers may **not** use that exception to write state directly. Preserve the existing external API and internal event contract, plus serialized authoritative state, deterministic RNG draw ordering, diagnostics, and existing fixtures.
+
+Do **not** implement new mechanics during PR 16.0. Extract incrementally, keep `execute_move` as the one queued-move entry, and move the current source-level architecture guards with the code without weakening their intent. Add missing behavior-level invariants (state-validity at stable boundaries, error atomicity, deterministic replay/serde continuation, interrupted queue resumption). Source-text guards are regression aids, **not** semantic proof.
+
+**Exit:** No intended behavior or generated coverage-status changes, unchanged reference fixtures and deterministic traces, a clearly documented ownership boundary, no parallel execution/switch pipeline, passing `cargo test --workspace`, and passing existing manifest/capability-report checks.
 
 ### PR 16.1 — Declarative common move effects
 
-Represent ordinary behavior as structured data (damage, boosts, major status, secondary chance, recoil, drain, field effect) where possible. Flamethrower, Thunderbolt, Ice Beam, Close Combat, Icy Wind, Snarl, and Rock Slide should not each need a bespoke execution engine.
+Represent ordinary behavior as structured data (damage, boosts, major status, secondary chance, recoil, drain, and field effect) where possible. Flamethrower, Thunderbolt, Ice Beam, Close Combat, Icy Wind, Snarl, and Rock Slide should not each need bespoke execution logic. Implement common categories in batches that use the existing move lifecycle, mechanical rule checks, and kernel operations. Recalculate the per-family backlog after every batch.
 
 ### PR 16.2 — Shared effect families
 
-Implement missing reusable behaviors in coherent, testable batches: recoil/drain, multi-hit, variable power, priority checks, Protect, redirection, pivot, phazing, two-turn mechanics, self-KO, transformations, and more.
+Implement reusable behaviors in coherent, dependency-ordered batches: recoil/drain, multi-hit and variable power, priority checks, Protect, redirection, pivot/phazing/forced switch, two-turn mechanics, self-KO, field/side conditions, item/ability changes, called moves, and transformations as reachable. Extend canonical shared lifecycles rather than implementing a competing route to damage, switching, targeting, or state mutation.
 
-### PR 16.3 — True exceptions
+When a new capability unlocks old partial mechanics, explicitly revisit its related move × item × ability interactions. For example, Substitute damage routing should trigger regression checks for resistance Berries, secondary effects, drain, and on-hit item/ability effects. Unresolved interactions remain blockers, not silent approximations.
 
-Unique moves may orchestrate mechanics but **must not mutate `BattleState` directly**. Keep a small, explicit unique-move layer only for irreducible behavior.
+### PR 16.3 — Irreducible exceptions
 
-**Exit:** `510/510` reachable moves executable, `0` unsupported, with focused tests and recorded limitations surfaced as failures rather than silent approximations. Full cross-interaction parity remains a PR 19 gate.
+Keep a small, explicit unique-move layer only where behavior cannot be described with existing structured effects or reusable mechanics. Exceptions may orchestrate checks and kernel calls, but **must not** write mechanical state directly or create a separate action execution pipeline. Add regression evidence whenever an exception alters ordering/history/targeting.
 
+### Mandatory PR 16 test and coverage policy (applies to every move-family batch)
+
+Every move-family PR must include:
+
+1. **Unit/mechanics tests:** behavior and calculation details, including boundaries, rounding, failure paths, PP, and move-history semantics.
+2. **Interaction/transition tests:** ordering with representative abilities/items/volatiles, multi-target behavior where applicable, switch/faint/queue interruption, and relevant negative paths. Include deterministic replay, serialization-resumption, and error-atomicity tests when a batch changes lifecycle boundaries.
+3. **Pinned-reference behavioral evidence:** a reproducible Showdown scenario at the pinned commit/format and assertions of the relevant normalized observable facts. Keep fixture generators and checked outputs consistent. Label these **reference-derived assertions**, not `full_state_differential_comparison`. The independent, comprehensive state oracle belongs to PR 19.
+
+A move may become `implemented` **only when every required capability for all of its reachable behavior is executable**. Treat missing required sub-capabilities, unmodeled timing or interaction, and unsupported callbacks as explicit blockers. Do not mark a move implemented merely because it has an entry in the dex, a handler, or a passing happy-path fixture. A verified claim additionally needs qualifying pinned-reference evidence, and no claim of full parity is allowed before the corresponding PR 19 tests.
+
+Every batch must regenerate the dependency graph and summarize: capabilities added/changed, move identities promoted, identities still blocked and why, unit/interaction/reference tests, new regression scenarios, and any limitations. Preserve the existing common pipelines; reviewers should reject parallel move dispatch, unchecked direct state writes, non-deterministic behavior, or opaque coverage promotion.
+
+**PR 16 exit:** All reachable moves (currently 510) have executable implementations, no unsupported move identities or unresolved required capability blockers remain, all family testing gates are satisfied, and remaining broader interaction-parity risk is explicitly deferred to PR 19. Fail clearly on out-of-scope/unsupported behavior rather than silently approximating it.
 ---
 
 ## PR 17 — Resolve partial abilities and items
 
-After PR 15 and PR 16, revisit the 95 partial abilities and 119 partial items. For every entry, capture its reason for incompleteness and dependencies in machine-readable coverage metadata:
+After PR 15 and PR 16, revisit the **current generated** partial ability/item identities (92 abilities and 25 items in the PR 15.7 snapshot; regenerate before planning PR 17). For every entry, capture its reason for incompleteness and dependencies in machine-readable coverage metadata:
 
 ```json
 {
@@ -179,7 +217,7 @@ After PR 15 and PR 16, revisit the 95 partial abilities and 119 partial items. F
 
 Prioritize blockers by the number and importance of mechanics they unlock. Reuse new substrate operations instead of rewriting previously valid callbacks.
 
-**Exit targets:** 215/215 abilities implemented; 166/166 items implemented; no lingering partial entries attributable to unmodeled common lifecycle or timing rules. Each claimed implementation must have meaningful verification evidence.
+**Exit targets:** All reachable abilities and items executable (215 abilities and 166 items in the PR 15.7 manifest), with no unresolved required capabilities or partial entries attributable to unmodeled lifecycle/timing rules. Use the PR 16 unit → interaction → pinned-reference test policy for every promoted family, and retain explicit limitations until verified.
 
 ---
 
@@ -193,17 +231,17 @@ Avoid separate state mutation engines for each form. Each transformation must de
 
 ---
 
-## PR 19 — Differential correctness and reliability
+## PR 19 — Independent full-state differential correctness and reliability
 
-Implementation coverage is **not proof of correctness**. Compare Rotom Spark and pinned Showdown with equivalent initial state, decisions, and controlled randomness. Compare normalized HP, status, boosts, items, abilities, fields, side/volatile conditions, active Pokémon, PP, fainting, turns, and winner.
+Implementation coverage and PR 16's reference-derived behavioral assertions are **not proof of full-state correctness**. PR 19 builds an independent normalized full-state differential harness comparing Rotom Spark and pinned Showdown with equivalent initial state, decisions, and controlled randomness. Compare normalized HP, status, boosts, items, abilities, fields, side/volatile conditions, active Pokémon, PP, fainting, turns, and winner.
 
-### Three testing layers
+### Three testing layers (build on, do not replace, PR 16 tests)
 
 1. **Deterministic fixtures:** Hundreds/thousands of focused interactions (e.g., Fake Out + Inner Focus, Earthquake + Levitate, Knock Off + Sticky Hold, Sitrus + Ripen, Intimidate + Clear Body, Mega + ability start).
 2. **Generated interactions:** Prioritize move×ability, move×item, ability×ability, weather×item, and terrain×ability combinations that share event hooks; avoid an impractical full Cartesian product.
 3. **Full-battle corpus:** Aim for 10,000+ randomized/replayed complete battles with state checks at decision/action boundaries, automatic mismatch capture, minimization, and permanent regression fixtures.
 
-Different RNG implementations may require controlled/random-decision injection or event-level parity instead of assuming identical seeds produce identical random draws across engines.
+Different RNG implementations may require controlled/random-decision injection or event-level parity instead of assuming identical seeds produce identical random draws across engines. Record the complete initial-state/action/RNG setup, normalize deliberate format differences, report each mismatch with minimized replay artifacts, and turn every confirmed bug into a permanent regression test. Do not relabel pinned-reference spot assertions as full differential tests.
 
 **Exit:** A documented differential pass threshold, zero unresolved high-severity mismatches in the supported scope, and reproducible replay artifacts for every discovered discrepancy.
 
@@ -252,7 +290,7 @@ Moves / Abilities / Items (declarative effect definitions)
                  BattleState
 ```
 
-Do not let effect handlers mutate `BattleState` directly. Maintain a single canonical move pipeline and shared switch, item, ability, and form lifecycles. Large files such as `combat.rs`, `abilities.rs`, and `items.rs` warrant **conceptual module boundaries**, not a proliferation of arbitrary microfiles.
+Do not let effect handlers mutate `BattleState` directly. Mechanical changes go through `StateKernel`; only canonical transition/resolution helpers own phase, turn, private queue, pending-switch, and terminal orchestration on a cloned working state. Maintain a single canonical move pipeline and shared switch, item, ability, and form lifecycles. Large files such as `combat.rs`, `abilities.rs`, and `items.rs` warrant **conceptual module boundaries**, not a proliferation of arbitrary microfiles.
 
 A possible eventual organization:
 
@@ -283,24 +321,22 @@ rotom-core/
     lifecycle.rs
 ```
 
-Treat this tree as **illustrative**; refactor only when it preserves behavior and reduces complexity.
+Treat this tree as **illustrative**; PR 16.0's smaller combat-focused extraction is the immediate target. Refactor only when it preserves behavior and reduces complexity. Keep source-level architectural checks narrow and pair them with behavioral invariants rather than building new AST-checker infrastructure.
 
-## First action: PR 15.0 — Capability audit and reporting
+## Immediate next action — PR 16.0 and ongoing acceptance gates
 
-Before another identity batch, generate an explicit dependency graph for **all partial abilities/items and unsupported moves**. Group blockers by engine capability, count dependent identities, rank by prerequisite leverage and competitive importance, and keep pinned Showdown evidence for each gap.
+PR 15.0–15.7 is frozen. **Next implementation PR:** `PR 16.0 — Behavior-preserving move architecture preparation`. Keep its diff bounded; do not couple the extraction with move implementation. After PR 16.0, prioritize the capability dependency graph and implement moves in shared families.
 
-**Next implementation batches, in order:** berry activation framework (potentially closing 28 items), mid-turn forced switching (Eject Button and Red Card), shared flinch/Mental Herb volatile lifecycles, then the Mega Evolution vertical slice. Re-rank later work from the updated dependency graph instead of assuming fixed family sizes.
+**Standard PR completion note:** Include (a) capability and sub-capability deltas, (b) genuinely unlocked identities, (c) still-blocked identities and prerequisites, (d) unit, interaction, and pinned-reference assertions, (e) any new replay/error-atomicity evidence, and (f) deterministic and generated-report checks run. Label full-state differential parity only after a corresponding independent PR 19 comparison exists.
 
-**Immediate next PR:** `PR 15.0 — Capability coverage report and mechanics blocker graph`.
-
-**Standard PR completion note:** State capability completed, sub-capabilities covered, unlocked identities, remaining blockers, and unit/interaction/differential evidence. Describe PR 14.4 as **“Mega Stone metadata foundation”** in progress reporting.
+**Working rules until completion:** Do not reopen PR 15 for cosmetic cleanup; do not build a standalone architecture-lint framework; do not postpone all correctness checks to PR 19; do not optimize batching before correctness and determinism are established. Each new mechanic should make the existing engine more general rather than growing `combat.rs` into a collection of special cases.
 
 ### Completion criteria for Rotom Spark 1.0
 
 - Every reachable Regulation M-C move, ability, item, and form has an accurate executable implementation and explicit evidence.
 - No silent approximation for unsupported mechanics; unresolved behavior fails clearly.
 - Canonical deterministic stepping and replay work from battle start to terminal result.
-- All state mutations respect kernel boundaries.
+- Mechanical state mutations respect kernel boundaries; transition-owned phase/turn/private queue orchestration stays within its documented exception.
 - Representative full battles agree with the pinned reference under normalized comparison.
 - Rust supports efficient batched stepping and Python-facing observations/actions.
 
