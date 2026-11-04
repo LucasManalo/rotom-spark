@@ -314,6 +314,259 @@ fn contact_ability_changes_run_end_replace_start_and_restore_metadata() {
     }
 }
 
+#[test]
+fn adversarial_item_theft_respects_contact_occupancy_and_mega_stones() {
+    let dex = champions_reg_mc().unwrap();
+    let leftovers = dex.resolve_item("leftovers").unwrap().0;
+    let mega_stone = dex.resolve_item("blastoisinite").unwrap().0;
+    let target_ref = PokemonRef::new(SideId::P2, PokemonIndex::new(0));
+    let source_ref = PokemonRef::new(SideId::P1, PokemonIndex::new(0));
+
+    // Cases 1-3: Magician steals after damage, but not into an occupied slot or
+    // through the dedicated Mega Stone removal restriction.
+    for (source_item, target_item, expected_source, expected_target) in [
+        (None, Some(leftovers), Some(leftovers), None),
+        (
+            Some(mega_stone),
+            Some(leftovers),
+            Some(mega_stone),
+            Some(leftovers),
+        ),
+        (None, Some(mega_stone), None, Some(mega_stone)),
+    ] {
+        let mut source = set_with_moves(&dex, "klefki", "magician", &["aerialace"]);
+        source.item = source_item;
+        let mut target = set_with_moves(&dex, "blissey", "naturalcure", &["recover"]);
+        target.item = target_item;
+        let result = execute_single_move(
+            &dex,
+            &selected_primary_battle(&dex, &source, &target, 0x15_07_01),
+            0,
+            ActionTarget::Foe(ActiveSlot::Left),
+        );
+        assert_eq!(
+            result
+                .state
+                .side(source_ref.side)
+                .pokemon(source_ref.pokemon)
+                .unwrap()
+                .item,
+            expected_source
+        );
+        assert_eq!(
+            result
+                .state
+                .side(target_ref.side)
+                .pokemon(target_ref.pokemon)
+                .unwrap()
+                .item,
+            expected_target
+        );
+    }
+
+    // Cases 4-6: Pickpocket requires contact, an empty holder slot, and a
+    // removable source item.
+    for (move_name, holder_item, source_item, expected_holder, expected_source) in [
+        ("aerialace", None, Some(leftovers), Some(leftovers), None),
+        ("earthpower", None, Some(leftovers), None, Some(leftovers)),
+        (
+            "aerialace",
+            Some(mega_stone),
+            Some(leftovers),
+            Some(mega_stone),
+            Some(leftovers),
+        ),
+    ] {
+        let mut source = set_with_moves(&dex, "goodra", "sapsipper", &[move_name]);
+        source.item = source_item;
+        let mut target = set_with_moves(&dex, "weavile", "pickpocket", &["recover"]);
+        target.item = holder_item;
+        let result = execute_single_move(
+            &dex,
+            &selected_primary_battle(&dex, &source, &target, 0x15_07_02),
+            0,
+            ActionTarget::Foe(ActiveSlot::Left),
+        );
+        assert_eq!(
+            result
+                .state
+                .side(target_ref.side)
+                .pokemon(target_ref.pokemon)
+                .unwrap()
+                .item,
+            expected_holder
+        );
+        assert_eq!(
+            result
+                .state
+                .side(source_ref.side)
+                .pokemon(source_ref.pokemon)
+                .unwrap()
+                .item,
+            expected_source
+        );
+    }
+}
+
+#[test]
+fn temporary_contact_abilities_restore_when_the_holder_leaves() {
+    let dex = champions_reg_mc().unwrap();
+    let original = dex.resolve_ability("sapsipper").unwrap().0;
+
+    // Cases 7-8: both temporary replacement paths restore the original
+    // ability and clear restoration metadata during canonical switch-out.
+    for (species, ability) in [("cofagrigus", "mummy"), ("runerigus", "wanderingspirit")] {
+        let source = set_with_moves(&dex, "goodra", "sapsipper", &["aerialace"]);
+        let target = set_with_moves(&dex, species, ability, &["recover"]);
+        let changed = execute_single_move(
+            &dex,
+            &selected_primary_battle(&dex, &source, &target, 0x15_07_03),
+            0,
+            ActionTarget::Foe(ActiveSlot::Left),
+        );
+        let switch = JointAction::Turn {
+            p1: TurnChoice {
+                actions: [
+                    PokemonAction::Switch {
+                        pokemon: PokemonIndex::new(2),
+                    },
+                    PokemonAction::Move {
+                        move_slot: MoveSlotIndex::new(0),
+                        target: ActionTarget::Automatic,
+                        mega: false,
+                    },
+                ],
+            },
+            p2: TurnChoice {
+                actions: ActiveSlot::ALL.map(|_| PokemonAction::Move {
+                    move_slot: MoveSlotIndex::new(0),
+                    target: ActionTarget::Automatic,
+                    mega: false,
+                }),
+            },
+        };
+        let switched = step(
+            &changed.state,
+            &switch,
+            &Mechanics::new(&dex, &EffectRegistry::new()),
+        )
+        .unwrap();
+        let benched = switched
+            .state
+            .side(SideId::P1)
+            .pokemon(PokemonIndex::new(0))
+            .unwrap();
+        assert_eq!(benched.ability, original, "{ability}");
+        assert_eq!(benched.ability_restore, None, "{ability}");
+    }
+}
+
+#[test]
+fn berry_activation_rechecks_suppression_and_ripen_at_the_update_boundary() {
+    let dex = champions_reg_mc().unwrap();
+    let sitrus = dex.resolve_item("sitrusberry").unwrap().0;
+    let source = set_with_moves(&dex, "goodra", "sapsipper", &["swordsdance"]);
+    let target = set_with_moves(&dex, "metagross", "clearbody", &["swordsdance"]);
+    let holder = PokemonRef::new(SideId::P2, PokemonIndex::new(0));
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let action = single_move_action(0, ActionTarget::Automatic);
+
+    let run = |opposing_ability: &str, holder_ability: &str, magic_room: bool| {
+        let mut opposing = source.clone();
+        opposing.ability = dex.resolve_ability(opposing_ability).unwrap().0;
+        let mut builder = BattleStateBuilder::from_state(selected_primary_battle(
+            &dex, &opposing, &target, 0x15_07_04,
+        ))
+        .unwrap();
+        builder
+            .edit_pokemon(holder, |pokemon| {
+                pokemon.ability = dex.resolve_ability(holder_ability).unwrap().0;
+                pokemon.item = Some(sitrus);
+                pokemon.current_hp = 40;
+            })
+            .unwrap();
+        if magic_room {
+            let condition = mechanics.field_effects().magic_room.unwrap();
+            builder.edit_field(|field| {
+                field
+                    .conditions
+                    .push(ConditionState::new(condition, Some(2)));
+            });
+        }
+        step(&builder.build().unwrap(), &action, &mechanics).unwrap()
+    };
+
+    // Cases 9-11: each suppression source preserves the Berry at eligible HP,
+    // while Ripen consumes once and doubles the ordinary Sitrus heal.
+    for blocked in [
+        run("unnerve", "clearbody", false),
+        run("sapsipper", "clearbody", true),
+    ] {
+        let pokemon = blocked
+            .state
+            .side(holder.side)
+            .pokemon(holder.pokemon)
+            .unwrap();
+        assert_eq!(pokemon.current_hp, 40);
+        assert_eq!(pokemon.item, Some(sitrus));
+        assert_eq!(pokemon.last_consumed_berry, None);
+    }
+    let ordinary = run("sapsipper", "clearbody", false);
+    let ripen = run("sapsipper", "ripen", false);
+    let ordinary_holder = ordinary
+        .state
+        .side(holder.side)
+        .pokemon(holder.pokemon)
+        .unwrap();
+    let ripen_holder = ripen
+        .state
+        .side(holder.side)
+        .pokemon(holder.pokemon)
+        .unwrap();
+    assert_eq!(
+        ripen_holder.current_hp - 40,
+        ripen_holder.stats.hp / 2,
+        "Ripen must apply the doubled Sitrus fraction with one final rounding"
+    );
+    assert_eq!(
+        ordinary_holder.current_hp - 40,
+        ordinary_holder.stats.hp / 4
+    );
+    assert_eq!(ripen_holder.item, None);
+    assert_eq!(ripen_holder.last_consumed_berry, Some(sitrus));
+
+    // Case 12: Harvest restoration returns the Berry to the ordinary item
+    // lifecycle, so it can be consumed and restored again on a later turn.
+    let mut harvest_builder =
+        BattleStateBuilder::from_state(selected_primary_battle(&dex, &source, &target, 0x15_07_05))
+            .unwrap();
+    harvest_builder
+        .edit_pokemon(holder, |pokemon| {
+            pokemon.ability = dex.resolve_ability("harvest").unwrap().0;
+            pokemon.item = Some(sitrus);
+            pokemon.current_hp = 40;
+        })
+        .unwrap();
+    let sun = mechanics.field_effects().sun.unwrap();
+    harvest_builder.edit_field(|field| {
+        field.weather = Some(ConditionState::new(sun, Some(5)));
+    });
+    let first = step(&harvest_builder.build().unwrap(), &action, &mechanics).unwrap();
+    let mut reused_builder = BattleStateBuilder::from_state(first.state).unwrap();
+    reused_builder
+        .edit_pokemon(holder, |pokemon| pokemon.current_hp = 40)
+        .unwrap();
+    let reused = step(&reused_builder.build().unwrap(), &action, &mechanics).unwrap();
+    let reused_holder = reused
+        .state
+        .side(holder.side)
+        .pokemon(holder.pokemon)
+        .unwrap();
+    assert!(reused_holder.current_hp > 40);
+    assert_eq!(reused_holder.item, Some(sitrus));
+    assert_eq!(reused_holder.last_consumed_berry, None);
+}
+
 fn single_move_action(move_slot: u8, target: ActionTarget) -> JointAction {
     JointAction::Turn {
         p1: TurnChoice {
@@ -659,6 +912,13 @@ fn eject_button_pauses_and_resumes_the_remaining_action_queue() {
     let restored: BattleState =
         serde_json::from_str(&serde_json::to_string(&interrupted.state).unwrap()).unwrap();
     assert_eq!(restored, interrupted.state);
+
+    // Case 12: an invalid replacement cannot consume or rewrite the suspended
+    // queue, so retrying the same serialized boundary remains deterministic.
+    let invalid = forced_switch_action(SideId::P2, ActiveSlot::Left, PokemonIndex::new(0));
+    assert!(step(&interrupted.state, &invalid, &mechanics).is_err());
+    assert_eq!(restored, interrupted.state);
+    assert_ne!(interrupted.state.queue().actions.len(), 0);
 
     let resumed = step(
         &interrupted.state,

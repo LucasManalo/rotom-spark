@@ -70,7 +70,8 @@ const output = {
 	methodology: {
 		source: 'complete pinned Showdown doubles turns with forced successful secondary rolls',
 		move_execution: true,
-		full_transition_comparison: true,
+		reference_derived_assertions: true,
+		full_state_differential_comparison: false,
 	},
 	cases: [
 		{id: 'air-slash-steadfast', ...flinchCase('steadfast')},

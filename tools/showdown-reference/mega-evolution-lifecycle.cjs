@@ -79,7 +79,8 @@ const output = {
 	methodology: {
 		source: 'complete pinned Showdown doubles turns using move-plus-Mega requests',
 		move_execution: true,
-		full_transition_comparison: true,
+		reference_derived_assertions: true,
+		full_state_differential_comparison: false,
 	},
 	cases: [
 		{id: 'charizard-mega-x-damage-and-item', ...charizardCase},

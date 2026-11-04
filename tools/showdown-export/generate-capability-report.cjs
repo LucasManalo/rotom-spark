@@ -135,7 +135,7 @@ function reportFor(audit) {
 	}
 	lines.push(
 		'',
-		'Mega Stones are reported as a **metadata foundation**. They remain partial until `mega_eligibility`, `mega_timing`, `form_change`, and `ability_transition` are complete.',
+		'Mega Stones are executable through the verified dedicated `mega_eligibility`, `mega_timing`, `mega_form_change`, and `mega_ability_transition` capabilities. Generic `form_change` remains unsupported for non-Mega battle transformations.',
 		'',
 		'The complete per-identity graph, sub-capabilities, tests, fixtures, known gaps, and pinned source references are in `reg-mc-capability-dependencies.json`.',
 		''

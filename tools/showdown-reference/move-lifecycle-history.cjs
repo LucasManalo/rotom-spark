@@ -65,7 +65,8 @@ const output = {
 	methodology: {
 		source: 'complete pinned Showdown doubles turns with controlled hit and damage outcomes',
 		move_execution: true,
-		full_transition_comparison: true,
+		reference_derived_assertions: true,
+		full_state_differential_comparison: false,
 	},
 	cases: [
 		{id: 'multi-hit-success-history', ...history(multiHit)},

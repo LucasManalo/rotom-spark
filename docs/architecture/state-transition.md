@@ -164,6 +164,23 @@ resolves internal queues, invokes mechanics/events in order, settles faints
 and replacements, validates the stable result, and commits atomically. It must
 not accumulate individual Pokémon special cases.
 
+The transition controller is the narrow orchestration exception to kernel
+ownership. It directly owns `phase`, `turn`, the private action/event queue,
+pending switch requests, and terminal settlement because those fields describe
+the transaction itself rather than an individual mechanical effect. These
+writes may occur only inside the canonical transition and its crate-private
+queue/resolution helpers, on the cloned working state. Move, item, ability,
+condition, and field-effect handlers must not write them.
+
+The ownership rule is therefore:
+
+- mechanics and event handlers decide why and when gameplay facts change, and
+  apply those facts through `StateKernel`;
+- the transition controller advances phase/turn and manages its private queue
+  through the canonical transition API;
+- stable validation checks both categories before a successful state is
+  returned.
+
 ## Invariant taxonomy
 
 ### Local representation invariants

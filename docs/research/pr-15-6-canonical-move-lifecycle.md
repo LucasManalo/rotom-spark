@@ -49,8 +49,9 @@ current/previous result, consecutive uses, last move damage, incoming hit and
 damage sources, per-turn damaging-hit count, persistent times-attacked count,
 and active move-action count.
 `BattleState::last_successful_move_this_turn` stores the battle-wide predicate.
-All writes use `StateKernel`; residual completion performs turn rollover, and
-switch-out cleanup clears the complete record.
+All mechanical history writes use `StateKernel`; residual completion performs
+the transition-owned turn rollover and queue settlement, and switch-out cleanup
+clears the complete record through the kernel.
 
 The Metronome held item now consumes the authoritative consecutive-use count
 at `ModifyDamage`, using pinned modifiers `4096, 4915, 5734, 6553, 7372, 8192`

@@ -3,6 +3,13 @@
 This directory contains development-only adapters around the pinned Pokémon
 Showdown checkout. It is never used by Rotom Spark at runtime.
 
+The checked outputs are pinned-reference behavioral fixtures: some invoke
+callbacks with controlled inputs and PR 15.2--15.6 execute selected complete
+Showdown turns, after which Rotom Spark tests assert the relevant normalized
+facts. They are reference-derived assertions, not a full differential state
+comparison between independent engines. That term is reserved for the planned
+PR 19 harness.
+
 Validate the shared Regulation M-C fixture with:
 
 ```text
@@ -86,7 +93,8 @@ node tools/showdown-reference/berry-lifecycle.cjs --check
 ```
 
 Regenerate or verify PR 15.2 Eject Button queue interruption, Red Card random
-dragging, and Suction Cups prevention using complete pinned Showdown turns:
+dragging, and Suction Cups prevention using behavioral assertions derived from
+complete pinned Showdown turns:
 
 ```text
 node tools/showdown-reference/forced-switch-lifecycle.cjs

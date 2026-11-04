@@ -29,7 +29,9 @@ test('headline separates identity labels from executable capability coverage', (
 	assert.deepEqual(audit.summary.identity_coverage.move, {reachable: 510, unsupported: 269, partial: 0, implemented: 241});
 	assert.match(markdown, /## Identity coverage/);
 	assert.match(markdown, /## Executable capability coverage/);
-	assert.match(markdown, /metadata foundation/);
+	assert.match(markdown, /Mega Stones are executable through the verified dedicated/);
+	assert.match(markdown, /Generic `form_change` remains unsupported/);
+	assert.doesNotMatch(markdown, /metadata foundation/);
 });
 
 test('roadmap examples expose their actual remaining blockers', () => {

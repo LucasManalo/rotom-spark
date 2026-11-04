@@ -20,7 +20,7 @@ These are implementation labels, **not** complete verification or interaction-pa
 
 **Main strategy:** Complete shared mechanics capabilities before counting individual identities as complete. Start with a dependency/coverage audit, berry activation, mid-turn forced switching, volatile lifecycles, and a Mega Evolution vertical slice; then implement missing moves by family, close remaining ability/item gaps, finish other forms, verify whole battles against pinned Showdown, and optimize batched RL simulation.
 
-**Coverage reporting rule:** PR 14.4 should be described as **“Mega Stone metadata foundation”**, not “71 items implemented.” All stones remain partial until their complete battle behavior is supported and verified. `0 unsupported identities` only means every reachable identity has at least some recognized handling; it does **not** mean the engine is complete. Report identity status **and** capability status separately.
+**Coverage reporting rule:** PR 14.4 should be described historically as **“Mega Stone metadata foundation”**, not “71 items implemented.” PR 15.4 subsequently verified the dedicated Mega eligibility, timing, form-change, and ability-transition capabilities and unlocked those identities; generic non-Mega `form_change` remains unsupported. `0 unsupported identities` only means every reachable identity has at least some recognized handling; it does **not** mean the engine is complete. Report identity status **and** capability status separately.
 
 ## Roadmap
 
@@ -51,7 +51,7 @@ Generate a machine-readable dependency map for every partial ability/item and un
 - `sub_capabilities`, lifecycle/ordering requirements, and known gaps;
 - tests, differential fixtures, and pinned-reference evidence.
 
-The headline report must show **identity coverage separately from executable capability coverage**, including outstanding partial/unsupported counts. Example dependencies: `choicescarf -> choice_lock`, `persimberry -> confusion`, `ejectbutton -> forced_switch`, and Mega Stones -> `mega_eligibility`, `mega_timing`, `form_change`, `ability_transition`.
+The headline report must show **identity coverage separately from executable capability coverage**, including outstanding partial/unsupported counts. Example dependencies: `choicescarf -> choice_lock`, `persimberry -> confusion`, `ejectbutton -> forced_switch`, and Mega Stones -> `mega_eligibility`, `mega_timing`, `mega_form_change`, `mega_ability_transition`.
 
 **Exit:** Reports distinguish metadata-only, partially executable, fully executable, and verified behavior. There are no misleading “0 unsupported = 100% complete” summaries.
 
@@ -122,7 +122,19 @@ Unify item removal, theft, exchange, restoration, suppression, and consumed-item
 
 Converge action execution on a canonical sequence for priority, before-move checks, target resolution, accuracy, multi-hit processing, damage, on-hit effects, secondaries, and after-move effects. The exact ordering must be derived from pinned reference behavior. Centralize move-history fields such as last move, last successful move, last hit/damage source, action flags, consecutive-use count, and turn resets.
 
-**Exit:** Moves do not bypass the shared lifecycle and history predicates; all state modifications go through the kernel.
+**Exit:** Moves do not bypass the shared lifecycle and history predicates; mechanical state modifications go through the kernel, while phase/turn/private-queue orchestration remains transition-owned.
+
+### PR 15.7 — Acceptance-gate hardening and freeze
+
+Reconcile the capability report after the Mega vertical slice, document the
+transition-owned orchestration exception, add adversarial lifecycle and
+interrupted-queue coverage, guard canonical move/switch/kernel pathways, and
+label pinned-reference assertions separately from PR 19 full-state
+differential comparison.
+
+**Exit:** PR 15's claims match its executable evidence and ownership model.
+Freeze the milestone after this pass; additional mechanic families belong to
+PR 16 and later milestones.
 
 ### PR 15 acceptance gate
 

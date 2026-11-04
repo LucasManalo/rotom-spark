@@ -81,7 +81,8 @@ const output = {
 	methodology: {
 		source: 'complete pinned Showdown doubles turns using Eject Button and Red Card',
 		move_execution: true,
-		full_transition_comparison: true,
+		reference_derived_assertions: true,
+		full_state_differential_comparison: false,
 	},
 	cases: [
 		{id: 'eject-button-pauses-queue', pending: ejectPending, settled: ejectSettled},
