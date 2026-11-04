@@ -214,3 +214,12 @@ random or scripted targeting, move calls, switch control, and bespoke
 callbacks remain deferred. Those definitions continue to fail capability
 preflight rather than falling back to standard damage.
 
+## PR 16.0 module boundary
+
+The public deterministic calculation seams `calculate_damage` and
+`calculate_move_damage` live in `combat/damage.rs`. That module receives only
+immutable, already-resolved inputs and owns no battle state, RNG, kernel, event
+dispatch, or switch orchestration. The canonical queued-move executor and live
+hit/damage lifecycle remain in `combat.rs`; the extraction does not create a
+second execution path.
+

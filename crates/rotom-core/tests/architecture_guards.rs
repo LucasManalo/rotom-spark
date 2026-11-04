@@ -4,6 +4,7 @@
 //! be bypassed accidentally while adding large identity batches.
 
 const COMBAT: &str = include_str!("../src/combat.rs");
+const COMBAT_DAMAGE: &str = include_str!("../src/combat/damage.rs");
 const STATE_TRANSITION: &str = include_str!("../src/state/transition.rs");
 const ARCHITECTURE: &str = include_str!("../../../docs/architecture/state-transition.md");
 
@@ -19,8 +20,12 @@ fn contains_direct_assignment(source: &str, pattern: &str) -> bool {
 
 #[test]
 fn queued_moves_and_switches_keep_their_canonical_entry_points() {
+    let combat_modules = [COMBAT, COMBAT_DAMAGE];
     assert_eq!(
-        COMBAT.matches("fn execute_move<").count(),
+        combat_modules
+            .iter()
+            .map(|source| source.matches("fn execute_move<").count())
+            .sum::<usize>(),
         1,
         "there must be exactly one canonical queued-move executor"
     );
@@ -37,6 +42,24 @@ fn queued_moves_and_switches_keep_their_canonical_entry_points() {
         STATE_TRANSITION.contains("StateKernel::new(self).switch_active_position"),
         "initial selection must use the same atomic kernel position operation"
     );
+}
+
+#[test]
+fn extracted_damage_module_is_calculation_only() {
+    for forbidden in [
+        "StateKernel::new",
+        "&mut BattleState",
+        ".rng",
+        "execute_move(",
+        "resolve_active_switch(",
+    ] {
+        assert!(
+            !COMBAT_DAMAGE.contains(forbidden),
+            "the static damage module crossed an orchestration or mutation boundary with `{forbidden}`"
+        );
+    }
+    assert!(COMBAT.contains("fn execute_move<"));
+    assert!(COMBAT.contains("calculate_damage_inner("));
 }
 
 #[test]

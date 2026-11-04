@@ -171,3 +171,8 @@ the only inputs to drain and recoil accounting. Conditional power, selected
 effective stats, hit counts, and aggregate damage are transaction-local
 calculation data; mechanics owns their rules and RNG requests.
 
+PR 16.0 moves only the immutable static calculation seams into
+`combat/damage.rs`. That module has no mutable battle-state or RNG access and
+adds no authoritative write path. Live hit application remains in the parent
+canonical executor and continues to route HP changes through `StateKernel`.
+
