@@ -47,6 +47,14 @@ pub enum MoveCategory {
     Status,
 }
 
+#[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum CriticalBehavior {
+    #[default]
+    Roll,
+    Guaranteed,
+}
+
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum MoveAccuracy {
@@ -185,10 +193,11 @@ pub enum MoveCapability {
     PerTargetHit = 1 << 25,
     ConditionalPower = 1 << 26,
     EffectiveStatOverride = 1 << 27,
+    GuaranteedCritical = 1 << 28,
 }
 
 impl MoveCapability {
-    const ALL: [Self; 28] = [
+    const ALL: [Self; 29] = [
         Self::StandardDamage,
         Self::SelectedSingleTarget,
         Self::Accuracy,
@@ -217,6 +226,7 @@ impl MoveCapability {
         Self::PerTargetHit,
         Self::ConditionalPower,
         Self::EffectiveStatOverride,
+        Self::GuaranteedCritical,
     ];
 }
 
@@ -251,6 +261,7 @@ impl fmt::Display for MoveCapability {
             Self::PerTargetHit => "per_target_hit",
             Self::ConditionalPower => "conditional_power",
             Self::EffectiveStatOverride => "effective_stat_override",
+            Self::GuaranteedCritical => "guaranteed_critical",
         };
         formatter.write_str(name)
     }
@@ -298,6 +309,7 @@ impl MoveCapabilities {
             | MoveCapability::ConditionalPower as u32
             | MoveCapability::EffectiveStatOverride as u32,
     );
+    pub const PR_16_1: Self = Self(Self::PR_13_4.0 | MoveCapability::GuaranteedCritical as u32);
 
     #[must_use]
     pub const fn with(self, capability: MoveCapability) -> Self {
@@ -459,6 +471,7 @@ pub struct CombatMove {
     pub base_power: u16,
     pub accuracy: MoveAccuracy,
     pub crit_ratio: u8,
+    pub critical_behavior: CriticalBehavior,
     pub target: MoveTarget,
     pub operation: MoveOperation,
     pub required_capabilities: MoveCapabilities,
@@ -4065,7 +4078,11 @@ impl BattleState {
         )?;
         let crit_ratio = integer_relay_u8(&crit_ratio_event, "ModifyCritRatio")?.min(4);
         resolution.events.push(crit_ratio_event);
-        let mut critical = roll_critical(&mut self.rng, crit_ratio)?;
+        let mut critical = if move_data.critical_behavior == CriticalBehavior::Guaranteed {
+            true
+        } else {
+            roll_critical(&mut self.rng, crit_ratio)?
+        };
         if critical {
             let critical_hit = effects.dispatch(
                 self,
@@ -5559,7 +5576,7 @@ fn preflight_move(
 ) -> Result<(), BattleError> {
     if let Some(missing) = move_data
         .required_capabilities
-        .first_missing_from(MoveCapabilities::PR_13_4)
+        .first_missing_from(MoveCapabilities::PR_16_1)
     {
         return Err(BattleError::UnsupportedMechanic(format!(
             "move {move_id} requires unsupported capability {missing}"
@@ -5774,6 +5791,7 @@ mod tests {
             base_power: 80,
             accuracy: MoveAccuracy::Percent { value: 100 },
             crit_ratio: 1,
+            critical_behavior: CriticalBehavior::Roll,
             target: MoveTarget::Normal,
             operation: MoveOperation::StandardDamage,
             required_capabilities: MoveCapabilities::PR_13_1,

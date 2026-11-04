@@ -81,6 +81,7 @@ const CAPABILITY_ORDER = [
 	'per_target_hit',
 	'conditional_power',
 	'effective_stat_override',
+	'guaranteed_critical',
 ];
 
 const PR_13_1_CAPABILITIES = new Set([
@@ -107,6 +108,7 @@ const PR_13_4_CAPABILITIES = new Set([
 	...PR_13_3_CAPABILITIES, 'fixed_damage', 'multi_hit', 'secondary_effect', 'self_effect',
 	'drain', 'recoil', 'conditional_power', 'effective_stat_override',
 ]);
+const PR_16_1_CAPABILITIES = new Set([...PR_13_4_CAPABILITIES, 'guaranteed_critical']);
 
 function sortedStrings(values) {
 	return [...(values || [])].sort((left, right) => left < right ? -1 : left > right ? 1 : 0);
@@ -196,6 +198,7 @@ function moveExecutionRequirements(move) {
 		capabilities.add('recoil');
 	}
 	if (move.id === 'facade') capabilities.add('conditional_power');
+	if (move.willCrit) capabilities.add('guaranteed_critical');
 	if (move.overrideOffensiveStat || move.overrideDefensiveStat ||
 		move.ignoreNegativeOffensive || move.ignorePositiveDefensive) {
 		capabilities.add('effective_stat_override');
@@ -230,6 +233,7 @@ function moveExecutionRequirements(move) {
 			'breaksProtect', 'ignoreImmunity', 'ignoreNegativeOffensive', 'ignorePositiveDefensive',
 			'overrideOffensiveStat', 'overrideDefensiveStat', 'multiaccuracy',
 			'chloroblastRecoil', 'mindBlownRecoil',
+			'willCrit',
 		].includes(property))) {
 		capabilities.add('special_behavior');
 	}
@@ -259,7 +263,12 @@ function isPr134Supported(move) {
 		.every(capability => PR_13_4_CAPABILITIES.has(capability));
 }
 
+function isPr161Supported(move) {
+	return moveExecutionRequirements(move).required_capabilities
+		.every(capability => PR_16_1_CAPABILITIES.has(capability));
+}
+
 module.exports = {
-	isPr131Supported, isPr132Supported, isPr133Supported, isPr134Supported,
+	isPr131Supported, isPr132Supported, isPr133Supported, isPr134Supported, isPr161Supported,
 	moveBehavior, moveExecutionRequirements,
 };

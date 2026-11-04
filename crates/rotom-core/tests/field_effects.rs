@@ -85,6 +85,7 @@ impl CombatData for TestData {
             base_power: 60,
             accuracy: self.accuracy,
             crit_ratio: 0,
+            critical_behavior: rotom_core::CriticalBehavior::Roll,
             target: self.target,
             operation: MoveOperation::StandardDamage,
             required_capabilities: if matches!(self.target, MoveTarget::Normal) {

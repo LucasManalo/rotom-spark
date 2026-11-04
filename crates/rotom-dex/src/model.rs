@@ -271,6 +271,7 @@ pub struct MoveData {
     pub target: MoveTarget,
     pub flags: Vec<String>,
     pub crit_ratio: u8,
+    pub will_crit: bool,
     pub multi_hit: Option<MultiHit>,
     pub multi_accuracy: bool,
     pub drain: Option<Fraction>,

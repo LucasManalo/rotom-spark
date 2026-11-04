@@ -7382,8 +7382,8 @@ fn mechanics_manifest_drives_every_move_capability_and_execution_smoke_case() {
         .iter()
         .filter(|entry| entry.implementation == "unsupported")
         .count();
-    assert_eq!(implemented, 241);
-    assert_eq!(unsupported, 269);
+    assert_eq!(implemented, 244);
+    assert_eq!(unsupported, 266);
 
     for entry in moves {
         let move_id = dex
@@ -7394,7 +7394,7 @@ fn mechanics_manifest_drives_every_move_capability_and_execution_smoke_case() {
             .unwrap_or_else(|| panic!("manifest move {} missing combat data", entry.id));
         let missing = move_data
             .required_capabilities
-            .first_missing_from(MoveCapabilities::PR_13_4);
+            .first_missing_from(MoveCapabilities::PR_16_1);
         let target = representative_action_target(move_data.target);
 
         match entry.implementation.as_str() {
@@ -8780,6 +8780,91 @@ fn critical_prevention_preserves_showdown_event_and_rng_order() {
         rotom_core::EventValue::Boolean(false)
     );
     assert_eq!(step(&state, &action, &mechanics).unwrap(), result);
+}
+
+#[test]
+fn guaranteed_critical_moves_skip_critical_rng_and_respect_prevention() {
+    let dex = champions_reg_mc().unwrap();
+    let fixture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../data/fixtures/differential/guaranteed-critical.json"
+    ))
+    .unwrap();
+    assert_eq!(fixture["showdown_commit"], SHOWDOWN_COMMIT);
+    assert_eq!(
+        fixture["methodology"]["full_state_differential_comparison"],
+        false
+    );
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let source_ref = PokemonRef::new(SideId::P1, PokemonIndex::new(0));
+    let target_ref = PokemonRef::new(SideId::P2, PokemonIndex::new(0));
+    let action = JointAction::Turn {
+        p1: opposing_targets_choice(),
+        p2: TurnChoice {
+            actions: [
+                use_move(0, ActionTarget::Automatic),
+                use_move(0, ActionTarget::Automatic),
+            ],
+        },
+    };
+
+    for case in fixture["cases"].as_array().unwrap() {
+        let move_name = case["move"].as_str().unwrap();
+        let target_ability = case["target_ability"].as_str().unwrap();
+        let source = set_with_moves(&dex, "medicham", "telepathy", &[move_name]);
+        let target = set_with_moves(&dex, "snorlax", target_ability, &["recover"]);
+        let state = selected_battle_for_sets(&dex, &source, &target, 0x16_01, true);
+        let result = step(&state, &action, &mechanics).unwrap_or_else(|error| {
+            panic!(
+                "{move_name}/{target_ability}: {error}; legal={:?}",
+                state.legal_actions(SideId::P1)
+            )
+        });
+
+        assert!(result
+            .state
+            .rng()
+            .trace()
+            .unwrap()
+            .iter()
+            .all(|entry| entry.reason != RngReason::CriticalHit));
+        let critical_event = result
+            .diagnostics
+            .turn
+            .as_ref()
+            .unwrap()
+            .events
+            .iter()
+            .find(|event| {
+                event.event == BattleEvent::CriticalHit
+                    && event.context.source == Some(source_ref)
+                    && event.context.target == Some(target_ref)
+            })
+            .expect("guaranteed critical must run the prevention event");
+        assert_eq!(
+            critical_event.value,
+            rotom_core::EventValue::Boolean(case["critical_after_prevention"].as_bool().unwrap())
+        );
+        assert_eq!(
+            <rotom_dex::DexData as CombatData>::move_data(
+                &dex,
+                dex.resolve_move(move_name).unwrap().0
+            )
+            .unwrap()
+            .critical_behavior
+                == rotom_core::CriticalBehavior::Guaranteed,
+            case["declared_will_crit"].as_bool().unwrap()
+        );
+    }
+    let cases = fixture["cases"].as_array().unwrap();
+    let reference_damage = |id| {
+        cases.iter().find(|case| case["id"] == id).unwrap()["damage"]
+            .as_u64()
+            .unwrap()
+    };
+    assert!(
+        reference_damage("flower-trick-guaranteed-critical")
+            > reference_damage("flower-trick-battle-armor")
+    );
 }
 
 use rotom_core::AbilitySuppression::{Breakable, Unbreakable};

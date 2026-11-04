@@ -160726,6 +160726,7 @@
       "target": "normal",
       "flags": [],
       "crit_ratio": 3,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -160780,6 +160781,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": {
@@ -160839,6 +160841,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -160892,6 +160895,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -160958,6 +160962,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -161015,6 +161020,7 @@
       "target": "normal",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -161069,6 +161075,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -161139,6 +161146,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -161191,6 +161199,7 @@
         "metronome"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -161250,6 +161259,7 @@
         "slicing"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -161305,6 +161315,7 @@
         "wind"
       ],
       "crit_ratio": 2,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -161356,6 +161367,7 @@
         "bypasssub"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -161411,6 +161423,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -161475,6 +161488,7 @@
         "wind"
       ],
       "crit_ratio": 2,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -161530,6 +161544,7 @@
         "slicing"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -161588,6 +161603,7 @@
       "target": "normal",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -161643,6 +161659,7 @@
         "sound"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -161703,6 +161720,7 @@
         "metronome"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -161759,6 +161777,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -161822,6 +161841,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -161885,6 +161905,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -161968,6 +161989,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -162037,6 +162059,7 @@
         "slicing"
       ],
       "crit_ratio": 2,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -162091,6 +162114,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -162142,6 +162166,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -162199,6 +162224,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -162268,6 +162294,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -162320,6 +162347,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -162388,6 +162416,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": {
         "min": 2,
         "max": 5
@@ -162443,6 +162472,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -162498,6 +162528,7 @@
         "metronome"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -162562,6 +162593,7 @@
         "nosleeptalk"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -162622,6 +162654,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -162678,6 +162711,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -162740,6 +162774,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -162793,6 +162828,7 @@
         "protect"
       ],
       "crit_ratio": 2,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -162848,6 +162884,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -162907,6 +162944,7 @@
         "pulse"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -162959,6 +162997,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -163030,6 +163069,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -163096,6 +163136,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -163153,6 +163194,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -163219,6 +163261,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -163275,6 +163318,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -163344,6 +163388,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -163405,6 +163450,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -163461,6 +163507,7 @@
         "noassist"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -163520,6 +163567,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -163586,6 +163634,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": {
         "min": 2,
         "max": 5
@@ -163640,6 +163689,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -163699,6 +163749,7 @@
         "metronome"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -163766,6 +163817,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -163823,6 +163875,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -163881,6 +163934,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -163937,6 +163991,7 @@
         "slicing"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -163994,6 +164049,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -164047,6 +164103,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -164105,6 +164162,7 @@
         "noassist"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -164163,6 +164221,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -164221,6 +164280,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -164276,6 +164336,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -164342,6 +164403,7 @@
         "slicing"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": {
@@ -164400,6 +164462,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -164463,6 +164526,7 @@
       "target": "normal",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -164517,6 +164581,7 @@
         "recharge"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -164578,6 +164643,7 @@
         "protect"
       ],
       "crit_ratio": 2,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -164647,6 +164713,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -164711,6 +164778,7 @@
         "wind"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -164782,6 +164850,7 @@
         "wind"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -164846,6 +164915,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -164904,6 +164974,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -164954,6 +165025,7 @@
       "target": "normal",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -165007,6 +165079,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -165070,6 +165143,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -165128,6 +165202,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -165194,6 +165269,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -165250,6 +165326,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -165313,6 +165390,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -165376,6 +165454,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": {
         "min": 2,
         "max": 2
@@ -165432,6 +165511,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": {
         "min": 2,
         "max": 5
@@ -165490,6 +165570,7 @@
         "sound"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -165550,6 +165631,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -165618,6 +165700,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": {
@@ -165676,6 +165759,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -165731,6 +165815,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -165787,6 +165872,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -165850,6 +165936,7 @@
       "target": "normal",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -165904,6 +165991,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -165959,6 +166047,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -166015,6 +166104,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -166068,6 +166158,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -166136,6 +166227,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -166205,6 +166297,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -166262,6 +166355,7 @@
         "sound"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -166328,6 +166422,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -166395,6 +166490,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -166465,6 +166561,7 @@
         "punch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -166519,6 +166616,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": {
         "min": 2,
         "max": 5
@@ -166574,6 +166672,7 @@
         "noassist"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -166633,6 +166732,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -166697,6 +166797,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -166758,6 +166859,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -166819,6 +166921,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -166883,6 +166986,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -166941,6 +167045,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -167002,6 +167107,7 @@
         "contact"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -167057,6 +167163,7 @@
         "slicing"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -167124,6 +167231,7 @@
         "nosleeptalk"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -167179,6 +167287,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -167241,6 +167350,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -167311,6 +167421,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -167380,6 +167491,7 @@
         "sound"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -167442,6 +167554,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -167505,6 +167618,7 @@
       "target": "all",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -167566,6 +167680,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -167622,6 +167737,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -167683,6 +167799,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -167739,6 +167856,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -167794,6 +167912,7 @@
         "sound"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -167856,6 +167975,7 @@
         "sound"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -167936,6 +168056,7 @@
         "sound"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -168023,6 +168144,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -168079,6 +168201,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -168145,6 +168268,7 @@
         "metronome"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -168209,6 +168333,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -168279,6 +168404,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -168340,6 +168466,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -168405,6 +168532,7 @@
         "punch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": {
         "min": 2,
         "max": 5
@@ -168462,6 +168590,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -168520,6 +168649,7 @@
         "sound"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -168583,6 +168713,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -168638,6 +168769,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -168702,6 +168834,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -168765,6 +168898,7 @@
       "target": "normal",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -168816,6 +168950,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -168871,6 +169006,7 @@
         "metronome"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -168930,6 +169066,7 @@
         "nosleeptalk"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -168989,6 +169126,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -169040,6 +169178,7 @@
       "target": "normal",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -169095,6 +169234,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -169150,6 +169290,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -169214,6 +169355,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -169278,6 +169420,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -169344,6 +169487,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -169400,6 +169544,7 @@
         "mirror"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -169460,6 +169605,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -169516,6 +169662,7 @@
         "protect"
       ],
       "crit_ratio": 2,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -169564,6 +169711,7 @@
       "target": "allySide",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -169624,6 +169772,7 @@
         "protect"
       ],
       "crit_ratio": 2,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -169679,6 +169828,7 @@
         "slicing"
       ],
       "crit_ratio": 2,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -169744,6 +169894,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -169814,6 +169965,7 @@
         "slicing"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -169883,6 +170035,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -169936,6 +170089,7 @@
         "metronome"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -169997,6 +170151,7 @@
         "slicing"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -170051,6 +170206,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -170109,6 +170265,7 @@
         "pulse"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -170174,6 +170331,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -170231,6 +170389,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -170281,6 +170440,7 @@
         "allyanim"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -170345,6 +170505,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -170409,6 +170570,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -170472,6 +170634,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -170528,6 +170691,7 @@
         "noassist"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -170583,6 +170747,7 @@
         "noassist"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -170637,6 +170802,7 @@
       "target": "normal",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -170689,6 +170855,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -170767,6 +170934,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -170826,6 +170994,7 @@
         "slicing"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -170891,6 +171060,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -170949,6 +171119,7 @@
         "sound"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -171002,6 +171173,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -171072,6 +171244,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -171131,6 +171304,7 @@
         "punch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -171190,6 +171364,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -171246,6 +171421,7 @@
         "metronome"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -171304,6 +171480,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -171361,6 +171538,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": {
         "min": 2,
         "max": 2
@@ -171418,6 +171596,7 @@
         "punch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": {
         "min": 2,
         "max": 2
@@ -171485,6 +171664,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": {
         "min": 2,
         "max": 2
@@ -171542,6 +171722,7 @@
         "punch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -171603,6 +171784,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": {
         "min": 2,
         "max": 5
@@ -171657,6 +171839,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -171719,6 +171902,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -171783,6 +171967,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -171850,6 +172035,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -171913,6 +172099,7 @@
         "sound"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -171970,6 +172157,7 @@
         "slicing"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -172022,6 +172210,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -172089,6 +172278,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": {
         "min": 2,
         "max": 2
@@ -172146,6 +172336,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -172202,6 +172393,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -172257,6 +172449,7 @@
         "pulse"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -172310,6 +172503,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -172368,6 +172562,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -172436,6 +172631,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -172493,6 +172689,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": {
@@ -172554,6 +172751,7 @@
         "punch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": {
@@ -172613,6 +172811,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": {
@@ -172675,6 +172874,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -172729,6 +172929,7 @@
         "protect"
       ],
       "crit_ratio": 2,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -172781,6 +172982,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -172850,6 +173052,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": {
         "min": 2,
         "max": 2
@@ -172907,6 +173110,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": {
         "min": 2,
         "max": 2
@@ -172967,6 +173171,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -173022,6 +173227,7 @@
         "punch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -173086,6 +173292,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -173155,6 +173362,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -173210,6 +173418,7 @@
         "sound"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -173267,6 +173476,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -173331,6 +173541,7 @@
         "sound"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -173395,6 +173606,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -173446,6 +173658,7 @@
         "nonsky"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -173503,6 +173716,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -173561,6 +173775,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -173616,6 +173831,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -173672,6 +173888,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -173731,6 +173948,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -173800,6 +174018,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -173855,6 +174074,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -173921,6 +174141,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -173978,6 +174199,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -174032,6 +174254,7 @@
         "noassist"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -174092,6 +174315,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -174162,6 +174386,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -174220,6 +174445,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -174275,6 +174501,7 @@
         "protect"
       ],
       "crit_ratio": 2,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -174343,6 +174570,7 @@
         "recharge"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -174403,6 +174631,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -174460,6 +174689,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -174515,6 +174745,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -174573,6 +174804,7 @@
       "target": "self",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -174652,6 +174884,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -174706,6 +174939,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -174760,6 +174994,7 @@
         "mirror"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -174818,6 +175053,7 @@
         "wind"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -174872,6 +175108,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -174940,6 +175177,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -175001,6 +175239,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -175055,6 +175294,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -175113,6 +175353,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -175175,6 +175416,7 @@
         "noassist"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -175230,6 +175472,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -175284,6 +175527,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -175339,6 +175583,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -175395,6 +175640,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -175462,6 +175708,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -175522,6 +175769,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -175596,6 +175844,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -175653,6 +175902,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -175718,6 +175968,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -175789,6 +176040,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -175859,6 +176111,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -175920,6 +176173,7 @@
         "punch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -175983,6 +176237,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -176037,6 +176292,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -176095,6 +176351,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -176151,6 +176408,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -176207,6 +176465,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -176262,6 +176521,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -176319,6 +176579,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -176387,6 +176648,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -176452,6 +176714,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -176519,6 +176782,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -176588,6 +176852,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -176650,6 +176915,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -176720,6 +176986,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -176781,6 +177048,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -176846,6 +177114,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -176902,6 +177171,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -176958,6 +177228,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -177024,6 +177295,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -177081,6 +177353,7 @@
         "metronome"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -177137,6 +177410,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": true,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -177199,6 +177473,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -177262,6 +177537,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -177321,6 +177597,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -177387,6 +177664,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -177447,6 +177725,7 @@
         "punch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -177501,6 +177780,7 @@
         "noassist"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -177559,6 +177839,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -177623,6 +177904,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -177682,6 +177964,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -177740,6 +178023,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -177795,6 +178079,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -177852,6 +178137,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -177918,6 +178204,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -177980,6 +178267,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -178037,6 +178325,7 @@
         "recharge"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -178097,6 +178386,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": true,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -178153,6 +178443,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -178209,6 +178500,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": {
         "min": 2,
         "max": 5
@@ -178267,6 +178559,7 @@
         "slicing"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -178323,6 +178616,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": {
         "min": 2,
         "max": 5
@@ -178379,6 +178673,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -178435,6 +178730,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -178492,6 +178788,7 @@
         "metronome"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -178553,6 +178850,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -178611,6 +178909,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": {
         "min": 2,
         "max": 2
@@ -178666,6 +178965,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -178718,6 +179018,7 @@
       "target": "normal",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -178782,6 +179083,7 @@
         "nosleeptalk"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -178857,6 +179159,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": {
@@ -178917,6 +179220,7 @@
         "recharge"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -178978,6 +179282,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -179028,6 +179333,7 @@
       "target": "normal",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -179080,6 +179386,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -179133,6 +179440,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -179202,6 +179510,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -179261,6 +179570,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -179315,6 +179625,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -179368,6 +179679,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -179421,6 +179733,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -179474,6 +179787,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -179527,6 +179841,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -179580,6 +179895,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -179633,6 +179949,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -179686,6 +180003,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -179736,6 +180054,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -179789,6 +180108,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -179839,6 +180159,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -179892,6 +180213,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -179945,6 +180267,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -179998,6 +180321,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -180048,6 +180372,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -180101,6 +180426,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -180154,6 +180480,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -180202,6 +180529,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -180250,6 +180578,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -180303,6 +180632,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -180356,6 +180686,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -180409,6 +180740,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -180462,6 +180794,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -180513,6 +180846,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -180566,6 +180900,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -180619,6 +180954,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -180672,6 +181008,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -180725,6 +181062,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -180778,6 +181116,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -180831,6 +181170,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -180884,6 +181224,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -180937,6 +181278,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -180990,6 +181332,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -181043,6 +181386,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -181103,6 +181447,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -181161,6 +181506,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -181223,6 +181569,7 @@
         "sound"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -181279,6 +181626,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -181332,6 +181680,7 @@
         "nonsky"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -181388,6 +181737,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -181456,6 +181806,7 @@
         "nonsky"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -181516,6 +181867,7 @@
         "sound"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -181576,6 +181928,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -181642,6 +181995,7 @@
         "metronome"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -181692,6 +182046,7 @@
       "target": "normal",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -181746,6 +182101,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -181804,6 +182160,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -181862,6 +182219,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -181917,6 +182275,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -181982,6 +182341,7 @@
         "wind"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -182037,6 +182397,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -182089,6 +182450,7 @@
         "metronome"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -182148,6 +182510,7 @@
         "punch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -182208,6 +182571,7 @@
         "metronome"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -182263,6 +182627,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -182326,6 +182691,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -182379,6 +182745,7 @@
         "metronome"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -182437,6 +182804,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -182501,6 +182869,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -182559,6 +182928,7 @@
         "punch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -182627,6 +182997,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -182684,6 +183055,7 @@
         "sound"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -182742,6 +183114,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -182796,6 +183169,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -182857,6 +183231,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -182922,6 +183297,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -182982,6 +183358,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -183046,6 +183423,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -183106,6 +183484,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -183165,6 +183544,7 @@
         "wind"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -183231,6 +183611,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -183288,6 +183669,7 @@
         "noassist"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -183345,6 +183727,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -183400,6 +183783,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -183454,6 +183838,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -183506,6 +183891,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -183558,6 +183944,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -183610,6 +183997,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -183662,6 +184050,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -183714,6 +184103,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -183766,6 +184156,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -183818,6 +184209,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -183870,6 +184262,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -183922,6 +184315,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -183974,6 +184368,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -184026,6 +184421,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -184078,6 +184474,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -184130,6 +184527,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -184182,6 +184580,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -184234,6 +184633,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -184288,6 +184688,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -184343,6 +184744,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -184403,6 +184805,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -184460,6 +184863,7 @@
         "nosleeptalk"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -184513,6 +184917,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -184580,6 +184985,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -184634,6 +185040,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -184691,6 +185098,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": {
@@ -184749,6 +185157,7 @@
         "sound"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -184813,6 +185222,7 @@
         "wind"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -184879,6 +185289,7 @@
         "recharge"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -184939,6 +185350,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -184993,6 +185405,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -185045,6 +185458,7 @@
       "target": "normal",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -185099,6 +185513,7 @@
         "recharge"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -185158,6 +185573,7 @@
         "mirror"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -185213,6 +185629,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -185275,6 +185692,7 @@
         "nosketch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -185340,6 +185758,7 @@
         "mirror"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -185397,6 +185816,7 @@
         "sound"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -185451,6 +185871,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -185510,6 +185931,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -185567,6 +185989,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -185632,6 +186055,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -185701,6 +186125,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -185773,6 +186198,7 @@
         "punch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -185838,6 +186264,7 @@
         "punch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -185901,6 +186328,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -185955,6 +186383,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -186011,6 +186440,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -186074,6 +186504,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": {
         "min": 2,
         "max": 5
@@ -186131,6 +186562,7 @@
         "wind"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -186199,6 +186631,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -186254,6 +186687,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -186309,6 +186743,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -186374,6 +186809,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -186432,6 +186868,7 @@
       "target": "normal",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -186486,6 +186923,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -186538,6 +186976,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -186593,6 +187032,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -186647,6 +187087,7 @@
         "metronome"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -186702,6 +187143,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -186765,6 +187207,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -186829,6 +187272,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -186897,6 +187341,7 @@
         "protect"
       ],
       "crit_ratio": 2,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -186955,6 +187400,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -187011,6 +187457,7 @@
         "punch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -187064,6 +187511,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -187121,6 +187569,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -187179,6 +187628,7 @@
         "heal"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -187239,6 +187689,7 @@
         "protect"
       ],
       "crit_ratio": 2,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -187293,6 +187744,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -187354,6 +187806,7 @@
         "noassist"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -187414,6 +187867,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -187471,6 +187925,7 @@
         "slicing"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -187525,6 +187980,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -187576,6 +188032,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -187632,6 +188089,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -187688,6 +188146,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -187743,6 +188202,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -187798,6 +188258,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -187861,6 +188322,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -187916,6 +188378,7 @@
         "slicing"
       ],
       "crit_ratio": 2,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -187969,6 +188432,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -188032,6 +188496,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -188102,6 +188567,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": {
@@ -188161,6 +188627,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -188219,6 +188686,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -188278,6 +188746,7 @@
         "contact"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -188332,6 +188801,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -188394,6 +188864,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -188455,6 +188926,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -188509,6 +188981,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -188561,6 +189034,7 @@
       "target": "normal",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -188619,6 +189093,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -188686,6 +189161,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -188745,6 +189221,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -188801,6 +189278,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -188858,6 +189336,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -188924,6 +189403,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -188981,6 +189461,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -189048,6 +189529,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -189107,6 +189589,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -189170,6 +189653,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -189238,6 +189722,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -189308,6 +189793,7 @@
         "punch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -189360,6 +189846,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -189419,6 +189906,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -189479,6 +189967,7 @@
         "metronome"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -189537,6 +190026,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -189594,6 +190084,7 @@
         "mirror"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -189651,6 +190142,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -189704,6 +190196,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -189757,6 +190250,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -189813,6 +190307,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -189873,6 +190368,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -189928,6 +190424,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -189989,6 +190486,7 @@
         "minimize"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -190044,6 +190542,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -190107,6 +190606,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -190169,6 +190669,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": {
@@ -190235,6 +190736,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -190288,6 +190790,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -190341,6 +190844,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -190394,6 +190898,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -190447,6 +190952,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -190500,6 +191006,7 @@
       "target": "self",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -190554,6 +191061,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -190607,6 +191115,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -190660,6 +191169,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -190713,6 +191223,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -190766,6 +191277,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -190819,6 +191331,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -190872,6 +191385,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -190925,6 +191439,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -190978,6 +191493,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -191031,6 +191547,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -191084,6 +191601,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -191137,6 +191655,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -191190,6 +191709,7 @@
       "target": "adjacentFoe",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -191247,6 +191767,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -191302,6 +191823,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -191369,6 +191891,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -191429,6 +191952,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": {
@@ -191488,6 +192012,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -191542,6 +192067,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -191597,6 +192123,7 @@
         "punch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -191650,6 +192177,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -191712,6 +192240,7 @@
       "target": "normal",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -191768,6 +192297,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -191827,6 +192357,7 @@
         "slicing"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -191899,6 +192430,7 @@
         "sound"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -191962,6 +192494,7 @@
         "recharge"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -192023,6 +192556,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -192082,6 +192616,7 @@
         "punch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -192152,6 +192687,7 @@
         "nosleeptalk"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -192212,6 +192748,7 @@
         "slicing"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -192264,6 +192801,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -192331,6 +192869,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -192387,6 +192926,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -192446,6 +192986,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -192502,6 +193043,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -192565,6 +193107,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -192622,6 +193165,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -192681,6 +193225,7 @@
         "nosleeptalk"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -192740,6 +193285,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -192806,6 +193352,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -192864,6 +193411,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -192932,6 +193480,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -192987,6 +193536,7 @@
         "nonsky"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -193044,6 +193594,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -193111,6 +193662,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -193165,6 +193717,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -193223,6 +193776,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -193283,6 +193837,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -193349,6 +193904,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -193413,6 +193969,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -193482,6 +194039,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -193550,6 +194108,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -193618,6 +194177,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -193684,6 +194244,7 @@
         "nonsky"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -193742,6 +194303,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -193797,6 +194359,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -193865,6 +194428,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -193931,6 +194495,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -193993,6 +194558,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -194051,6 +194617,7 @@
         "nosleeptalk"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -194109,6 +194676,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -194165,6 +194733,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -194223,6 +194792,7 @@
       "target": "normal",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -194276,6 +194846,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -194344,6 +194915,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -194399,6 +194971,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -194456,6 +195029,7 @@
         "slicing"
       ],
       "crit_ratio": 2,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -194509,6 +195083,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -194569,6 +195144,7 @@
         "sound"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -194633,6 +195209,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -194719,6 +195296,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -194783,6 +195361,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -194848,6 +195427,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": {
@@ -194904,6 +195484,7 @@
         "failinstruct"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -194958,6 +195539,7 @@
       "target": "normal",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -195012,6 +195594,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -195080,6 +195663,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -195139,6 +195723,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -195196,6 +195781,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -195278,6 +195864,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -195335,6 +195922,7 @@
         "pulse"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -195390,6 +195978,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -195449,6 +196038,7 @@
         "sound"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -195502,6 +196092,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -195565,6 +196156,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -195621,6 +196213,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -195690,6 +196283,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": {
@@ -195751,6 +196345,7 @@
         "sound"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -195811,6 +196406,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -195866,6 +196462,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -195921,6 +196518,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -195974,6 +196572,7 @@
         "sound"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -196032,6 +196631,7 @@
         "wind"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -196088,6 +196688,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -196150,6 +196751,7 @@
         "nosleeptalk"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -196208,6 +196810,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -196263,6 +196866,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -196318,6 +196922,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": {
         "min": 2,
         "max": 5
@@ -196375,6 +196980,7 @@
         "punch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -196430,6 +197036,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -196493,6 +197100,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -196563,6 +197171,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -196620,6 +197229,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -196684,6 +197294,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -196740,6 +197351,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -196805,6 +197417,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -196862,6 +197475,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -196926,6 +197540,7 @@
         "protect"
       ],
       "crit_ratio": 2,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -196990,6 +197605,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -197059,6 +197675,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -197116,6 +197733,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -197173,6 +197791,7 @@
         "slicing"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": {
         "min": 10,
         "max": 10
@@ -197231,6 +197850,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -197300,6 +197920,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -197356,6 +197977,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -197413,6 +198035,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -197476,6 +198099,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -197526,6 +198150,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -197580,6 +198205,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -197638,6 +198264,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -197693,6 +198320,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -197749,6 +198377,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -197806,6 +198435,7 @@
         "punch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -197875,6 +198505,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -197928,6 +198559,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -197981,6 +198613,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -198037,6 +198670,7 @@
         "recharge"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -198095,6 +198729,7 @@
         "noassist"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -198154,6 +198789,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -198219,6 +198855,7 @@
         "slicing"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -198274,6 +198911,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -198344,6 +198982,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -198401,6 +199040,7 @@
         "sound"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -198462,6 +199102,7 @@
         "nonsky"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -198519,6 +199160,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -198583,6 +199225,7 @@
         "slicing"
       ],
       "crit_ratio": 2,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -198636,6 +199279,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -198697,6 +199341,7 @@
         "metronome"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -198755,6 +199400,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -198823,6 +199469,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -198878,6 +199525,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -198933,6 +199581,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -198985,6 +199634,7 @@
         "contact"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -199039,6 +199689,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -199094,6 +199745,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -199154,6 +199806,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -199212,6 +199865,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -199276,6 +199930,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -199334,6 +199989,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -199384,6 +200040,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -199443,6 +200100,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -199514,6 +200172,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -199573,6 +200232,7 @@
         "punch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -199627,6 +200287,7 @@
         "powder"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -199686,6 +200347,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -199741,6 +200403,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -199796,6 +200459,7 @@
         "metronome"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -199854,6 +200518,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -199926,6 +200591,7 @@
         "slicing"
       ],
       "crit_ratio": 2,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -199981,6 +200647,7 @@
         "slicing"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -200052,6 +200719,7 @@
         "protect"
       ],
       "crit_ratio": 2,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -200108,6 +200776,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -200168,6 +200837,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -200223,6 +200893,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -200280,6 +200951,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -200335,6 +201007,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -200393,6 +201066,7 @@
         "sound"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -200457,6 +201131,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -200518,6 +201193,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -200574,6 +201250,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -200630,6 +201307,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -200686,6 +201364,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -200742,6 +201421,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -200795,6 +201475,7 @@
         "nosketch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -200857,6 +201538,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -200916,6 +201598,7 @@
         "sound"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -200974,6 +201657,7 @@
         "recharge"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -201035,6 +201719,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": {
         "min": 2,
         "max": 5
@@ -201092,6 +201777,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -201153,6 +201839,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -201215,6 +201902,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -201279,6 +201967,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -201347,6 +202036,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -201400,6 +202090,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -201470,6 +202161,7 @@
         "recharge"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -201529,6 +202221,7 @@
         "metronome"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -201588,6 +202281,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -201654,6 +202348,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -201710,6 +202405,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -201775,6 +202471,7 @@
         "nonsky"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -201834,6 +202531,7 @@
         "sound"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -201889,6 +202587,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -201945,6 +202644,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -202012,6 +202712,7 @@
         "slicing"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -202066,6 +202767,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -202122,6 +202824,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -202186,6 +202889,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -202249,6 +202953,7 @@
         "wind"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -202312,6 +203017,7 @@
         "wind"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -202369,6 +203075,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -202422,6 +203129,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -202472,6 +203180,7 @@
       "target": "normal",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -202526,6 +203235,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -202593,6 +203303,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": {
         "min": 2,
         "max": 5
@@ -202665,6 +203376,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -202728,6 +203440,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -202796,6 +203509,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -202853,6 +203567,7 @@
         "sound"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -202916,6 +203631,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -202976,6 +203692,7 @@
         "contact"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -203031,6 +203748,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -203096,6 +203814,7 @@
         "slicing"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -203152,6 +203871,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -203205,6 +203925,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -203275,6 +203996,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -203331,6 +204053,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -203387,6 +204110,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -203455,6 +204179,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -203525,6 +204250,7 @@
         "slicing"
       ],
       "crit_ratio": 2,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -203582,6 +204308,7 @@
         "nosleeptalk"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -203642,6 +204369,7 @@
         "punch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -203696,6 +204424,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -203749,6 +204478,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -203815,6 +204545,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -203872,6 +204603,7 @@
       "target": "normal",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -203920,6 +204652,7 @@
       "target": "self",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -203984,6 +204717,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -204039,6 +204773,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -204105,6 +204840,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -204186,6 +204922,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -204240,6 +204977,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -204300,6 +205038,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -204365,6 +205104,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -204417,6 +205157,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -204476,6 +205217,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -204534,6 +205276,7 @@
       "target": "self",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -204593,6 +205336,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -204679,6 +205423,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -204740,6 +205485,7 @@
         "sound"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -204790,6 +205536,7 @@
       "target": "normal",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -204844,6 +205591,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -204914,6 +205662,7 @@
         "nosleeptalk"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -204972,6 +205721,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -205030,6 +205780,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -205102,6 +205853,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -205163,6 +205915,7 @@
         "protect"
       ],
       "crit_ratio": 2,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -205237,6 +205990,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -205303,6 +206057,7 @@
         "punch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -205355,6 +206110,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -205419,6 +206175,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -205474,6 +206231,7 @@
         "slicing"
       ],
       "crit_ratio": 2,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -205529,6 +206287,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -205588,6 +206347,7 @@
         "nosleeptalk"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -205649,6 +206409,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -205713,6 +206474,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -205776,6 +206538,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -205840,6 +206603,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -205893,6 +206657,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -205947,6 +206712,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -206003,6 +206769,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -206067,6 +206834,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -206129,6 +206897,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -206183,6 +206952,7 @@
         "sound"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -206251,6 +207021,7 @@
         "noassist"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -206306,6 +207077,7 @@
         "protect"
       ],
       "crit_ratio": 2,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -206362,6 +207134,7 @@
         "sound"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -206424,6 +207197,7 @@
       "target": "all",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -206483,6 +207257,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -206539,6 +207314,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -206604,6 +207380,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -206667,6 +207444,7 @@
         "slicing"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -206725,6 +207503,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -206778,6 +207557,7 @@
         "contact"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -206831,6 +207611,7 @@
         "protect"
       ],
       "crit_ratio": 2,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -206885,6 +207666,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -206950,6 +207732,7 @@
         "sound"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -207014,6 +207797,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -207073,6 +207857,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -207129,6 +207914,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -207185,6 +207971,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -207251,6 +208038,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -207308,6 +208096,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": {
         "min": 2,
         "max": 5
@@ -207364,6 +208153,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -207419,6 +208209,7 @@
         "noassist"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -207479,6 +208270,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -207542,6 +208334,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -207610,6 +208403,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -207675,6 +208469,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -207731,6 +208526,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -207786,6 +208582,7 @@
         "metronome"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -207841,6 +208638,7 @@
       "target": "normal",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -207896,6 +208694,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -207961,6 +208760,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -208019,6 +208819,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -208076,6 +208877,7 @@
         "wind"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -208143,6 +208945,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -208200,6 +209003,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -208269,6 +209073,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -208333,6 +209138,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -208394,6 +209200,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -208452,6 +209259,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -208518,6 +209326,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -208573,6 +209382,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -208625,6 +209435,7 @@
       "target": "normal",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -208691,6 +209502,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -208757,6 +209569,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -208814,6 +209627,7 @@
         "slicing"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -208880,6 +209694,7 @@
         "protect"
       ],
       "crit_ratio": 2,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -208933,6 +209748,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -208989,6 +209805,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": true,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -209043,6 +209860,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -209107,6 +209925,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -209162,6 +209981,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -209222,6 +210042,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -209290,6 +210111,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -209350,6 +210172,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -209416,6 +210239,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -209476,6 +210300,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -209534,6 +210359,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -209589,6 +210415,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -209642,6 +210469,7 @@
       "target": "normal",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -209696,6 +210524,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -209748,6 +210577,7 @@
         "metronome"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -209805,6 +210635,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -209862,6 +210693,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -209922,6 +210754,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -209978,6 +210811,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -210048,6 +210882,7 @@
         "sound"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -210098,6 +210933,7 @@
       "target": "normal",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -210152,6 +210988,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -210206,6 +211043,7 @@
         "punch"
       ],
       "crit_ratio": 1,
+      "will_crit": true,
       "multi_hit": {
         "min": 3,
         "max": 3
@@ -210266,6 +211104,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -210327,6 +211166,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -210388,6 +211228,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -210444,6 +211285,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -210505,6 +211347,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -210560,6 +211403,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -210617,6 +211461,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -210679,6 +211524,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -210733,6 +211579,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -210793,6 +211640,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -210856,6 +211704,7 @@
         "slicing"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": {
         "min": 2,
         "max": 2
@@ -210913,6 +211762,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -210964,6 +211814,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -211027,6 +211878,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": {
         "min": 2,
         "max": 5
@@ -211084,6 +211936,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -211145,6 +211998,7 @@
         "wind"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -211203,6 +212057,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -211257,6 +212112,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -211315,6 +212171,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -211379,6 +212236,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -211433,6 +212291,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -211497,6 +212356,7 @@
         "metronome"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -211553,6 +212413,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -211603,6 +212464,7 @@
       "target": "normal",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -211657,6 +212519,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -211714,6 +212577,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -211770,6 +212634,7 @@
         "metronome"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -211830,6 +212695,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -211886,6 +212752,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -211947,6 +212814,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -212004,6 +212872,7 @@
         "pulse"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -212063,6 +212932,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -212118,6 +212988,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -212175,6 +213046,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -212232,6 +213104,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -212291,6 +213164,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -212354,6 +213228,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -212419,6 +213294,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -212481,6 +213357,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -212534,6 +213411,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -212591,6 +213469,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -212661,6 +213540,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -212731,6 +213611,7 @@
         "punch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -212794,6 +213675,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -212858,6 +213740,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -212913,6 +213796,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -212974,6 +213858,7 @@
       "target": "self",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -213032,6 +213917,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -213091,6 +213977,7 @@
         "sound"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -213161,6 +214048,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -213217,6 +214105,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -213272,6 +214161,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -213330,6 +214220,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -213392,6 +214283,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -213462,6 +214354,7 @@
         "noassist"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -213519,6 +214412,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -213584,6 +214478,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -213644,6 +214539,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -213699,6 +214595,7 @@
         "mirror"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -213756,6 +214653,7 @@
         "protect"
       ],
       "crit_ratio": 2,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -213832,6 +214730,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": {
         "min": 3,
         "max": 3
@@ -213893,6 +214792,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": {
         "min": 3,
         "max": 3
@@ -213950,6 +214850,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": {
         "min": 3,
         "max": 3
@@ -214011,6 +214912,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -214079,6 +214981,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -214133,6 +215036,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": {
         "min": 2,
         "max": 2
@@ -214189,6 +215093,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": {
         "min": 2,
         "max": 2
@@ -214250,6 +215155,7 @@
       "target": "normal",
       "flags": [],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -214304,6 +215210,7 @@
         "wind"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -214368,6 +215275,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -214437,6 +215345,7 @@
         "sound"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -214498,6 +215407,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -214553,6 +215463,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -214606,6 +215517,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -214676,6 +215588,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -214732,6 +215645,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -214789,6 +215703,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -214843,6 +215758,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -214914,6 +215830,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -214968,6 +215885,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -215021,6 +215939,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -215074,6 +215993,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -215130,6 +216050,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -215197,6 +216118,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -215254,6 +216176,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -215317,6 +216240,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -215372,6 +216296,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -215433,6 +216358,7 @@
         "pulse"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -215496,6 +216422,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": {
         "min": 2,
         "max": 5
@@ -215552,6 +216479,7 @@
         "nonsky"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -215609,6 +216537,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -215665,6 +216594,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -215722,6 +216652,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -215778,6 +216709,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -215835,6 +216767,7 @@
         "wind"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -215893,6 +216826,7 @@
         "punch"
       ],
       "crit_ratio": 1,
+      "will_crit": true,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -215954,6 +216888,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -216014,6 +216949,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -216075,6 +217011,7 @@
         "wind"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -216141,6 +217078,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -216198,6 +217136,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -216255,6 +217194,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -216307,6 +217247,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -216364,6 +217305,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -216424,6 +217366,7 @@
         "mirror"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -216482,6 +217425,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -216536,6 +217480,7 @@
         "snatch"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -216604,6 +217549,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -216664,6 +217610,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -216718,6 +217665,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -216775,6 +217723,7 @@
         "slicing"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -216828,6 +217777,7 @@
         "reflectable"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -216886,6 +217836,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -216950,6 +217901,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -217014,6 +217966,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,
@@ -217077,6 +218030,7 @@
         "protect"
       ],
       "crit_ratio": 1,
+      "will_crit": false,
       "multi_hit": null,
       "multi_accuracy": false,
       "drain": null,

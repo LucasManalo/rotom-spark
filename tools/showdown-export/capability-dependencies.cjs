@@ -29,6 +29,7 @@ const CAPABILITIES = {
 	per_target_hit: implemented('Per-target hit resolution', ['independent hit results'], 'Exceptional per-target callbacks remain separate.', ['showdown:sim/battle-actions.ts:BattleActions.trySpreadMoveHit']),
 	conditional_power: implemented('Declarative conditional base power', ['Facade predicate'], 'Other variable-power predicates remain separate.', ['showdown:sim/battle-actions.ts:BattleActions.getDamage']),
 	effective_stat_override: implemented('Effective offensive/defensive stat override', ['Psyshock-style defense selection'], 'Move-specific ignore rules remain separate.', ['showdown:sim/battle-actions.ts:BattleActions.getDamage']),
+	guaranteed_critical: verified('Guaranteed critical-hit moves', ['declarative willCrit', 'critical prevention hook', 'no critical RNG draw'], 'No known gap for declarative always-critical moves.', ['showdown:sim/battle-actions.ts:BattleActions.getDamage', 'showdown:data/moves.ts:Moves.flowertrick']),
 
 	berry_lifecycle: implemented('Shared berry activation and consumption', ['trigger timing', 'eligibility', 'suppression', 'consumption history', 'follow-up hooks'], 'The shared lifecycle is implemented; individual berry effects and Substitute damage routing remain separate capabilities.', ['showdown:data/items.ts:Items.sitrusberry', 'showdown:sim/pokemon.ts:Pokemon.eatItem']),
 	berry_effect_coverage: partial('Individual berry effect coverage', ['effect eligibility', 'effect application', 'ability interaction'], 'Confusion-curing and pinch-stat berries remain incomplete, so berry-dependent abilities are not interaction-complete for every reachable berry.', ['showdown:data/items.ts:Items']),
@@ -207,6 +208,11 @@ Object.assign(CAPABILITIES.move_history, {
 		'unit:crates/rotom-dex/tests/combat.rs#failed_move_history_is_recorded_without_promoting_last_successful_move',
 	],
 	differential_fixtures: ['differential:data/fixtures/differential/move-lifecycle-history.json#multi-hit-success-history'],
+});
+
+Object.assign(CAPABILITIES.guaranteed_critical, {
+	tests: ['unit:crates/rotom-dex/tests/combat.rs#guaranteed_critical_moves_skip_critical_rng_and_respect_prevention'],
+	differential_fixtures: ['differential:data/fixtures/differential/guaranteed-critical.json#flower-trick-guaranteed-critical'],
 });
 
 for (const id of ['mega_eligibility', 'mega_timing', 'mega_form_change', 'mega_ability_transition']) {

@@ -1,12 +1,12 @@
 use crate::{Accuracy, DexData, MoveBehaviorKind, MoveData, SpeciesData, Stats};
 use rotom_core::{
     AbilityBehavior, AbilityHandler, AbilityId, AbilitySuppression, BattleError, BattleStat,
-    BattleStats, CombatData, CombatMove, ConditionId, EffectFraction, FieldEffectIds, HitSequence,
-    ItemBehavior, ItemHandler, ItemId, MajorStatus, MegaEvolution, MoveAccuracy, MoveCapabilities,
-    MoveCapability, MoveCategory, MoveId, MoveIntrinsic, MoveOperation, MoveSlot, MoveTarget,
-    PokemonPosition, PokemonSet, PokemonState, PokemonType, PokemonTypes, PrimaryMoveEffect,
-    PriorMoveEffect, SecondaryMoveEffect, SelfMoveEffect, SpeciesId, StatAllocation, StatStages,
-    StatusState, TerrainEnvironment, WeatherEnvironment,
+    BattleStats, CombatData, CombatMove, ConditionId, CriticalBehavior, EffectFraction,
+    FieldEffectIds, HitSequence, ItemBehavior, ItemHandler, ItemId, MajorStatus, MegaEvolution,
+    MoveAccuracy, MoveCapabilities, MoveCapability, MoveCategory, MoveId, MoveIntrinsic,
+    MoveOperation, MoveSlot, MoveTarget, PokemonPosition, PokemonSet, PokemonState, PokemonType,
+    PokemonTypes, PrimaryMoveEffect, PriorMoveEffect, SecondaryMoveEffect, SelfMoveEffect,
+    SpeciesId, StatAllocation, StatStages, StatusState, TerrainEnvironment, WeatherEnvironment,
 };
 
 impl CombatData for DexData {
@@ -22,6 +22,11 @@ impl CombatData for DexData {
                 Accuracy::Percent { value } => MoveAccuracy::Percent { value },
             },
             crit_ratio: data.crit_ratio,
+            critical_behavior: if data.will_crit {
+                CriticalBehavior::Guaranteed
+            } else {
+                CriticalBehavior::Roll
+            },
             target: data.target,
             operation,
             required_capabilities,
@@ -1779,6 +1784,9 @@ fn move_execution_requirements(data: &MoveData) -> (MoveOperation, MoveCapabilit
     if data.id == "facade" {
         required = required.with(MoveCapability::ConditionalPower);
     }
+    if data.will_crit {
+        required = required.with(MoveCapability::GuaranteedCritical);
+    }
     if data.override_offensive_stat.is_some()
         || data.override_defensive_stat.is_some()
         || data.ignore_negative_offensive
@@ -1895,20 +1903,7 @@ fn behavior_capabilities(data: &MoveData, mut required: MoveCapabilities) -> Mov
                 "trickroom" | "gravity" | "magicroom" | "wonderroom"
             )
         });
-    let unsupported_special = data.behavior.special_properties.iter().any(|property| {
-        !matches!(
-            property.as_str(),
-            "breaksProtect"
-                | "ignoreImmunity"
-                | "ignoreNegativeOffensive"
-                | "ignorePositiveDefensive"
-                | "overrideOffensiveStat"
-                | "overrideDefensiveStat"
-                | "multiaccuracy"
-                | "chloroblastRecoil"
-                | "mindBlownRecoil"
-        )
-    });
+    let unsupported_special = has_unsupported_special_property(data);
     let unsupported_flag = data.behavior.intrinsic_flags.iter().any(|flag| {
         (flag != "heal" || (data.heal.is_none() && data.drain.is_none()))
             && !(data.id == "magnetrise" && flag == "gravity")
@@ -1923,6 +1918,24 @@ fn behavior_capabilities(data: &MoveData, mut required: MoveCapabilities) -> Mov
         required = required.with(MoveCapability::SpecialBehavior);
     }
     required
+}
+
+fn has_unsupported_special_property(data: &MoveData) -> bool {
+    data.behavior.special_properties.iter().any(|property| {
+        !matches!(
+            property.as_str(),
+            "breaksProtect"
+                | "ignoreImmunity"
+                | "ignoreNegativeOffensive"
+                | "ignorePositiveDefensive"
+                | "overrideOffensiveStat"
+                | "overrideDefensiveStat"
+                | "multiaccuracy"
+                | "chloroblastRecoil"
+                | "mindBlownRecoil"
+                | "willCrit"
+        )
+    })
 }
 
 fn parse_status(value: &str) -> Option<MajorStatus> {

@@ -132,3 +132,11 @@ protected move history and damage-source behavior:
 node tools/showdown-reference/move-lifecycle-history.cjs
 node tools/showdown-reference/move-lifecycle-history.cjs --check
 ```
+
+PR 16.1 records declarative guaranteed critical hits, critical prevention, and
+pinned maximum-roll damage for Flower Trick, Frost Breath, and Storm Throw:
+
+```text
+node tools/showdown-reference/guaranteed-critical.cjs
+node tools/showdown-reference/guaranteed-critical.cjs --check
+```

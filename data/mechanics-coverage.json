@@ -5384,6 +5384,49 @@
         "unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility",
         "interaction_unit:crates/rotom-dex/tests/combat.rs#mega_evolution_preserves_damage_item_and_replay_while_consuming_side_eligibility"
       ]
+    },
+    {
+      "id": "flowertrick",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 16.1",
+      "evidence": [
+        "file:docs/research/pr-16-1-guaranteed-critical.md",
+        "unit:crates/rotom-dex/tests/combat.rs#guaranteed_critical_moves_skip_critical_rng_and_respect_prevention",
+        "differential:data/fixtures/differential/guaranteed-critical.json#flower-trick-guaranteed-critical",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#guaranteed_critical_moves_skip_critical_rng_and_respect_prevention",
+        "interaction_differential:data/fixtures/differential/guaranteed-critical.json#flower-trick-battle-armor"
+      ]
+    },
+    {
+      "id": "frostbreath",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 16.1",
+      "evidence": [
+        "file:docs/research/pr-16-1-guaranteed-critical.md",
+        "unit:crates/rotom-dex/tests/combat.rs#guaranteed_critical_moves_skip_critical_rng_and_respect_prevention",
+        "differential:data/fixtures/differential/guaranteed-critical.json#frost-breath-guaranteed-critical",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#guaranteed_critical_moves_skip_critical_rng_and_respect_prevention"
+      ]
+    },
+    {
+      "id": "stormthrow",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 16.1",
+      "evidence": [
+        "file:docs/research/pr-16-1-guaranteed-critical.md",
+        "unit:crates/rotom-dex/tests/combat.rs#guaranteed_critical_moves_skip_critical_rng_and_respect_prevention",
+        "differential:data/fixtures/differential/guaranteed-critical.json#storm-throw-guaranteed-critical",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#guaranteed_critical_moves_skip_critical_rng_and_respect_prevention"
+      ]
     }
   ]
 }

@@ -1,0 +1,44 @@
+{
+  "showdown_commit": "b79ce06d06b8f0dc8de8bb348bc9cab5d931553f",
+  "format": "gen9championsvgc2026regmc",
+  "methodology": {
+    "source": "pinned resolved move willCrit, CriticalHit event, and Battle.actions.getDamage",
+    "damage_roll_percent": 100,
+    "move_execution": true,
+    "full_state_differential_comparison": false
+  },
+  "cases": [
+    {
+      "id": "flower-trick-guaranteed-critical",
+      "move": "flowertrick",
+      "target_ability": "immunity",
+      "declared_will_crit": true,
+      "critical_after_prevention": true,
+      "damage": 45
+    },
+    {
+      "id": "frost-breath-guaranteed-critical",
+      "move": "frostbreath",
+      "target_ability": "immunity",
+      "declared_will_crit": true,
+      "critical_after_prevention": true,
+      "damage": 27
+    },
+    {
+      "id": "storm-throw-guaranteed-critical",
+      "move": "stormthrow",
+      "target_ability": "immunity",
+      "declared_will_crit": true,
+      "critical_after_prevention": true,
+      "damage": 116
+    },
+    {
+      "id": "flower-trick-battle-armor",
+      "move": "flowertrick",
+      "target_ability": "battlearmor",
+      "declared_will_crit": true,
+      "critical_after_prevention": false,
+      "damage": 30
+    }
+  ]
+}

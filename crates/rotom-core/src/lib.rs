@@ -26,12 +26,12 @@ pub use action::{
     TurnChoice,
 };
 pub use combat::{
-    calculate_damage, calculate_move_damage, CombatData, CombatMove, DamageResult, EffectFraction,
-    ExpiredCondition, ExpiredVolatile, FieldHpChange, HitSequence, Modifier, MoveAccuracy,
-    MoveCapabilities, MoveCapability, MoveCategory, MoveInteractionFlags, MoveIntrinsic,
-    MoveOperation, PokemonType, PokemonTypes, PrimaryMoveEffect, PriorMoveEffect, ResidualDamage,
-    ResolvedAction, SecondaryMoveEffect, SelfMoveEffect, TargetOutcome, TargetResult,
-    TurnResolution,
+    calculate_damage, calculate_move_damage, CombatData, CombatMove, CriticalBehavior,
+    DamageResult, EffectFraction, ExpiredCondition, ExpiredVolatile, FieldHpChange, HitSequence,
+    Modifier, MoveAccuracy, MoveCapabilities, MoveCapability, MoveCategory, MoveInteractionFlags,
+    MoveIntrinsic, MoveOperation, PokemonType, PokemonTypes, PrimaryMoveEffect, PriorMoveEffect,
+    ResidualDamage, ResolvedAction, SecondaryMoveEffect, SelfMoveEffect, TargetOutcome,
+    TargetResult, TurnResolution,
 };
 pub use error::BattleError;
 pub use event::{

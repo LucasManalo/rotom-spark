@@ -20,7 +20,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | --- | ---: | ---: | ---: | ---: |
 | Abilities | 215 | 123 | 92 | 0 |
 | Items | 166 | 141 | 25 | 0 |
-| Moves | 510 | 241 | 0 | 269 |
+| Moves | 510 | 244 | 0 | 266 |
 
 ## Abilities
 
@@ -584,7 +584,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Flatter | `flatter` | unsupported | not_tested | not_tested | — |
 | Fling | `fling` | unsupported | not_tested | not_tested | — |
 | Flip Turn | `flipturn` | unsupported | not_tested | not_tested | — |
-| Flower Trick | `flowertrick` | unsupported | not_tested | not_tested | — |
+| Flower Trick | `flowertrick` | implemented | differential_verified | differential_verified | PR 16.1 |
 | Fly | `fly` | unsupported | not_tested | not_tested | — |
 | Flying Press | `flyingpress` | unsupported | not_tested | not_tested | — |
 | Focus Blast | `focusblast` | implemented | unit_tested | not_tested | PR 13.4 |
@@ -595,7 +595,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Foul Play | `foulplay` | unsupported | not_tested | not_tested | — |
 | Freeze-Dry | `freezedry` | unsupported | not_tested | not_tested | — |
 | Frenzy Plant | `frenzyplant` | unsupported | not_tested | not_tested | — |
-| Frost Breath | `frostbreath` | unsupported | not_tested | not_tested | — |
+| Frost Breath | `frostbreath` | implemented | differential_verified | unit_tested | PR 16.1 |
 | Future Sight | `futuresight` | unsupported | not_tested | not_tested | — |
 | Gastro Acid | `gastroacid` | unsupported | not_tested | not_tested | — |
 | Giga Drain | `gigadrain` | implemented | unit_tested | not_tested | PR 13.4 |
@@ -844,7 +844,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Stone Axe | `stoneaxe` | unsupported | not_tested | not_tested | — |
 | Stone Edge | `stoneedge` | implemented | unit_tested | not_tested | PR 13.2 |
 | Stored Power | `storedpower` | unsupported | not_tested | not_tested | — |
-| Storm Throw | `stormthrow` | unsupported | not_tested | not_tested | — |
+| Storm Throw | `stormthrow` | implemented | differential_verified | unit_tested | PR 16.1 |
 | Strength Sap | `strengthsap` | unsupported | not_tested | not_tested | — |
 | String Shot | `stringshot` | implemented | unit_tested | not_tested | PR 13.3 |
 | Struggle Bug | `strugglebug` | implemented | unit_tested | not_tested | PR 13.4 |
