@@ -11,13 +11,13 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | --- | ---: | ---: | ---: | ---: |
 | ability | 215 | 123 | 92 | 0 |
 | item | 166 | 141 | 25 | 0 |
-| move | 510 | 244 | 0 | 266 |
+| move | 510 | 248 | 0 | 262 |
 
 ## Executable capability coverage
 
 | Total | Verified | Implemented | Partial | Unsupported |
 | ---: | ---: | ---: | ---: | ---: |
-| 72 | 13 | 21 | 21 | 17 |
+| 73 | 14 | 21 | 21 | 17 |
 
 `implemented` means the shared capability executes in its stated scope. `verified` additionally has qualifying pinned-reference evidence. Partial and unsupported capabilities continue to block dependent identities.
 
@@ -31,12 +31,12 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | `substitute_damage_routing` | unsupported | 18 | 18 | Resistance Berries cannot be promoted until damage and item activation distinguish Substitute damage from direct HP damage. |
 | `field_or_side_condition` | partial | 14 | 1 | Hazards, delayed effects, screens with special removal, and several side conditions are incomplete. |
 | `damage_event_lifecycle` | partial | 13 | 4 | Sturdy, Innards Out, Magic Guard, Liquid Ooze, and related effects need canonical event history. |
-| `switch_control` | unsupported | 12 | 7 | Pivoting, phazing, item-driven switches, and ability-driven switches do not share an end-to-end lifecycle. |
 | `form_change` | unsupported | 10 | 10 | Mega Evolution uses its verified dedicated capability; Stance Change, Hunger Switch, Zero to Hero, Transform, and other forms remain PR 18 scope. |
 | `ability_damage_modifiers` | partial | 9 | 0 | Several modifier identities are registered but not interaction-complete. |
 | `contact_effects` | partial | 9 | 9 | Several abilities and items depend on unimplemented volatile/status/faint consequences. |
 | `field_activation` | partial | 9 | 9 | Several setters exist, but entry and damage-triggered activation is not uniformly sequenced. |
 | `stat_event_lifecycle` | partial | 8 | 8 | Intimidate and other reactive boosts/drops are not complete across interactions. |
+| `switch_control` | unsupported | 8 | 3 | Pivoting, phazing, item-driven switches, and ability-driven switches do not share an end-to-end lifecycle. |
 | `item_lifecycle_consumers` | partial | 7 | 7 | Pickup, Magician, Pickpocket, Symbiosis, and future removal moves still require identity-specific timing coverage. |
 | `berry_effect_coverage` | partial | 5 | 4 | Confusion-curing and pinch-stat berries remain incomplete, so berry-dependent abilities are not interaction-complete for every reachable berry. |
 | `move_type_conversion` | partial | 5 | 5 | Aerilate-family and Champions conversion abilities are not interaction-complete. |
@@ -74,7 +74,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 
 - ability: 92 partial identities mapped; 0 currently unlocked.
 - item: 25 partial identities mapped; 0 currently unlocked.
-- move: 266 unsupported identities mapped; 0 currently unlocked.
+- move: 262 unsupported identities mapped; 0 currently unlocked.
 
 Mega Stones are executable through the verified dedicated `mega_eligibility`, `mega_timing`, `mega_form_change`, and `mega_ability_transition` capabilities. Generic `form_change` remains unsupported for non-Mega battle transformations.
 

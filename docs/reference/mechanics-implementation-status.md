@@ -20,7 +20,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | --- | ---: | ---: | ---: | ---: |
 | Abilities | 215 | 123 | 92 | 0 |
 | Items | 166 | 141 | 25 | 0 |
-| Moves | 510 | 244 | 0 | 266 |
+| Moves | 510 | 248 | 0 | 262 |
 
 ## Abilities
 
@@ -486,7 +486,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Charm | `charm` | implemented | unit_tested | not_tested | PR 13.3 |
 | Chilling Water | `chillingwater` | implemented | unit_tested | not_tested | PR 13.4 |
 | Chilly Reception | `chillyreception` | unsupported | not_tested | not_tested | — |
-| Circle Throw | `circlethrow` | unsupported | not_tested | not_tested | — |
+| Circle Throw | `circlethrow` | implemented | differential_verified | unit_tested | PR 16.2 |
 | Clanging Scales | `clangingscales` | implemented | unit_tested | not_tested | PR 13.4 |
 | Clangorous Soul | `clangoroussoul` | unsupported | not_tested | not_tested | — |
 | Clear Smog | `clearsmog` | unsupported | not_tested | not_tested | — |
@@ -532,7 +532,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Dragon Darts | `dragondarts` | unsupported | not_tested | not_tested | — |
 | Dragon Pulse | `dragonpulse` | implemented | differential_verified | not_tested | PR 9 |
 | Dragon Rush | `dragonrush` | unsupported | not_tested | not_tested | — |
-| Dragon Tail | `dragontail` | unsupported | not_tested | not_tested | — |
+| Dragon Tail | `dragontail` | implemented | differential_verified | unit_tested | PR 16.2 |
 | Draining Kiss | `drainingkiss` | implemented | unit_tested | not_tested | PR 13.4 |
 | Drain Punch | `drainpunch` | implemented | unit_tested | not_tested | PR 13.4 |
 | Drill Peck | `drillpeck` | implemented | unit_tested | not_tested | PR 13.2 |
@@ -772,7 +772,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Reversal | `reversal` | unsupported | not_tested | not_tested | — |
 | Revival Blessing | `revivalblessing` | unsupported | not_tested | not_tested | — |
 | Rising Voltage | `risingvoltage` | unsupported | not_tested | not_tested | — |
-| Roar | `roar` | unsupported | not_tested | not_tested | — |
+| Roar | `roar` | implemented | differential_verified | differential_verified | PR 16.2 |
 | Rock Blast | `rockblast` | implemented | unit_tested | not_tested | PR 13.4 |
 | Rock Polish | `rockpolish` | implemented | unit_tested | not_tested | PR 13.3 |
 | Rock Slide | `rockslide` | implemented | unit_tested | not_tested | PR 15.3 |
@@ -913,7 +913,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Wave Crash | `wavecrash` | implemented | unit_tested | not_tested | PR 13.4 |
 | Weather Ball | `weatherball` | unsupported | not_tested | not_tested | — |
 | Whirlpool | `whirlpool` | unsupported | not_tested | not_tested | — |
-| Whirlwind | `whirlwind` | unsupported | not_tested | not_tested | — |
+| Whirlwind | `whirlwind` | implemented | differential_verified | unit_tested | PR 16.2 |
 | Wide Guard | `wideguard` | unsupported | not_tested | not_tested | — |
 | Wild Charge | `wildcharge` | implemented | unit_tested | not_tested | PR 13.4 |
 | Will-O-Wisp | `willowisp` | implemented | differential_verified | differential_verified | PR 13.3.1 |

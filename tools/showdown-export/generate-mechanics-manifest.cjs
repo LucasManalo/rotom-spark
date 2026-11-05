@@ -7,6 +7,7 @@ const path = require('node:path');
 const {execFileSync} = require('node:child_process');
 const {
 	isPr131Supported, isPr132Supported, isPr133Supported, isPr134Supported, isPr161Supported,
+	isPr162Supported,
 	moveExecutionRequirements,
 } = require('./move-capabilities.cjs');
 
@@ -411,19 +412,20 @@ function entryWithCoverage(base, claims) {
 		pr_13_3_supported: pr133Supported = false,
 		pr_13_4_supported: pr134Supported = false,
 		pr_16_1_supported: pr161Supported = false,
+		pr_16_2_supported: pr162Supported = false,
 		...entry
 	} = base;
 	const key = `${base.kind}:${base.id}`;
 	const claim = claims.get(key);
-	const manifestMoveSmoke = base.kind === 'move' && pr161Supported;
+	const manifestMoveSmoke = base.kind === 'move' && pr162Supported;
 	const pr153FlinchMove = manifestMoveSmoke &&
 		base.required_capabilities?.includes('secondary_effect') &&
 		base.required_capabilities?.includes('volatile');
-	const automatic = pr161Supported ? {
+	const automatic = pr162Supported ? {
 		implementation: 'implemented',
 		verification: manifestMoveSmoke ? 'unit_tested' : 'not_tested',
 		interaction_verification: 'not_tested',
-		owner_pr: !pr134Supported ? 'PR 16.1' : pr153FlinchMove ? 'PR 15.3' :
+		owner_pr: !pr161Supported ? 'PR 16.2' : !pr134Supported ? 'PR 16.1' : pr153FlinchMove ? 'PR 15.3' :
 			pr131Supported ? 'PR 13.1' : pr132Supported ? 'PR 13.2' : pr133Supported ? 'PR 13.3' : 'PR 13.4',
 	} : defaultCoverage();
 	const coverage = claim ? {
@@ -436,7 +438,7 @@ function entryWithCoverage(base, claims) {
 		...entry,
 		evidence: uniqueSorted([
 			...(base.evidence || []),
-			...(pr161Supported ? [
+			...(pr162Supported ? [
 				'file:crates/rotom-core/src/combat.rs',
 				'file:crates/rotom-dex/src/combat.rs',
 			] : []),
@@ -523,6 +525,7 @@ function buildManifest(version, Showdown) {
 			pr_13_3_supported: isPr133Supported(move),
 			pr_13_4_supported: isPr134Supported(move),
 			pr_16_1_supported: isPr161Supported(move),
+			pr_16_2_supported: isPr162Supported(move),
 			pr_13_1_supported: isPr131Supported(move),
 		}, claims));
 		collectConditionReferences(move, `move/${id}`, conditions);
@@ -667,7 +670,7 @@ function buildManifest(version, Showdown) {
 	for (const claim of claims.values()) {
 		if (claim.kind !== 'move' || claim.implementation !== 'implemented') continue;
 		const move = dex.moves.get(claim.id);
-		if (!isPr161Supported(move)) {
+		if (!isPr162Supported(move)) {
 			fail(`Move ${claim.id} is claimed implemented but requires unsupported capabilities`);
 		}
 	}

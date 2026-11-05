@@ -242,6 +242,7 @@ function exportMoves(dex, validator) {
 			flags: sortedStrings(Object.keys(move.flags || {}).filter(flag => move.flags[flag])),
 			crit_ratio: move.critRatio || 1,
 			will_crit: Boolean(move.willCrit),
+			force_switch: Boolean(move.forceSwitch),
 			multi_hit: normalizeMultiHit(move.multihit),
 			multi_accuracy: Boolean(move.multiaccuracy),
 			drain: normalizeFraction(move.drain),

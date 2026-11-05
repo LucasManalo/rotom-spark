@@ -16294,13 +16294,20 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/move-phazing.json#circlethrow-naturalcure",
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-16-2-move-phazing.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#move_phazing_reuses_random_forced_switch_and_preserves_the_queue",
         "species/grapploct",
         "species/heracross",
         "species/kangaskhan",
         "species/lopunny",
         "species/lucario",
         "species/pangoro",
-        "species/pinsir"
+        "species/pinsir",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case",
+        "unit:crates/rotom-dex/tests/combat.rs#move_phazing_reuses_random_forced_switch_and_preserves_the_queue"
       ],
       "effect_families": [
         "damage",
@@ -16311,16 +16318,16 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "switch_control",
         "protection",
         "redirection",
         "retargeting",
-        "per_target_hit"
+        "per_target_hit",
+        "force_target_switch"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 16.2"
     },
     {
       "id": "clangingscales",
@@ -18801,6 +18808,11 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/move-phazing.json#dragontail-naturalcure",
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-16-2-move-phazing.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#move_phazing_reuses_random_forced_switch_and_preserves_the_queue",
         "species/ampharos",
         "species/appletun",
         "species/arbok",
@@ -18833,7 +18845,9 @@
         "species/serperior",
         "species/steelix",
         "species/tyranitar",
-        "species/tyrantrum"
+        "species/tyrantrum",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case",
+        "unit:crates/rotom-dex/tests/combat.rs#move_phazing_reuses_random_forced_switch_and_preserves_the_queue"
       ],
       "effect_families": [
         "damage",
@@ -18844,16 +18858,16 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "switch_control",
         "protection",
         "redirection",
         "retargeting",
-        "per_target_hit"
+        "per_target_hit",
+        "force_target_switch"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 16.2"
     },
     {
       "id": "drainingkiss",
@@ -33419,6 +33433,12 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/move-phazing.json#roar-naturalcure",
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-16-2-move-phazing.md",
+        "interaction_differential:data/fixtures/differential/move-phazing.json#roar-suctioncups",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#move_phazing_reuses_random_forced_switch_and_preserves_the_queue",
         "species/aerodactyl",
         "species/aggron",
         "species/altaria",
@@ -33488,7 +33508,9 @@
         "species/venusaur",
         "species/wyrdeer",
         "species/zoroark",
-        "species/zoroarkhisui"
+        "species/zoroarkhisui",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case",
+        "unit:crates/rotom-dex/tests/combat.rs#move_phazing_reuses_random_forced_switch_and_preserves_the_queue"
       ],
       "effect_families": [
         "status_move",
@@ -33499,12 +33521,12 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "switch_control"
+        "force_target_switch"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 16.2"
     },
     {
       "id": "rockblast",
@@ -42748,6 +42770,11 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/move-phazing.json#whirlwind-naturalcure",
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-16-2-move-phazing.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#move_phazing_reuses_random_forced_switch_and_preserves_the_queue",
         "species/aerodactyl",
         "species/dragonite",
         "species/drampa",
@@ -42778,7 +42805,9 @@
         "species/vivillonsavanna",
         "species/vivillonsun",
         "species/vivillontundra",
-        "species/volcarona"
+        "species/volcarona",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case",
+        "unit:crates/rotom-dex/tests/combat.rs#move_phazing_reuses_random_forced_switch_and_preserves_the_queue"
       ],
       "effect_families": [
         "status_move",
@@ -42789,12 +42818,12 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "switch_control"
+        "force_target_switch"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 16.2"
     },
     {
       "id": "wideguard",
@@ -48726,19 +48755,19 @@
       "move": {
         "total": 510,
         "implementation": {
-          "unsupported": 266,
+          "unsupported": 262,
           "partial": 0,
-          "implemented": 244
+          "implemented": 248
         },
         "verification": {
-          "not_tested": 266,
+          "not_tested": 262,
           "unit_tested": 218,
-          "differential_verified": 26
+          "differential_verified": 30
         },
         "interaction_verification": {
-          "not_tested": 489,
-          "unit_tested": 6,
-          "differential_verified": 15
+          "not_tested": 485,
+          "unit_tested": 9,
+          "differential_verified": 16
         },
         "reachability": {
           "direct_legal_set": 510,

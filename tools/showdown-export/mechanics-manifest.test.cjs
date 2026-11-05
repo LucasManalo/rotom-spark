@@ -128,10 +128,10 @@ test('move support is derived from complete executor capabilities', () => {
 	);
 	assert.equal(dragonClaw.implementation, 'implemented');
 	assert.equal(dragonClaw.owner_pr, 'PR 13.1');
-	assert.equal(manifest.summary.by_kind.move.implementation.implemented, 244);
+	assert.equal(manifest.summary.by_kind.move.implementation.implemented, 248);
 	assert.deepEqual(
 		manifest.summary.by_kind.move.verification,
-		{not_tested: 266, unit_tested: 218, differential_verified: 26}
+		{not_tested: 262, unit_tested: 218, differential_verified: 30}
 	);
 	const implementedMoves = manifest.entries.filter(candidate =>
 		candidate.kind === 'move' && candidate.implementation === 'implemented'
@@ -142,7 +142,7 @@ test('move support is derived from complete executor capabilities', () => {
 	));
 	assert.deepEqual(
 		manifest.summary.by_kind.move.interaction_verification,
-		{not_tested: 489, unit_tested: 6, differential_verified: 15}
+		{not_tested: 485, unit_tested: 9, differential_verified: 16}
 	);
 	assert.equal(entry('move', 'magnetrise').implementation, 'implemented');
 	assert.equal(entry('move', 'magnetrise').verification, 'differential_verified');

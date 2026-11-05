@@ -307,6 +307,7 @@ mod tests {
                 accuracy: MoveAccuracy::Always,
                 crit_ratio: 0,
                 critical_behavior: crate::CriticalBehavior::Roll,
+                switch_effect: crate::SwitchEffect::None,
                 target: MoveTarget::Normal,
                 operation: MoveOperation::StandardDamage,
                 required_capabilities: MoveCapabilities::PR_13_1,

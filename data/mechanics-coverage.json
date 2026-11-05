@@ -5427,6 +5427,63 @@
         "differential:data/fixtures/differential/guaranteed-critical.json#storm-throw-guaranteed-critical",
         "interaction_unit:crates/rotom-dex/tests/combat.rs#guaranteed_critical_moves_skip_critical_rng_and_respect_prevention"
       ]
+    },
+    {
+      "id": "circlethrow",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 16.2",
+      "evidence": [
+        "file:docs/research/pr-16-2-move-phazing.md",
+        "unit:crates/rotom-dex/tests/combat.rs#move_phazing_reuses_random_forced_switch_and_preserves_the_queue",
+        "differential:data/fixtures/differential/move-phazing.json#circlethrow-naturalcure",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#move_phazing_reuses_random_forced_switch_and_preserves_the_queue"
+      ]
+    },
+    {
+      "id": "dragontail",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 16.2",
+      "evidence": [
+        "file:docs/research/pr-16-2-move-phazing.md",
+        "unit:crates/rotom-dex/tests/combat.rs#move_phazing_reuses_random_forced_switch_and_preserves_the_queue",
+        "differential:data/fixtures/differential/move-phazing.json#dragontail-naturalcure",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#move_phazing_reuses_random_forced_switch_and_preserves_the_queue"
+      ]
+    },
+    {
+      "id": "roar",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 16.2",
+      "evidence": [
+        "file:docs/research/pr-16-2-move-phazing.md",
+        "unit:crates/rotom-dex/tests/combat.rs#move_phazing_reuses_random_forced_switch_and_preserves_the_queue",
+        "differential:data/fixtures/differential/move-phazing.json#roar-naturalcure",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#move_phazing_reuses_random_forced_switch_and_preserves_the_queue",
+        "interaction_differential:data/fixtures/differential/move-phazing.json#roar-suctioncups"
+      ]
+    },
+    {
+      "id": "whirlwind",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 16.2",
+      "evidence": [
+        "file:docs/research/pr-16-2-move-phazing.md",
+        "unit:crates/rotom-dex/tests/combat.rs#move_phazing_reuses_random_forced_switch_and_preserves_the_queue",
+        "differential:data/fixtures/differential/move-phazing.json#whirlwind-naturalcure",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#move_phazing_reuses_random_forced_switch_and_preserves_the_queue"
+      ]
     }
   ]
 }

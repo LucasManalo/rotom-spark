@@ -1,0 +1,57 @@
+{
+  "showdown_commit": "b79ce06d06b8f0dc8de8bb348bc9cab5d931553f",
+  "format": "gen9championsvgc2026regmc",
+  "methodology": {
+    "source": "complete pinned Showdown doubles turns using move forceSwitch and DragOut prevention",
+    "move_execution": true,
+    "reference_derived_assertions": true,
+    "full_state_differential_comparison": false
+  },
+  "cases": [
+    {
+      "id": "circlethrow-naturalcure",
+      "move": "circlethrow",
+      "target_ability": "naturalcure",
+      "original_active": false,
+      "active_species": "feebas",
+      "forced_switch": true,
+      "request_state": "move"
+    },
+    {
+      "id": "dragontail-naturalcure",
+      "move": "dragontail",
+      "target_ability": "naturalcure",
+      "original_active": false,
+      "active_species": "feebas",
+      "forced_switch": true,
+      "request_state": "move"
+    },
+    {
+      "id": "roar-naturalcure",
+      "move": "roar",
+      "target_ability": "naturalcure",
+      "original_active": false,
+      "active_species": "wishiwashi",
+      "forced_switch": true,
+      "request_state": "move"
+    },
+    {
+      "id": "whirlwind-naturalcure",
+      "move": "whirlwind",
+      "target_ability": "naturalcure",
+      "original_active": false,
+      "active_species": "wishiwashi",
+      "forced_switch": true,
+      "request_state": "move"
+    },
+    {
+      "id": "roar-suctioncups",
+      "move": "roar",
+      "target_ability": "suctioncups",
+      "original_active": true,
+      "active_species": "blissey",
+      "forced_switch": false,
+      "request_state": "move"
+    }
+  ]
+}

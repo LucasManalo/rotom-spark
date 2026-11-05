@@ -18,6 +18,7 @@ const CAPABILITIES = {
 	healing: implemented('Ordinary direct healing', ['fractional healing', 'full-HP failure'], 'Weather-dependent and delayed healing remain separate.', ['showdown:sim/battle.ts:Battle.heal']),
 	field_or_side_condition: partial('Field, side, and slot condition lifecycle', ['weather', 'terrain', 'side conditions', 'durations'], 'Hazards, delayed effects, screens with special removal, and several side conditions are incomplete.', ['showdown:sim/field.ts:Field.addPseudoWeather', 'showdown:sim/side.ts:Side.addSideCondition']),
 	switch_control: unsupported('Mid-turn switch control', ['switch request', 'queue preservation', 'replacement choice', 'entry/exit sequencing'], 'Pivoting, phazing, item-driven switches, and ability-driven switches do not share an end-to-end lifecycle.', ['showdown:sim/battle-actions.ts:BattleActions.runSwitch', 'showdown:sim/battle.ts:Battle.checkFainted']),
+	force_target_switch: verified('Move-driven random phazing', ['successful hit', 'living source and target', 'available reserve', 'DragOut prevention', 'random replacement', 'queue preservation'], 'Circle Throw, Dragon Tail, Roar, and Whirlwind reuse the shared forced-switch lifecycle.', ['showdown:sim/battle-actions.ts:BattleActions.forceSwitch', 'showdown:data/abilities.ts:Abilities.suctioncups']),
 	calls_move: unsupported('Move calling and copying', ['source selection', 'legality filters', 'history lookup'], 'Copycat, Sleep Talk, and other callers are not executable.', ['showdown:sim/battle-actions.ts:BattleActions.useMove']),
 	custom_callback: unsupported('Move-specific callback orchestration', ['callback predicates', 'hook ordering', 'failure semantics'], 'Resolved Showdown callbacks are recognized but not generically executable.', ['showdown:sim/battle-actions.ts:BattleActions.runMove']),
 	special_behavior: unsupported('Exceptional move behavior', ['intrinsic flags', 'special properties', 'history predicates'], 'The move requires semantics outside the currently supported declarative executor.', ['showdown:data/moves.ts:Moves']),
@@ -213,6 +214,11 @@ Object.assign(CAPABILITIES.move_history, {
 Object.assign(CAPABILITIES.guaranteed_critical, {
 	tests: ['unit:crates/rotom-dex/tests/combat.rs#guaranteed_critical_moves_skip_critical_rng_and_respect_prevention'],
 	differential_fixtures: ['differential:data/fixtures/differential/guaranteed-critical.json#flower-trick-guaranteed-critical'],
+});
+
+Object.assign(CAPABILITIES.force_target_switch, {
+	tests: ['unit:crates/rotom-dex/tests/combat.rs#move_phazing_reuses_random_forced_switch_and_preserves_the_queue'],
+	differential_fixtures: ['differential:data/fixtures/differential/move-phazing.json#roar-naturalcure'],
 });
 
 for (const id of ['mega_eligibility', 'mega_timing', 'mega_form_change', 'mega_ability_transition']) {

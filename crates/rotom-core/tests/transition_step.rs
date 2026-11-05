@@ -36,6 +36,7 @@ impl CombatData for TestData {
             accuracy: MoveAccuracy::Always,
             crit_ratio: 0,
             critical_behavior: rotom_core::CriticalBehavior::Roll,
+            switch_effect: rotom_core::SwitchEffect::None,
             target: self.target,
             operation: MoveOperation::StandardDamage,
             required_capabilities: self.required_capabilities,

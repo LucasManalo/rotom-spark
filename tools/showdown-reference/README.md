@@ -140,3 +140,11 @@ pinned maximum-roll damage for Flower Trick, Frost Breath, and Storm Throw:
 node tools/showdown-reference/guaranteed-critical.cjs
 node tools/showdown-reference/guaranteed-critical.cjs --check
 ```
+
+PR 16.2 records complete-turn target phazing and Suction Cups prevention for
+Circle Throw, Dragon Tail, Roar, and Whirlwind:
+
+```text
+node tools/showdown-reference/move-phazing.cjs
+node tools/showdown-reference/move-phazing.cjs --check
+```

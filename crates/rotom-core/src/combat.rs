@@ -55,6 +55,14 @@ pub enum CriticalBehavior {
     Guaranteed,
 }
 
+#[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum SwitchEffect {
+    #[default]
+    None,
+    ForceTargetRandom,
+}
+
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum MoveAccuracy {
@@ -194,10 +202,11 @@ pub enum MoveCapability {
     ConditionalPower = 1 << 26,
     EffectiveStatOverride = 1 << 27,
     GuaranteedCritical = 1 << 28,
+    ForceTargetSwitch = 1 << 29,
 }
 
 impl MoveCapability {
-    const ALL: [Self; 29] = [
+    const ALL: [Self; 30] = [
         Self::StandardDamage,
         Self::SelectedSingleTarget,
         Self::Accuracy,
@@ -227,6 +236,7 @@ impl MoveCapability {
         Self::ConditionalPower,
         Self::EffectiveStatOverride,
         Self::GuaranteedCritical,
+        Self::ForceTargetSwitch,
     ];
 }
 
@@ -262,6 +272,7 @@ impl fmt::Display for MoveCapability {
             Self::ConditionalPower => "conditional_power",
             Self::EffectiveStatOverride => "effective_stat_override",
             Self::GuaranteedCritical => "guaranteed_critical",
+            Self::ForceTargetSwitch => "force_target_switch",
         };
         formatter.write_str(name)
     }
@@ -310,6 +321,7 @@ impl MoveCapabilities {
             | MoveCapability::EffectiveStatOverride as u32,
     );
     pub const PR_16_1: Self = Self(Self::PR_13_4.0 | MoveCapability::GuaranteedCritical as u32);
+    pub const PR_16_2: Self = Self(Self::PR_16_1.0 | MoveCapability::ForceTargetSwitch as u32);
 
     #[must_use]
     pub const fn with(self, capability: MoveCapability) -> Self {
@@ -472,6 +484,7 @@ pub struct CombatMove {
     pub accuracy: MoveAccuracy,
     pub crit_ratio: u8,
     pub critical_behavior: CriticalBehavior,
+    pub switch_effect: SwitchEffect,
     pub target: MoveTarget,
     pub operation: MoveOperation,
     pub required_capabilities: MoveCapabilities,
@@ -2198,6 +2211,7 @@ impl BattleState {
                 {
                     self.remove_held_item(data, target)?;
                 }
+                self.request_force_switch(data, move_context, target)?;
                 if fainted {
                     self.settle_faint(
                         effects,
@@ -2958,6 +2972,15 @@ impl BattleState {
         field_effects: &FieldEffectIds,
         resolution: &mut TurnResolution,
     ) -> Result<(), BattleError> {
+        if move_context.move_data.switch_effect == SwitchEffect::ForceTargetRandom {
+            return self.execute_force_switch_status(
+                data,
+                move_context,
+                effects,
+                field_effects,
+                resolution,
+            );
+        }
         if !move_context.primary_effects.is_empty() {
             return self.execute_declarative_non_damage(
                 data,
@@ -3093,6 +3116,116 @@ impl BattleState {
             fainted: false,
         });
         Ok(())
+    }
+
+    fn execute_force_switch_status<D: CombatData>(
+        &mut self,
+        data: &D,
+        context: &MoveExecutionContext,
+        effects: &EffectRegistry,
+        field_effects: &FieldEffectIds,
+        resolution: &mut TurnResolution,
+    ) -> Result<(), BattleError> {
+        let HitLifecycle {
+            eligible,
+            mut outcomes,
+        } = self.resolve_hit_lifecycle(data, context, effects, field_effects, false, resolution)?;
+        let mut succeeded = false;
+        for (index, target) in eligible {
+            let event_context = EventContext {
+                source: Some(context.source),
+                target: Some(target.target),
+                move_id: Some(context.move_id),
+                move_category: Some(context.move_data.category),
+                move_type: Some(context.move_data.move_type),
+                move_flags: context.move_data.interaction_flags,
+                suppress_target_ability: context.suppress_target_ability,
+                ..EventContext::default()
+            };
+            resolution.events.push(effects.dispatch(
+                self,
+                BattleEvent::Hit,
+                event_context,
+                EventValue::None,
+            )?);
+            let switched = self.request_force_switch(data, context, target.target)?;
+            succeeded |= switched;
+            outcomes[index] = Some(TargetOutcome {
+                source: context.source,
+                move_id: context.move_id,
+                target: target.target,
+                redirected: target.redirected,
+                result: if switched {
+                    TargetResult::Hit
+                } else {
+                    TargetResult::Cancelled
+                },
+                calculated_damage: 0,
+                applied_hp_loss: 0,
+                fainted: false,
+            });
+        }
+        resolution
+            .target_outcomes
+            .extend(outcomes.into_iter().flatten());
+        resolution.actions.push(if succeeded {
+            ResolvedAction::Used {
+                side: context.queued.side,
+                slot: context.queued.slot,
+                move_slot: context.queued.move_slot,
+            }
+        } else {
+            ResolvedAction::Skipped {
+                side: context.queued.side,
+                slot: context.queued.slot,
+            }
+        });
+        Ok(())
+    }
+
+    fn request_force_switch<D: CombatData>(
+        &mut self,
+        data: &D,
+        context: &MoveExecutionContext,
+        target: PokemonRef,
+    ) -> Result<bool, BattleError> {
+        if context.move_data.switch_effect != SwitchEffect::ForceTargetRandom {
+            return Ok(false);
+        }
+        let source_living = self
+            .side(context.source.side)
+            .pokemon(context.source.pokemon)
+            .is_some_and(|pokemon| !pokemon.is_fainted());
+        let target_living = self
+            .side(target.side)
+            .pokemon(target.pokemon)
+            .is_some_and(|pokemon| !pokemon.is_fainted());
+        let has_replacement = self
+            .side(target.side)
+            .selected_team
+            .iter()
+            .copied()
+            .any(|index| {
+                self.side(target.side)
+                    .pokemon(index)
+                    .is_some_and(|pokemon| {
+                        !pokemon.is_fainted() && pokemon.position == crate::PokemonPosition::Team
+                    })
+            });
+        let blocked = !context.suppress_target_ability
+            && self
+                .side(target.side)
+                .pokemon(target.pokemon)
+                .is_some_and(|pokemon| {
+                    data.ability_has_behavior(
+                        pokemon.ability,
+                        crate::AbilityBehavior::PreventsForcedSwitch,
+                    )
+                });
+        if !source_living || !target_living || !has_replacement || blocked {
+            return Ok(false);
+        }
+        StateKernel::new(self).request_switch(target, crate::SwitchRequestKind::Random)
     }
 
     fn execute_item_swap<D: CombatData>(
@@ -5576,7 +5709,7 @@ fn preflight_move(
 ) -> Result<(), BattleError> {
     if let Some(missing) = move_data
         .required_capabilities
-        .first_missing_from(MoveCapabilities::PR_16_1)
+        .first_missing_from(MoveCapabilities::PR_16_2)
     {
         return Err(BattleError::UnsupportedMechanic(format!(
             "move {move_id} requires unsupported capability {missing}"
@@ -5660,7 +5793,9 @@ fn preflight_move(
     let valid_intrinsic = move_data.operation == MoveOperation::NonDamage
         && move_data.category == MoveCategory::Status
         && move_data.base_power == 0
-        && (intrinsic != MoveIntrinsic::Ordinary || !primary_effects.is_empty());
+        && (intrinsic != MoveIntrinsic::Ordinary
+            || !primary_effects.is_empty()
+            || move_data.switch_effect != SwitchEffect::None);
     if !valid_damage && !valid_fixed && !valid_intrinsic {
         return Err(BattleError::DataMismatch(format!(
             "move {move_id} declares inconsistent operation metadata"
@@ -5792,6 +5927,7 @@ mod tests {
             accuracy: MoveAccuracy::Percent { value: 100 },
             crit_ratio: 1,
             critical_behavior: CriticalBehavior::Roll,
+            switch_effect: SwitchEffect::None,
             target: MoveTarget::Normal,
             operation: MoveOperation::StandardDamage,
             required_capabilities: MoveCapabilities::PR_13_1,

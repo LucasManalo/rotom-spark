@@ -1022,6 +1022,53 @@ fn red_card_uses_forced_switch_rng_and_suction_cups_blocks_only_the_drag() {
 }
 
 #[test]
+fn move_phazing_reuses_random_forced_switch_and_preserves_the_queue() {
+    let dex = champions_reg_mc().unwrap();
+    let fixture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../data/fixtures/differential/move-phazing.json"
+    ))
+    .unwrap();
+    assert_eq!(fixture["showdown_commit"], SHOWDOWN_COMMIT);
+    assert_eq!(
+        fixture["methodology"]["full_state_differential_comparison"],
+        false
+    );
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+
+    for case in fixture["cases"].as_array().unwrap() {
+        let move_name = case["move"].as_str().unwrap();
+        let target_ability = case["target_ability"].as_str().unwrap();
+        let source = set_with_moves(&dex, "aerodactyl", "noguard", &[move_name]);
+        let target = set_with_moves(&dex, "blissey", target_ability, &["swordsdance"]);
+        let mut battle = selected_primary_battle(&dex, &source, &target, 0x16_02);
+        battle.enable_rng_trace();
+        let replay: BattleState = serde_json::from_str(&serde_json::to_string(&battle).unwrap())
+            .expect("serialized phazing input");
+        let action = single_move_action(0, ActionTarget::Foe(ActiveSlot::Left));
+        let result = step(&battle, &action, &mechanics).unwrap();
+        assert_eq!(result, step(&replay, &action, &mechanics).unwrap());
+
+        let forced = result.state.side(SideId::P2).active[ActiveSlot::Left.index()]
+            != Some(PokemonIndex::new(0));
+        assert_eq!(
+            forced,
+            case["forced_switch"].as_bool().unwrap(),
+            "{move_name}"
+        );
+        assert_eq!(result.state.phase(), BattlePhase::TurnSelection);
+        let drew_switch = result
+            .state
+            .rng()
+            .trace()
+            .unwrap()
+            .iter()
+            .any(|entry| entry.reason == RngReason::ForcedSwitch);
+        assert_eq!(drew_switch, forced, "{move_name}");
+        assert!(result.state.queue().actions.is_empty(), "{move_name}");
+    }
+}
+
+#[test]
 #[allow(clippy::too_many_lines)]
 fn primary_non_damage_operations_share_the_canonical_executor() {
     let dex = champions_reg_mc().unwrap();
@@ -7382,8 +7429,8 @@ fn mechanics_manifest_drives_every_move_capability_and_execution_smoke_case() {
         .iter()
         .filter(|entry| entry.implementation == "unsupported")
         .count();
-    assert_eq!(implemented, 244);
-    assert_eq!(unsupported, 266);
+    assert_eq!(implemented, 248);
+    assert_eq!(unsupported, 262);
 
     for entry in moves {
         let move_id = dex
@@ -7394,7 +7441,7 @@ fn mechanics_manifest_drives_every_move_capability_and_execution_smoke_case() {
             .unwrap_or_else(|| panic!("manifest move {} missing combat data", entry.id));
         let missing = move_data
             .required_capabilities
-            .first_missing_from(MoveCapabilities::PR_16_1);
+            .first_missing_from(MoveCapabilities::PR_16_2);
         let target = representative_action_target(move_data.target);
 
         match entry.implementation.as_str() {

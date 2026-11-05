@@ -6,7 +6,8 @@ use rotom_core::{
     MoveAccuracy, MoveCapabilities, MoveCapability, MoveCategory, MoveId, MoveIntrinsic,
     MoveOperation, MoveSlot, MoveTarget, PokemonPosition, PokemonSet, PokemonState, PokemonType,
     PokemonTypes, PrimaryMoveEffect, PriorMoveEffect, SecondaryMoveEffect, SelfMoveEffect,
-    SpeciesId, StatAllocation, StatStages, StatusState, TerrainEnvironment, WeatherEnvironment,
+    SpeciesId, StatAllocation, StatStages, StatusState, SwitchEffect, TerrainEnvironment,
+    WeatherEnvironment,
 };
 
 impl CombatData for DexData {
@@ -26,6 +27,11 @@ impl CombatData for DexData {
                 CriticalBehavior::Guaranteed
             } else {
                 CriticalBehavior::Roll
+            },
+            switch_effect: if data.force_switch {
+                SwitchEffect::ForceTargetRandom
+            } else {
+                SwitchEffect::None
             },
             target: data.target,
             operation,
@@ -1878,7 +1884,11 @@ fn behavior_capabilities(data: &MoveData, mut required: MoveCapabilities) -> Mov
         .effect_kinds
         .contains(&MoveBehaviorKind::SwitchControl)
     {
-        required = required.with(MoveCapability::SwitchControl);
+        required = required.with(if data.force_switch {
+            MoveCapability::ForceTargetSwitch
+        } else {
+            MoveCapability::SwitchControl
+        });
     }
     let has_unsupported_callback = data.behavior.callbacks.iter().any(|callback| {
         !((data.id == "magnetrise" && callback == "onTry")
