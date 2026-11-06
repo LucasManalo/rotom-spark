@@ -5484,6 +5484,22 @@
         "differential:data/fixtures/differential/move-phazing.json#whirlwind-naturalcure",
         "interaction_unit:crates/rotom-dex/tests/combat.rs#move_phazing_reuses_random_forced_switch_and_preserves_the_queue"
       ]
+    },
+    {
+      "id": "freezedry",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 16.3",
+      "evidence": [
+        "file:docs/research/pr-16-3-freeze-dry.md",
+        "unit:crates/rotom-dex/tests/combat.rs#freeze_dry_overrides_only_water_effectiveness_in_the_shared_damage_path",
+        "differential:data/fixtures/differential/freeze-dry.json#freeze-dry-vaporeon",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#freeze_dry_overrides_only_water_effectiveness_in_the_shared_damage_path",
+        "interaction_differential:data/fixtures/differential/freeze-dry.json#freeze-dry-kingdra",
+        "interaction_differential:data/fixtures/differential/freeze-dry.json#freeze-dry-lapras"
+      ]
     }
   ]
 }

@@ -1,0 +1,78 @@
+{
+  "showdown_commit": "b79ce06d06b8f0dc8de8bb348bc9cab5d931553f",
+  "format": "gen9championsvgc2026regmc",
+  "methodology": {
+    "source": "pinned Freeze-Dry onEffectiveness callback plus complete Showdown doubles turns",
+    "move_execution": true,
+    "reference_derived_assertions": true,
+    "full_state_differential_comparison": false
+  },
+  "cases": [
+    {
+      "id": "freeze-dry-vaporeon",
+      "move": "freezedry",
+      "target_species": "vaporeon",
+      "target_types": [
+        {
+          "type": "Water",
+          "ordinary": -1,
+          "freeze_dry": 1
+        }
+      ],
+      "combined_type_modifier": 1,
+      "hp_loss": 114
+    },
+    {
+      "id": "freeze-dry-kingdra",
+      "move": "freezedry",
+      "target_species": "kingdra",
+      "target_types": [
+        {
+          "type": "Water",
+          "ordinary": -1,
+          "freeze_dry": 1
+        },
+        {
+          "type": "Dragon",
+          "ordinary": 1,
+          "freeze_dry": 1
+        }
+      ],
+      "combined_type_modifier": 2,
+      "hp_loss": 150
+    },
+    {
+      "id": "freeze-dry-lapras",
+      "move": "freezedry",
+      "target_species": "lapras",
+      "target_types": [
+        {
+          "type": "Water",
+          "ordinary": -1,
+          "freeze_dry": 1
+        },
+        {
+          "type": "Ice",
+          "ordinary": -1,
+          "freeze_dry": -1
+        }
+      ],
+      "combined_type_modifier": 0,
+      "hp_loss": 61
+    },
+    {
+      "id": "freeze-dry-snorlax",
+      "move": "freezedry",
+      "target_species": "snorlax",
+      "target_types": [
+        {
+          "type": "Normal",
+          "ordinary": 0,
+          "freeze_dry": 0
+        }
+      ],
+      "combined_type_modifier": 0,
+      "hp_loss": 46
+    }
+  ]
+}

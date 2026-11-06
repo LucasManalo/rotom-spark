@@ -128,6 +128,7 @@ impl CombatData for DexData {
             Some("ragepowder") => MoveIntrinsic::RagePowder,
             Some("knockoff") => MoveIntrinsic::KnockOff,
             Some("trick" | "switcheroo") => MoveIntrinsic::ItemSwap,
+            Some("freezedry") => MoveIntrinsic::FreezeDry,
             _ => MoveIntrinsic::Ordinary,
         }
     }
@@ -1793,6 +1794,9 @@ fn move_execution_requirements(data: &MoveData) -> (MoveOperation, MoveCapabilit
     if data.will_crit {
         required = required.with(MoveCapability::GuaranteedCritical);
     }
+    if data.id == "freezedry" {
+        required = required.with(MoveCapability::UniqueTypeEffectiveness);
+    }
     if data.override_offensive_stat.is_some()
         || data.override_defensive_stat.is_some()
         || data.ignore_negative_offensive
@@ -1894,6 +1898,7 @@ fn behavior_capabilities(data: &MoveData, mut required: MoveCapabilities) -> Mov
         !((data.id == "magnetrise" && callback == "onTry")
             || (data.id == "facade" && callback == "onBasePower")
             || (data.id == "knockoff" && matches!(callback.as_str(), "onBasePower" | "onAfterHit"))
+            || (data.id == "freezedry" && callback == "onEffectiveness")
             || (matches!(data.id.as_str(), "trick" | "switcheroo")
                 && matches!(callback.as_str(), "onHit" | "onTryImmunity")))
     });

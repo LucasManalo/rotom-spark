@@ -203,10 +203,11 @@ pub enum MoveCapability {
     EffectiveStatOverride = 1 << 27,
     GuaranteedCritical = 1 << 28,
     ForceTargetSwitch = 1 << 29,
+    UniqueTypeEffectiveness = 1 << 30,
 }
 
 impl MoveCapability {
-    const ALL: [Self; 30] = [
+    const ALL: [Self; 31] = [
         Self::StandardDamage,
         Self::SelectedSingleTarget,
         Self::Accuracy,
@@ -237,6 +238,7 @@ impl MoveCapability {
         Self::EffectiveStatOverride,
         Self::GuaranteedCritical,
         Self::ForceTargetSwitch,
+        Self::UniqueTypeEffectiveness,
     ];
 }
 
@@ -273,6 +275,7 @@ impl fmt::Display for MoveCapability {
             Self::EffectiveStatOverride => "effective_stat_override",
             Self::GuaranteedCritical => "guaranteed_critical",
             Self::ForceTargetSwitch => "force_target_switch",
+            Self::UniqueTypeEffectiveness => "unique_type_effectiveness",
         };
         formatter.write_str(name)
     }
@@ -322,6 +325,8 @@ impl MoveCapabilities {
     );
     pub const PR_16_1: Self = Self(Self::PR_13_4.0 | MoveCapability::GuaranteedCritical as u32);
     pub const PR_16_2: Self = Self(Self::PR_16_1.0 | MoveCapability::ForceTargetSwitch as u32);
+    pub const PR_16_3: Self =
+        Self(Self::PR_16_2.0 | MoveCapability::UniqueTypeEffectiveness as u32);
 
     #[must_use]
     pub const fn with(self, capability: MoveCapability) -> Self {
@@ -596,6 +601,7 @@ pub enum MoveIntrinsic {
     RagePowder,
     KnockOff,
     ItemSwap,
+    FreezeDry,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -2076,6 +2082,7 @@ impl BattleState {
                 sheer_force_boosted: move_context.sheer_force_boosted,
                 type_effectiveness: self.target_type_effectiveness(
                     data,
+                    move_context.move_id,
                     move_context.move_data,
                     move_context.source,
                     target,
@@ -2620,6 +2627,7 @@ impl BattleState {
                 move_flags: context.move_data.interaction_flags,
                 type_effectiveness: self.target_type_effectiveness(
                     data,
+                    context.move_id,
                     context.move_data,
                     context.source,
                     target_context.target,
@@ -2843,6 +2851,7 @@ impl BattleState {
             if check_type_immunity
                 && self.target_is_type_immune(
                     data,
+                    move_context.move_id,
                     move_context.move_data,
                     move_context.source,
                     target_context.target,
@@ -3052,7 +3061,8 @@ impl BattleState {
                     MoveIntrinsic::Ordinary
                     | MoveIntrinsic::Protect
                     | MoveIntrinsic::KnockOff
-                    | MoveIntrinsic::ItemSwap => None,
+                    | MoveIntrinsic::ItemSwap
+                    | MoveIntrinsic::FreezeDry => None,
                 }
                 .ok_or_else(|| {
                     BattleError::DataMismatch(
@@ -3074,7 +3084,10 @@ impl BattleState {
                 }
                 doubles_active
             }
-            MoveIntrinsic::Ordinary | MoveIntrinsic::KnockOff | MoveIntrinsic::ItemSwap => {
+            MoveIntrinsic::Ordinary
+            | MoveIntrinsic::KnockOff
+            | MoveIntrinsic::ItemSwap
+            | MoveIntrinsic::FreezeDry => {
                 return Err(BattleError::UnsupportedMechanic(format!(
                     "move {} has no supported non-damage intrinsic",
                     move_context.move_id
@@ -4068,6 +4081,7 @@ impl BattleState {
     fn target_is_type_immune<D: CombatData>(
         &self,
         data: &D,
+        move_id: MoveId,
         move_data: CombatMove,
         source: PokemonRef,
         target: PokemonRef,
@@ -4080,13 +4094,14 @@ impl BattleState {
             .pokemon_types(target.species, target.form)
             .ok_or_else(|| BattleError::DataMismatch("missing immunity target types".to_owned()))?;
         Ok(self
-            .type_modifier_for_source(data, move_data.move_type, source, types)?
+            .type_modifier_for_source(data, move_id, move_data.move_type, source, types)?
             .is_none())
     }
 
     fn target_type_effectiveness<D: CombatData>(
         &self,
         data: &D,
+        move_id: MoveId,
         move_data: CombatMove,
         source: PokemonRef,
         target: PokemonRef,
@@ -4098,12 +4113,13 @@ impl BattleState {
         let types = data
             .pokemon_types(target.species, target.form)
             .ok_or_else(|| BattleError::DataMismatch("missing damage target types".to_owned()))?;
-        self.type_modifier_for_source(data, move_data.move_type, source, types)
+        self.type_modifier_for_source(data, move_id, move_data.move_type, source, types)
     }
 
     fn type_modifier_for_source<D: CombatData>(
         &self,
         data: &D,
+        move_id: MoveId,
         attacking: PokemonType,
         source: PokemonRef,
         defending: PokemonTypes,
@@ -4114,7 +4130,13 @@ impl BattleState {
             .is_some_and(|pokemon| {
                 data.ability_has_behavior(pokemon.ability, crate::AbilityBehavior::Scrappy)
             });
-        combined_type_modifier_with_scrappy(data, attacking, defending, scrappy)
+        combined_type_modifier_for_intrinsic(
+            data,
+            attacking,
+            defending,
+            scrappy,
+            data.move_intrinsic(move_id),
+        )
     }
 
     #[allow(clippy::too_many_arguments, clippy::too_many_lines)]
@@ -4145,8 +4167,13 @@ impl BattleState {
         let target_types = data
             .pokemon_types(target_state.species, target_state.form)
             .ok_or_else(|| BattleError::DataMismatch("missing target type data".to_owned()))?;
-        let type_exponent =
-            self.type_modifier_for_source(data, move_data.move_type, source, target_types)?;
+        let type_exponent = self.type_modifier_for_source(
+            data,
+            move_id,
+            move_data.move_type,
+            source,
+            target_types,
+        )?;
         let mut source_state = self
             .side(source.side)
             .pokemon(source.pokemon)
@@ -5709,7 +5736,7 @@ fn preflight_move(
 ) -> Result<(), BattleError> {
     if let Some(missing) = move_data
         .required_capabilities
-        .first_missing_from(MoveCapabilities::PR_16_2)
+        .first_missing_from(MoveCapabilities::PR_16_3)
     {
         return Err(BattleError::UnsupportedMechanic(format!(
             "move {move_id} requires unsupported capability {missing}"
@@ -5833,19 +5860,12 @@ fn roll_critical(rng: &mut crate::BattleRng, ratio: u8) -> Result<bool, BattleEr
     rng.chance(RngReason::CriticalHit, 1, denominator)
 }
 
-fn combined_type_modifier<D: CombatData>(
-    data: &D,
-    attacking: PokemonType,
-    defending: PokemonTypes,
-) -> Result<Option<i8>, BattleError> {
-    combined_type_modifier_with_scrappy(data, attacking, defending, false)
-}
-
-fn combined_type_modifier_with_scrappy<D: CombatData>(
+fn combined_type_modifier_for_intrinsic<D: CombatData>(
     data: &D,
     attacking: PokemonType,
     defending: PokemonTypes,
     scrappy: bool,
+    intrinsic: MoveIntrinsic,
 ) -> Result<Option<i8>, BattleError> {
     let mut modifier = 0_i8;
     for defending_type in [Some(defending.primary), defending.secondary]
@@ -5858,7 +5878,13 @@ fn combined_type_modifier_with_scrappy<D: CombatData>(
         {
             continue;
         }
-        let Some(value) = data.type_modifier(attacking, defending_type) else {
+        let effectiveness =
+            if intrinsic == MoveIntrinsic::FreezeDry && defending_type == PokemonType::Water {
+                Some(1)
+            } else {
+                data.type_modifier(attacking, defending_type)
+            };
+        let Some(value) = effectiveness else {
             return Ok(None);
         };
         modifier = modifier.checked_add(value).ok_or_else(|| {

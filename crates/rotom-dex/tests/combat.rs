@@ -7429,8 +7429,8 @@ fn mechanics_manifest_drives_every_move_capability_and_execution_smoke_case() {
         .iter()
         .filter(|entry| entry.implementation == "unsupported")
         .count();
-    assert_eq!(implemented, 248);
-    assert_eq!(unsupported, 262);
+    assert_eq!(implemented, 249);
+    assert_eq!(unsupported, 261);
 
     for entry in moves {
         let move_id = dex
@@ -7441,7 +7441,7 @@ fn mechanics_manifest_drives_every_move_capability_and_execution_smoke_case() {
             .unwrap_or_else(|| panic!("manifest move {} missing combat data", entry.id));
         let missing = move_data
             .required_capabilities
-            .first_missing_from(MoveCapabilities::PR_16_2);
+            .first_missing_from(MoveCapabilities::PR_16_3);
         let target = representative_action_target(move_data.target);
 
         match entry.implementation.as_str() {
@@ -8912,6 +8912,64 @@ fn guaranteed_critical_moves_skip_critical_rng_and_respect_prevention() {
         reference_damage("flower-trick-guaranteed-critical")
             > reference_damage("flower-trick-battle-armor")
     );
+}
+
+#[test]
+fn freeze_dry_overrides_only_water_effectiveness_in_the_shared_damage_path() {
+    let dex = champions_reg_mc().unwrap();
+    let fixture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../data/fixtures/differential/freeze-dry.json"
+    ))
+    .unwrap();
+    assert_eq!(fixture["showdown_commit"], SHOWDOWN_COMMIT);
+    assert_eq!(
+        fixture["methodology"]["full_state_differential_comparison"],
+        false
+    );
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let source = set_with_moves(&dex, "glaceon", "snowcloak", &["freezedry"]);
+    let action = single_move_action(0, ActionTarget::Foe(ActiveSlot::Left));
+
+    for case in fixture["cases"].as_array().unwrap() {
+        let species = case["target_species"].as_str().unwrap();
+        let target = set_with_moves(&dex, species, "immunity", &["swordsdance"]);
+        let state = selected_primary_battle(&dex, &source, &target, 0x16_03);
+        let resumed: BattleState = serde_json::from_str(&serde_json::to_string(&state).unwrap())
+            .expect("serialized Freeze-Dry input");
+        let result = step(&state, &action, &mechanics).unwrap();
+        assert_eq!(result, step(&resumed, &action, &mechanics).unwrap());
+        let damage = result
+            .diagnostics
+            .turn
+            .as_ref()
+            .unwrap()
+            .actions
+            .iter()
+            .find_map(|resolved| match resolved {
+                ResolvedAction::Damaged {
+                    target_side: SideId::P2,
+                    target_slot: ActiveSlot::Left,
+                    damage,
+                    ..
+                } => Some(damage),
+                _ => None,
+            })
+            .expect("Freeze-Dry must use the canonical damage action");
+        let expected = match case["combined_type_modifier"].as_i64().unwrap() {
+            2 => rotom_core::Modifier {
+                numerator: 4,
+                denominator: 1,
+            },
+            1 => rotom_core::Modifier {
+                numerator: 2,
+                denominator: 1,
+            },
+            0 => rotom_core::Modifier::NEUTRAL,
+            value => panic!("unexpected reference type modifier {value}"),
+        };
+        assert_eq!(damage.type_modifier, expected, "{species}");
+        assert!(damage.final_damage > 0, "{species}");
+    }
 }
 
 use rotom_core::AbilitySuppression::{Breakable, Unbreakable};

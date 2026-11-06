@@ -83,6 +83,7 @@ const CAPABILITY_ORDER = [
 	'effective_stat_override',
 	'guaranteed_critical',
 	'force_target_switch',
+	'unique_type_effectiveness',
 ];
 
 const PR_13_1_CAPABILITIES = new Set([
@@ -111,6 +112,7 @@ const PR_13_4_CAPABILITIES = new Set([
 ]);
 const PR_16_1_CAPABILITIES = new Set([...PR_13_4_CAPABILITIES, 'guaranteed_critical']);
 const PR_16_2_CAPABILITIES = new Set([...PR_16_1_CAPABILITIES, 'force_target_switch']);
+const PR_16_3_CAPABILITIES = new Set([...PR_16_2_CAPABILITIES, 'unique_type_effectiveness']);
 
 function sortedStrings(values) {
 	return [...(values || [])].sort((left, right) => left < right ? -1 : left > right ? 1 : 0);
@@ -201,6 +203,7 @@ function moveExecutionRequirements(move) {
 	}
 	if (move.id === 'facade') capabilities.add('conditional_power');
 	if (move.willCrit) capabilities.add('guaranteed_critical');
+	if (move.id === 'freezedry') capabilities.add('unique_type_effectiveness');
 	if (move.overrideOffensiveStat || move.overrideDefensiveStat ||
 		move.ignoreNegativeOffensive || move.ignorePositiveDefensive) {
 		capabilities.add('effective_stat_override');
@@ -222,6 +225,7 @@ function moveExecutionRequirements(move) {
 		...(move.id === 'magnetrise' ? ['onTry'] : []),
 		...(move.id === 'facade' ? ['onBasePower'] : []),
 		...(move.id === 'knockoff' ? ['onBasePower', 'onAfterHit'] : []),
+		...(move.id === 'freezedry' ? ['onEffectiveness'] : []),
 		...(['trick', 'switcheroo'].includes(move.id) ? ['onTryImmunity', 'onHit'] : []),
 	]);
 	if (behavior.callbacks.some(callback => !supportedCallbacks.has(callback))) {
@@ -277,8 +281,14 @@ function isPr162Supported(move) {
 		.every(capability => PR_16_2_CAPABILITIES.has(capability));
 }
 
+function isPr163Supported(move) {
+	return moveExecutionRequirements(move).required_capabilities
+		.every(capability => PR_16_3_CAPABILITIES.has(capability));
+}
+
 module.exports = {
 	isPr131Supported, isPr132Supported, isPr133Supported, isPr134Supported, isPr161Supported,
 	isPr162Supported,
+	isPr163Supported,
 	moveBehavior, moveExecutionRequirements,
 };

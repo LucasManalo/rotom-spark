@@ -5,8 +5,8 @@
 //! never mutate battle state or consume the battle RNG.
 
 use super::{
-    combined_type_modifier, preflight_move, showdown_modify, staged_stat, CombatData, CombatMove,
-    DamageEnvironment, DamageResult, Modifier, MoveCapability, MoveCategory, MoveId, MoveIntrinsic,
+    combined_type_modifier_for_intrinsic, preflight_move, showdown_modify, staged_stat, CombatData,
+    CombatMove, DamageEnvironment, DamageResult, Modifier, MoveCapability, MoveCategory, MoveId,
     PokemonState, PokemonTypes,
 };
 use crate::{BattleError, MajorStatus};
@@ -230,10 +230,11 @@ pub fn calculate_move_damage<D: CombatData>(
     }
     let secondaries = data.secondary_move_effects(move_id);
     let self_effect = data.self_move_effect(move_id);
+    let intrinsic = data.move_intrinsic(move_id);
     preflight_move(
         move_id,
         move_data,
-        MoveIntrinsic::Ordinary,
+        intrinsic,
         &[],
         &secondaries,
         self_effect.as_ref(),
@@ -244,7 +245,13 @@ pub fn calculate_move_damage<D: CombatData>(
     let target_types = data
         .pokemon_types(target.species, target.form)
         .ok_or_else(|| BattleError::DataMismatch("missing target type data".to_owned()))?;
-    let type_exponent = combined_type_modifier(data, move_data.move_type, target_types)?;
+    let type_exponent = combined_type_modifier_for_intrinsic(
+        data,
+        move_data.move_type,
+        target_types,
+        false,
+        intrinsic,
+    )?;
     calculate_damage(
         source,
         target,

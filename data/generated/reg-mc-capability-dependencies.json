@@ -31,22 +31,22 @@
       },
       "move": {
         "reachable": 510,
-        "unsupported": 262,
+        "unsupported": 261,
         "partial": 0,
-        "implemented": 248
+        "implemented": 249
       }
     },
     "executable_capability_coverage": {
-      "total": 73,
+      "total": 74,
       "unsupported": 17,
       "partial": 21,
       "implemented": 21,
-      "verified": 14
+      "verified": 15
     },
     "dependency_targets": {
       "ability": 92,
       "item": 25,
-      "move": 262
+      "move": 261
     }
   },
   "capabilities": [
@@ -630,7 +630,6 @@
         "move:flyingpress",
         "move:focuspunch",
         "move:forestscurse",
-        "move:freezedry",
         "move:futuresight",
         "move:gastroacid",
         "move:grassknot",
@@ -786,7 +785,6 @@
         "move:fling",
         "move:focuspunch",
         "move:forestscurse",
-        "move:freezedry",
         "move:grassknot",
         "move:grassyglide",
         "move:gravapple",
@@ -2862,6 +2860,37 @@
       "differential_fixtures": [],
       "pinned_reference_evidence": [
         "showdown:sim/battle-actions.ts:BattleActions.getMoveTargets"
+      ],
+      "blocked_identities": [],
+      "unlocked_identities": [],
+      "would_unlock_if_completed": []
+    },
+    {
+      "id": "unique_type_effectiveness",
+      "status": "verified",
+      "title": "Unique move type-effectiveness override",
+      "sub_capabilities": [
+        "per-defending-type override",
+        "dual-type composition",
+        "shared damage modifier"
+      ],
+      "lifecycle_and_ordering": [
+        "per-defending-type override",
+        "dual-type composition",
+        "shared damage modifier"
+      ],
+      "known_gaps": [
+        "Freeze-Dry overrides only the Water component to super effective inside the canonical type and damage calculation."
+      ],
+      "tests": [
+        "unit:crates/rotom-dex/tests/combat.rs#freeze_dry_overrides_only_water_effectiveness_in_the_shared_damage_path"
+      ],
+      "differential_fixtures": [
+        "differential:data/fixtures/differential/freeze-dry.json#freeze-dry-vaporeon"
+      ],
+      "pinned_reference_evidence": [
+        "showdown:data/moves.ts:Moves.freezedry.onEffectiveness",
+        "showdown:sim/battle.ts:Battle.getEffectiveness"
       ],
       "blocked_identities": [],
       "unlocked_identities": [],
@@ -6972,24 +7001,6 @@
       "differential_fixtures": [],
       "pinned_reference_evidence": [
         "showdown:data/moves.ts:Moves.foulplay"
-      ]
-    },
-    {
-      "kind": "move",
-      "id": "freezedry",
-      "name": "Freeze-Dry",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "custom_callback"
-      ],
-      "outstanding_blockers": [
-        "custom_callback"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.freezedry"
       ]
     },
     {

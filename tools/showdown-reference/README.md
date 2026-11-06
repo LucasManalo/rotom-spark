@@ -148,3 +148,11 @@ Circle Throw, Dragon Tail, Roar, and Whirlwind:
 node tools/showdown-reference/move-phazing.cjs
 node tools/showdown-reference/move-phazing.cjs --check
 ```
+
+PR 16.3 records Freeze-Dry's per-type Water override and dual-type
+composition through complete pinned Showdown turns:
+
+```text
+node tools/showdown-reference/freeze-dry.cjs
+node tools/showdown-reference/freeze-dry.cjs --check
+```

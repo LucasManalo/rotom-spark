@@ -20,7 +20,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | --- | ---: | ---: | ---: | ---: |
 | Abilities | 215 | 123 | 92 | 0 |
 | Items | 166 | 141 | 25 | 0 |
-| Moves | 510 | 248 | 0 | 262 |
+| Moves | 510 | 249 | 0 | 261 |
 
 ## Abilities
 
@@ -593,7 +593,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Follow Me | `followme` | implemented | differential_verified | differential_verified | PR 13.2 |
 | Forest's Curse | `forestscurse` | unsupported | not_tested | not_tested | — |
 | Foul Play | `foulplay` | unsupported | not_tested | not_tested | — |
-| Freeze-Dry | `freezedry` | unsupported | not_tested | not_tested | — |
+| Freeze-Dry | `freezedry` | implemented | differential_verified | differential_verified | PR 16.3 |
 | Frenzy Plant | `frenzyplant` | unsupported | not_tested | not_tested | — |
 | Frost Breath | `frostbreath` | implemented | differential_verified | unit_tested | PR 16.1 |
 | Future Sight | `futuresight` | unsupported | not_tested | not_tested | — |

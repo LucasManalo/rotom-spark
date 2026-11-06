@@ -22914,6 +22914,13 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/freeze-dry.json#freeze-dry-vaporeon",
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-16-3-freeze-dry.md",
+        "interaction_differential:data/fixtures/differential/freeze-dry.json#freeze-dry-kingdra",
+        "interaction_differential:data/fixtures/differential/freeze-dry.json#freeze-dry-lapras",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#freeze_dry_overrides_only_water_effectiveness_in_the_shared_damage_path",
         "species/aurorus",
         "species/baxcalibur",
         "species/glaceon",
@@ -22921,7 +22928,9 @@
         "species/mamoswine",
         "species/mrrime",
         "species/ninetalesalola",
-        "species/vanilluxe"
+        "species/vanilluxe",
+        "unit:crates/rotom-dex/tests/combat.rs#freeze_dry_overrides_only_water_effectiveness_in_the_shared_damage_path",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case"
       ],
       "effect_families": [
         "damage"
@@ -22931,16 +22940,16 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback",
         "protection",
         "redirection",
         "retargeting",
-        "per_target_hit"
+        "per_target_hit",
+        "unique_type_effectiveness"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 16.3"
     },
     {
       "id": "frenzyplant",
@@ -48755,19 +48764,19 @@
       "move": {
         "total": 510,
         "implementation": {
-          "unsupported": 262,
+          "unsupported": 261,
           "partial": 0,
-          "implemented": 248
+          "implemented": 249
         },
         "verification": {
-          "not_tested": 262,
+          "not_tested": 261,
           "unit_tested": 218,
-          "differential_verified": 30
+          "differential_verified": 31
         },
         "interaction_verification": {
-          "not_tested": 485,
+          "not_tested": 484,
           "unit_tested": 9,
-          "differential_verified": 16
+          "differential_verified": 17
         },
         "reachability": {
           "direct_legal_set": 510,
