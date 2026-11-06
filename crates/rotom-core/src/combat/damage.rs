@@ -220,6 +220,7 @@ pub fn calculate_move_damage<D: CombatData>(
     let transition_only = [
         MoveCapability::ConditionalPower,
         MoveCapability::EffectiveStatOverride,
+        MoveCapability::VariablePower,
     ]
     .into_iter()
     .find(|capability| move_data.required_capabilities.contains(*capability));
@@ -234,6 +235,7 @@ pub fn calculate_move_damage<D: CombatData>(
     preflight_move(
         move_id,
         move_data,
+        data.move_base_power_rule(move_id),
         intrinsic,
         &[],
         &secondaries,

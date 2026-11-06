@@ -1,7 +1,7 @@
 use crate::{Accuracy, DexData, MoveBehaviorKind, MoveData, SpeciesData, Stats};
 use rotom_core::{
-    AbilityBehavior, AbilityHandler, AbilityId, AbilitySuppression, BattleError, BattleStat,
-    BattleStats, CombatData, CombatMove, ConditionId, CriticalBehavior, EffectFraction,
+    AbilityBehavior, AbilityHandler, AbilityId, AbilitySuppression, BasePowerRule, BattleError,
+    BattleStat, BattleStats, CombatData, CombatMove, ConditionId, CriticalBehavior, EffectFraction,
     FieldEffectIds, HitSequence, ItemBehavior, ItemHandler, ItemId, MajorStatus, MegaEvolution,
     MoveAccuracy, MoveCapabilities, MoveCapability, MoveCategory, MoveId, MoveIntrinsic,
     MoveOperation, MoveSlot, MoveTarget, PokemonPosition, PokemonSet, PokemonState, PokemonType,
@@ -92,6 +92,15 @@ impl CombatData for DexData {
                             .any(|property| property == "hasCrashDamage"),
                 ),
         })
+    }
+
+    fn move_base_power_rule(&self, move_id: MoveId) -> BasePowerRule {
+        self.move_data(move_id)
+            .map_or(BasePowerRule::Fixed, |data| match data.id.as_str() {
+                "eruption" | "waterspout" => BasePowerRule::CurrentHpRatio,
+                "flail" | "reversal" => BasePowerRule::LowHpBracket,
+                _ => BasePowerRule::Fixed,
+            })
     }
 
     fn pokemon_types(
@@ -1721,6 +1730,7 @@ fn implemented_ability_behaviors(id: &str) -> impl Iterator<Item = AbilityBehavi
         .filter_map(move |(key, behavior, _)| (*key == id).then_some(*behavior))
 }
 
+#[allow(clippy::too_many_lines)] // One linear audit of resolved move requirements.
 fn move_execution_requirements(data: &MoveData) -> (MoveOperation, MoveCapabilities) {
     if data.id == "protect" {
         return (
@@ -1749,10 +1759,14 @@ fn move_execution_requirements(data: &MoveData) -> (MoveOperation, MoveCapabilit
             MoveOperation::LevelDamage,
             MoveCapabilities::NONE.with(MoveCapability::FixedDamage),
         ),
-        None if data.category != "Status" && data.base_power > 0 => (
-            MoveOperation::StandardDamage,
-            MoveCapabilities::NONE.with(MoveCapability::StandardDamage),
-        ),
+        None if data.category != "Status"
+            && (data.base_power > 0 || matches!(data.id.as_str(), "flail" | "reversal")) =>
+        {
+            (
+                MoveOperation::StandardDamage,
+                MoveCapabilities::NONE.with(MoveCapability::StandardDamage),
+            )
+        }
         None => (
             MoveOperation::NonDamage,
             MoveCapabilities::NONE.with(MoveCapability::NonDamagePrimary),
@@ -1794,6 +1808,12 @@ fn move_execution_requirements(data: &MoveData) -> (MoveOperation, MoveCapabilit
         "facade" | "hex" | "infernalparade" | "barbbarrage" | "venoshock"
     ) {
         required = required.with(MoveCapability::ConditionalPower);
+    }
+    if matches!(
+        data.id.as_str(),
+        "eruption" | "waterspout" | "flail" | "reversal"
+    ) {
+        required = required.with(MoveCapability::VariablePower);
     }
     if data.will_crit {
         required = required.with(MoveCapability::GuaranteedCritical);
@@ -1904,6 +1924,10 @@ fn behavior_capabilities(data: &MoveData, mut required: MoveCapabilities) -> Mov
                 && callback == "onBasePower")
             || (matches!(data.id.as_str(), "hex" | "infernalparade")
                 && callback == "basePowerCallback")
+            || (matches!(
+                data.id.as_str(),
+                "eruption" | "waterspout" | "flail" | "reversal"
+            ) && callback == "basePowerCallback")
             || (data.id == "knockoff" && matches!(callback.as_str(), "onBasePower" | "onAfterHit"))
             || (data.id == "freezedry" && callback == "onEffectiveness")
             || (matches!(data.id.as_str(), "trick" | "switcheroo")

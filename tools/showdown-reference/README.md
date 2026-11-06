@@ -165,3 +165,11 @@ major-status targets:
 node tools/showdown-reference/status-dependent-power.cjs
 node tools/showdown-reference/status-dependent-power.cjs --check
 ```
+
+PR 16.5 records current-HP-ratio and low-HP-bracket base power, including
+rounding and threshold cases, through complete pinned Showdown turns:
+
+```text
+node tools/showdown-reference/hp-dependent-power.cjs
+node tools/showdown-reference/hp-dependent-power.cjs --check
+```

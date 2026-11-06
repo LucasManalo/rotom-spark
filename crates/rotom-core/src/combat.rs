@@ -114,6 +114,15 @@ pub enum PriorMoveEffect {
     TargetPoison,
 }
 
+#[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum BasePowerRule {
+    #[default]
+    Fixed,
+    CurrentHpRatio,
+    LowHpBracket,
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct SecondaryMoveEffect {
@@ -206,10 +215,11 @@ pub enum MoveCapability {
     GuaranteedCritical = 1 << 28,
     ForceTargetSwitch = 1 << 29,
     UniqueTypeEffectiveness = 1 << 30,
+    VariablePower = 1 << 31,
 }
 
 impl MoveCapability {
-    const ALL: [Self; 31] = [
+    const ALL: [Self; 32] = [
         Self::StandardDamage,
         Self::SelectedSingleTarget,
         Self::Accuracy,
@@ -241,6 +251,7 @@ impl MoveCapability {
         Self::GuaranteedCritical,
         Self::ForceTargetSwitch,
         Self::UniqueTypeEffectiveness,
+        Self::VariablePower,
     ];
 }
 
@@ -278,6 +289,7 @@ impl fmt::Display for MoveCapability {
             Self::GuaranteedCritical => "guaranteed_critical",
             Self::ForceTargetSwitch => "force_target_switch",
             Self::UniqueTypeEffectiveness => "unique_type_effectiveness",
+            Self::VariablePower => "variable_power",
         };
         formatter.write_str(name)
     }
@@ -329,6 +341,7 @@ impl MoveCapabilities {
     pub const PR_16_2: Self = Self(Self::PR_16_1.0 | MoveCapability::ForceTargetSwitch as u32);
     pub const PR_16_3: Self =
         Self(Self::PR_16_2.0 | MoveCapability::UniqueTypeEffectiveness as u32);
+    pub const PR_16_5: Self = Self(Self::PR_16_3.0 | MoveCapability::VariablePower as u32);
 
     #[must_use]
     pub const fn with(self, capability: MoveCapability) -> Self {
@@ -526,6 +539,10 @@ pub trait CombatData {
     /// Narrow intrinsic behavior implemented by the unified move executor.
     fn move_intrinsic(&self, _move_id: MoveId) -> MoveIntrinsic {
         MoveIntrinsic::Ordinary
+    }
+
+    fn move_base_power_rule(&self, _move_id: MoveId) -> BasePowerRule {
+        BasePowerRule::Fixed
     }
 
     fn primary_move_effects(&self, _move_id: MoveId) -> Vec<PrimaryMoveEffect> {
@@ -1918,6 +1935,7 @@ impl BattleState {
         preflight_move(
             move_id,
             move_data,
+            data.move_base_power_rule(move_id),
             intrinsic,
             &primary_effects,
             &secondary_effects,
@@ -4257,6 +4275,12 @@ impl BattleState {
         }
         event_context.critical = critical;
         let mut adjusted_move = move_data;
+        adjusted_move.base_power = resolve_variable_base_power(
+            data.move_base_power_rule(move_id),
+            adjusted_move.base_power,
+            source_state.current_hp,
+            source_state.stats.hp,
+        )?;
         self.apply_field_base_power(
             data,
             field_effects,
@@ -5709,6 +5733,38 @@ fn conditional_power_activates(
     }
 }
 
+fn resolve_variable_base_power(
+    rule: BasePowerRule,
+    listed_power: u16,
+    current_hp: u16,
+    max_hp: u16,
+) -> Result<u16, BattleError> {
+    if max_hp == 0 || current_hp > max_hp {
+        return Err(BattleError::InvalidState(
+            "variable base power requires HP within a nonzero maximum".to_owned(),
+        ));
+    }
+    Ok(match rule {
+        BasePowerRule::Fixed => listed_power,
+        BasePowerRule::CurrentHpRatio => (u32::from(listed_power) * u32::from(current_hp)
+            / u32::from(max_hp))
+        .max(1)
+        .try_into()
+        .unwrap_or(u16::MAX),
+        BasePowerRule::LowHpBracket => {
+            let ratio = (u32::from(current_hp) * 48 / u32::from(max_hp)).max(1);
+            match ratio {
+                1 => 200,
+                2..=4 => 150,
+                5..=9 => 100,
+                10..=16 => 80,
+                17..=32 => 40,
+                _ => 20,
+            }
+        }
+    })
+}
+
 fn rounded_fraction(value: u32, fraction: EffectFraction) -> Result<u32, BattleError> {
     if fraction.denominator == 0 {
         return Err(BattleError::DataMismatch(
@@ -5751,6 +5807,7 @@ fn apply_type_conversion<D: CombatData>(
 fn preflight_move(
     move_id: MoveId,
     move_data: CombatMove,
+    base_power_rule: BasePowerRule,
     intrinsic: MoveIntrinsic,
     primary_effects: &[PrimaryMoveEffect],
     secondary_effects: &[SecondaryMoveEffect],
@@ -5758,7 +5815,7 @@ fn preflight_move(
 ) -> Result<(), BattleError> {
     if let Some(missing) = move_data
         .required_capabilities
-        .first_missing_from(MoveCapabilities::PR_16_3)
+        .first_missing_from(MoveCapabilities::PR_16_5)
     {
         return Err(BattleError::UnsupportedMechanic(format!(
             "move {move_id} requires unsupported capability {missing}"
@@ -5821,6 +5878,15 @@ fn preflight_move(
     }
     if move_data
         .required_capabilities
+        .contains(MoveCapability::VariablePower)
+        && base_power_rule == BasePowerRule::Fixed
+    {
+        return Err(BattleError::UnsupportedMechanic(format!(
+            "move {move_id} requires variable-power data"
+        )));
+    }
+    if move_data
+        .required_capabilities
         .contains(MoveCapability::EffectiveStatOverride)
         && move_data.offensive_stat.is_none()
         && move_data.defensive_stat.is_none()
@@ -5833,7 +5899,7 @@ fn preflight_move(
     }
     let valid_damage = move_data.operation == MoveOperation::StandardDamage
         && move_data.category != MoveCategory::Status
-        && move_data.base_power > 0;
+        && (move_data.base_power > 0 || base_power_rule != BasePowerRule::Fixed);
     let valid_fixed = match move_data.operation {
         MoveOperation::FixedDamage => move_data.base_power == 0 && move_data.fixed_damage.is_some(),
         MoveOperation::LevelDamage => move_data.base_power == 0 && move_data.fixed_damage.is_none(),
@@ -6083,6 +6149,7 @@ mod tests {
             preflight_move(
                 move_id,
                 standard_move(),
+                BasePowerRule::Fixed,
                 MoveIntrinsic::Ordinary,
                 &[],
                 &[],
@@ -6098,6 +6165,7 @@ mod tests {
         let error = preflight_move(
             move_id,
             unsupported,
+            BasePowerRule::Fixed,
             MoveIntrinsic::Ordinary,
             &[],
             &[],
@@ -6120,6 +6188,7 @@ mod tests {
             preflight_move(
                 MoveId::new(1),
                 inconsistent,
+                BasePowerRule::Fixed,
                 MoveIntrinsic::Ordinary,
                 &[],
                 &[],
@@ -6178,5 +6247,35 @@ mod tests {
                 Err(BattleError::IllegalChoice(_))
             ));
         }
+    }
+
+    #[test]
+    fn variable_base_power_calculations_cover_rounding_and_bracket_boundaries() {
+        assert_eq!(
+            resolve_variable_base_power(BasePowerRule::CurrentHpRatio, 150, 87, 175),
+            Ok(74)
+        );
+        assert_eq!(
+            resolve_variable_base_power(BasePowerRule::CurrentHpRatio, 150, 1, 175),
+            Ok(1)
+        );
+        for (hp, expected) in [
+            (175, 20),
+            (120, 40),
+            (58, 80),
+            (32, 100),
+            (17, 150),
+            (3, 200),
+        ] {
+            assert_eq!(
+                resolve_variable_base_power(BasePowerRule::LowHpBracket, 0, hp, 175),
+                Ok(expected),
+                "HP {hp}"
+            );
+        }
+        assert!(matches!(
+            resolve_variable_base_power(BasePowerRule::LowHpBracket, 0, 1, 0),
+            Err(BattleError::InvalidState(_))
+        ));
     }
 }

@@ -1,0 +1,73 @@
+{
+  "showdown_commit": "b79ce06d06b8f0dc8de8bb348bc9cab5d931553f",
+  "format": "gen9championsvgc2026regmc",
+  "methodology": {
+    "source": "pinned HP-dependent base-power callbacks plus complete Showdown doubles turns",
+    "damage_roll_percent": 100,
+    "move_execution": true,
+    "reference_derived_assertions": true,
+    "full_state_differential_comparison": false
+  },
+  "cases": [
+    {
+      "id": "eruption-half-hp",
+      "move": "eruption",
+      "source_hp": 87,
+      "source_max_hp": 175,
+      "resolved_base_power": 74,
+      "callback_base_power": 74.57142857142857,
+      "hp_loss": 24,
+      "execution_path": "complete Showdown doubles turn after direct callback inspection"
+    },
+    {
+      "id": "water-spout-one-hp",
+      "move": "waterspout",
+      "source_hp": 1,
+      "source_max_hp": 175,
+      "resolved_base_power": 1,
+      "callback_base_power": 0.8571428571428571,
+      "hp_loss": 1,
+      "execution_path": "complete Showdown doubles turn after direct callback inspection"
+    },
+    {
+      "id": "flail-full-hp",
+      "move": "flail",
+      "source_hp": 175,
+      "source_max_hp": 175,
+      "resolved_base_power": 20,
+      "callback_base_power": 20,
+      "hp_loss": 14,
+      "execution_path": "complete Showdown doubles turn after direct callback inspection"
+    },
+    {
+      "id": "flail-ratio-16",
+      "move": "flail",
+      "source_hp": 58,
+      "source_max_hp": 175,
+      "resolved_base_power": 80,
+      "callback_base_power": 80,
+      "hp_loss": 51,
+      "execution_path": "complete Showdown doubles turn after direct callback inspection"
+    },
+    {
+      "id": "reversal-ratio-4",
+      "move": "reversal",
+      "source_hp": 17,
+      "source_max_hp": 175,
+      "resolved_base_power": 150,
+      "callback_base_power": 150,
+      "hp_loss": 190,
+      "execution_path": "complete Showdown doubles turn after direct callback inspection"
+    },
+    {
+      "id": "reversal-ratio-1",
+      "move": "reversal",
+      "source_hp": 3,
+      "source_max_hp": 175,
+      "resolved_base_power": 200,
+      "callback_base_power": 200,
+      "hp_loss": 235,
+      "execution_path": "complete Showdown doubles turn after direct callback inspection"
+    }
+  ]
+}

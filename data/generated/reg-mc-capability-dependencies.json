@@ -31,22 +31,22 @@
       },
       "move": {
         "reachable": 510,
-        "unsupported": 257,
+        "unsupported": 253,
         "partial": 0,
-        "implemented": 253
+        "implemented": 257
       }
     },
     "executable_capability_coverage": {
-      "total": 74,
+      "total": 75,
       "unsupported": 17,
       "partial": 21,
       "implemented": 20,
-      "verified": 16
+      "verified": 17
     },
     "dependency_targets": {
       "ability": 92,
       "item": 25,
-      "move": 257
+      "move": 253
     }
   },
   "capabilities": [
@@ -627,14 +627,12 @@
         "move:endeavor",
         "move:endure",
         "move:entrainment",
-        "move:eruption",
         "move:expandingforce",
         "move:fakeout",
         "move:fellstinger",
         "move:ficklebeam",
         "move:finalgambit",
         "move:firstimpression",
-        "move:flail",
         "move:fling",
         "move:fly",
         "move:flyingpress",
@@ -702,7 +700,6 @@
         "move:recycle",
         "move:reflecttype",
         "move:rest",
-        "move:reversal",
         "move:revivalblessing",
         "move:risingvoltage",
         "move:roleplay",
@@ -749,7 +746,6 @@
         "move:upperhand",
         "move:uproar",
         "move:watershuriken",
-        "move:waterspout",
         "move:weatherball",
         "move:wideguard",
         "move:worryseed",
@@ -782,12 +778,10 @@
         "move:electroball",
         "move:endeavor",
         "move:entrainment",
-        "move:eruption",
         "move:expandingforce",
         "move:fellstinger",
         "move:ficklebeam",
         "move:firstimpression",
-        "move:flail",
         "move:fling",
         "move:focuspunch",
         "move:forestscurse",
@@ -829,7 +823,6 @@
         "move:rapidspin",
         "move:recycle",
         "move:reflecttype",
-        "move:reversal",
         "move:risingvoltage",
         "move:roleplay",
         "move:round",
@@ -858,7 +851,6 @@
         "move:trickortreat",
         "move:tripleaxel",
         "move:watershuriken",
-        "move:waterspout",
         "move:weatherball",
         "move:worryseed"
       ]
@@ -2894,6 +2886,38 @@
       "pinned_reference_evidence": [
         "showdown:data/moves.ts:Moves.freezedry.onEffectiveness",
         "showdown:sim/battle.ts:Battle.getEffectiveness"
+      ],
+      "blocked_identities": [],
+      "unlocked_identities": [],
+      "would_unlock_if_completed": []
+    },
+    {
+      "id": "variable_power",
+      "status": "verified",
+      "title": "Declarative variable base power",
+      "sub_capabilities": [
+        "current-HP ratio",
+        "low-HP brackets",
+        "pre-modifier resolution"
+      ],
+      "lifecycle_and_ordering": [
+        "current-HP ratio",
+        "low-HP brackets",
+        "pre-modifier resolution"
+      ],
+      "known_gaps": [
+        "Stat-dependent and contextual variable-power rules remain separate."
+      ],
+      "tests": [
+        "unit:crates/rotom-dex/tests/combat.rs#hp_dependent_power_uses_shared_rules_before_damage_modifiers"
+      ],
+      "differential_fixtures": [
+        "differential:data/fixtures/differential/hp-dependent-power.json#eruption-half-hp"
+      ],
+      "pinned_reference_evidence": [
+        "showdown:data/moves.ts:Moves.eruption.basePowerCallback",
+        "showdown:data/moves.ts:Moves.flail.basePowerCallback",
+        "showdown:sim/battle-actions.ts:BattleActions.getDamage"
       ],
       "blocked_identities": [],
       "unlocked_identities": [],
@@ -6578,24 +6602,6 @@
     },
     {
       "kind": "move",
-      "id": "eruption",
-      "name": "Eruption",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "custom_callback"
-      ],
-      "outstanding_blockers": [
-        "custom_callback"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.eruption"
-      ]
-    },
-    {
-      "kind": "move",
       "id": "expandingforce",
       "name": "Expanding Force",
       "identity_status": "unsupported",
@@ -6780,24 +6786,6 @@
       "differential_fixtures": [],
       "pinned_reference_evidence": [
         "showdown:data/moves.ts:Moves.fissure"
-      ]
-    },
-    {
-      "kind": "move",
-      "id": "flail",
-      "name": "Flail",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "custom_callback"
-      ],
-      "outstanding_blockers": [
-        "custom_callback"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.flail"
       ]
     },
     {
@@ -8580,24 +8568,6 @@
     },
     {
       "kind": "move",
-      "id": "reversal",
-      "name": "Reversal",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "custom_callback"
-      ],
-      "outstanding_blockers": [
-        "custom_callback"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.reversal"
-      ]
-    },
-    {
-      "kind": "move",
       "id": "revivalblessing",
       "name": "Revival Blessing",
       "identity_status": "unsupported",
@@ -10106,24 +10076,6 @@
       "differential_fixtures": [],
       "pinned_reference_evidence": [
         "showdown:data/moves.ts:Moves.watershuriken"
-      ]
-    },
-    {
-      "kind": "move",
-      "id": "waterspout",
-      "name": "Water Spout",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "custom_callback"
-      ],
-      "outstanding_blockers": [
-        "custom_callback"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.waterspout"
       ]
     },
     {

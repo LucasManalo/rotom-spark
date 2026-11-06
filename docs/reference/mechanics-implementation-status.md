@@ -20,7 +20,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | --- | ---: | ---: | ---: | ---: |
 | Abilities | 215 | 123 | 92 | 0 |
 | Items | 166 | 141 | 25 | 0 |
-| Moves | 510 | 253 | 0 | 257 |
+| Moves | 510 | 257 | 0 | 253 |
 
 ## Abilities
 
@@ -554,7 +554,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Endure | `endure` | unsupported | not_tested | not_tested | — |
 | Energy Ball | `energyball` | implemented | unit_tested | not_tested | PR 13.4 |
 | Entrainment | `entrainment` | unsupported | not_tested | not_tested | — |
-| Eruption | `eruption` | unsupported | not_tested | not_tested | — |
+| Eruption | `eruption` | implemented | differential_verified | unit_tested | PR 16.5 |
 | Expanding Force | `expandingforce` | unsupported | not_tested | not_tested | — |
 | Explosion | `explosion` | unsupported | not_tested | not_tested | — |
 | Extrasensory | `extrasensory` | implemented | unit_tested | not_tested | PR 15.3 |
@@ -576,7 +576,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Fire Spin | `firespin` | unsupported | not_tested | not_tested | — |
 | First Impression | `firstimpression` | unsupported | not_tested | not_tested | — |
 | Fissure | `fissure` | unsupported | not_tested | not_tested | — |
-| Flail | `flail` | unsupported | not_tested | not_tested | — |
+| Flail | `flail` | implemented | differential_verified | unit_tested | PR 16.5 |
 | Flame Charge | `flamecharge` | implemented | unit_tested | not_tested | PR 13.4 |
 | Flamethrower | `flamethrower` | implemented | unit_tested | not_tested | PR 13.4 |
 | Flare Blitz | `flareblitz` | unsupported | not_tested | not_tested | — |
@@ -769,7 +769,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Reflect | `reflect` | implemented | differential_verified | differential_verified | PR 13.3.1 |
 | Reflect Type | `reflecttype` | unsupported | not_tested | not_tested | — |
 | Rest | `rest` | unsupported | not_tested | not_tested | — |
-| Reversal | `reversal` | unsupported | not_tested | not_tested | — |
+| Reversal | `reversal` | implemented | differential_verified | unit_tested | PR 16.5 |
 | Revival Blessing | `revivalblessing` | unsupported | not_tested | not_tested | — |
 | Rising Voltage | `risingvoltage` | unsupported | not_tested | not_tested | — |
 | Roar | `roar` | implemented | differential_verified | differential_verified | PR 16.2 |
@@ -909,7 +909,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Waterfall | `waterfall` | implemented | unit_tested | not_tested | PR 15.3 |
 | Water Pulse | `waterpulse` | unsupported | not_tested | not_tested | — |
 | Water Shuriken | `watershuriken` | unsupported | not_tested | not_tested | — |
-| Water Spout | `waterspout` | unsupported | not_tested | not_tested | — |
+| Water Spout | `waterspout` | implemented | differential_verified | unit_tested | PR 16.5 |
 | Wave Crash | `wavecrash` | implemented | unit_tested | not_tested | PR 13.4 |
 | Weather Ball | `weatherball` | unsupported | not_tested | not_tested | — |
 | Whirlpool | `whirlpool` | unsupported | not_tested | not_tested | — |

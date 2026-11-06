@@ -9,6 +9,7 @@ const {
 	isPr131Supported, isPr132Supported, isPr133Supported, isPr134Supported, isPr161Supported,
 	isPr162Supported,
 	isPr163Supported,
+	isPr165Supported,
 	moveExecutionRequirements,
 } = require('./move-capabilities.cjs');
 
@@ -529,6 +530,7 @@ function buildManifest(version, Showdown) {
 			pr_16_1_supported: isPr161Supported(move),
 			pr_16_2_supported: isPr162Supported(move),
 			pr_16_3_supported: isPr163Supported(move),
+			pr_16_5_supported: isPr165Supported(move),
 			pr_13_1_supported: isPr131Supported(move),
 		}, claims));
 		collectConditionReferences(move, `move/${id}`, conditions);
@@ -673,7 +675,7 @@ function buildManifest(version, Showdown) {
 	for (const claim of claims.values()) {
 		if (claim.kind !== 'move' || claim.implementation !== 'implemented') continue;
 		const move = dex.moves.get(claim.id);
-		if (!isPr163Supported(move)) {
+		if (!isPr165Supported(move)) {
 			fail(`Move ${claim.id} is claimed implemented but requires unsupported capabilities`);
 		}
 	}
