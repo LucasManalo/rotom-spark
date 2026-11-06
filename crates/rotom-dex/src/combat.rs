@@ -63,10 +63,11 @@ impl CombatData for DexData {
                 numerator: value.numerator,
                 denominator: value.denominator,
             }),
-            prior_effect: if data.id == "facade" {
-                PriorMoveEffect::Facade
-            } else {
-                PriorMoveEffect::None
+            prior_effect: match data.id.as_str() {
+                "facade" => PriorMoveEffect::Facade,
+                "hex" | "infernalparade" => PriorMoveEffect::TargetStatus,
+                "barbbarrage" | "venoshock" => PriorMoveEffect::TargetPoison,
+                _ => PriorMoveEffect::None,
             },
             offensive_stat: data.override_offensive_stat.as_deref().and_then(parse_stat),
             defensive_stat: data.override_defensive_stat.as_deref().and_then(parse_stat),
@@ -1788,7 +1789,10 @@ fn move_execution_requirements(data: &MoveData) -> (MoveOperation, MoveCapabilit
     if data.recoil.is_some() || data.self_damage.is_some() {
         required = required.with(MoveCapability::Recoil);
     }
-    if data.id == "facade" {
+    if matches!(
+        data.id.as_str(),
+        "facade" | "hex" | "infernalparade" | "barbbarrage" | "venoshock"
+    ) {
         required = required.with(MoveCapability::ConditionalPower);
     }
     if data.will_crit {
@@ -1896,7 +1900,10 @@ fn behavior_capabilities(data: &MoveData, mut required: MoveCapabilities) -> Mov
     }
     let has_unsupported_callback = data.behavior.callbacks.iter().any(|callback| {
         !((data.id == "magnetrise" && callback == "onTry")
-            || (data.id == "facade" && callback == "onBasePower")
+            || (matches!(data.id.as_str(), "facade" | "barbbarrage" | "venoshock")
+                && callback == "onBasePower")
+            || (matches!(data.id.as_str(), "hex" | "infernalparade")
+                && callback == "basePowerCallback")
             || (data.id == "knockoff" && matches!(callback.as_str(), "onBasePower" | "onAfterHit"))
             || (data.id == "freezedry" && callback == "onEffectiveness")
             || (matches!(data.id.as_str(), "trick" | "switcheroo")

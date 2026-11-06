@@ -156,3 +156,12 @@ composition through complete pinned Showdown turns:
 node tools/showdown-reference/freeze-dry.cjs
 node tools/showdown-reference/freeze-dry.cjs --check
 ```
+
+PR 16.4 records resolved base power and complete-turn execution for Hex,
+Infernal Parade, Venoshock, and Barb Barrage across healthy and relevant
+major-status targets:
+
+```text
+node tools/showdown-reference/status-dependent-power.cjs
+node tools/showdown-reference/status-dependent-power.cjs --check
+```

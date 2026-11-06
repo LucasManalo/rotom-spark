@@ -13855,8 +13855,16 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/status-dependent-power.json#barb-barrage-toxic",
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-16-4-status-dependent-power.md",
+        "interaction_differential:data/fixtures/differential/status-dependent-power.json#barb-barrage-toxic",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#status_dependent_power_uses_target_status_in_the_canonical_damage_path",
         "species/overqwil",
-        "species/qwilfish"
+        "species/qwilfish",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case",
+        "unit:crates/rotom-dex/tests/combat.rs#status_dependent_power_uses_target_status_in_the_canonical_damage_path"
       ],
       "effect_families": [
         "damage",
@@ -13868,16 +13876,16 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
-        "custom_callback",
         "protection",
         "redirection",
         "retargeting",
-        "per_target_hit"
+        "per_target_hit",
+        "conditional_power"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 16.4"
     },
     {
       "id": "batonpass",
@@ -24869,6 +24877,12 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/status-dependent-power.json#hex-burn",
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-16-4-status-dependent-power.md",
+        "interaction_differential:data/fixtures/differential/status-dependent-power.json#hex-healthy",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#status_dependent_power_uses_target_status_in_the_canonical_damage_path",
         "species/absol",
         "species/ariados",
         "species/banette",
@@ -24922,7 +24936,9 @@
         "species/trevenant",
         "species/typhlosionhisui",
         "species/zoroark",
-        "species/zoroarkhisui"
+        "species/zoroarkhisui",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case",
+        "unit:crates/rotom-dex/tests/combat.rs#status_dependent_power_uses_target_status_in_the_canonical_damage_path"
       ],
       "effect_families": [
         "custom_callback",
@@ -24933,16 +24949,16 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback",
         "protection",
         "redirection",
         "retargeting",
-        "per_target_hit"
+        "per_target_hit",
+        "conditional_power"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 16.4"
     },
     {
       "id": "highhorsepower",
@@ -26441,7 +26457,15 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
-        "species/typhlosionhisui"
+        "differential:data/fixtures/differential/status-dependent-power.json#infernal-parade-paralysis",
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-16-4-status-dependent-power.md",
+        "interaction_differential:data/fixtures/differential/status-dependent-power.json#infernal-parade-paralysis",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#status_dependent_power_uses_target_status_in_the_canonical_damage_path",
+        "species/typhlosionhisui",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case",
+        "unit:crates/rotom-dex/tests/combat.rs#status_dependent_power_uses_target_status_in_the_canonical_damage_path"
       ],
       "effect_families": [
         "custom_callback",
@@ -26454,16 +26478,16 @@
         "selected_single_target",
         "accuracy",
         "secondary_effect",
-        "custom_callback",
         "protection",
         "redirection",
         "retargeting",
-        "per_target_hit"
+        "per_target_hit",
+        "conditional_power"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 16.4"
     },
     {
       "id": "inferno",
@@ -42244,6 +42268,12 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/status-dependent-power.json#venoshock-poison",
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "file:docs/research/pr-16-4-status-dependent-power.md",
+        "interaction_differential:data/fixtures/differential/status-dependent-power.json#venoshock-burn",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#status_dependent_power_uses_target_status_in_the_canonical_damage_path",
         "species/arbok",
         "species/ariados",
         "species/beedrill",
@@ -42271,7 +42301,9 @@
         "species/toxtricitylowkey",
         "species/venusaur",
         "species/victreebel",
-        "species/vileplume"
+        "species/vileplume",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case",
+        "unit:crates/rotom-dex/tests/combat.rs#status_dependent_power_uses_target_status_in_the_canonical_damage_path"
       ],
       "effect_families": [
         "damage"
@@ -42281,16 +42313,16 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback",
         "protection",
         "redirection",
         "retargeting",
-        "per_target_hit"
+        "per_target_hit",
+        "conditional_power"
       ],
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 16.4"
     },
     {
       "id": "voltswitch",
@@ -48764,19 +48796,19 @@
       "move": {
         "total": 510,
         "implementation": {
-          "unsupported": 261,
+          "unsupported": 257,
           "partial": 0,
-          "implemented": 249
+          "implemented": 253
         },
         "verification": {
-          "not_tested": 261,
+          "not_tested": 257,
           "unit_tested": 218,
-          "differential_verified": 31
+          "differential_verified": 35
         },
         "interaction_verification": {
-          "not_tested": 484,
+          "not_tested": 480,
           "unit_tested": 9,
-          "differential_verified": 17
+          "differential_verified": 21
         },
         "reachability": {
           "direct_legal_set": 510,

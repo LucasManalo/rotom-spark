@@ -7429,8 +7429,8 @@ fn mechanics_manifest_drives_every_move_capability_and_execution_smoke_case() {
         .iter()
         .filter(|entry| entry.implementation == "unsupported")
         .count();
-    assert_eq!(implemented, 249);
-    assert_eq!(unsupported, 261);
+    assert_eq!(implemented, 253);
+    assert_eq!(unsupported, 257);
 
     for entry in moves {
         let move_id = dex
@@ -8969,6 +8969,85 @@ fn freeze_dry_overrides_only_water_effectiveness_in_the_shared_damage_path() {
         };
         assert_eq!(damage.type_modifier, expected, "{species}");
         assert!(damage.final_damage > 0, "{species}");
+    }
+}
+
+#[test]
+fn status_dependent_power_uses_target_status_in_the_canonical_damage_path() {
+    let dex = champions_reg_mc().unwrap();
+    let fixture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../data/fixtures/differential/status-dependent-power.json"
+    ))
+    .unwrap();
+    assert_eq!(fixture["showdown_commit"], SHOWDOWN_COMMIT);
+    assert_eq!(fixture["methodology"]["move_execution"], true);
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let action = single_move_action(0, ActionTarget::Foe(ActiveSlot::Left));
+
+    let execute = |move_name: &str, status: Option<MajorStatus>| {
+        let source = set_with_moves(&dex, "mew", "synchronize", &[move_name]);
+        let target = set_with_moves(&dex, "milotic", "competitive", &["swordsdance"]);
+        let state = selected_primary_battle(&dex, &source, &target, 0x16_04);
+        let mut builder = BattleStateBuilder::from_state(state).unwrap();
+        builder
+            .edit_pokemon(
+                PokemonRef::new(SideId::P2, PokemonIndex::new(0)),
+                |pokemon| {
+                    pokemon.status = status;
+                    pokemon.status_state =
+                        status.map_or_else(StatusState::default, fixture_status_state);
+                },
+            )
+            .unwrap();
+        let state = builder.build().unwrap();
+        let resumed: BattleState = serde_json::from_str(&serde_json::to_string(&state).unwrap())
+            .expect("serialized conditional-power input");
+        let result = step(&state, &action, &mechanics).expect("conditional-power move");
+        assert_eq!(state, resumed, "input state must remain unchanged");
+        assert_eq!(result, step(&resumed, &action, &mechanics).unwrap());
+        result
+            .diagnostics
+            .turn
+            .as_ref()
+            .unwrap()
+            .actions
+            .iter()
+            .find_map(|resolved| match resolved {
+                ResolvedAction::Damaged {
+                    target_side: SideId::P2,
+                    target_slot: ActiveSlot::Left,
+                    damage,
+                    ..
+                } => Some(damage.base_damage),
+                _ => None,
+            })
+            .expect("move must use canonical damage")
+    };
+
+    for case in fixture["cases"].as_array().unwrap() {
+        let move_name = case["move"].as_str().unwrap();
+        let status = match case["target_status"].as_str() {
+            Some("brn") => Some(MajorStatus::Burn),
+            Some("par") => Some(MajorStatus::Paralysis),
+            Some("psn") => Some(MajorStatus::Poison),
+            Some("tox") => Some(MajorStatus::BadlyPoisoned),
+            None => None,
+            value => panic!("unexpected fixture status {value:?}"),
+        };
+        let move_id = dex.resolve_move(move_name).unwrap().0;
+        let move_data = CombatData::move_data(&dex, move_id).unwrap();
+        let expected_power = u16::try_from(case["resolved_base_power"].as_u64().unwrap()).unwrap();
+        let actual = execute(move_name, status);
+        let healthy = execute(move_name, None);
+        if expected_power > move_data.base_power {
+            assert!(
+                actual > healthy,
+                "{} should double against {status:?}",
+                case["id"]
+            );
+        } else {
+            assert_eq!(actual, healthy, "{} should retain base power", case["id"]);
+        }
     }
 }
 

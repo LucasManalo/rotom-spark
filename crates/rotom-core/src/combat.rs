@@ -110,6 +110,8 @@ pub enum PriorMoveEffect {
     #[default]
     None,
     Facade,
+    TargetStatus,
+    TargetPoison,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -4264,7 +4266,11 @@ impl BattleState {
             &mut adjusted_move,
         )?;
         let facade_active = facade_activates(source_state.status);
-        if adjusted_move.prior_effect == PriorMoveEffect::Facade && facade_active {
+        if conditional_power_activates(
+            adjusted_move.prior_effect,
+            source_state.status,
+            target_state.status,
+        ) {
             adjusted_move.base_power = adjusted_move.base_power.saturating_mul(2);
         }
         if data.move_intrinsic(move_id) == MoveIntrinsic::KnockOff
@@ -5687,6 +5693,22 @@ fn facade_activates(status: Option<MajorStatus>) -> bool {
     )
 }
 
+fn conditional_power_activates(
+    effect: PriorMoveEffect,
+    source_status: Option<MajorStatus>,
+    target_status: Option<MajorStatus>,
+) -> bool {
+    match effect {
+        PriorMoveEffect::None => false,
+        PriorMoveEffect::Facade => facade_activates(source_status),
+        PriorMoveEffect::TargetStatus => target_status.is_some(),
+        PriorMoveEffect::TargetPoison => matches!(
+            target_status,
+            Some(MajorStatus::Poison | MajorStatus::BadlyPoisoned)
+        ),
+    }
+}
+
 fn rounded_fraction(value: u32, fraction: EffectFraction) -> Result<u32, BattleError> {
     if fraction.denominator == 0 {
         return Err(BattleError::DataMismatch(
@@ -5985,6 +6007,38 @@ mod tests {
         ] {
             assert_eq!(facade_activates(status), expected, "status: {status:?}");
         }
+    }
+
+    #[test]
+    fn target_status_power_predicates_distinguish_any_status_from_poison() {
+        for status in [
+            MajorStatus::Burn,
+            MajorStatus::Freeze,
+            MajorStatus::Paralysis,
+            MajorStatus::Poison,
+            MajorStatus::BadlyPoisoned,
+            MajorStatus::Sleep,
+        ] {
+            assert!(conditional_power_activates(
+                PriorMoveEffect::TargetStatus,
+                None,
+                Some(status)
+            ));
+            assert_eq!(
+                conditional_power_activates(PriorMoveEffect::TargetPoison, None, Some(status)),
+                matches!(status, MajorStatus::Poison | MajorStatus::BadlyPoisoned)
+            );
+        }
+        assert!(!conditional_power_activates(
+            PriorMoveEffect::TargetStatus,
+            None,
+            None
+        ));
+        assert!(!conditional_power_activates(
+            PriorMoveEffect::TargetPoison,
+            None,
+            None
+        ));
     }
 
     #[test]

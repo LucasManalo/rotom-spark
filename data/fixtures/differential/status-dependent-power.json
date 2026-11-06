@@ -1,0 +1,67 @@
+{
+  "showdown_commit": "b79ce06d06b8f0dc8de8bb348bc9cab5d931553f",
+  "format": "gen9championsvgc2026regmc",
+  "methodology": {
+    "source": "pinned status-dependent base-power callbacks plus complete Showdown doubles turns",
+    "damage_roll_percent": 100,
+    "move_execution": true,
+    "reference_derived_assertions": true,
+    "full_state_differential_comparison": false
+  },
+  "cases": [
+    {
+      "id": "hex-healthy",
+      "move": "hex",
+      "target_status": null,
+      "resolved_base_power": 65,
+      "damage": 25,
+      "hp_loss": 25,
+      "execution_path": "complete Showdown doubles turn after direct callback inspection"
+    },
+    {
+      "id": "hex-burn",
+      "move": "hex",
+      "target_status": "brn",
+      "resolved_base_power": 130,
+      "damage": 49,
+      "hp_loss": 59,
+      "execution_path": "complete Showdown doubles turn after direct callback inspection"
+    },
+    {
+      "id": "infernal-parade-paralysis",
+      "move": "infernalparade",
+      "target_status": "par",
+      "resolved_base_power": 130,
+      "damage": 49,
+      "hp_loss": 73,
+      "execution_path": "complete Showdown doubles turn after direct callback inspection"
+    },
+    {
+      "id": "venoshock-burn",
+      "move": "venoshock",
+      "target_status": "brn",
+      "resolved_base_power": 65,
+      "damage": 25,
+      "hp_loss": 35,
+      "execution_path": "complete Showdown doubles turn after direct callback inspection"
+    },
+    {
+      "id": "venoshock-poison",
+      "move": "venoshock",
+      "target_status": "psn",
+      "resolved_base_power": 130,
+      "damage": 49,
+      "hp_loss": 70,
+      "execution_path": "complete Showdown doubles turn after direct callback inspection"
+    },
+    {
+      "id": "barb-barrage-toxic",
+      "move": "barbbarrage",
+      "target_status": "tox",
+      "resolved_base_power": 120,
+      "damage": 66,
+      "hp_loss": 76,
+      "execution_path": "complete Showdown doubles turn after direct callback inspection"
+    }
+  ]
+}

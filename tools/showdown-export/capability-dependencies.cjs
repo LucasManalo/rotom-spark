@@ -29,7 +29,7 @@ const CAPABILITIES = {
 	redirection: verified('Follow Me and Rage Powder redirection', ['priority', 'eligibility'], 'Ability redirection and exceptional bypass rules remain separate.', ['showdown:sim/battle-actions.ts:BattleActions.getRedirectTarget']),
 	retargeting: implemented('Fainted-target retargeting', ['replacement target selection'], 'Implemented and unit tested, but no isolated pinned differential fixture is recorded.', ['showdown:sim/battle-actions.ts:BattleActions.getRandomTarget']),
 	per_target_hit: implemented('Per-target hit resolution', ['independent hit results'], 'Exceptional per-target callbacks remain separate.', ['showdown:sim/battle-actions.ts:BattleActions.trySpreadMoveHit']),
-	conditional_power: implemented('Declarative conditional base power', ['Facade predicate'], 'Other variable-power predicates remain separate.', ['showdown:sim/battle-actions.ts:BattleActions.getDamage']),
+	conditional_power: verified('Declarative conditional base power', ['source-status predicate', 'target-status predicate', 'target-poison predicate'], 'Other variable-power predicates remain separate.', ['showdown:data/moves.ts:Moves.facade.onBasePower', 'showdown:data/moves.ts:Moves.hex.basePowerCallback', 'showdown:data/moves.ts:Moves.venoshock.onBasePower', 'showdown:sim/battle-actions.ts:BattleActions.getDamage']),
 	effective_stat_override: implemented('Effective offensive/defensive stat override', ['Psyshock-style defense selection'], 'Move-specific ignore rules remain separate.', ['showdown:sim/battle-actions.ts:BattleActions.getDamage']),
 	guaranteed_critical: verified('Guaranteed critical-hit moves', ['declarative willCrit', 'critical prevention hook', 'no critical RNG draw'], 'No known gap for declarative always-critical moves.', ['showdown:sim/battle-actions.ts:BattleActions.getDamage', 'showdown:data/moves.ts:Moves.flowertrick']),
 
@@ -215,6 +215,11 @@ Object.assign(CAPABILITIES.move_history, {
 Object.assign(CAPABILITIES.guaranteed_critical, {
 	tests: ['unit:crates/rotom-dex/tests/combat.rs#guaranteed_critical_moves_skip_critical_rng_and_respect_prevention'],
 	differential_fixtures: ['differential:data/fixtures/differential/guaranteed-critical.json#flower-trick-guaranteed-critical'],
+});
+
+Object.assign(CAPABILITIES.conditional_power, {
+	tests: ['unit:crates/rotom-dex/tests/combat.rs#status_dependent_power_uses_target_status_in_the_canonical_damage_path'],
+	differential_fixtures: ['differential:data/fixtures/differential/status-dependent-power.json#hex-burn'],
 });
 
 Object.assign(CAPABILITIES.force_target_switch, {

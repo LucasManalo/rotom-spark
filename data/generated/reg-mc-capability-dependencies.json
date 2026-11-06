@@ -31,22 +31,22 @@
       },
       "move": {
         "reachable": 510,
-        "unsupported": 261,
+        "unsupported": 257,
         "partial": 0,
-        "implemented": 249
+        "implemented": 253
       }
     },
     "executable_capability_coverage": {
       "total": 74,
       "unsupported": 17,
       "partial": 21,
-      "implemented": 21,
-      "verified": 15
+      "implemented": 20,
+      "verified": 16
     },
     "dependency_targets": {
       "ability": 92,
       "item": 25,
-      "move": 261
+      "move": 257
     }
   },
   "capabilities": [
@@ -448,20 +448,31 @@
     },
     {
       "id": "conditional_power",
-      "status": "implemented",
+      "status": "verified",
       "title": "Declarative conditional base power",
       "sub_capabilities": [
-        "Facade predicate"
+        "source-status predicate",
+        "target-status predicate",
+        "target-poison predicate"
       ],
       "lifecycle_and_ordering": [
-        "Facade predicate"
+        "source-status predicate",
+        "target-status predicate",
+        "target-poison predicate"
       ],
       "known_gaps": [
         "Other variable-power predicates remain separate."
       ],
-      "tests": [],
-      "differential_fixtures": [],
+      "tests": [
+        "unit:crates/rotom-dex/tests/combat.rs#status_dependent_power_uses_target_status_in_the_canonical_damage_path"
+      ],
+      "differential_fixtures": [
+        "differential:data/fixtures/differential/status-dependent-power.json#hex-burn"
+      ],
       "pinned_reference_evidence": [
+        "showdown:data/moves.ts:Moves.facade.onBasePower",
+        "showdown:data/moves.ts:Moves.hex.basePowerCallback",
+        "showdown:data/moves.ts:Moves.venoshock.onBasePower",
         "showdown:sim/battle-actions.ts:BattleActions.getDamage"
       ],
       "blocked_identities": [],
@@ -581,7 +592,6 @@
         "move:avalanche",
         "move:axekick",
         "move:banefulbunker",
-        "move:barbbarrage",
         "move:batonpass",
         "move:beakblast",
         "move:beatup",
@@ -647,11 +657,9 @@
         "move:heatcrash",
         "move:heavyslam",
         "move:helpinghand",
-        "move:hex",
         "move:highjumpkick",
         "move:hurricane",
         "move:icespinner",
-        "move:infernalparade",
         "move:instruct",
         "move:jawlock",
         "move:kingsshield",
@@ -740,7 +748,6 @@
         "move:tripleaxel",
         "move:upperhand",
         "move:uproar",
-        "move:venoshock",
         "move:watershuriken",
         "move:waterspout",
         "move:weatherball",
@@ -757,7 +764,6 @@
         "move:assurance",
         "move:aurawheel",
         "move:avalanche",
-        "move:barbbarrage",
         "move:beakblast",
         "move:beatup",
         "move:belch",
@@ -795,9 +801,7 @@
         "move:hardpress",
         "move:haze",
         "move:healbell",
-        "move:hex",
         "move:icespinner",
-        "move:infernalparade",
         "move:instruct",
         "move:jawlock",
         "move:lashout",
@@ -853,7 +857,6 @@
         "move:transform",
         "move:trickortreat",
         "move:tripleaxel",
-        "move:venoshock",
         "move:watershuriken",
         "move:waterspout",
         "move:weatherball",
@@ -5613,24 +5616,6 @@
     },
     {
       "kind": "move",
-      "id": "barbbarrage",
-      "name": "Barb Barrage",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "custom_callback"
-      ],
-      "outstanding_blockers": [
-        "custom_callback"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.barbbarrage"
-      ]
-    },
-    {
-      "kind": "move",
       "id": "batonpass",
       "name": "Baton Pass",
       "identity_status": "unsupported",
@@ -7421,24 +7406,6 @@
     },
     {
       "kind": "move",
-      "id": "hex",
-      "name": "Hex",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "custom_callback"
-      ],
-      "outstanding_blockers": [
-        "custom_callback"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.hex"
-      ]
-    },
-    {
-      "kind": "move",
       "id": "highjumpkick",
       "name": "High Jump Kick",
       "identity_status": "unsupported",
@@ -7569,24 +7536,6 @@
       "differential_fixtures": [],
       "pinned_reference_evidence": [
         "showdown:data/moves.ts:Moves.imprison"
-      ]
-    },
-    {
-      "kind": "move",
-      "id": "infernalparade",
-      "name": "Infernal Parade",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "custom_callback"
-      ],
-      "outstanding_blockers": [
-        "custom_callback"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.infernalparade"
       ]
     },
     {
@@ -10101,24 +10050,6 @@
       "differential_fixtures": [],
       "pinned_reference_evidence": [
         "showdown:data/moves.ts:Moves.uturn"
-      ]
-    },
-    {
-      "kind": "move",
-      "id": "venoshock",
-      "name": "Venoshock",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "custom_callback"
-      ],
-      "outstanding_blockers": [
-        "custom_callback"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.venoshock"
       ]
     },
     {

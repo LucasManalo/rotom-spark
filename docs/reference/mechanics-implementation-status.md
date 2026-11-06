@@ -20,7 +20,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | --- | ---: | ---: | ---: | ---: |
 | Abilities | 215 | 123 | 92 | 0 |
 | Items | 166 | 141 | 25 | 0 |
-| Moves | 510 | 249 | 0 | 261 |
+| Moves | 510 | 253 | 0 | 257 |
 
 ## Abilities
 
@@ -448,7 +448,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Axe Kick | `axekick` | unsupported | not_tested | not_tested | — |
 | Baby-Doll Eyes | `babydolleyes` | implemented | unit_tested | not_tested | PR 13.3 |
 | Baneful Bunker | `banefulbunker` | unsupported | not_tested | not_tested | — |
-| Barb Barrage | `barbbarrage` | unsupported | not_tested | not_tested | — |
+| Barb Barrage | `barbbarrage` | implemented | differential_verified | differential_verified | PR 16.4 |
 | Baton Pass | `batonpass` | unsupported | not_tested | not_tested | — |
 | Beak Blast | `beakblast` | unsupported | not_tested | not_tested | — |
 | Beat Up | `beatup` | unsupported | not_tested | not_tested | — |
@@ -626,7 +626,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Heat Wave | `heatwave` | implemented | unit_tested | not_tested | PR 13.4 |
 | Heavy Slam | `heavyslam` | unsupported | not_tested | not_tested | — |
 | Helping Hand | `helpinghand` | unsupported | not_tested | not_tested | — |
-| Hex | `hex` | unsupported | not_tested | not_tested | — |
+| Hex | `hex` | implemented | differential_verified | differential_verified | PR 16.4 |
 | High Horsepower | `highhorsepower` | implemented | differential_verified | not_tested | PR 9 |
 | High Jump Kick | `highjumpkick` | unsupported | not_tested | not_tested | — |
 | Horn Drill | `horndrill` | unsupported | not_tested | not_tested | — |
@@ -648,7 +648,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Icicle Spear | `iciclespear` | implemented | unit_tested | not_tested | PR 13.4 |
 | Icy Wind | `icywind` | implemented | unit_tested | not_tested | PR 13.4 |
 | Imprison | `imprison` | unsupported | not_tested | not_tested | — |
-| Infernal Parade | `infernalparade` | unsupported | not_tested | not_tested | — |
+| Infernal Parade | `infernalparade` | implemented | differential_verified | differential_verified | PR 16.4 |
 | Inferno | `inferno` | implemented | unit_tested | not_tested | PR 13.4 |
 | Infestation | `infestation` | unsupported | not_tested | not_tested | — |
 | Ingrain | `ingrain` | unsupported | not_tested | not_tested | — |
@@ -903,7 +903,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Uproar | `uproar` | unsupported | not_tested | not_tested | — |
 | U-turn | `uturn` | unsupported | not_tested | not_tested | — |
 | Vacuum Wave | `vacuumwave` | implemented | unit_tested | not_tested | PR 13.2 |
-| Venoshock | `venoshock` | unsupported | not_tested | not_tested | — |
+| Venoshock | `venoshock` | implemented | differential_verified | differential_verified | PR 16.4 |
 | Volt Switch | `voltswitch` | unsupported | not_tested | not_tested | — |
 | Volt Tackle | `volttackle` | implemented | unit_tested | not_tested | PR 13.4 |
 | Waterfall | `waterfall` | implemented | unit_tested | not_tested | PR 15.3 |

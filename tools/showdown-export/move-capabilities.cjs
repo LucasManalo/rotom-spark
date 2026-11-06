@@ -201,7 +201,9 @@ function moveExecutionRequirements(move) {
 	if (move.recoil || move.mindBlownRecoil || move.chloroblastRecoil || move.struggleRecoil) {
 		capabilities.add('recoil');
 	}
-	if (move.id === 'facade') capabilities.add('conditional_power');
+	if (['facade', 'hex', 'infernalparade', 'barbbarrage', 'venoshock'].includes(move.id)) {
+		capabilities.add('conditional_power');
+	}
 	if (move.willCrit) capabilities.add('guaranteed_critical');
 	if (move.id === 'freezedry') capabilities.add('unique_type_effectiveness');
 	if (move.overrideOffensiveStat || move.overrideDefensiveStat ||
@@ -223,7 +225,8 @@ function moveExecutionRequirements(move) {
 	}
 	const supportedCallbacks = new Set([
 		...(move.id === 'magnetrise' ? ['onTry'] : []),
-		...(move.id === 'facade' ? ['onBasePower'] : []),
+		...(['facade', 'barbbarrage', 'venoshock'].includes(move.id) ? ['onBasePower'] : []),
+		...(['hex', 'infernalparade'].includes(move.id) ? ['basePowerCallback'] : []),
 		...(move.id === 'knockoff' ? ['onBasePower', 'onAfterHit'] : []),
 		...(move.id === 'freezedry' ? ['onEffectiveness'] : []),
 		...(['trick', 'switcheroo'].includes(move.id) ? ['onTryImmunity', 'onHit'] : []),
