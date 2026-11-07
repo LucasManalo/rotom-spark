@@ -173,3 +173,12 @@ rounding and threshold cases, through complete pinned Showdown turns:
 node tools/showdown-reference/hp-dependent-power.cjs
 node tools/showdown-reference/hp-dependent-power.cjs --check
 ```
+
+PR 16.6 records Stored Power and Power Trip across positive, negative, mixed,
+maximum, and Unaware-interaction stat stages through complete pinned Showdown
+turns:
+
+```text
+node tools/showdown-reference/stat-dependent-power.cjs
+node tools/showdown-reference/stat-dependent-power.cjs --check
+```

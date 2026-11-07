@@ -164,6 +164,13 @@ fn hp_dependent_power_fixture() -> serde_json::Value {
     .expect("HP-dependent power fixture")
 }
 
+fn stat_dependent_power_fixture() -> serde_json::Value {
+    serde_json::from_str(include_str!(
+        "../../../data/fixtures/differential/stat-dependent-power.json"
+    ))
+    .expect("stat-dependent power fixture")
+}
+
 fn lifecycle_case<'a>(fixture: &'a serde_json::Value, id: &str) -> &'a serde_json::Value {
     fixture["cases"]
         .as_array()
@@ -7436,8 +7443,8 @@ fn mechanics_manifest_drives_every_move_capability_and_execution_smoke_case() {
         .iter()
         .filter(|entry| entry.implementation == "unsupported")
         .count();
-    assert_eq!(implemented, 257);
-    assert_eq!(unsupported, 253);
+    assert_eq!(implemented, 259);
+    assert_eq!(unsupported, 251);
 
     for entry in moves {
         let move_id = dex
@@ -9167,6 +9174,188 @@ fn hp_dependent_power_uses_shared_rules_before_damage_modifiers() {
     };
     assert_eq!(modified_power("technician", None), 30);
     assert_eq!(modified_power("synchronize", Some("muscleband")), 22);
+}
+
+#[test]
+fn zero_listed_power_damage_keeps_hit_protection_and_targeting_requirements() {
+    let dex = champions_reg_mc().unwrap();
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let source_ref = PokemonRef::new(SideId::P1, PokemonIndex::new(0));
+    let target_ref = PokemonRef::new(SideId::P2, PokemonIndex::new(0));
+
+    for move_name in ["flail", "reversal"] {
+        let move_id = dex.resolve_move(move_name).unwrap().0;
+        let move_data = CombatData::move_data(&dex, move_id).unwrap();
+        assert_eq!(move_data.operation, MoveOperation::StandardDamage);
+        for capability in [
+            MoveCapability::PerTargetHit,
+            MoveCapability::Protection,
+            MoveCapability::Retargeting,
+            MoveCapability::Redirection,
+        ] {
+            assert!(
+                move_data.required_capabilities.contains(capability),
+                "{move_name} is missing {capability}"
+            );
+        }
+
+        let source = set_with_moves(&dex, "mew", "synchronize", &[move_name]);
+        let target = set_with_moves(&dex, "snorlax", "immunity", &["swordsdance"]);
+        let state = selected_primary_battle(&dex, &source, &target, 0x16_06_01);
+        let unchanged = state.clone();
+        let invalid = single_move_action(0, ActionTarget::Automatic);
+        assert!(matches!(
+            step(&state, &invalid, &mechanics),
+            Err(rotom_core::BattleError::IllegalChoice(_))
+        ));
+        assert_eq!(
+            state, unchanged,
+            "illegal {move_name} target must be atomic"
+        );
+
+        let protect = dex.field_effect_ids().protect.unwrap();
+        let mut builder = BattleStateBuilder::from_state(state.clone()).unwrap();
+        builder
+            .edit_pokemon(target_ref, |pokemon| {
+                pokemon
+                    .volatiles
+                    .push(ConditionState::new(protect, Some(1)));
+            })
+            .unwrap();
+        let protected_state = builder.build().unwrap();
+        let result = step(
+            &protected_state,
+            &single_move_action(0, ActionTarget::Foe(ActiveSlot::Left)),
+            &mechanics,
+        )
+        .unwrap();
+        assert_eq!(
+            result
+                .state
+                .side(SideId::P2)
+                .pokemon(target_ref.pokemon)
+                .unwrap()
+                .current_hp,
+            protected_state
+                .side(SideId::P2)
+                .pokemon(target_ref.pokemon)
+                .unwrap()
+                .current_hp
+        );
+        assert!(result
+            .diagnostics
+            .turn
+            .as_ref()
+            .unwrap()
+            .target_outcomes
+            .iter()
+            .any(|outcome| {
+                outcome.source == source_ref
+                    && outcome.target == target_ref
+                    && outcome.result == TargetResult::Protected
+            }));
+    }
+}
+
+#[allow(clippy::too_many_lines)] // End-to-end family coverage includes pinned interactions.
+#[test]
+fn stat_dependent_power_counts_only_positive_stages_before_damage_modifiers() {
+    let dex = champions_reg_mc().unwrap();
+    let fixture = stat_dependent_power_fixture();
+    assert_eq!(fixture["showdown_commit"], SHOWDOWN_COMMIT);
+    assert_eq!(fixture["methodology"]["move_execution"], true);
+    let source_ref = PokemonRef::new(SideId::P1, PokemonIndex::new(0));
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+
+    for case in fixture["cases"].as_array().unwrap() {
+        let move_name = case["move"].as_str().unwrap();
+        let source = set_with_moves(&dex, "mew", "synchronize", &[move_name]);
+        let target = set_with_moves(
+            &dex,
+            "snorlax",
+            case["target_ability"].as_str().unwrap(),
+            &["swordsdance"],
+        );
+        let state = selected_primary_battle(&dex, &source, &target, 0x16_06_02);
+        let boosts = &case["boosts"];
+        let mut builder = BattleStateBuilder::from_state(state).unwrap();
+        builder
+            .edit_pokemon(source_ref, |pokemon| {
+                for (key, stage) in boosts.as_object().unwrap() {
+                    let value = i8::try_from(stage.as_i64().unwrap()).unwrap();
+                    match key.as_str() {
+                        "atk" => pokemon.stat_stages.atk = value,
+                        "def" => pokemon.stat_stages.def = value,
+                        "spa" => pokemon.stat_stages.spa = value,
+                        "spd" => pokemon.stat_stages.spd = value,
+                        "spe" => pokemon.stat_stages.spe = value,
+                        "accuracy" => pokemon.stat_stages.accuracy = value,
+                        "evasion" => pokemon.stat_stages.evasion = value,
+                        other => panic!("unexpected fixture stat {other}"),
+                    }
+                }
+            })
+            .unwrap();
+        let state = builder.build().unwrap();
+        let resumed: BattleState = serde_json::from_str(&serde_json::to_string(&state).unwrap())
+            .expect("serialized stat-dependent input");
+        let action = single_move_action(0, ActionTarget::Foe(ActiveSlot::Left));
+        let result = step(&state, &action, &mechanics).unwrap();
+        assert_eq!(state, resumed);
+        assert_eq!(result, step(&resumed, &action, &mechanics).unwrap());
+        let expected = case["resolved_base_power"].as_i64().unwrap();
+        let power = result
+            .diagnostics
+            .turn
+            .as_ref()
+            .unwrap()
+            .events
+            .iter()
+            .find_map(|event| {
+                (event.event == BattleEvent::ModifyBasePower
+                    && event.context.source == Some(source_ref))
+                .then_some(&event.value)
+            })
+            .and_then(|value| match value {
+                rotom_core::EventValue::Integer(value) => Some(*value),
+                _ => None,
+            })
+            .unwrap();
+        assert_eq!(power, expected, "{}", case["id"]);
+    }
+
+    let technician_power = |boost: i8| {
+        let source = set_with_moves(&dex, "mew", "technician", &["storedpower"]);
+        let target = set_with_moves(&dex, "snorlax", "immunity", &["swordsdance"]);
+        let state = selected_primary_battle(&dex, &source, &target, 0x16_06_03);
+        let mut builder = BattleStateBuilder::from_state(state).unwrap();
+        builder
+            .edit_pokemon(source_ref, |pokemon| pokemon.stat_stages.spe = boost)
+            .unwrap();
+        step(
+            &builder.build().unwrap(),
+            &single_move_action(0, ActionTarget::Foe(ActiveSlot::Left)),
+            &mechanics,
+        )
+        .unwrap()
+        .diagnostics
+        .turn
+        .unwrap()
+        .events
+        .into_iter()
+        .find_map(|event| {
+            (event.event == BattleEvent::ModifyBasePower
+                && event.context.source == Some(source_ref))
+            .then_some(event.value)
+        })
+        .and_then(|value| match value {
+            rotom_core::EventValue::Integer(value) => Some(value),
+            _ => None,
+        })
+        .unwrap()
+    };
+    assert_eq!(technician_power(0), 30);
+    assert_eq!(technician_power(2), 90);
 }
 
 use rotom_core::AbilitySuppression::{Breakable, Unbreakable};

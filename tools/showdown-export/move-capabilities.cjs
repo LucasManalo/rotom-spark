@@ -175,7 +175,7 @@ function moveExecutionRequirements(move) {
 	} else if (move.damage === 'level') {
 		operation = 'level_damage';
 		capabilities.add('fixed_damage');
-	} else if (move.category !== 'Status' && (move.basePower > 0 || ['flail', 'reversal'].includes(move.id))) {
+	} else if (isStandardDamageMove(move)) {
 		operation = 'standard_damage';
 		capabilities.add('standard_damage');
 	} else {
@@ -187,7 +187,7 @@ function moveExecutionRequirements(move) {
 	} else {
 		capabilities.add('advanced_targeting');
 	}
-	if (move.category !== 'Status' && move.basePower > 0) {
+	if (operation === 'standard_damage') {
 		capabilities.add('per_target_hit');
 		capabilities.add('protection');
 		capabilities.add('retargeting');
@@ -206,7 +206,7 @@ function moveExecutionRequirements(move) {
 	if (['facade', 'hex', 'infernalparade', 'barbbarrage', 'venoshock'].includes(move.id)) {
 		capabilities.add('conditional_power');
 	}
-	if (['eruption', 'waterspout', 'flail', 'reversal'].includes(move.id)) capabilities.add('variable_power');
+	if (basePowerRule(move) !== 'fixed') capabilities.add('variable_power');
 	if (move.willCrit) capabilities.add('guaranteed_critical');
 	if (move.id === 'freezedry') capabilities.add('unique_type_effectiveness');
 	if (move.overrideOffensiveStat || move.overrideDefensiveStat ||
@@ -230,7 +230,7 @@ function moveExecutionRequirements(move) {
 		...(move.id === 'magnetrise' ? ['onTry'] : []),
 		...(['facade', 'barbbarrage', 'venoshock'].includes(move.id) ? ['onBasePower'] : []),
 		...(['hex', 'infernalparade'].includes(move.id) ? ['basePowerCallback'] : []),
-		...(['eruption', 'waterspout', 'flail', 'reversal'].includes(move.id) ? ['basePowerCallback'] : []),
+		...(['eruption', 'waterspout', 'flail', 'reversal', 'storedpower', 'powertrip'].includes(move.id) ? ['basePowerCallback'] : []),
 		...(move.id === 'knockoff' ? ['onBasePower', 'onAfterHit'] : []),
 		...(move.id === 'freezedry' ? ['onEffectiveness'] : []),
 		...(['trick', 'switcheroo'].includes(move.id) ? ['onTryImmunity', 'onHit'] : []),
@@ -256,6 +256,18 @@ function moveExecutionRequirements(move) {
 		operation,
 		required_capabilities: CAPABILITY_ORDER.filter(capability => capabilities.has(capability)),
 	};
+}
+
+function basePowerRule(move) {
+	if (['eruption', 'waterspout'].includes(move.id)) return 'current_hp_ratio';
+	if (['flail', 'reversal'].includes(move.id)) return 'low_hp_bracket';
+	if (['storedpower', 'powertrip'].includes(move.id)) return 'positive_stat_stages';
+	return 'fixed';
+}
+
+function isStandardDamageMove(move) {
+	return move.damage === undefined && move.category !== 'Status' &&
+		(move.basePower > 0 || basePowerRule(move) !== 'fixed');
 }
 
 function isPr131Supported(move) {

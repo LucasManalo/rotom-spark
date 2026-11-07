@@ -22005,6 +22005,10 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit",
         "variable_power"
       ],
       "pr_16_5_supported": true,
@@ -31475,12 +31479,16 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/stat-dependent-power.json#power-trip-max-stages",
+        "file:docs/research/pr-16-6-stat-dependent-power.md",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#stat_dependent_power_counts_only_positive_stages_before_damage_modifiers",
         "species/corviknight",
         "species/empoleon",
         "species/incineroar",
         "species/krookodile",
         "species/morpeko",
-        "species/pangoro"
+        "species/pangoro",
+        "unit:crates/rotom-dex/tests/combat.rs#stat_dependent_power_counts_only_positive_stages_before_damage_modifiers"
       ],
       "effect_families": [
         "custom_callback",
@@ -31491,17 +31499,17 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback",
         "protection",
         "redirection",
         "retargeting",
-        "per_target_hit"
+        "per_target_hit",
+        "variable_power"
       ],
-      "pr_16_5_supported": false,
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "pr_16_5_supported": true,
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 16.6"
     },
     {
       "id": "powerwhip",
@@ -33740,6 +33748,10 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
+        "protection",
+        "redirection",
+        "retargeting",
+        "per_target_hit",
         "variable_power"
       ],
       "pr_16_5_supported": true,
@@ -38627,6 +38639,10 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/stat-dependent-power.json#stored-power-mixed-stages",
+        "file:docs/research/pr-16-6-stat-dependent-power.md",
+        "interaction_differential:data/fixtures/differential/stat-dependent-power.json#stored-power-unaware",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#stat_dependent_power_counts_only_positive_stages_before_damage_modifiers",
         "species/alakazam",
         "species/alcremie",
         "species/alcremiecaramelswirl",
@@ -38688,7 +38704,8 @@
         "species/umbreon",
         "species/vaporeon",
         "species/wigglytuff",
-        "species/wyrdeer"
+        "species/wyrdeer",
+        "unit:crates/rotom-dex/tests/combat.rs#stat_dependent_power_counts_only_positive_stages_before_damage_modifiers"
       ],
       "effect_families": [
         "custom_callback",
@@ -38699,17 +38716,17 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback",
         "protection",
         "redirection",
         "retargeting",
-        "per_target_hit"
+        "per_target_hit",
+        "variable_power"
       ],
-      "pr_16_5_supported": false,
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "pr_16_5_supported": true,
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 16.6"
     },
     {
       "id": "stormthrow",
@@ -49322,19 +49339,19 @@
       "move": {
         "total": 510,
         "implementation": {
-          "unsupported": 253,
+          "unsupported": 251,
           "partial": 0,
-          "implemented": 257
+          "implemented": 259
         },
         "verification": {
-          "not_tested": 253,
+          "not_tested": 251,
           "unit_tested": 218,
-          "differential_verified": 39
+          "differential_verified": 41
         },
         "interaction_verification": {
-          "not_tested": 476,
-          "unit_tested": 13,
-          "differential_verified": 21
+          "not_tested": 474,
+          "unit_tested": 14,
+          "differential_verified": 22
         },
         "reachability": {
           "direct_legal_set": 510,

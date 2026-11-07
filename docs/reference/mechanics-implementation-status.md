@@ -20,7 +20,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | --- | ---: | ---: | ---: | ---: |
 | Abilities | 215 | 123 | 92 | 0 |
 | Items | 166 | 141 | 25 | 0 |
-| Moves | 510 | 257 | 0 | 253 |
+| Moves | 510 | 259 | 0 | 251 |
 
 ## Abilities
 
@@ -741,7 +741,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Power Split | `powersplit` | unsupported | not_tested | not_tested | — |
 | Power Swap | `powerswap` | unsupported | not_tested | not_tested | — |
 | Power Trick | `powertrick` | unsupported | not_tested | not_tested | — |
-| Power Trip | `powertrip` | unsupported | not_tested | not_tested | — |
+| Power Trip | `powertrip` | implemented | differential_verified | unit_tested | PR 16.6 |
 | Power Whip | `powerwhip` | implemented | unit_tested | not_tested | PR 9 |
 | Protect | `protect` | implemented | differential_verified | differential_verified | PR 13.2 |
 | Psychic | `psychic` | implemented | unit_tested | not_tested | PR 13.4 |
@@ -843,7 +843,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Stomping Tantrum | `stompingtantrum` | unsupported | not_tested | not_tested | — |
 | Stone Axe | `stoneaxe` | unsupported | not_tested | not_tested | — |
 | Stone Edge | `stoneedge` | implemented | unit_tested | not_tested | PR 13.2 |
-| Stored Power | `storedpower` | unsupported | not_tested | not_tested | — |
+| Stored Power | `storedpower` | implemented | differential_verified | differential_verified | PR 16.6 |
 | Storm Throw | `stormthrow` | implemented | differential_verified | unit_tested | PR 16.1 |
 | Strength Sap | `strengthsap` | unsupported | not_tested | not_tested | — |
 | String Shot | `stringshot` | implemented | unit_tested | not_tested | PR 13.3 |

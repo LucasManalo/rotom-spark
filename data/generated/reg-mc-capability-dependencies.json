@@ -31,9 +31,9 @@
       },
       "move": {
         "reachable": 510,
-        "unsupported": 253,
+        "unsupported": 251,
         "partial": 0,
-        "implemented": 257
+        "implemented": 259
       }
     },
     "executable_capability_coverage": {
@@ -46,7 +46,7 @@
     "dependency_targets": {
       "ability": 92,
       "item": 25,
-      "move": 253
+      "move": 251
     }
   },
   "capabilities": [
@@ -689,7 +689,6 @@
         "move:poltergeist",
         "move:powersplit",
         "move:powerswap",
-        "move:powertrip",
         "move:psychicfangs",
         "move:psychup",
         "move:quash",
@@ -724,7 +723,6 @@
         "move:stockpile",
         "move:stompingtantrum",
         "move:stoneaxe",
-        "move:storedpower",
         "move:strengthsap",
         "move:stuffcheeks",
         "move:substitute",
@@ -814,7 +812,6 @@
         "move:poltergeist",
         "move:powersplit",
         "move:powerswap",
-        "move:powertrip",
         "move:psychicfangs",
         "move:psychup",
         "move:quash",
@@ -836,7 +833,6 @@
         "move:steelbeam",
         "move:steelroller",
         "move:stompingtantrum",
-        "move:storedpower",
         "move:stuffcheeks",
         "move:suckerpunch",
         "move:superfang",
@@ -2898,25 +2894,31 @@
       "sub_capabilities": [
         "current-HP ratio",
         "low-HP brackets",
+        "positive stat-stage sum",
         "pre-modifier resolution"
       ],
       "lifecycle_and_ordering": [
         "current-HP ratio",
         "low-HP brackets",
+        "positive stat-stage sum",
         "pre-modifier resolution"
       ],
       "known_gaps": [
-        "Stat-dependent and contextual variable-power rules remain separate."
+        "Contextual action-order, damage-history, and prior-failure power rules remain separate."
       ],
       "tests": [
-        "unit:crates/rotom-dex/tests/combat.rs#hp_dependent_power_uses_shared_rules_before_damage_modifiers"
+        "unit:crates/rotom-dex/tests/combat.rs#hp_dependent_power_uses_shared_rules_before_damage_modifiers",
+        "unit:crates/rotom-dex/tests/combat.rs#zero_listed_power_damage_keeps_hit_protection_and_targeting_requirements",
+        "unit:crates/rotom-dex/tests/combat.rs#stat_dependent_power_counts_only_positive_stages_before_damage_modifiers"
       ],
       "differential_fixtures": [
-        "differential:data/fixtures/differential/hp-dependent-power.json#eruption-half-hp"
+        "differential:data/fixtures/differential/hp-dependent-power.json#eruption-half-hp",
+        "differential:data/fixtures/differential/stat-dependent-power.json#stored-power-unaware"
       ],
       "pinned_reference_evidence": [
         "showdown:data/moves.ts:Moves.eruption.basePowerCallback",
         "showdown:data/moves.ts:Moves.flail.basePowerCallback",
+        "showdown:data/moves.ts:Moves.storedpower.basePowerCallback",
         "showdown:sim/battle-actions.ts:BattleActions.getDamage"
       ],
       "blocked_identities": [],
@@ -8308,24 +8310,6 @@
     },
     {
       "kind": "move",
-      "id": "powertrip",
-      "name": "Power Trip",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "custom_callback"
-      ],
-      "outstanding_blockers": [
-        "custom_callback"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.powertrip"
-      ]
-    },
-    {
-      "kind": "move",
       "id": "psychicfangs",
       "name": "Psychic Fangs",
       "identity_status": "unsupported",
@@ -9378,24 +9362,6 @@
       "differential_fixtures": [],
       "pinned_reference_evidence": [
         "showdown:data/moves.ts:Moves.stoneaxe"
-      ]
-    },
-    {
-      "kind": "move",
-      "id": "storedpower",
-      "name": "Stored Power",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "custom_callback"
-      ],
-      "outstanding_blockers": [
-        "custom_callback"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.storedpower"
       ]
     },
     {

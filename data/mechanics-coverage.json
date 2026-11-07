@@ -5616,6 +5616,35 @@
         "differential:data/fixtures/differential/hp-dependent-power.json#reversal-ratio-1",
         "interaction_unit:crates/rotom-dex/tests/combat.rs#hp_dependent_power_uses_shared_rules_before_damage_modifiers"
       ]
+    },
+    {
+      "id": "storedpower",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 16.6",
+      "evidence": [
+        "file:docs/research/pr-16-6-stat-dependent-power.md",
+        "unit:crates/rotom-dex/tests/combat.rs#stat_dependent_power_counts_only_positive_stages_before_damage_modifiers",
+        "differential:data/fixtures/differential/stat-dependent-power.json#stored-power-mixed-stages",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#stat_dependent_power_counts_only_positive_stages_before_damage_modifiers",
+        "interaction_differential:data/fixtures/differential/stat-dependent-power.json#stored-power-unaware"
+      ]
+    },
+    {
+      "id": "powertrip",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 16.6",
+      "evidence": [
+        "file:docs/research/pr-16-6-stat-dependent-power.md",
+        "unit:crates/rotom-dex/tests/combat.rs#stat_dependent_power_counts_only_positive_stages_before_damage_modifiers",
+        "differential:data/fixtures/differential/stat-dependent-power.json#power-trip-max-stages",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#stat_dependent_power_counts_only_positive_stages_before_damage_modifiers"
+      ]
     }
   ]
 }

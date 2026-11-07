@@ -96,11 +96,7 @@ impl CombatData for DexData {
 
     fn move_base_power_rule(&self, move_id: MoveId) -> BasePowerRule {
         self.move_data(move_id)
-            .map_or(BasePowerRule::Fixed, |data| match data.id.as_str() {
-                "eruption" | "waterspout" => BasePowerRule::CurrentHpRatio,
-                "flail" | "reversal" => BasePowerRule::LowHpBracket,
-                _ => BasePowerRule::Fixed,
-            })
+            .map_or(BasePowerRule::Fixed, base_power_rule)
     }
 
     fn pokemon_types(
@@ -1759,14 +1755,10 @@ fn move_execution_requirements(data: &MoveData) -> (MoveOperation, MoveCapabilit
             MoveOperation::LevelDamage,
             MoveCapabilities::NONE.with(MoveCapability::FixedDamage),
         ),
-        None if data.category != "Status"
-            && (data.base_power > 0 || matches!(data.id.as_str(), "flail" | "reversal")) =>
-        {
-            (
-                MoveOperation::StandardDamage,
-                MoveCapabilities::NONE.with(MoveCapability::StandardDamage),
-            )
-        }
+        None if is_standard_damage_move(data) => (
+            MoveOperation::StandardDamage,
+            MoveCapabilities::NONE.with(MoveCapability::StandardDamage),
+        ),
         None => (
             MoveOperation::NonDamage,
             MoveCapabilities::NONE.with(MoveCapability::NonDamagePrimary),
@@ -1775,7 +1767,7 @@ fn move_execution_requirements(data: &MoveData) -> (MoveOperation, MoveCapabilit
 
     required = required.with(MoveCapability::Accuracy);
     required = required.with(target_capability(data.target));
-    if data.category != "Status" && data.base_power > 0 {
+    if operation == MoveOperation::StandardDamage {
         required = required
             .with(MoveCapability::PerTargetHit)
             .with(MoveCapability::Protection)
@@ -1811,7 +1803,7 @@ fn move_execution_requirements(data: &MoveData) -> (MoveOperation, MoveCapabilit
     }
     if matches!(
         data.id.as_str(),
-        "eruption" | "waterspout" | "flail" | "reversal"
+        "eruption" | "waterspout" | "flail" | "reversal" | "storedpower" | "powertrip"
     ) {
         required = required.with(MoveCapability::VariablePower);
     }
@@ -1842,6 +1834,21 @@ fn move_execution_requirements(data: &MoveData) -> (MoveOperation, MoveCapabilit
         required = required.with(MoveCapability::Volatile);
     }
     (operation, behavior_capabilities(data, required))
+}
+
+fn base_power_rule(data: &MoveData) -> BasePowerRule {
+    match data.id.as_str() {
+        "eruption" | "waterspout" => BasePowerRule::CurrentHpRatio,
+        "flail" | "reversal" => BasePowerRule::LowHpBracket,
+        "storedpower" | "powertrip" => BasePowerRule::PositiveStatStages,
+        _ => BasePowerRule::Fixed,
+    }
+}
+
+fn is_standard_damage_move(data: &MoveData) -> bool {
+    data.damage.is_none()
+        && data.category != "Status"
+        && (data.base_power > 0 || base_power_rule(data) != BasePowerRule::Fixed)
 }
 
 const fn target_capability(target: MoveTarget) -> MoveCapability {
@@ -1926,7 +1933,7 @@ fn behavior_capabilities(data: &MoveData, mut required: MoveCapabilities) -> Mov
                 && callback == "basePowerCallback")
             || (matches!(
                 data.id.as_str(),
-                "eruption" | "waterspout" | "flail" | "reversal"
+                "eruption" | "waterspout" | "flail" | "reversal" | "storedpower" | "powertrip"
             ) && callback == "basePowerCallback")
             || (data.id == "knockoff" && matches!(callback.as_str(), "onBasePower" | "onAfterHit"))
             || (data.id == "freezedry" && callback == "onEffectiveness")

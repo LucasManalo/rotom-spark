@@ -121,6 +121,7 @@ pub enum BasePowerRule {
     Fixed,
     CurrentHpRatio,
     LowHpBracket,
+    PositiveStatStages,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -4199,6 +4200,7 @@ impl BattleState {
             .pokemon(source.pokemon)
             .ok_or_else(|| BattleError::InvalidState("damage source is out of bounds".to_owned()))?
             .clone();
+        let variable_power_positive_stages = positive_stat_stage_sum(source_state.stat_stages);
         if data.ability_has_behavior(source_state.ability, crate::AbilityBehavior::Unaware) {
             target_state.stat_stages.def = 0;
             target_state.stat_stages.spd = 0;
@@ -4280,6 +4282,7 @@ impl BattleState {
             adjusted_move.base_power,
             source_state.current_hp,
             source_state.stats.hp,
+            variable_power_positive_stages,
         )?;
         self.apply_field_base_power(
             data,
@@ -5738,6 +5741,7 @@ fn resolve_variable_base_power(
     listed_power: u16,
     current_hp: u16,
     max_hp: u16,
+    positive_stat_stages: u16,
 ) -> Result<u16, BattleError> {
     if max_hp == 0 || current_hp > max_hp {
         return Err(BattleError::InvalidState(
@@ -5762,7 +5766,25 @@ fn resolve_variable_base_power(
                 _ => 20,
             }
         }
+        BasePowerRule::PositiveStatStages => {
+            listed_power.saturating_add(20_u16.saturating_mul(positive_stat_stages))
+        }
     })
+}
+
+fn positive_stat_stage_sum(stages: crate::StatStages) -> u16 {
+    [
+        stages.atk,
+        stages.def,
+        stages.spa,
+        stages.spd,
+        stages.spe,
+        stages.accuracy,
+        stages.evasion,
+    ]
+    .into_iter()
+    .map(|stage| u16::from(stage.max(0).unsigned_abs()))
+    .sum()
 }
 
 fn rounded_fraction(value: u32, fraction: EffectFraction) -> Result<u32, BattleError> {
@@ -6252,11 +6274,11 @@ mod tests {
     #[test]
     fn variable_base_power_calculations_cover_rounding_and_bracket_boundaries() {
         assert_eq!(
-            resolve_variable_base_power(BasePowerRule::CurrentHpRatio, 150, 87, 175),
+            resolve_variable_base_power(BasePowerRule::CurrentHpRatio, 150, 87, 175, 0),
             Ok(74)
         );
         assert_eq!(
-            resolve_variable_base_power(BasePowerRule::CurrentHpRatio, 150, 1, 175),
+            resolve_variable_base_power(BasePowerRule::CurrentHpRatio, 150, 1, 175, 0),
             Ok(1)
         );
         for (hp, expected) in [
@@ -6268,14 +6290,32 @@ mod tests {
             (3, 200),
         ] {
             assert_eq!(
-                resolve_variable_base_power(BasePowerRule::LowHpBracket, 0, hp, 175),
+                resolve_variable_base_power(BasePowerRule::LowHpBracket, 0, hp, 175, 0),
                 Ok(expected),
                 "HP {hp}"
             );
         }
         assert!(matches!(
-            resolve_variable_base_power(BasePowerRule::LowHpBracket, 0, 1, 0),
+            resolve_variable_base_power(BasePowerRule::LowHpBracket, 0, 1, 0, 0),
             Err(BattleError::InvalidState(_))
         ));
+        assert_eq!(
+            resolve_variable_base_power(BasePowerRule::PositiveStatStages, 20, 100, 100, 0),
+            Ok(20)
+        );
+        assert_eq!(
+            resolve_variable_base_power(BasePowerRule::PositiveStatStages, 20, 100, 100, 42),
+            Ok(860)
+        );
+        assert_eq!(
+            positive_stat_stage_sum(crate::StatStages {
+                atk: 2,
+                def: -4,
+                spa: 1,
+                accuracy: 3,
+                ..crate::StatStages::default()
+            }),
+            6
+        );
     }
 }

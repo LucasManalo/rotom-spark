@@ -1,0 +1,78 @@
+{
+  "showdown_commit": "b79ce06d06b8f0dc8de8bb348bc9cab5d931553f",
+  "format": "gen9championsvgc2026regmc",
+  "methodology": {
+    "source": "pinned positiveBoosts base-power callbacks plus complete Showdown doubles turns",
+    "damage_roll_percent": 100,
+    "move_execution": true,
+    "reference_derived_assertions": true,
+    "full_state_differential_comparison": false
+  },
+  "cases": [
+    {
+      "id": "stored-power-unboosted",
+      "move": "storedpower",
+      "boosts": {},
+      "target_ability": "immunity",
+      "resolved_base_power": 20,
+      "hp_loss": 15,
+      "execution_path": "complete Showdown doubles turn after direct callback inspection"
+    },
+    {
+      "id": "stored-power-mixed-stages",
+      "move": "storedpower",
+      "boosts": {
+        "spa": 2,
+        "spe": 1,
+        "def": -3
+      },
+      "target_ability": "immunity",
+      "resolved_base_power": 80,
+      "hp_loss": 148,
+      "execution_path": "complete Showdown doubles turn after direct callback inspection"
+    },
+    {
+      "id": "stored-power-unaware",
+      "move": "storedpower",
+      "boosts": {
+        "spa": 2,
+        "accuracy": 1
+      },
+      "target_ability": "unaware",
+      "resolved_base_power": 80,
+      "hp_loss": 51,
+      "execution_path": "complete Showdown doubles turn after direct callback inspection"
+    },
+    {
+      "id": "power-trip-mixed-stages",
+      "move": "powertrip",
+      "boosts": {
+        "atk": 2,
+        "spe": 1,
+        "evasion": 1,
+        "def": -2
+      },
+      "target_ability": "immunity",
+      "resolved_base_power": 100,
+      "hp_loss": 126,
+      "execution_path": "complete Showdown doubles turn after direct callback inspection"
+    },
+    {
+      "id": "power-trip-max-stages",
+      "move": "powertrip",
+      "boosts": {
+        "atk": 6,
+        "def": 6,
+        "spa": 6,
+        "spd": 6,
+        "spe": 6,
+        "accuracy": 6,
+        "evasion": 6
+      },
+      "target_ability": "immunity",
+      "resolved_base_power": 860,
+      "hp_loss": 235,
+      "execution_path": "complete Showdown doubles turn after direct callback inspection"
+    }
+  ]
+}
