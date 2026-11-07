@@ -41,11 +41,38 @@ function run(id, moveName, boosts, targetAbility, seed) {
 	};
 }
 
+function runContext(id, moveName, context, seed) {
+	const set = (species, ability, moves) => ({species, ability, moves, level: 50, nature: 'Serious', evs: {}});
+	const battle = new Battle({
+		format: Dex.formats.get(version.format, true),
+		seed,
+		p1: {team: [set('Mew', 'synchronize', [moveName]), filler, filler, filler]},
+		p2: {team: [set('Snorlax', 'immunity', ['splash']), filler, filler, filler]},
+	});
+	battle.makeChoices('team 1234', 'team 1234');
+	const source = battle.p1.active[0];
+	const target = battle.p2.active[0];
+	target.newlySwitched = context.target_newly_switched;
+	source.moveLastTurnResult = context.previous_move_failed ? false : undefined;
+	if (context.target_damaged_by_status) {
+		battle.damage(5, target, source, battle.dex.conditions.get('brn'));
+	}
+	let move = battle.dex.getActiveMove(moveName);
+	move = battle.runEvent('ModifyMove', source, target, move, move);
+	return {
+		id,
+		move: moveName,
+		context,
+		resolved_base_power: move.basePowerCallback.call(battle, source, target, move),
+		execution_path: 'direct pinned callback with canonical Pokemon and damage history state',
+	};
+}
+
 const contents = `${JSON.stringify({
 	showdown_commit: version.commit,
 	format: version.format,
 	methodology: {
-		source: 'pinned positiveBoosts base-power callbacks plus complete Showdown doubles turns',
+		source: 'pinned declarative base-power callbacks plus complete stat-dependent Showdown doubles turns',
 		damage_roll_percent: 100,
 		move_execution: true,
 		reference_derived_assertions: true,
@@ -57,6 +84,12 @@ const contents = `${JSON.stringify({
 		run('stored-power-unaware', 'storedpower', {spa: 2, accuracy: 1}, 'unaware', 'gen5,0000000000000063'),
 		run('power-trip-mixed-stages', 'powertrip', {atk: 2, spe: 1, evasion: 1, def: -2}, 'immunity', 'gen5,0000000000000064'),
 		run('power-trip-max-stages', 'powertrip', {atk: 6, def: 6, spa: 6, spd: 6, spe: 6, accuracy: 6, evasion: 6}, 'immunity', 'gen5,0000000000000065'),
+		runContext('payback-newly-switched', 'payback', {target_newly_switched: true, target_damaged_by_status: false, previous_move_failed: false}, 'gen5,0000000000000066'),
+		runContext('payback-after-action', 'payback', {target_newly_switched: false, target_damaged_by_status: false, previous_move_failed: false}, 'gen5,0000000000000067'),
+		runContext('assurance-undamaged', 'assurance', {target_newly_switched: false, target_damaged_by_status: false, previous_move_failed: false}, 'gen5,0000000000000068'),
+		runContext('assurance-after-status-damage', 'assurance', {target_newly_switched: false, target_damaged_by_status: true, previous_move_failed: false}, 'gen5,0000000000000069'),
+		runContext('stomping-after-success', 'stompingtantrum', {target_newly_switched: false, target_damaged_by_status: false, previous_move_failed: false}, 'gen5,000000000000006a'),
+		runContext('stomping-after-failure', 'stompingtantrum', {target_newly_switched: false, target_damaged_by_status: false, previous_move_failed: true}, 'gen5,000000000000006b'),
 	],
 }, null, 2)}\n`;
 

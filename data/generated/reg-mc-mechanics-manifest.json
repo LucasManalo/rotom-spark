@@ -13401,6 +13401,9 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/stat-dependent-power.json#assurance-after-status-damage",
+        "interaction_differential:data/fixtures/differential/stat-dependent-power.json#assurance-after-status-damage",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#contextual_power_reuses_action_damage_and_failure_history",
         "species/absol",
         "species/aerodactyl",
         "species/annihilape",
@@ -13459,7 +13462,8 @@
         "species/watchog",
         "species/weavile",
         "species/zoroark",
-        "species/zoroarkhisui"
+        "species/zoroarkhisui",
+        "unit:crates/rotom-dex/tests/combat.rs#contextual_power_reuses_action_damage_and_failure_history"
       ],
       "effect_families": [
         "custom_callback",
@@ -13470,17 +13474,17 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback",
         "protection",
         "redirection",
         "retargeting",
-        "per_target_hit"
+        "per_target_hit",
+        "variable_power"
       ],
-      "pr_16_5_supported": false,
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "pr_16_5_supported": true,
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 16.5.2"
     },
     {
       "id": "attract",
@@ -30487,6 +30491,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/stat-dependent-power.json#payback-after-action",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#contextual_power_reuses_action_damage_and_failure_history",
         "species/absol",
         "species/aerodactyl",
         "species/aggron",
@@ -30571,7 +30577,8 @@
         "species/umbreon",
         "species/weavile",
         "species/zoroark",
-        "species/zoroarkhisui"
+        "species/zoroarkhisui",
+        "unit:crates/rotom-dex/tests/combat.rs#contextual_power_reuses_action_damage_and_failure_history"
       ],
       "effect_families": [
         "custom_callback",
@@ -30582,17 +30589,17 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback",
         "protection",
         "redirection",
         "retargeting",
-        "per_target_hit"
+        "per_target_hit",
+        "variable_power"
       ],
-      "pr_16_5_supported": false,
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "pr_16_5_supported": true,
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 16.5.2"
     },
     {
       "id": "perishsong",
@@ -38410,6 +38417,8 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/stat-dependent-power.json#stomping-after-failure",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#contextual_power_reuses_action_damage_and_failure_history",
         "species/abomasnow",
         "species/aggron",
         "species/ampharos",
@@ -38484,7 +38493,8 @@
         "species/tyranitar",
         "species/tyrantrum",
         "species/venusaur",
-        "species/watchog"
+        "species/watchog",
+        "unit:crates/rotom-dex/tests/combat.rs#contextual_power_reuses_action_damage_and_failure_history"
       ],
       "effect_families": [
         "custom_callback",
@@ -38495,17 +38505,17 @@
         "standard_damage",
         "selected_single_target",
         "accuracy",
-        "custom_callback",
         "protection",
         "redirection",
         "retargeting",
-        "per_target_hit"
+        "per_target_hit",
+        "variable_power"
       ],
-      "pr_16_5_supported": false,
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "pr_16_5_supported": true,
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 16.5.2"
     },
     {
       "id": "stoneaxe",
@@ -49339,19 +49349,19 @@
       "move": {
         "total": 510,
         "implementation": {
-          "unsupported": 251,
+          "unsupported": 248,
           "partial": 0,
-          "implemented": 259
+          "implemented": 262
         },
         "verification": {
-          "not_tested": 251,
+          "not_tested": 248,
           "unit_tested": 218,
-          "differential_verified": 41
+          "differential_verified": 44
         },
         "interaction_verification": {
-          "not_tested": 474,
-          "unit_tested": 14,
-          "differential_verified": 22
+          "not_tested": 471,
+          "unit_tested": 16,
+          "differential_verified": 23
         },
         "reachability": {
           "direct_legal_set": 510,

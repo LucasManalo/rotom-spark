@@ -230,7 +230,10 @@ function moveExecutionRequirements(move) {
 		...(move.id === 'magnetrise' ? ['onTry'] : []),
 		...(['facade', 'barbbarrage', 'venoshock'].includes(move.id) ? ['onBasePower'] : []),
 		...(['hex', 'infernalparade'].includes(move.id) ? ['basePowerCallback'] : []),
-		...(['eruption', 'waterspout', 'flail', 'reversal', 'storedpower', 'powertrip'].includes(move.id) ? ['basePowerCallback'] : []),
+		...([
+			'eruption', 'waterspout', 'flail', 'reversal', 'storedpower', 'powertrip',
+			'payback', 'assurance', 'stompingtantrum',
+		].includes(move.id) ? ['basePowerCallback'] : []),
 		...(move.id === 'knockoff' ? ['onBasePower', 'onAfterHit'] : []),
 		...(move.id === 'freezedry' ? ['onEffectiveness'] : []),
 		...(['trick', 'switcheroo'].includes(move.id) ? ['onTryImmunity', 'onHit'] : []),
@@ -262,6 +265,9 @@ function basePowerRule(move) {
 	if (['eruption', 'waterspout'].includes(move.id)) return 'current_hp_ratio';
 	if (['flail', 'reversal'].includes(move.id)) return 'low_hp_bracket';
 	if (['storedpower', 'powertrip'].includes(move.id)) return 'positive_stat_stages';
+	if (move.id === 'payback') return 'target_acted';
+	if (move.id === 'assurance') return 'target_damaged_this_turn';
+	if (move.id === 'stompingtantrum') return 'previous_move_failed';
 	return 'fixed';
 }
 

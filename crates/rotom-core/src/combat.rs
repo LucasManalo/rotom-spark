@@ -122,6 +122,17 @@ pub enum BasePowerRule {
     CurrentHpRatio,
     LowHpBracket,
     PositiveStatStages,
+    ContextualDouble {
+        predicate: ContextualPowerPredicate,
+    },
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ContextualPowerPredicate {
+    TargetActed,
+    TargetDamagedThisTurn,
+    PreviousMoveFailed,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -4283,6 +4294,13 @@ impl BattleState {
             source_state.current_hp,
             source_state.stats.hp,
             variable_power_positive_stages,
+            ContextualPowerState {
+                target_acted: !move_context.later_actors.contains(&target)
+                    && !target_state.move_history.switched_in_this_turn,
+                target_damaged_this_turn: target_state.move_history.damaged_this_turn,
+                previous_move_failed: source_state.move_history.move_last_turn_result
+                    == Some(crate::MoveActionResult::Failed),
+            },
         )?;
         self.apply_field_base_power(
             data,
@@ -5742,6 +5760,7 @@ fn resolve_variable_base_power(
     current_hp: u16,
     max_hp: u16,
     positive_stat_stages: u16,
+    contextual: ContextualPowerState,
 ) -> Result<u16, BattleError> {
     if max_hp == 0 || current_hp > max_hp {
         return Err(BattleError::InvalidState(
@@ -5769,7 +5788,28 @@ fn resolve_variable_base_power(
         BasePowerRule::PositiveStatStages => {
             listed_power.saturating_add(20_u16.saturating_mul(positive_stat_stages))
         }
+        BasePowerRule::ContextualDouble { predicate } => {
+            let active = match predicate {
+                ContextualPowerPredicate::TargetActed => contextual.target_acted,
+                ContextualPowerPredicate::TargetDamagedThisTurn => {
+                    contextual.target_damaged_this_turn
+                }
+                ContextualPowerPredicate::PreviousMoveFailed => contextual.previous_move_failed,
+            };
+            if active {
+                listed_power.saturating_mul(2)
+            } else {
+                listed_power
+            }
+        }
     })
+}
+
+#[derive(Clone, Copy, Debug, Default)]
+struct ContextualPowerState {
+    target_acted: bool,
+    target_damaged_this_turn: bool,
+    previous_move_failed: bool,
 }
 
 fn positive_stat_stage_sum(stages: crate::StatStages) -> u16 {
@@ -6274,11 +6314,25 @@ mod tests {
     #[test]
     fn variable_base_power_calculations_cover_rounding_and_bracket_boundaries() {
         assert_eq!(
-            resolve_variable_base_power(BasePowerRule::CurrentHpRatio, 150, 87, 175, 0),
+            resolve_variable_base_power(
+                BasePowerRule::CurrentHpRatio,
+                150,
+                87,
+                175,
+                0,
+                ContextualPowerState::default(),
+            ),
             Ok(74)
         );
         assert_eq!(
-            resolve_variable_base_power(BasePowerRule::CurrentHpRatio, 150, 1, 175, 0),
+            resolve_variable_base_power(
+                BasePowerRule::CurrentHpRatio,
+                150,
+                1,
+                175,
+                0,
+                ContextualPowerState::default(),
+            ),
             Ok(1)
         );
         for (hp, expected) in [
@@ -6290,21 +6344,49 @@ mod tests {
             (3, 200),
         ] {
             assert_eq!(
-                resolve_variable_base_power(BasePowerRule::LowHpBracket, 0, hp, 175, 0),
+                resolve_variable_base_power(
+                    BasePowerRule::LowHpBracket,
+                    0,
+                    hp,
+                    175,
+                    0,
+                    ContextualPowerState::default(),
+                ),
                 Ok(expected),
                 "HP {hp}"
             );
         }
         assert!(matches!(
-            resolve_variable_base_power(BasePowerRule::LowHpBracket, 0, 1, 0, 0),
+            resolve_variable_base_power(
+                BasePowerRule::LowHpBracket,
+                0,
+                1,
+                0,
+                0,
+                ContextualPowerState::default(),
+            ),
             Err(BattleError::InvalidState(_))
         ));
         assert_eq!(
-            resolve_variable_base_power(BasePowerRule::PositiveStatStages, 20, 100, 100, 0),
+            resolve_variable_base_power(
+                BasePowerRule::PositiveStatStages,
+                20,
+                100,
+                100,
+                0,
+                ContextualPowerState::default(),
+            ),
             Ok(20)
         );
         assert_eq!(
-            resolve_variable_base_power(BasePowerRule::PositiveStatStages, 20, 100, 100, 42),
+            resolve_variable_base_power(
+                BasePowerRule::PositiveStatStages,
+                20,
+                100,
+                100,
+                42,
+                ContextualPowerState::default(),
+            ),
             Ok(860)
         );
         assert_eq!(
@@ -6317,5 +6399,43 @@ mod tests {
             }),
             6
         );
+    }
+
+    #[test]
+    fn contextual_base_power_predicates_double_only_their_matching_history() {
+        for (predicate, state) in [
+            (
+                ContextualPowerPredicate::TargetActed,
+                ContextualPowerState {
+                    target_acted: true,
+                    ..ContextualPowerState::default()
+                },
+            ),
+            (
+                ContextualPowerPredicate::TargetDamagedThisTurn,
+                ContextualPowerState {
+                    target_damaged_this_turn: true,
+                    ..ContextualPowerState::default()
+                },
+            ),
+            (
+                ContextualPowerPredicate::PreviousMoveFailed,
+                ContextualPowerState {
+                    previous_move_failed: true,
+                    ..ContextualPowerState::default()
+                },
+            ),
+        ] {
+            let rule = BasePowerRule::ContextualDouble { predicate };
+            let inactive = ContextualPowerState::default();
+            assert_eq!(
+                resolve_variable_base_power(rule, 60, 100, 100, 0, state),
+                Ok(120)
+            );
+            assert_eq!(
+                resolve_variable_base_power(rule, 60, 100, 100, 0, inactive),
+                Ok(60)
+            );
+        }
     }
 }

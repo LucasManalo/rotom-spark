@@ -31,9 +31,9 @@
       },
       "move": {
         "reachable": 510,
-        "unsupported": 251,
+        "unsupported": 248,
         "partial": 0,
-        "implemented": 259
+        "implemented": 262
       }
     },
     "executable_capability_coverage": {
@@ -46,7 +46,7 @@
     "dependency_targets": {
       "ability": 92,
       "item": 25,
-      "move": 251
+      "move": 248
     }
   },
   "capabilities": [
@@ -585,7 +585,6 @@
         "move:acupressure",
         "move:afteryou",
         "move:allyswitch",
-        "move:assurance",
         "move:attract",
         "move:aurawheel",
         "move:auroraveil",
@@ -681,7 +680,6 @@
         "move:octolock",
         "move:painsplit",
         "move:partingshot",
-        "move:payback",
         "move:perishsong",
         "move:phantomforce",
         "move:pluck",
@@ -721,7 +719,6 @@
         "move:steelbeam",
         "move:steelroller",
         "move:stockpile",
-        "move:stompingtantrum",
         "move:stoneaxe",
         "move:strengthsap",
         "move:stuffcheeks",
@@ -755,7 +752,6 @@
         "move:acupressure",
         "move:afteryou",
         "move:allyswitch",
-        "move:assurance",
         "move:aurawheel",
         "move:avalanche",
         "move:beakblast",
@@ -805,7 +801,6 @@
         "move:meanlook",
         "move:mortalspin",
         "move:painsplit",
-        "move:payback",
         "move:perishsong",
         "move:pluck",
         "move:pollenpuff",
@@ -832,7 +827,6 @@
         "move:spitup",
         "move:steelbeam",
         "move:steelroller",
-        "move:stompingtantrum",
         "move:stuffcheeks",
         "move:suckerpunch",
         "move:superfang",
@@ -2895,30 +2889,37 @@
         "current-HP ratio",
         "low-HP brackets",
         "positive stat-stage sum",
+        "context predicates",
         "pre-modifier resolution"
       ],
       "lifecycle_and_ordering": [
         "current-HP ratio",
         "low-HP brackets",
         "positive stat-stage sum",
+        "context predicates",
         "pre-modifier resolution"
       ],
       "known_gaps": [
-        "Contextual action-order, damage-history, and prior-failure power rules remain separate."
+        "HP, stat-stage, action-order, damage-history, and prior-failure rules share the canonical damage pipeline."
       ],
       "tests": [
         "unit:crates/rotom-dex/tests/combat.rs#hp_dependent_power_uses_shared_rules_before_damage_modifiers",
         "unit:crates/rotom-dex/tests/combat.rs#zero_listed_power_damage_keeps_hit_protection_and_targeting_requirements",
-        "unit:crates/rotom-dex/tests/combat.rs#stat_dependent_power_counts_only_positive_stages_before_damage_modifiers"
+        "unit:crates/rotom-dex/tests/combat.rs#stat_dependent_power_counts_only_positive_stages_before_damage_modifiers",
+        "unit:crates/rotom-dex/tests/combat.rs#contextual_power_reuses_action_damage_and_failure_history"
       ],
       "differential_fixtures": [
         "differential:data/fixtures/differential/hp-dependent-power.json#eruption-half-hp",
-        "differential:data/fixtures/differential/stat-dependent-power.json#stored-power-unaware"
+        "differential:data/fixtures/differential/stat-dependent-power.json#stored-power-unaware",
+        "differential:data/fixtures/differential/stat-dependent-power.json#assurance-after-status-damage"
       ],
       "pinned_reference_evidence": [
         "showdown:data/moves.ts:Moves.eruption.basePowerCallback",
         "showdown:data/moves.ts:Moves.flail.basePowerCallback",
         "showdown:data/moves.ts:Moves.storedpower.basePowerCallback",
+        "showdown:data/moves.ts:Moves.payback.basePowerCallback",
+        "showdown:data/moves.ts:Moves.assurance.basePowerCallback",
+        "showdown:data/moves.ts:Moves.stompingtantrum.basePowerCallback",
         "showdown:sim/battle-actions.ts:BattleActions.getDamage"
       ],
       "blocked_identities": [],
@@ -5496,24 +5497,6 @@
       "differential_fixtures": [],
       "pinned_reference_evidence": [
         "showdown:data/moves.ts:Moves.aquaring"
-      ]
-    },
-    {
-      "kind": "move",
-      "id": "assurance",
-      "name": "Assurance",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "custom_callback"
-      ],
-      "outstanding_blockers": [
-        "custom_callback"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.assurance"
       ]
     },
     {
@@ -8108,24 +8091,6 @@
     },
     {
       "kind": "move",
-      "id": "payback",
-      "name": "Payback",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "custom_callback"
-      ],
-      "outstanding_blockers": [
-        "custom_callback"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.payback"
-      ]
-    },
-    {
-      "kind": "move",
       "id": "perishsong",
       "name": "Perish Song",
       "identity_status": "unsupported",
@@ -9324,24 +9289,6 @@
       "differential_fixtures": [],
       "pinned_reference_evidence": [
         "showdown:data/moves.ts:Moves.stockpile"
-      ]
-    },
-    {
-      "kind": "move",
-      "id": "stompingtantrum",
-      "name": "Stomping Tantrum",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "custom_callback"
-      ],
-      "outstanding_blockers": [
-        "custom_callback"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.stompingtantrum"
       ]
     },
     {

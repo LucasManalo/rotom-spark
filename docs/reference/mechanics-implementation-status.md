@@ -20,7 +20,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | --- | ---: | ---: | ---: | ---: |
 | Abilities | 215 | 123 | 92 | 0 |
 | Items | 166 | 141 | 25 | 0 |
-| Moves | 510 | 259 | 0 | 251 |
+| Moves | 510 | 262 | 0 | 248 |
 
 ## Abilities
 
@@ -439,7 +439,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Aqua Tail | `aquatail` | implemented | unit_tested | not_tested | PR 9 |
 | Armor Cannon | `armorcannon` | implemented | unit_tested | not_tested | PR 13.4 |
 | Aromatic Mist | `aromaticmist` | implemented | unit_tested | not_tested | PR 13.3 |
-| Assurance | `assurance` | unsupported | not_tested | not_tested | — |
+| Assurance | `assurance` | implemented | differential_verified | differential_verified | PR 16.5.2 |
 | Attract | `attract` | unsupported | not_tested | not_tested | — |
 | Aura Sphere | `aurasphere` | implemented | unit_tested | not_tested | PR 13.2 |
 | Aura Wheel | `aurawheel` | unsupported | not_tested | not_tested | — |
@@ -722,7 +722,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Pain Split | `painsplit` | unsupported | not_tested | not_tested | — |
 | Parabolic Charge | `paraboliccharge` | implemented | unit_tested | not_tested | PR 13.4 |
 | Parting Shot | `partingshot` | unsupported | not_tested | not_tested | — |
-| Payback | `payback` | unsupported | not_tested | not_tested | — |
+| Payback | `payback` | implemented | differential_verified | unit_tested | PR 16.5.2 |
 | Perish Song | `perishsong` | unsupported | not_tested | not_tested | — |
 | Petal Blizzard | `petalblizzard` | implemented | unit_tested | not_tested | PR 13.2 |
 | Petal Dance | `petaldance` | unsupported | not_tested | not_tested | — |
@@ -840,7 +840,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Steel Wing | `steelwing` | implemented | unit_tested | not_tested | PR 13.4 |
 | Sticky Web | `stickyweb` | unsupported | not_tested | not_tested | — |
 | Stockpile | `stockpile` | unsupported | not_tested | not_tested | — |
-| Stomping Tantrum | `stompingtantrum` | unsupported | not_tested | not_tested | — |
+| Stomping Tantrum | `stompingtantrum` | implemented | differential_verified | unit_tested | PR 16.5.2 |
 | Stone Axe | `stoneaxe` | unsupported | not_tested | not_tested | — |
 | Stone Edge | `stoneedge` | implemented | unit_tested | not_tested | PR 13.2 |
 | Stored Power | `storedpower` | implemented | differential_verified | differential_verified | PR 16.6 |

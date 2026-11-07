@@ -5645,6 +5645,46 @@
         "differential:data/fixtures/differential/stat-dependent-power.json#power-trip-max-stages",
         "interaction_unit:crates/rotom-dex/tests/combat.rs#stat_dependent_power_counts_only_positive_stages_before_damage_modifiers"
       ]
+    },
+    {
+      "id": "payback",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 16.5.2",
+      "evidence": [
+        "unit:crates/rotom-dex/tests/combat.rs#contextual_power_reuses_action_damage_and_failure_history",
+        "differential:data/fixtures/differential/stat-dependent-power.json#payback-after-action",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#contextual_power_reuses_action_damage_and_failure_history"
+      ]
+    },
+    {
+      "id": "assurance",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 16.5.2",
+      "evidence": [
+        "unit:crates/rotom-dex/tests/combat.rs#contextual_power_reuses_action_damage_and_failure_history",
+        "differential:data/fixtures/differential/stat-dependent-power.json#assurance-after-status-damage",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#contextual_power_reuses_action_damage_and_failure_history",
+        "interaction_differential:data/fixtures/differential/stat-dependent-power.json#assurance-after-status-damage"
+      ]
+    },
+    {
+      "id": "stompingtantrum",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "unit_tested",
+      "owner_pr": "PR 16.5.2",
+      "evidence": [
+        "unit:crates/rotom-dex/tests/combat.rs#contextual_power_reuses_action_damage_and_failure_history",
+        "differential:data/fixtures/differential/stat-dependent-power.json#stomping-after-failure",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#contextual_power_reuses_action_damage_and_failure_history"
+      ]
     }
   ]
 }

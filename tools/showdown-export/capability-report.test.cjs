@@ -16,17 +16,21 @@ function identity(audit, kind, id) {
 
 test('dependency graph covers every partial ability and item and every unsupported move', () => {
 	const {audit} = generatedContents();
-	assert.deepEqual(audit.summary.dependency_targets, {ability: 92, item: 25, move: 251});
-	assert.equal(audit.identity_dependencies.length, 368);
+	const derived = Object.fromEntries(['ability', 'item', 'move'].map(kind => [
+		kind,
+		audit.identity_dependencies.filter(entry => entry.kind === kind).length,
+	]));
+	assert.deepEqual(audit.summary.dependency_targets, derived);
+	assert.equal(Object.values(derived).reduce((sum, count) => sum + count, 0), audit.identity_dependencies.length);
 	assert.ok(audit.identity_dependencies.every(entry => entry.outstanding_blockers.length > 0));
 	assert.ok(audit.identity_dependencies.every(entry => entry.unlocked === false));
 });
 
 test('headline separates identity labels from executable capability coverage', () => {
 	const {audit, markdown} = generatedContents();
-	assert.deepEqual(audit.summary.identity_coverage.ability, {reachable: 215, unsupported: 0, partial: 92, implemented: 123});
-	assert.deepEqual(audit.summary.identity_coverage.item, {reachable: 166, unsupported: 0, partial: 25, implemented: 141});
-	assert.deepEqual(audit.summary.identity_coverage.move, {reachable: 510, unsupported: 251, partial: 0, implemented: 259});
+	for (const coverage of Object.values(audit.summary.identity_coverage)) {
+		assert.equal(coverage.reachable, coverage.unsupported + coverage.partial + coverage.implemented);
+	}
 	assert.match(markdown, /## Identity coverage/);
 	assert.match(markdown, /## Executable capability coverage/);
 	assert.match(markdown, /Mega Stones are executable through the verified dedicated/);

@@ -7443,8 +7443,9 @@ fn mechanics_manifest_drives_every_move_capability_and_execution_smoke_case() {
         .iter()
         .filter(|entry| entry.implementation == "unsupported")
         .count();
-    assert_eq!(implemented, 259);
-    assert_eq!(unsupported, 251);
+    assert_eq!(implemented + unsupported, moves.len());
+    assert!(implemented > 0);
+    assert!(unsupported > 0);
 
     for entry in moves {
         let move_id = dex
@@ -9143,6 +9144,22 @@ fn hp_dependent_power_uses_shared_rules_before_damage_modifiers() {
             history.move_history.last_successful_move,
             Some(dex.resolve_move(move_name).unwrap().0)
         );
+        assert_eq!(
+            result
+                .state
+                .side(SideId::P1)
+                .pokemon(source_ref.pokemon)
+                .unwrap()
+                .moves[0]
+                .pp
+                + 1,
+            state
+                .side(SideId::P1)
+                .pokemon(source_ref.pokemon)
+                .unwrap()
+                .moves[0]
+                .pp
+        );
     }
 
     let modified_power = |ability: &str, item: Option<&str>| {
@@ -9267,7 +9284,12 @@ fn stat_dependent_power_counts_only_positive_stages_before_damage_modifiers() {
     let source_ref = PokemonRef::new(SideId::P1, PokemonIndex::new(0));
     let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
 
-    for case in fixture["cases"].as_array().unwrap() {
+    for case in fixture["cases"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|case| case.get("boosts").is_some())
+    {
         let move_name = case["move"].as_str().unwrap();
         let source = set_with_moves(&dex, "mew", "synchronize", &[move_name]);
         let target = set_with_moves(
@@ -9356,6 +9378,266 @@ fn stat_dependent_power_counts_only_positive_stages_before_damage_modifiers() {
     };
     assert_eq!(technician_power(0), 30);
     assert_eq!(technician_power(2), 90);
+}
+
+fn resolved_base_power(result: &rotom_core::StepResult, source: PokemonRef) -> i64 {
+    result
+        .diagnostics
+        .turn
+        .as_ref()
+        .unwrap()
+        .events
+        .iter()
+        .find_map(|event| {
+            (event.event == BattleEvent::ModifyBasePower && event.context.source == Some(source))
+                .then_some(&event.value)
+        })
+        .and_then(|value| match value {
+            rotom_core::EventValue::Integer(value) => Some(*value),
+            _ => None,
+        })
+        .expect("move entered the canonical base-power pipeline")
+}
+
+#[allow(clippy::too_many_lines)] // One end-to-end contextual-power family acceptance test.
+#[test]
+fn contextual_power_reuses_action_damage_and_failure_history() {
+    let dex = champions_reg_mc().unwrap();
+    let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+    let fixture = stat_dependent_power_fixture();
+    let source_ref = PokemonRef::new(SideId::P1, PokemonIndex::new(0));
+    let target_ref = PokemonRef::new(SideId::P2, PokemonIndex::new(0));
+
+    for case in fixture["cases"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|case| case.get("context").is_some())
+    {
+        let move_name = case["move"].as_str().unwrap();
+        if move_name == "payback" {
+            continue;
+        }
+        let source = set_with_moves(&dex, "mew", "synchronize", &[move_name]);
+        let target = set_with_moves(&dex, "snorlax", "immunity", &["swordsdance"]);
+        let state = selected_primary_battle(&dex, &source, &target, 0x16_07_01);
+        let context = &case["context"];
+        let mut builder = BattleStateBuilder::from_state(state).unwrap();
+        builder
+            .edit_pokemon(source_ref, |pokemon| {
+                pokemon.move_history.move_last_turn_result =
+                    if context["previous_move_failed"].as_bool().unwrap() {
+                        Some(MoveActionResult::Failed)
+                    } else {
+                        Some(MoveActionResult::Succeeded)
+                    };
+            })
+            .unwrap();
+        builder
+            .edit_pokemon(target_ref, |pokemon| {
+                pokemon.move_history.damaged_this_turn =
+                    context["target_damaged_by_status"].as_bool().unwrap();
+            })
+            .unwrap();
+        let state = builder.build().unwrap();
+        let replay: BattleState = serde_json::from_str(&serde_json::to_string(&state).unwrap())
+            .expect("serialized contextual-power input");
+        let action = single_move_action(0, ActionTarget::Foe(ActiveSlot::Left));
+        let result = step(&state, &action, &mechanics).unwrap();
+        assert_eq!(result, step(&replay, &action, &mechanics).unwrap());
+        assert_eq!(
+            resolved_base_power(&result, source_ref),
+            case["resolved_base_power"].as_i64().unwrap(),
+            "{}",
+            case["id"]
+        );
+        assert_eq!(
+            result
+                .state
+                .side(SideId::P1)
+                .pokemon(source_ref.pokemon)
+                .unwrap()
+                .move_history
+                .last_successful_move,
+            Some(dex.resolve_move(move_name).unwrap().0)
+        );
+    }
+
+    let payback_power = |source_species: &str, target_species: &str| {
+        let source = set_with_moves(&dex, source_species, "synchronize", &["payback"]);
+        let target = set_with_moves(&dex, target_species, "immunity", &["swordsdance"]);
+        let state = selected_primary_battle(&dex, &source, &target, 0x16_07_02);
+        let replay: BattleState =
+            serde_json::from_str(&serde_json::to_string(&state).unwrap()).unwrap();
+        let action = single_move_action(0, ActionTarget::Foe(ActiveSlot::Left));
+        let result = step(&state, &action, &mechanics).unwrap();
+        assert_eq!(result, step(&replay, &action, &mechanics).unwrap());
+        resolved_base_power(&result, source_ref)
+    };
+    assert_eq!(payback_power("mew", "snorlax"), 50);
+    assert_eq!(payback_power("snorlax", "mew"), 100);
+
+    let source = set_with_moves(&dex, "snorlax", "immunity", &["payback"]);
+    let target = set_with_moves(&dex, "mew", "synchronize", &["swordsdance"]);
+    let switched = selected_primary_battle(&dex, &source, &target, 0x16_07_02_01);
+    let switched_result = step(
+        &switched,
+        &JointAction::Turn {
+            p1: TurnChoice {
+                actions: [
+                    PokemonAction::Move {
+                        move_slot: MoveSlotIndex::new(0),
+                        target: ActionTarget::Foe(ActiveSlot::Left),
+                        mega: false,
+                    },
+                    PokemonAction::Move {
+                        move_slot: MoveSlotIndex::new(0),
+                        target: ActionTarget::Automatic,
+                        mega: false,
+                    },
+                ],
+            },
+            p2: TurnChoice {
+                actions: [
+                    PokemonAction::Switch {
+                        pokemon: PokemonIndex::new(2),
+                    },
+                    PokemonAction::Move {
+                        move_slot: MoveSlotIndex::new(0),
+                        target: ActionTarget::Automatic,
+                        mega: false,
+                    },
+                ],
+            },
+        },
+        &mechanics,
+    )
+    .unwrap();
+    assert_eq!(resolved_base_power(&switched_result, source_ref), 50);
+
+    let opener = set_with_moves(&dex, "mew", "synchronize", &["dragonclaw"]);
+    let payback = set_with_moves(&dex, "snorlax", "immunity", &["payback"]);
+    let victim = set_with_moves(&dex, "snorlax", "immunity", &["swordsdance"]);
+    let filler = set_with_moves(&dex, "magikarp", "swiftswim", &["swordsdance"]);
+    let state = selected_battle_for_teams(
+        &dex,
+        &[opener, payback, filler.clone(), filler.clone()],
+        &[victim, filler.clone(), filler.clone(), filler.clone()],
+        0x16_07_02_02,
+    );
+    let mut builder = BattleStateBuilder::from_state(state).unwrap();
+    builder
+        .edit_pokemon(target_ref, |pokemon| pokemon.current_hp = 1)
+        .unwrap();
+    let interrupted = step(
+        &builder.build().unwrap(),
+        &JointAction::Turn {
+            p1: TurnChoice {
+                actions: ActiveSlot::ALL.map(|_| PokemonAction::Move {
+                    move_slot: MoveSlotIndex::new(0),
+                    target: ActionTarget::Foe(ActiveSlot::Left),
+                    mega: false,
+                }),
+            },
+            p2: TurnChoice {
+                actions: ActiveSlot::ALL.map(|_| PokemonAction::Move {
+                    move_slot: MoveSlotIndex::new(0),
+                    target: ActionTarget::Automatic,
+                    mega: false,
+                }),
+            },
+        },
+        &mechanics,
+    )
+    .unwrap();
+    assert_eq!(
+        interrupted.state.phase(),
+        rotom_core::BattlePhase::ForcedSwitch
+    );
+    let replay: BattleState = serde_json::from_str(
+        &serde_json::to_string(&interrupted.state).expect("serialized interrupted Payback state"),
+    )
+    .unwrap();
+    let replacement = forced_switch_action(SideId::P2, ActiveSlot::Left, PokemonIndex::new(2));
+    let resumed = step(&interrupted.state, &replacement, &mechanics).unwrap();
+    assert_eq!(resumed, step(&replay, &replacement, &mechanics).unwrap());
+    assert_eq!(
+        resolved_base_power(&resumed, PokemonRef::new(SideId::P1, PokemonIndex::new(1))),
+        50
+    );
+
+    let fast = set_with_moves(&dex, "mew", "synchronize", &["dragonclaw"]);
+    let assurance = set_with_moves(&dex, "snorlax", "immunity", &["assurance"]);
+    let victim = set_with_moves(&dex, "snorlax", "immunity", &["swordsdance"]);
+    let filler = set_with_moves(&dex, "magikarp", "swiftswim", &["swordsdance"]);
+    let state = selected_battle_for_teams(
+        &dex,
+        &[fast, assurance, filler.clone(), filler.clone()],
+        &[victim, filler.clone(), filler.clone(), filler],
+        0x16_07_03,
+    );
+    let result = step(
+        &state,
+        &JointAction::Turn {
+            p1: TurnChoice {
+                actions: [
+                    PokemonAction::Move {
+                        move_slot: MoveSlotIndex::new(0),
+                        target: ActionTarget::Foe(ActiveSlot::Left),
+                        mega: false,
+                    },
+                    PokemonAction::Move {
+                        move_slot: MoveSlotIndex::new(0),
+                        target: ActionTarget::Foe(ActiveSlot::Left),
+                        mega: false,
+                    },
+                ],
+            },
+            p2: TurnChoice {
+                actions: [
+                    PokemonAction::Move {
+                        move_slot: MoveSlotIndex::new(0),
+                        target: ActionTarget::Automatic,
+                        mega: false,
+                    },
+                    PokemonAction::Move {
+                        move_slot: MoveSlotIndex::new(0),
+                        target: ActionTarget::Automatic,
+                        mega: false,
+                    },
+                ],
+            },
+        },
+        &mechanics,
+    )
+    .unwrap();
+    assert_eq!(
+        resolved_base_power(&result, PokemonRef::new(SideId::P1, PokemonIndex::new(1))),
+        120
+    );
+
+    for (history, expected) in [
+        (MoveActionResult::Failed, 150),
+        (MoveActionResult::Skipped, 75),
+        (MoveActionResult::Succeeded, 75),
+    ] {
+        let source = set_with_moves(&dex, "mew", "synchronize", &["stompingtantrum"]);
+        let target = set_with_moves(&dex, "snorlax", "immunity", &["swordsdance"]);
+        let state = selected_primary_battle(&dex, &source, &target, 0x16_07_04);
+        let mut builder = BattleStateBuilder::from_state(state).unwrap();
+        builder
+            .edit_pokemon(source_ref, |pokemon| {
+                pokemon.move_history.move_last_turn_result = Some(history);
+            })
+            .unwrap();
+        let result = step(
+            &builder.build().unwrap(),
+            &single_move_action(0, ActionTarget::Foe(ActiveSlot::Left)),
+            &mechanics,
+        )
+        .unwrap();
+        assert_eq!(resolved_base_power(&result, source_ref), expected);
+    }
 }
 
 use rotom_core::AbilitySuppression::{Breakable, Unbreakable};

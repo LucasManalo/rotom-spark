@@ -2,7 +2,7 @@
   "showdown_commit": "b79ce06d06b8f0dc8de8bb348bc9cab5d931553f",
   "format": "gen9championsvgc2026regmc",
   "methodology": {
-    "source": "pinned positiveBoosts base-power callbacks plus complete Showdown doubles turns",
+    "source": "pinned declarative base-power callbacks plus complete stat-dependent Showdown doubles turns",
     "damage_roll_percent": 100,
     "move_execution": true,
     "reference_derived_assertions": true,
@@ -73,6 +73,72 @@
       "resolved_base_power": 860,
       "hp_loss": 235,
       "execution_path": "complete Showdown doubles turn after direct callback inspection"
+    },
+    {
+      "id": "payback-newly-switched",
+      "move": "payback",
+      "context": {
+        "target_newly_switched": true,
+        "target_damaged_by_status": false,
+        "previous_move_failed": false
+      },
+      "resolved_base_power": 50,
+      "execution_path": "direct pinned callback with canonical Pokemon and damage history state"
+    },
+    {
+      "id": "payback-after-action",
+      "move": "payback",
+      "context": {
+        "target_newly_switched": false,
+        "target_damaged_by_status": false,
+        "previous_move_failed": false
+      },
+      "resolved_base_power": 100,
+      "execution_path": "direct pinned callback with canonical Pokemon and damage history state"
+    },
+    {
+      "id": "assurance-undamaged",
+      "move": "assurance",
+      "context": {
+        "target_newly_switched": false,
+        "target_damaged_by_status": false,
+        "previous_move_failed": false
+      },
+      "resolved_base_power": 60,
+      "execution_path": "direct pinned callback with canonical Pokemon and damage history state"
+    },
+    {
+      "id": "assurance-after-status-damage",
+      "move": "assurance",
+      "context": {
+        "target_newly_switched": false,
+        "target_damaged_by_status": true,
+        "previous_move_failed": false
+      },
+      "resolved_base_power": 120,
+      "execution_path": "direct pinned callback with canonical Pokemon and damage history state"
+    },
+    {
+      "id": "stomping-after-success",
+      "move": "stompingtantrum",
+      "context": {
+        "target_newly_switched": false,
+        "target_damaged_by_status": false,
+        "previous_move_failed": false
+      },
+      "resolved_base_power": 75,
+      "execution_path": "direct pinned callback with canonical Pokemon and damage history state"
+    },
+    {
+      "id": "stomping-after-failure",
+      "move": "stompingtantrum",
+      "context": {
+        "target_newly_switched": false,
+        "target_damaged_by_status": false,
+        "previous_move_failed": true
+      },
+      "resolved_base_power": 150,
+      "execution_path": "direct pinned callback with canonical Pokemon and damage history state"
     }
   ]
 }

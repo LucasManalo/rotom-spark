@@ -20,7 +20,7 @@ const CAPABILITIES = {
 	switch_control: unsupported('Mid-turn switch control', ['switch request', 'queue preservation', 'replacement choice', 'entry/exit sequencing'], 'Pivoting, phazing, item-driven switches, and ability-driven switches do not share an end-to-end lifecycle.', ['showdown:sim/battle-actions.ts:BattleActions.runSwitch', 'showdown:sim/battle.ts:Battle.checkFainted']),
 	force_target_switch: verified('Move-driven random phazing', ['successful hit', 'living source and target', 'available reserve', 'DragOut prevention', 'random replacement', 'queue preservation'], 'Circle Throw, Dragon Tail, Roar, and Whirlwind reuse the shared forced-switch lifecycle.', ['showdown:sim/battle-actions.ts:BattleActions.forceSwitch', 'showdown:data/abilities.ts:Abilities.suctioncups']),
 	unique_type_effectiveness: verified('Unique move type-effectiveness override', ['per-defending-type override', 'dual-type composition', 'shared damage modifier'], 'Freeze-Dry overrides only the Water component to super effective inside the canonical type and damage calculation.', ['showdown:data/moves.ts:Moves.freezedry.onEffectiveness', 'showdown:sim/battle.ts:Battle.getEffectiveness']),
-	variable_power: verified('Declarative variable base power', ['current-HP ratio', 'low-HP brackets', 'positive stat-stage sum', 'pre-modifier resolution'], 'Contextual action-order, damage-history, and prior-failure power rules remain separate.', ['showdown:data/moves.ts:Moves.eruption.basePowerCallback', 'showdown:data/moves.ts:Moves.flail.basePowerCallback', 'showdown:data/moves.ts:Moves.storedpower.basePowerCallback', 'showdown:sim/battle-actions.ts:BattleActions.getDamage']),
+	variable_power: verified('Declarative variable base power', ['current-HP ratio', 'low-HP brackets', 'positive stat-stage sum', 'context predicates', 'pre-modifier resolution'], 'HP, stat-stage, action-order, damage-history, and prior-failure rules share the canonical damage pipeline.', ['showdown:data/moves.ts:Moves.eruption.basePowerCallback', 'showdown:data/moves.ts:Moves.flail.basePowerCallback', 'showdown:data/moves.ts:Moves.storedpower.basePowerCallback', 'showdown:data/moves.ts:Moves.payback.basePowerCallback', 'showdown:data/moves.ts:Moves.assurance.basePowerCallback', 'showdown:data/moves.ts:Moves.stompingtantrum.basePowerCallback', 'showdown:sim/battle-actions.ts:BattleActions.getDamage']),
 	calls_move: unsupported('Move calling and copying', ['source selection', 'legality filters', 'history lookup'], 'Copycat, Sleep Talk, and other callers are not executable.', ['showdown:sim/battle-actions.ts:BattleActions.useMove']),
 	custom_callback: unsupported('Move-specific callback orchestration', ['callback predicates', 'hook ordering', 'failure semantics'], 'Resolved Showdown callbacks are recognized but not generically executable.', ['showdown:sim/battle-actions.ts:BattleActions.runMove']),
 	special_behavior: unsupported('Exceptional move behavior', ['intrinsic flags', 'special properties', 'history predicates'], 'The move requires semantics outside the currently supported declarative executor.', ['showdown:data/moves.ts:Moves']),
@@ -238,10 +238,12 @@ Object.assign(CAPABILITIES.variable_power, {
 		'unit:crates/rotom-dex/tests/combat.rs#hp_dependent_power_uses_shared_rules_before_damage_modifiers',
 		'unit:crates/rotom-dex/tests/combat.rs#zero_listed_power_damage_keeps_hit_protection_and_targeting_requirements',
 		'unit:crates/rotom-dex/tests/combat.rs#stat_dependent_power_counts_only_positive_stages_before_damage_modifiers',
+		'unit:crates/rotom-dex/tests/combat.rs#contextual_power_reuses_action_damage_and_failure_history',
 	],
 	differential_fixtures: [
 		'differential:data/fixtures/differential/hp-dependent-power.json#eruption-half-hp',
 		'differential:data/fixtures/differential/stat-dependent-power.json#stored-power-unaware',
+		'differential:data/fixtures/differential/stat-dependent-power.json#assurance-after-status-damage',
 	],
 });
 

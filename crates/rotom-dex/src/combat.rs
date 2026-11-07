@@ -1,13 +1,13 @@
 use crate::{Accuracy, DexData, MoveBehaviorKind, MoveData, SpeciesData, Stats};
 use rotom_core::{
     AbilityBehavior, AbilityHandler, AbilityId, AbilitySuppression, BasePowerRule, BattleError,
-    BattleStat, BattleStats, CombatData, CombatMove, ConditionId, CriticalBehavior, EffectFraction,
-    FieldEffectIds, HitSequence, ItemBehavior, ItemHandler, ItemId, MajorStatus, MegaEvolution,
-    MoveAccuracy, MoveCapabilities, MoveCapability, MoveCategory, MoveId, MoveIntrinsic,
-    MoveOperation, MoveSlot, MoveTarget, PokemonPosition, PokemonSet, PokemonState, PokemonType,
-    PokemonTypes, PrimaryMoveEffect, PriorMoveEffect, SecondaryMoveEffect, SelfMoveEffect,
-    SpeciesId, StatAllocation, StatStages, StatusState, SwitchEffect, TerrainEnvironment,
-    WeatherEnvironment,
+    BattleStat, BattleStats, CombatData, CombatMove, ConditionId, ContextualPowerPredicate,
+    CriticalBehavior, EffectFraction, FieldEffectIds, HitSequence, ItemBehavior, ItemHandler,
+    ItemId, MajorStatus, MegaEvolution, MoveAccuracy, MoveCapabilities, MoveCapability,
+    MoveCategory, MoveId, MoveIntrinsic, MoveOperation, MoveSlot, MoveTarget, PokemonPosition,
+    PokemonSet, PokemonState, PokemonType, PokemonTypes, PrimaryMoveEffect, PriorMoveEffect,
+    SecondaryMoveEffect, SelfMoveEffect, SpeciesId, StatAllocation, StatStages, StatusState,
+    SwitchEffect, TerrainEnvironment, WeatherEnvironment,
 };
 
 impl CombatData for DexData {
@@ -1841,6 +1841,15 @@ fn base_power_rule(data: &MoveData) -> BasePowerRule {
         "eruption" | "waterspout" => BasePowerRule::CurrentHpRatio,
         "flail" | "reversal" => BasePowerRule::LowHpBracket,
         "storedpower" | "powertrip" => BasePowerRule::PositiveStatStages,
+        "payback" => BasePowerRule::ContextualDouble {
+            predicate: ContextualPowerPredicate::TargetActed,
+        },
+        "assurance" => BasePowerRule::ContextualDouble {
+            predicate: ContextualPowerPredicate::TargetDamagedThisTurn,
+        },
+        "stompingtantrum" => BasePowerRule::ContextualDouble {
+            predicate: ContextualPowerPredicate::PreviousMoveFailed,
+        },
         _ => BasePowerRule::Fixed,
     }
 }
@@ -1925,21 +1934,11 @@ fn behavior_capabilities(data: &MoveData, mut required: MoveCapabilities) -> Mov
             MoveCapability::SwitchControl
         });
     }
-    let has_unsupported_callback = data.behavior.callbacks.iter().any(|callback| {
-        !((data.id == "magnetrise" && callback == "onTry")
-            || (matches!(data.id.as_str(), "facade" | "barbbarrage" | "venoshock")
-                && callback == "onBasePower")
-            || (matches!(data.id.as_str(), "hex" | "infernalparade")
-                && callback == "basePowerCallback")
-            || (matches!(
-                data.id.as_str(),
-                "eruption" | "waterspout" | "flail" | "reversal" | "storedpower" | "powertrip"
-            ) && callback == "basePowerCallback")
-            || (data.id == "knockoff" && matches!(callback.as_str(), "onBasePower" | "onAfterHit"))
-            || (data.id == "freezedry" && callback == "onEffectiveness")
-            || (matches!(data.id.as_str(), "trick" | "switcheroo")
-                && matches!(callback.as_str(), "onHit" | "onTryImmunity")))
-    });
+    let has_unsupported_callback = data
+        .behavior
+        .callbacks
+        .iter()
+        .any(|callback| !is_supported_callback(data, callback));
     if has_unsupported_callback {
         required = required.with(MoveCapability::CustomCallback);
     }
@@ -1971,6 +1970,29 @@ fn behavior_capabilities(data: &MoveData, mut required: MoveCapabilities) -> Mov
         required = required.with(MoveCapability::SpecialBehavior);
     }
     required
+}
+
+fn is_supported_callback(data: &MoveData, callback: &str) -> bool {
+    (data.id == "magnetrise" && callback == "onTry")
+        || (matches!(data.id.as_str(), "facade" | "barbbarrage" | "venoshock")
+            && callback == "onBasePower")
+        || (matches!(data.id.as_str(), "hex" | "infernalparade") && callback == "basePowerCallback")
+        || (matches!(
+            data.id.as_str(),
+            "eruption"
+                | "waterspout"
+                | "flail"
+                | "reversal"
+                | "storedpower"
+                | "powertrip"
+                | "payback"
+                | "assurance"
+                | "stompingtantrum"
+        ) && callback == "basePowerCallback")
+        || (data.id == "knockoff" && matches!(callback, "onBasePower" | "onAfterHit"))
+        || (data.id == "freezedry" && callback == "onEffectiveness")
+        || (matches!(data.id.as_str(), "trick" | "switcheroo")
+            && matches!(callback, "onHit" | "onTryImmunity"))
 }
 
 fn has_unsupported_special_property(data: &MoveData) -> bool {

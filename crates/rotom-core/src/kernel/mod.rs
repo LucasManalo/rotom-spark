@@ -72,6 +72,9 @@ impl<'a> StateKernel<'a> {
         let previous = pokemon.current_hp;
         let current = previous.saturating_sub(requested);
         pokemon.current_hp = current;
+        if current < previous {
+            pokemon.move_history.damaged_this_turn = true;
+        }
         Ok(HpChange {
             previous,
             current,
@@ -493,6 +496,8 @@ impl<'a> StateKernel<'a> {
                 history.move_this_turn = None;
                 history.move_this_turn_result = None;
                 history.damaging_hits_this_turn = 0;
+                history.damaged_this_turn = false;
+                history.switched_in_this_turn = false;
                 if let Some(record) = &mut history.last_hit_by {
                     record.this_turn = false;
                 }
@@ -727,6 +732,7 @@ impl<'a> StateKernel<'a> {
             BattleError::InvalidState("switch target is out of bounds".to_owned())
         })?;
         incoming_state.prepare_switch_in();
+        incoming_state.move_history.switched_in_this_turn = true;
         incoming_state.position = PokemonPosition::Active { slot };
         side_state.active[slot_index] = Some(incoming);
         self.battle.active_effect_orders[side_index(side)][slot_index] = Some(effect_order);
@@ -751,11 +757,13 @@ impl<'a> StateKernel<'a> {
         self.battle.next_effect_order = effect_order.checked_add(1).ok_or_else(|| {
             BattleError::InvalidState("active effect-order counter overflowed".to_owned())
         })?;
+        let switched_in_this_turn = self.battle.phase != crate::BattlePhase::TeamPreview;
         let side_state = self.battle.side_mut(side);
         let incoming_state = side_state.pokemon_mut(incoming).ok_or_else(|| {
             BattleError::InvalidState("incoming Pokémon is out of bounds".to_owned())
         })?;
         incoming_state.prepare_switch_in();
+        incoming_state.move_history.switched_in_this_turn = switched_in_this_turn;
         incoming_state.position = PokemonPosition::Active { slot };
         side_state.active[slot.index()] = Some(incoming);
         self.battle.active_effect_orders[side_index(side)][slot.index()] = Some(effect_order);
@@ -1121,6 +1129,7 @@ mod tests {
         kernel.begin_move_action(source).unwrap();
         kernel.record_move_used(source, move_id).unwrap();
         kernel.record_move_hit(source, target, move_id, 17).unwrap();
+        kernel.damage_hp(target, 17).unwrap();
         kernel
             .finish_move_action(source, move_id, MoveActionResult::Succeeded)
             .unwrap();
@@ -1148,6 +1157,18 @@ mod tests {
             kernel.pokemon(target).unwrap().move_history.times_attacked,
             1
         );
+        assert!(
+            kernel
+                .pokemon(target)
+                .unwrap()
+                .move_history
+                .damaged_this_turn
+        );
+        kernel
+            .pokemon_mut(target)
+            .unwrap()
+            .move_history
+            .switched_in_this_turn = true;
 
         kernel.reset_move_turn_history();
         let source_history = kernel.pokemon(source).unwrap().move_history;
@@ -1170,6 +1191,20 @@ mod tests {
         assert_eq!(
             kernel.pokemon(target).unwrap().move_history.times_attacked,
             1
+        );
+        assert!(
+            !kernel
+                .pokemon(target)
+                .unwrap()
+                .move_history
+                .damaged_this_turn
+        );
+        assert!(
+            !kernel
+                .pokemon(target)
+                .unwrap()
+                .move_history
+                .switched_in_this_turn
         );
     }
 

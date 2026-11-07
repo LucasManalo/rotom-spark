@@ -174,9 +174,10 @@ node tools/showdown-reference/hp-dependent-power.cjs
 node tools/showdown-reference/hp-dependent-power.cjs --check
 ```
 
-PR 16.6 records Stored Power and Power Trip across positive, negative, mixed,
-maximum, and Unaware-interaction stat stages through complete pinned Showdown
-turns:
+The shared variable-power fixture generator records Stored Power and Power Trip
+stat-stage cases plus Payback, Assurance, and Stomping Tantrum context
+predicates. It uses complete pinned Showdown turns where the harness supports
+them and direct pinned callbacks for isolated history predicates:
 
 ```text
 node tools/showdown-reference/stat-dependent-power.cjs

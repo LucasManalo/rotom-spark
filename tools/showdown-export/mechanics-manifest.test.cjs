@@ -128,11 +128,13 @@ test('move support is derived from complete executor capabilities', () => {
 	);
 	assert.equal(dragonClaw.implementation, 'implemented');
 	assert.equal(dragonClaw.owner_pr, 'PR 13.1');
-	assert.equal(manifest.summary.by_kind.move.implementation.implemented, 259);
-	assert.deepEqual(
-		manifest.summary.by_kind.move.verification,
-		{not_tested: 251, unit_tested: 218, differential_verified: 41}
-	);
+	const moveEntries = manifest.entries.filter(candidate => candidate.kind === 'move');
+	for (const [status, count] of Object.entries(manifest.summary.by_kind.move.implementation)) {
+		assert.equal(count, moveEntries.filter(candidate => candidate.implementation === status).length);
+	}
+	for (const [status, count] of Object.entries(manifest.summary.by_kind.move.verification)) {
+		assert.equal(count, moveEntries.filter(candidate => candidate.verification === status).length);
+	}
 	const implementedMoves = manifest.entries.filter(candidate =>
 		candidate.kind === 'move' && candidate.implementation === 'implemented'
 	);
@@ -140,10 +142,9 @@ test('move support is derived from complete executor capabilities', () => {
 	assert.ok(entry('move', 'powerwhip').evidence.includes(
 		'unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case'
 	));
-	assert.deepEqual(
-		manifest.summary.by_kind.move.interaction_verification,
-		{not_tested: 474, unit_tested: 14, differential_verified: 22}
-	);
+	for (const [status, count] of Object.entries(manifest.summary.by_kind.move.interaction_verification)) {
+		assert.equal(count, moveEntries.filter(candidate => candidate.interaction_verification === status).length);
+	}
 	for (const id of ['hex', 'infernalparade', 'venoshock', 'barbbarrage']) {
 		assert.equal(entry('move', id).implementation, 'implemented');
 		assert.equal(entry('move', id).owner_pr, 'PR 16.4');

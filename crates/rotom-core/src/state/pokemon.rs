@@ -297,6 +297,12 @@ pub struct MoveHistory {
     pub last_damaged_by: Option<MoveHitRecord>,
     /// Number of damaging hits received during the current turn.
     pub damaging_hits_this_turn: u16,
+    /// Whether any source caused positive HP loss during the current turn.
+    #[serde(default)]
+    pub damaged_this_turn: bool,
+    /// Whether the Pokémon entered the active field during the current turn.
+    #[serde(default)]
+    pub switched_in_this_turn: bool,
     /// Move hits received since entering the field (Rage Fist-style history).
     pub times_attacked: u16,
     /// Move actions begun since the Pokémon entered the field.
