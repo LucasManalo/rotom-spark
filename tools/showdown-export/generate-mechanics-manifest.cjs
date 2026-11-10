@@ -6,6 +6,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const {execFileSync} = require('node:child_process');
 const {
+	isWeatherScaledHeal,
 	isPr131Supported, isPr132Supported, isPr133Supported, isPr134Supported, isPr161Supported,
 	isPr162Supported,
 	isPr163Supported,
@@ -268,7 +269,7 @@ function moveFamilies(move) {
 	if (move.secondary || move.secondaries) families.push('secondary_effect');
 	if (move.self || move.selfBoost) families.push('self_effect');
 	if (move.boosts) families.push('stat_change');
-	if (move.heal) families.push('healing');
+	if (move.heal || isWeatherScaledHeal(move)) families.push('healing');
 	if (move.status) families.push('major_status');
 	if (move.volatileStatus) families.push('volatile');
 	if (move.weather || move.terrain || move.pseudoWeather || move.sideCondition || move.slotCondition) {
@@ -363,7 +364,8 @@ function validateCoverageClaims(source, root = repositoryRoot) {
 				const fixtureCase = differentialFixtureCase(root, relativePath, anchor);
 				if (!fixtureCase) fail(`Differential evidence ${evidence} does not name an existing fixture case for ${key}`);
 				const matchesIdentity = claim.kind === 'move'
-					? fixtureCase.move === claim.id
+					? fixtureCase.move === claim.id ||
+						(Array.isArray(fixtureCase.moves) && fixtureCase.moves.includes(claim.id))
 					: claim.kind === 'ability' && fixtureCase.ability === claim.id;
 				if (!matchesIdentity) {
 					const noun = claim.kind === 'move' ? 'move' : 'mechanic';

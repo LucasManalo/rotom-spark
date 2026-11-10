@@ -161,6 +161,16 @@ impl CombatData for DexData {
                 denominator: heal.denominator,
             });
         }
+        if is_weather_scaled_heal(data) {
+            effects.push(PrimaryMoveEffect::WeatherScaledHeal {
+                neutral_numerator: 1,
+                neutral_denominator: 2,
+                sun_numerator: 667,
+                sun_denominator: 1_000,
+                adverse_numerator: 1,
+                adverse_denominator: 4,
+            });
+        }
         if data.volatile_status.as_deref() == Some("magnetrise") {
             effects.push(PrimaryMoveEffect::AddVolatile {
                 condition: ConditionId::new(move_id.get()),
@@ -1860,6 +1870,10 @@ fn is_standard_damage_move(data: &MoveData) -> bool {
         && (data.base_power > 0 || base_power_rule(data) != BasePowerRule::Fixed)
 }
 
+fn is_weather_scaled_heal(data: &MoveData) -> bool {
+    matches!(data.id.as_str(), "moonlight" | "morningsun" | "synthesis")
+}
+
 const fn target_capability(target: MoveTarget) -> MoveCapability {
     match target {
         MoveTarget::Normal | MoveTarget::Any | MoveTarget::AdjacentFoe => {
@@ -1906,6 +1920,7 @@ fn behavior_capabilities(data: &MoveData, mut required: MoveCapabilities) -> Mov
         .behavior
         .effect_kinds
         .contains(&MoveBehaviorKind::Healing)
+        || is_weather_scaled_heal(data)
     {
         required = required.with(MoveCapability::Healing);
     }
@@ -1957,7 +1972,8 @@ fn behavior_capabilities(data: &MoveData, mut required: MoveCapabilities) -> Mov
         });
     let unsupported_special = has_unsupported_special_property(data);
     let unsupported_flag = data.behavior.intrinsic_flags.iter().any(|flag| {
-        (flag != "heal" || (data.heal.is_none() && data.drain.is_none()))
+        (flag != "heal"
+            || (data.heal.is_none() && data.drain.is_none() && !is_weather_scaled_heal(data)))
             && !(data.id == "magnetrise" && flag == "gravity")
     });
     if data.id == "toxic"
@@ -1993,6 +2009,7 @@ fn is_supported_callback(data: &MoveData, callback: &str) -> bool {
         || (data.id == "freezedry" && callback == "onEffectiveness")
         || (matches!(data.id.as_str(), "trick" | "switcheroo")
             && matches!(callback, "onHit" | "onTryImmunity"))
+        || (is_weather_scaled_heal(data) && callback == "onHit")
 }
 
 fn has_unsupported_special_property(data: &MoveData) -> bool {

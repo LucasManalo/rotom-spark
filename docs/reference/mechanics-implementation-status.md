@@ -20,7 +20,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | --- | ---: | ---: | ---: | ---: |
 | Abilities | 215 | 123 | 92 | 0 |
 | Items | 166 | 141 | 25 | 0 |
-| Moves | 510 | 262 | 0 | 248 |
+| Moves | 510 | 265 | 0 | 245 |
 
 ## Abilities
 
@@ -700,8 +700,8 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Misty Explosion | `mistyexplosion` | unsupported | not_tested | not_tested | — |
 | Misty Terrain | `mistyterrain` | implemented | unit_tested | not_tested | PR 13.3 |
 | Moonblast | `moonblast` | implemented | unit_tested | not_tested | PR 13.4 |
-| Moonlight | `moonlight` | unsupported | not_tested | not_tested | — |
-| Morning Sun | `morningsun` | unsupported | not_tested | not_tested | — |
+| Moonlight | `moonlight` | implemented | differential_verified | differential_verified | PR 16.6 |
+| Morning Sun | `morningsun` | implemented | differential_verified | differential_verified | PR 16.6 |
 | Mortal Spin | `mortalspin` | unsupported | not_tested | not_tested | — |
 | Mountain Gale | `mountaingale` | implemented | unit_tested | not_tested | PR 15.3 |
 | Muddy Water | `muddywater` | implemented | unit_tested | not_tested | PR 13.4 |
@@ -863,7 +863,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Sweet Scent | `sweetscent` | implemented | unit_tested | not_tested | PR 13.3 |
 | Switcheroo | `switcheroo` | implemented | unit_tested | unit_tested | PR 15.5 |
 | Swords Dance | `swordsdance` | implemented | differential_verified | not_tested | PR 13.3.1 |
-| Synthesis | `synthesis` | unsupported | not_tested | not_tested | — |
+| Synthesis | `synthesis` | implemented | differential_verified | differential_verified | PR 16.6 |
 | Syrup Bomb | `syrupbomb` | unsupported | not_tested | not_tested | — |
 | Tail Slap | `tailslap` | implemented | unit_tested | not_tested | PR 13.4 |
 | Tailwind | `tailwind` | implemented | differential_verified | differential_verified | PR 13.3.1 |

@@ -137,12 +137,16 @@ function structuredEffectsSupported(move) {
 	return true;
 }
 
+function isWeatherScaledHeal(move) {
+	return ['moonlight', 'morningsun', 'synthesis'].includes(move.id);
+}
+
 function moveBehavior(move) {
 	const effectKinds = [];
 	if (move.secondary || move.secondaries?.length) effectKinds.push('secondary_effect');
 	if (move.self || move.selfBoost) effectKinds.push('self_effect');
 	if (move.boosts) effectKinds.push('stat_stage');
-	if (move.heal) effectKinds.push('healing');
+	if (move.heal || isWeatherScaledHeal(move)) effectKinds.push('healing');
 	if (move.weather || move.terrain || move.pseudoWeather || move.sideCondition || move.slotCondition) {
 		effectKinds.push('field_or_side_condition');
 	}
@@ -237,6 +241,7 @@ function moveExecutionRequirements(move) {
 		...(move.id === 'knockoff' ? ['onBasePower', 'onAfterHit'] : []),
 		...(move.id === 'freezedry' ? ['onEffectiveness'] : []),
 		...(['trick', 'switcheroo'].includes(move.id) ? ['onTryImmunity', 'onHit'] : []),
+		...(isWeatherScaledHeal(move) ? ['onHit'] : []),
 	]);
 	if (behavior.callbacks.some(callback => !supportedCallbacks.has(callback))) {
 		capabilities.add('custom_callback');
@@ -244,7 +249,7 @@ function moveExecutionRequirements(move) {
 	if (move.id === 'toxic' || unsupportedCondition || !behavior.structured_effects_supported ||
 		['randomNormal', 'scripted'].includes(move.target) ||
 		behavior.intrinsic_flags.some(flag =>
-			(flag !== 'heal' || (!move.heal && !move.drain)) &&
+			(flag !== 'heal' || (!move.heal && !move.drain && !isWeatherScaledHeal(move))) &&
 			!(move.id === 'magnetrise' && flag === 'gravity')
 		) ||
 		behavior.special_properties.some(property => ![
@@ -317,6 +322,7 @@ function isPr165Supported(move) {
 }
 
 module.exports = {
+	isWeatherScaledHeal,
 	isPr131Supported, isPr132Supported, isPr133Supported, isPr134Supported, isPr161Supported,
 	isPr162Supported,
 	isPr163Supported,

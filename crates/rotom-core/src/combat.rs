@@ -165,6 +165,14 @@ pub enum PrimaryMoveEffect {
         numerator: u16,
         denominator: u16,
     },
+    WeatherScaledHeal {
+        neutral_numerator: u16,
+        neutral_denominator: u16,
+        sun_numerator: u16,
+        sun_denominator: u16,
+        adverse_numerator: u16,
+        adverse_denominator: u16,
+    },
     AddVolatile {
         condition: ConditionId,
         duration: Option<u8>,
@@ -3372,6 +3380,11 @@ impl BattleState {
         field_effects: &FieldEffectIds,
         resolution: &mut TurnResolution,
     ) -> Result<(), BattleError> {
+        let no_effect_succeeds = !move_context.primary_effects.is_empty()
+            && move_context
+                .primary_effects
+                .iter()
+                .all(|effect| matches!(effect, PrimaryMoveEffect::WeatherScaledHeal { .. }));
         let global = move_context.primary_effects.iter().all(|effect| {
             matches!(
                 effect,
@@ -3436,14 +3449,14 @@ impl BattleState {
                 outcomes[index] = Some(Self::empty_target_outcome(
                     move_context,
                     target_context,
-                    if applied {
+                    if applied || no_effect_succeeds {
                         TargetResult::Hit
                     } else {
                         TargetResult::Cancelled
                     },
                 ));
             }
-            any_applied |= applied;
+            any_applied |= applied || no_effect_succeeds;
         }
         resolution
             .target_outcomes
@@ -3629,6 +3642,50 @@ impl BattleState {
                 let amount = (u32::from(max_hp) * u32::from(numerator)
                     + u32::from(denominator) / 2)
                     / u32::from(denominator);
+                Ok(StateKernel::new(self)
+                    .heal_hp(target, u16::try_from(amount).unwrap_or(u16::MAX))?
+                    .applied
+                    != 0)
+            }
+            PrimaryMoveEffect::WeatherScaledHeal {
+                neutral_numerator,
+                neutral_denominator,
+                sun_numerator,
+                sun_denominator,
+                adverse_numerator,
+                adverse_denominator,
+            } => {
+                if neutral_denominator == 0 || sun_denominator == 0 || adverse_denominator == 0 {
+                    return Err(BattleError::DataMismatch(
+                        "weather-scaled healing denominator is zero".to_owned(),
+                    ));
+                }
+                let target = pokemon()?;
+                let (numerator, denominator) =
+                    match field_effects.effective_weather_environment(self, data) {
+                        Some(WeatherEnvironment::Sun) => (sun_numerator, sun_denominator),
+                        Some(
+                            WeatherEnvironment::Rain
+                            | WeatherEnvironment::Sandstorm
+                            | WeatherEnvironment::Snow,
+                        ) => (adverse_numerator, adverse_denominator),
+                        None => (neutral_numerator, neutral_denominator),
+                    };
+                let max_hp = self
+                    .side(target.side)
+                    .pokemon(target.pokemon)
+                    .ok_or_else(|| {
+                        BattleError::InvalidState("healing target is invalid".to_owned())
+                    })?
+                    .stats
+                    .hp;
+                // These callbacks use Showdown's fixed-point `modify`, unlike
+                // ordinary `heal` data, which uses JavaScript Math.round.
+                let amount = showdown_modify(
+                    u32::from(max_hp),
+                    u32::from(numerator),
+                    u32::from(denominator),
+                );
                 Ok(StateKernel::new(self)
                     .heal_hp(target, u16::try_from(amount).unwrap_or(u16::MAX))?
                     .applied

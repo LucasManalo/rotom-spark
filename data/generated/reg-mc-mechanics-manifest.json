@@ -29319,14 +29319,22 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/primary-non-damage.json#weather-scaled-healing",
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "interaction_differential:data/fixtures/differential/primary-non-damage.json#weather-scaled-healing",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#primary_non_damage_fixture_is_an_automated_differential_sweep",
         "species/clefable",
         "species/musharna",
         "species/noivern",
         "species/umbreon",
-        "species/vileplume"
+        "species/vileplume",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case",
+        "unit:crates/rotom-dex/tests/combat.rs#primary_non_damage_fixture_is_an_automated_differential_sweep"
       ],
       "effect_families": [
         "custom_callback",
+        "healing",
         "status_move"
       ],
       "operation": "non_damage",
@@ -29334,14 +29342,13 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "custom_callback",
-        "special_behavior"
+        "healing"
       ],
-      "pr_16_5_supported": false,
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "pr_16_5_supported": true,
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 16.6"
     },
     {
       "id": "morningsun",
@@ -29349,14 +29356,22 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/primary-non-damage.json#weather-scaled-healing",
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "interaction_differential:data/fixtures/differential/primary-non-damage.json#weather-scaled-healing",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#primary_non_damage_fixture_is_an_automated_differential_sweep",
         "species/arcanine",
         "species/arcaninehisui",
         "species/espeon",
         "species/heliolisk",
-        "species/volcarona"
+        "species/volcarona",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case",
+        "unit:crates/rotom-dex/tests/combat.rs#primary_non_damage_fixture_is_an_automated_differential_sweep"
       ],
       "effect_families": [
         "custom_callback",
+        "healing",
         "status_move"
       ],
       "operation": "non_damage",
@@ -29364,14 +29379,13 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "custom_callback",
-        "special_behavior"
+        "healing"
       ],
-      "pr_16_5_supported": false,
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "pr_16_5_supported": true,
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 16.6"
     },
     {
       "id": "mortalspin",
@@ -40271,6 +40285,11 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/primary-non-damage.json#weather-scaled-healing",
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "interaction_differential:data/fixtures/differential/primary-non-damage.json#weather-scaled-healing",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#primary_non_damage_fixture_is_an_automated_differential_sweep",
         "species/arboliva",
         "species/chesnaught",
         "species/decidueye",
@@ -40287,10 +40306,13 @@
         "species/tsareena",
         "species/venusaur",
         "species/victreebel",
-        "species/vileplume"
+        "species/vileplume",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case",
+        "unit:crates/rotom-dex/tests/combat.rs#primary_non_damage_fixture_is_an_automated_differential_sweep"
       ],
       "effect_families": [
         "custom_callback",
+        "healing",
         "status_move"
       ],
       "operation": "non_damage",
@@ -40298,14 +40320,13 @@
         "accuracy",
         "non_damage_primary",
         "advanced_targeting",
-        "custom_callback",
-        "special_behavior"
+        "healing"
       ],
-      "pr_16_5_supported": false,
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "pr_16_5_supported": true,
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 16.6"
     },
     {
       "id": "syrupbomb",
@@ -49349,19 +49370,19 @@
       "move": {
         "total": 510,
         "implementation": {
-          "unsupported": 248,
+          "unsupported": 245,
           "partial": 0,
-          "implemented": 262
+          "implemented": 265
         },
         "verification": {
-          "not_tested": 248,
+          "not_tested": 245,
           "unit_tested": 218,
-          "differential_verified": 44
+          "differential_verified": 47
         },
         "interaction_verification": {
-          "not_tested": 471,
+          "not_tested": 468,
           "unit_tested": 16,
-          "differential_verified": 23
+          "differential_verified": 26
         },
         "reachability": {
           "direct_legal_set": 510,

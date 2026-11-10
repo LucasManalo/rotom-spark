@@ -15,11 +15,13 @@ const filler = () => ({species: 'Magikarp', ability: 'swiftswim', moves: ['splas
 const set = (species, moves, ability = 'pressure') => ({species, ability, moves, level: 50});
 const pad = team => [...team, ...Array.from({length: 4 - team.length}, filler)];
 
-function battleWith(sourceMoves, targetSpecies = 'Blastoise', seed = 'gen5,0000000000000001') {
+function battleWith(
+	sourceMoves, targetSpecies = 'Blastoise', seed = 'gen5,0000000000000001', targetAbility = 'pressure'
+) {
 	const battle = new Battle({
 		format: Dex.formats.get(version.format, true), seed,
 		p1: {team: pad([set('Goodra', sourceMoves, 'sapsipper'), filler()])},
-		p2: {team: pad([set(targetSpecies, ['splash']), filler()])},
+		p2: {team: pad([set(targetSpecies, ['splash'], targetAbility), filler()])},
 	});
 	battle.makeChoices('team 1234', 'team 1234');
 	return battle;
@@ -152,6 +154,34 @@ function recoverCases() {
 	return {normal, odd_max_hp: odd, full_hp: full};
 }
 
+function weatherHealingCases() {
+	const observe = (move, weather = null, targetAbility = 'pressure', fullHp = false) => {
+		const targetSpecies = targetAbility === 'cloudnine' ? 'Golduck' : 'Blastoise';
+		const battle = battleWith([move], targetSpecies, 'gen5,0000000000000017', targetAbility);
+		const source = battle.p1.active[0];
+		source.baseMaxhp = 155;
+		source.maxhp = 155;
+		source.hp = fullHp ? source.maxhp : 1;
+		if (weather) battle.field.setWeather(weather, source);
+		const before = source.hp;
+		const execution = use(battle, move, source, source);
+		return {
+			healed: execution.state.source.hp - before,
+			result: execution.result,
+			move_result: source.moveThisTurnResult ?? null,
+		};
+	};
+	return Object.fromEntries(['morningsun', 'synthesis', 'moonlight'].map(move => [move, {
+		neutral: observe(move),
+		sun: observe(move, 'sunnyday'),
+		rain: observe(move, 'raindance'),
+		sand: observe(move, 'sandstorm'),
+		snow: observe(move, 'snowscape'),
+		cloud_nine_sun: observe(move, 'sunnyday', 'cloudnine'),
+		full_hp: observe(move, null, 'pressure', true),
+	}]));
+}
+
 function fieldCases() {
 	const weather = battleWith(['sunnyday', 'raindance']);
 	const sunny = use(weather, 'sunnyday', weather.p1.active[0], weather.p1.active[0]);
@@ -200,6 +230,23 @@ function protectCase() {
 	use(battle, 'protect', battle.p2.active[0], battle.p2.active[0]);
 	return use(battle, 'willowisp');
 }
+
+const weatherHealing = weatherHealingCases();
+const weatherHealingBaseline = weatherHealing.morningsun;
+const weatherHealingExpected = {
+	neutral_healed: weatherHealingBaseline.neutral.healed,
+	sun_healed: weatherHealingBaseline.sun.healed,
+	adverse_healed: weatherHealingBaseline.rain.healed,
+	cloud_nine_sun_healed: weatherHealingBaseline.cloud_nine_sun.healed,
+	full_hp_healed: weatherHealingBaseline.full_hp.healed,
+	full_hp_succeeded: weatherHealingBaseline.full_hp.move_result === true,
+	all_cases_succeeded: Object.values(weatherHealingBaseline).every(value =>
+		value.result === true && value.move_result === true
+	),
+	all_moves_match: Object.values(weatherHealing).every(value =>
+		JSON.stringify(value) === JSON.stringify(weatherHealingBaseline)
+	),
+};
 
 const observations = {
 	will_o_wisp: statusCases(), thunder_wave: thunderWaveCases(), sleep: sleepCases(),
@@ -254,6 +301,8 @@ const output = {
 			odd_max_hp_healed: observations.recover.odd_max_hp.healed,
 			full_hp_failed: !observations.recover.full_hp.result,
 		}},
+		{name: 'weather-scaled-healing', moves: ['morningsun', 'synthesis', 'moonlight'],
+			expected: weatherHealingExpected},
 		{name: 'sunny-day-reapplication', move: 'sunnyday', expected: {
 			initial_duration: observations.field_conditions.sunny_day.initial.state.field.weather_duration,
 			repeated_failed: !observations.field_conditions.sunny_day.repeated.result,

@@ -31,9 +31,9 @@
       },
       "move": {
         "reachable": 510,
-        "unsupported": 248,
+        "unsupported": 245,
         "partial": 0,
-        "implemented": 262
+        "implemented": 265
       }
     },
     "executable_capability_coverage": {
@@ -46,7 +46,7 @@
     "dependency_targets": {
       "ability": 92,
       "item": 25,
-      "move": 248
+      "move": 245
     }
   },
   "capabilities": [
@@ -673,8 +673,6 @@
         "move:meteorbeam",
         "move:mirrorcoat",
         "move:mistyexplosion",
-        "move:moonlight",
-        "move:morningsun",
         "move:mortalspin",
         "move:noretreat",
         "move:octolock",
@@ -727,7 +725,6 @@
         "move:supercellslam",
         "move:superfang",
         "move:swallow",
-        "move:synthesis",
         "move:teatime",
         "move:temperflare",
         "move:terrainpulse",
@@ -2357,8 +2354,6 @@
         "move:minimize",
         "move:mirrorcoat",
         "move:mistyexplosion",
-        "move:moonlight",
-        "move:morningsun",
         "move:noretreat",
         "move:octolock",
         "move:outrage",
@@ -2407,7 +2402,6 @@
         "move:swagger",
         "move:swallow",
         "move:sweetkiss",
-        "move:synthesis",
         "move:syrupbomb",
         "move:taunt",
         "move:teeterdance",
@@ -7933,46 +7927,6 @@
     },
     {
       "kind": "move",
-      "id": "moonlight",
-      "name": "Moonlight",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "custom_callback",
-        "special_behavior"
-      ],
-      "outstanding_blockers": [
-        "custom_callback",
-        "special_behavior"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.moonlight"
-      ]
-    },
-    {
-      "kind": "move",
-      "id": "morningsun",
-      "name": "Morning Sun",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "custom_callback",
-        "special_behavior"
-      ],
-      "outstanding_blockers": [
-        "custom_callback",
-        "special_behavior"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.morningsun"
-      ]
-    },
-    {
-      "kind": "move",
       "id": "mortalspin",
       "name": "Mortal Spin",
       "identity_status": "unsupported",
@@ -9503,26 +9457,6 @@
       "differential_fixtures": [],
       "pinned_reference_evidence": [
         "showdown:data/moves.ts:Moves.sweetkiss"
-      ]
-    },
-    {
-      "kind": "move",
-      "id": "synthesis",
-      "name": "Synthesis",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "custom_callback",
-        "special_behavior"
-      ],
-      "outstanding_blockers": [
-        "custom_callback",
-        "special_behavior"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.synthesis"
       ]
     },
     {

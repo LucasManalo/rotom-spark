@@ -2078,6 +2078,102 @@ fn primary_non_damage_fixture_is_an_automated_differential_sweep() {
                 );
                 assert!(fixture_bool(case, "full_hp_failed"));
             }
+            "weather-scaled-healing" => {
+                assert_eq!(case["expected"]["all_moves_match"], true);
+                assert_eq!(case["expected"]["all_cases_succeeded"], true);
+                for move_name in case["moves"].as_array().unwrap() {
+                    let move_name = move_name.as_str().unwrap();
+                    let source = set_with_moves(&dex, "kommoo", "overcoat", &[move_name]);
+                    let move_id = dex.resolve_move(move_name).unwrap().0;
+                    for (scenario, weather, cloud_nine, full_hp) in [
+                        ("neutral", None, false, false),
+                        ("sun", Some(WeatherEnvironment::Sun), false, false),
+                        ("rain", Some(WeatherEnvironment::Rain), false, false),
+                        ("sand", Some(WeatherEnvironment::Sandstorm), false, false),
+                        ("snow", Some(WeatherEnvironment::Snow), false, false),
+                        ("cloud_nine_sun", Some(WeatherEnvironment::Sun), true, false),
+                        ("full_hp", None, false, true),
+                    ] {
+                        let target = if cloud_nine {
+                            set_with_moves(&dex, "golduck", "cloudnine", &["swordsdance"])
+                        } else {
+                            ordinary.clone()
+                        };
+                        let state = selected_primary_battle(&dex, &source, &target, 0x33_45);
+                        let mut builder = BattleStateBuilder::from_state(state).unwrap();
+                        builder
+                            .edit_pokemon(
+                                PokemonRef::new(SideId::P1, PokemonIndex::new(0)),
+                                |pokemon| {
+                                    pokemon.stats.hp = 155;
+                                    pokemon.current_hp = if full_hp { 155 } else { 1 };
+                                },
+                            )
+                            .unwrap();
+                        if let Some(weather) = weather {
+                            let condition = match weather {
+                                WeatherEnvironment::Rain => dex.field_effect_ids().rain,
+                                WeatherEnvironment::Sun => dex.field_effect_ids().sun,
+                                WeatherEnvironment::Sandstorm => dex.field_effect_ids().sandstorm,
+                                WeatherEnvironment::Snow => dex.field_effect_ids().snow,
+                            }
+                            .unwrap();
+                            builder.edit_field(|field| {
+                                field.weather = Some(ConditionState::new(condition, Some(5)));
+                            });
+                        }
+                        let state = builder.build().unwrap();
+                        let before = state
+                            .side(SideId::P1)
+                            .pokemon(PokemonIndex::new(0))
+                            .unwrap();
+                        let initial_hp = before.current_hp;
+                        let starting_pp = before.moves[0].pp;
+                        let action = single_move_action(0, ActionTarget::Automatic);
+                        let mechanics = Mechanics::new(&dex, &EffectRegistry::new());
+                        let result = step(&state, &action, &mechanics).unwrap();
+                        let replay = step(&round_trip_state(&state), &action, &mechanics).unwrap();
+                        assert_eq!(result, replay, "{move_name}/{scenario} replay");
+
+                        let after = result
+                            .state
+                            .side(SideId::P1)
+                            .pokemon(PokemonIndex::new(0))
+                            .unwrap();
+                        let expected_healed = match scenario {
+                            "neutral" => case["expected"]["neutral_healed"].as_i64().unwrap(),
+                            "sun" => case["expected"]["sun_healed"].as_i64().unwrap(),
+                            "rain" | "sand" | "snow" => {
+                                case["expected"]["adverse_healed"].as_i64().unwrap()
+                            }
+                            "cloud_nine_sun" => {
+                                case["expected"]["cloud_nine_sun_healed"].as_i64().unwrap()
+                            }
+                            "full_hp" => case["expected"]["full_hp_healed"].as_i64().unwrap(),
+                            _ => unreachable!(),
+                        };
+                        assert_eq!(
+                            i64::from(after.current_hp - initial_hp),
+                            expected_healed,
+                            "{move_name}/{scenario} healing"
+                        );
+                        assert_eq!(
+                            after.moves[0].pp,
+                            starting_pp - 1,
+                            "{move_name}/{scenario} PP"
+                        );
+                        assert_eq!(
+                            after.move_history.move_last_turn_result,
+                            Some(MoveActionResult::Succeeded),
+                            "{move_name}/{scenario} history"
+                        );
+                        if full_hp {
+                            assert_eq!(case["expected"]["full_hp_succeeded"], true);
+                        }
+                        assert_eq!(primary_outcome(&result, move_id), TargetResult::Hit);
+                    }
+                }
+            }
             "sunny-day-reapplication" | "electric-terrain-reapplication" => {
                 let is_weather = name == "sunny-day-reapplication";
                 let moves: &[&str] = if is_weather {
@@ -2295,6 +2391,7 @@ fn primary_non_damage_fixture_is_an_automated_differential_sweep() {
             "tailwind-reapplication",
             "thunder-wave-immunities",
             "trick-room-toggle",
+            "weather-scaled-healing",
             "will-o-wisp-matrix",
         ]
     );

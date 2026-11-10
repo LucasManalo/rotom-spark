@@ -242,6 +242,48 @@
       ]
     },
     {
+      "id": "morningsun",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 16.6",
+      "evidence": [
+        "unit:crates/rotom-dex/tests/combat.rs#primary_non_damage_fixture_is_an_automated_differential_sweep",
+        "differential:data/fixtures/differential/primary-non-damage.json#weather-scaled-healing",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#primary_non_damage_fixture_is_an_automated_differential_sweep",
+        "interaction_differential:data/fixtures/differential/primary-non-damage.json#weather-scaled-healing"
+      ]
+    },
+    {
+      "id": "synthesis",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 16.6",
+      "evidence": [
+        "unit:crates/rotom-dex/tests/combat.rs#primary_non_damage_fixture_is_an_automated_differential_sweep",
+        "differential:data/fixtures/differential/primary-non-damage.json#weather-scaled-healing",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#primary_non_damage_fixture_is_an_automated_differential_sweep",
+        "interaction_differential:data/fixtures/differential/primary-non-damage.json#weather-scaled-healing"
+      ]
+    },
+    {
+      "id": "moonlight",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 16.6",
+      "evidence": [
+        "unit:crates/rotom-dex/tests/combat.rs#primary_non_damage_fixture_is_an_automated_differential_sweep",
+        "differential:data/fixtures/differential/primary-non-damage.json#weather-scaled-healing",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#primary_non_damage_fixture_is_an_automated_differential_sweep",
+        "interaction_differential:data/fixtures/differential/primary-non-damage.json#weather-scaled-healing"
+      ]
+    },
+    {
       "id": "sunnyday",
       "kind": "move",
       "implementation": "implemented",

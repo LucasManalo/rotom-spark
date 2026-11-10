@@ -95,6 +95,24 @@
       }
     },
     {
+      "name": "weather-scaled-healing",
+      "moves": [
+        "morningsun",
+        "synthesis",
+        "moonlight"
+      ],
+      "expected": {
+        "neutral_healed": 77,
+        "sun_healed": 103,
+        "adverse_healed": 39,
+        "cloud_nine_sun_healed": 77,
+        "full_hp_healed": 0,
+        "full_hp_succeeded": true,
+        "all_cases_succeeded": true,
+        "all_moves_match": true
+      }
+    },
+    {
       "name": "sunny-day-reapplication",
       "move": "sunnyday",
       "expected": {
