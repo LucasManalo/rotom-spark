@@ -20,7 +20,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | --- | ---: | ---: | ---: | ---: |
 | Abilities | 215 | 123 | 92 | 0 |
 | Items | 166 | 141 | 25 | 0 |
-| Moves | 510 | 265 | 0 | 245 |
+| Moves | 510 | 269 | 0 | 241 |
 
 ## Abilities
 
@@ -732,7 +732,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Pluck | `pluck` | unsupported | not_tested | not_tested | — |
 | Poison Fang | `poisonfang` | implemented | unit_tested | not_tested | PR 13.4 |
 | Poison Jab | `poisonjab` | implemented | unit_tested | not_tested | PR 13.4 |
-| Poison Powder | `poisonpowder` | unsupported | not_tested | not_tested | — |
+| Poison Powder | `poisonpowder` | implemented | differential_verified | differential_verified | PR 16.7 |
 | Pollen Puff | `pollenpuff` | unsupported | not_tested | not_tested | — |
 | Poltergeist | `poltergeist` | unsupported | not_tested | not_tested | — |
 | Population Bomb | `populationbomb` | implemented | unit_tested | not_tested | PR 13.4 |
@@ -811,7 +811,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Sky Attack | `skyattack` | unsupported | not_tested | not_tested | — |
 | Slack Off | `slackoff` | implemented | unit_tested | not_tested | PR 13.3 |
 | Slash | `slash` | implemented | unit_tested | not_tested | PR 13.2 |
-| Sleep Powder | `sleeppowder` | unsupported | not_tested | not_tested | — |
+| Sleep Powder | `sleeppowder` | implemented | differential_verified | differential_verified | PR 16.7 |
 | Sleep Talk | `sleeptalk` | unsupported | not_tested | not_tested | — |
 | Sludge Bomb | `sludgebomb` | implemented | unit_tested | not_tested | PR 13.4 |
 | Sludge Wave | `sludgewave` | implemented | unit_tested | not_tested | PR 13.4 |
@@ -849,7 +849,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | String Shot | `stringshot` | implemented | unit_tested | not_tested | PR 13.3 |
 | Struggle Bug | `strugglebug` | implemented | unit_tested | not_tested | PR 13.4 |
 | Stuff Cheeks | `stuffcheeks` | unsupported | not_tested | not_tested | — |
-| Stun Spore | `stunspore` | unsupported | not_tested | not_tested | — |
+| Stun Spore | `stunspore` | implemented | differential_verified | differential_verified | PR 16.7 |
 | Substitute | `substitute` | unsupported | not_tested | not_tested | — |
 | Sucker Punch | `suckerpunch` | unsupported | not_tested | not_tested | — |
 | Sunny Day | `sunnyday` | implemented | differential_verified | differential_verified | PR 13.3.1 |
@@ -886,7 +886,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Topsy-Turvy | `topsyturvy` | unsupported | not_tested | not_tested | — |
 | Torch Song | `torchsong` | implemented | unit_tested | not_tested | PR 13.4 |
 | Torment | `torment` | unsupported | not_tested | not_tested | — |
-| Toxic | `toxic` | unsupported | not_tested | not_tested | — |
+| Toxic | `toxic` | implemented | differential_verified | differential_verified | PR 16.7 |
 | Toxic Spikes | `toxicspikes` | unsupported | not_tested | not_tested | — |
 | Toxic Thread | `toxicthread` | implemented | unit_tested | not_tested | PR 13.3 |
 | Trailblaze | `trailblaze` | implemented | unit_tested | not_tested | PR 13.4 |

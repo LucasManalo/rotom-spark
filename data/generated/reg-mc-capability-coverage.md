@@ -11,7 +11,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | --- | ---: | ---: | ---: | ---: |
 | ability | 215 | 123 | 92 | 0 |
 | item | 166 | 141 | 25 | 0 |
-| move | 510 | 265 | 0 | 245 |
+| move | 510 | 269 | 0 | 241 |
 
 ## Executable capability coverage
 
@@ -26,7 +26,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 | Capability | Status | Blocked identities | Sole remaining blocker | Known gap |
 | --- | --- | ---: | ---: | --- |
 | `custom_callback` | unsupported | 161 | 95 | Resolved Showdown callbacks are recognized but not generically executable. |
-| `special_behavior` | unsupported | 142 | 44 | The move requires semantics outside the currently supported declarative executor. |
+| `special_behavior` | unsupported | 138 | 40 | The move requires semantics outside the currently supported declarative executor. |
 | `volatile` | partial | 63 | 3 | Flinch and selected existing conditions use the shared lifecycle; confusion, Taunt, Encore, Disable, Substitute, trapping, recharge, and invulnerability remain incomplete. |
 | `substitute_damage_routing` | unsupported | 18 | 18 | Resistance Berries cannot be promoted until damage and item activation distinguish Substitute damage from direct HP damage. |
 | `field_or_side_condition` | partial | 14 | 1 | Hazards, delayed effects, screens with special removal, and several side conditions are incomplete. |
@@ -74,7 +74,7 @@ Format: `gen9championsvgc2026regmc` (mod `champions`)
 
 - ability: 92 partial identities mapped; 0 currently unlocked.
 - item: 25 partial identities mapped; 0 currently unlocked.
-- move: 245 unsupported identities mapped; 0 currently unlocked.
+- move: 241 unsupported identities mapped; 0 currently unlocked.
 
 Mega Stones are executable through the verified dedicated `mega_eligibility`, `mega_timing`, `mega_form_change`, and `mega_ability_transition` capabilities. Generic `form_change` remains unsupported for non-Mega battle transformations.
 

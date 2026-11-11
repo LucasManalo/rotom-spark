@@ -60,6 +60,34 @@
       }
     },
     {
+      "name": "powder-status-eligibility",
+      "moves": [
+        "sleeppowder",
+        "stunspore",
+        "poisonpowder"
+      ],
+      "expected": {
+        "statuses": {
+          "sleeppowder": "slp",
+          "stunspore": "par",
+          "poisonpowder": "psn"
+        },
+        "grass_immune": true,
+        "overcoat_immune": true,
+        "safety_goggles_immune": true
+      }
+    },
+    {
+      "name": "toxic-poison-user-accuracy",
+      "move": "toxic",
+      "expected": {
+        "poison_user_status": "tox",
+        "poison_user_accuracy_draws": 0,
+        "non_poison_user_missed": true,
+        "steel_target_immune": true
+      }
+    },
+    {
       "name": "swords-dance-limits",
       "move": "swordsdance",
       "expected": {

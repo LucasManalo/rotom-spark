@@ -246,10 +246,11 @@ function moveExecutionRequirements(move) {
 	if (behavior.callbacks.some(callback => !supportedCallbacks.has(callback))) {
 		capabilities.add('custom_callback');
 	}
-	if (move.id === 'toxic' || unsupportedCondition || !behavior.structured_effects_supported ||
+	if (unsupportedCondition || !behavior.structured_effects_supported ||
 		['randomNormal', 'scripted'].includes(move.target) ||
 		behavior.intrinsic_flags.some(flag =>
 			(flag !== 'heal' || (!move.heal && !move.drain && !isWeatherScaledHeal(move))) &&
+			!(flag === 'powder' && move.status) &&
 			!(move.id === 'magnetrise' && flag === 'gravity')
 		) ||
 		behavior.special_properties.some(property => ![

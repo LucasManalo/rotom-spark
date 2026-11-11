@@ -3,11 +3,11 @@ use rotom_core::{
     AbilityBehavior, AbilityHandler, AbilityId, AbilitySuppression, BasePowerRule, BattleError,
     BattleStat, BattleStats, CombatData, CombatMove, ConditionId, ContextualPowerPredicate,
     CriticalBehavior, EffectFraction, FieldEffectIds, HitSequence, ItemBehavior, ItemHandler,
-    ItemId, MajorStatus, MegaEvolution, MoveAccuracy, MoveCapabilities, MoveCapability,
-    MoveCategory, MoveId, MoveIntrinsic, MoveOperation, MoveSlot, MoveTarget, PokemonPosition,
-    PokemonSet, PokemonState, PokemonType, PokemonTypes, PrimaryMoveEffect, PriorMoveEffect,
-    SecondaryMoveEffect, SelfMoveEffect, SpeciesId, StatAllocation, StatStages, StatusState,
-    SwitchEffect, TerrainEnvironment, WeatherEnvironment,
+    ItemId, MajorStatus, MegaEvolution, MoveAccuracy, MoveAccuracyRule, MoveCapabilities,
+    MoveCapability, MoveCategory, MoveId, MoveIntrinsic, MoveOperation, MoveSlot, MoveTarget,
+    PokemonPosition, PokemonSet, PokemonState, PokemonType, PokemonTypes, PrimaryMoveEffect,
+    PriorMoveEffect, SecondaryMoveEffect, SelfMoveEffect, SpeciesId, StatAllocation, StatStages,
+    StatusState, SwitchEffect, TerrainEnvironment, WeatherEnvironment,
 };
 
 impl CombatData for DexData {
@@ -97,6 +97,17 @@ impl CombatData for DexData {
     fn move_base_power_rule(&self, move_id: MoveId) -> BasePowerRule {
         self.move_data(move_id)
             .map_or(BasePowerRule::Fixed, base_power_rule)
+    }
+
+    fn move_accuracy_rule(&self, move_id: MoveId) -> MoveAccuracyRule {
+        self.move_data(move_id)
+            .map_or(MoveAccuracyRule::Standard, |data| {
+                if data.id == "toxic" {
+                    MoveAccuracyRule::PoisonUserAlwaysHits
+                } else {
+                    MoveAccuracyRule::Standard
+                }
+            })
     }
 
     fn pokemon_types(
@@ -1974,10 +1985,10 @@ fn behavior_capabilities(data: &MoveData, mut required: MoveCapabilities) -> Mov
     let unsupported_flag = data.behavior.intrinsic_flags.iter().any(|flag| {
         (flag != "heal"
             || (data.heal.is_none() && data.drain.is_none() && !is_weather_scaled_heal(data)))
+            && !(flag == "powder" && data.status.is_some())
             && !(data.id == "magnetrise" && flag == "gravity")
     });
-    if data.id == "toxic"
-        || unsupported_condition
+    if unsupported_condition
         || unsupported_flag
         || unsupported_special
         || !data.behavior.structured_effects_supported

@@ -1961,6 +1961,17 @@ fn primary_non_damage_fixture_is_an_automated_differential_sweep() {
                 );
                 assert!(fixture_bool(case, "electric_terrain_prevented"));
             }
+            "powder-status-eligibility" => {
+                assert!(fixture_bool(case, "grass_immune"));
+                assert!(fixture_bool(case, "overcoat_immune"));
+                assert!(fixture_bool(case, "safety_goggles_immune"));
+            }
+            "toxic-poison-user-accuracy" => {
+                assert_eq!(case["expected"]["poison_user_status"], "tox");
+                assert_eq!(fixture_integer(case, "poison_user_accuracy_draws"), 0);
+                assert!(fixture_bool(case, "non_poison_user_missed"));
+                assert!(fixture_bool(case, "steel_target_immune"));
+            }
             "swords-dance-limits" | "growl-limits" => {
                 let is_self = name == "swords-dance-limits";
                 let move_name = if is_self { "swordsdance" } else { "growl" };
@@ -2383,6 +2394,7 @@ fn primary_non_damage_fixture_is_an_automated_differential_sweep() {
             "light-screen-reapplication",
             "magnet-rise-reapplication",
             "noble-roar-combined",
+            "powder-status-eligibility",
             "protect-blocks-status",
             "recover-rounding",
             "reflect-reapplication",
@@ -2390,11 +2402,168 @@ fn primary_non_damage_fixture_is_an_automated_differential_sweep() {
             "swords-dance-limits",
             "tailwind-reapplication",
             "thunder-wave-immunities",
+            "toxic-poison-user-accuracy",
             "trick-room-toggle",
             "weather-scaled-healing",
             "will-o-wisp-matrix",
         ]
     );
+}
+
+#[test]
+#[allow(clippy::too_many_lines)]
+fn powder_status_and_toxic_share_typed_eligibility_and_accuracy_rules() {
+    let fixture = primary_non_damage_fixture();
+    let case_named = |name| {
+        fixture["cases"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|case| case["name"] == name)
+            .unwrap()
+    };
+    let powder_reference = case_named("powder-status-eligibility");
+    let toxic_reference = case_named("toxic-poison-user-accuracy");
+    let dex = champions_reg_mc().expect("generated Dex");
+    let ordinary = set_with_moves(&dex, "blastoise", "torrent", &["recover"]);
+    let foe = ActionTarget::Foe(ActiveSlot::Left);
+    let target_ref = PokemonRef::new(SideId::P2, PokemonIndex::new(0));
+
+    for (move_name, expected_status) in [
+        ("sleeppowder", MajorStatus::Sleep),
+        ("stunspore", MajorStatus::Paralysis),
+        ("poisonpowder", MajorStatus::Poison),
+    ] {
+        let source = set_with_moves(&dex, "goodra", "sapsipper", &[move_name]);
+        let move_id = dex.resolve_move(move_name).unwrap().0;
+        let state_for = |target: &PokemonSet, seed| {
+            let state = selected_primary_battle(&dex, &source, target, seed);
+            let mut builder = BattleStateBuilder::from_state(state).unwrap();
+            builder
+                .edit_pokemon(target_ref, |pokemon| pokemon.stats.spe = u16::MAX)
+                .unwrap();
+            builder.build().unwrap()
+        };
+        let success = (0..10_000)
+            .map(|seed| execute_single_move(&dex, &state_for(&ordinary, seed), 0, foe))
+            .find(|result| {
+                result
+                    .state
+                    .side(SideId::P2)
+                    .pokemon(PokemonIndex::new(0))
+                    .unwrap()
+                    .status
+                    == Some(expected_status)
+            })
+            .expect("powder status should hit for one deterministic seed");
+        assert_eq!(primary_outcome(&success, move_id), TargetResult::Hit);
+        assert_eq!(
+            powder_reference["expected"]["statuses"][move_name],
+            match expected_status {
+                MajorStatus::Sleep => "slp",
+                MajorStatus::Paralysis => "par",
+                MajorStatus::Poison => "psn",
+                _ => unreachable!(),
+            }
+        );
+
+        let grass = set_with_moves(&dex, "tsareena", "queenlymajesty", &["recover"]);
+        let overcoat = set_with_moves(&dex, "kommoo", "overcoat", &["recover"]);
+        let mut goggles = ordinary.clone();
+        goggles.item = Some(dex.resolve_item("safetygoggles").unwrap().0);
+        for target in [&grass, &overcoat, &goggles] {
+            let state = state_for(target, 0x33_60);
+            let starting_pp = state
+                .side(SideId::P1)
+                .pokemon(PokemonIndex::new(0))
+                .unwrap()
+                .moves[0]
+                .pp;
+            let result = execute_single_move(&dex, &state, 0, foe);
+            assert_eq!(
+                result,
+                execute_single_move(&dex, &round_trip_state(&state), 0, foe)
+            );
+            assert_eq!(primary_outcome(&result, move_id), TargetResult::Immune);
+            let source_state = result
+                .state
+                .side(SideId::P1)
+                .pokemon(PokemonIndex::new(0))
+                .unwrap();
+            assert_eq!(source_state.moves[0].pp, starting_pp - 1);
+            assert_eq!(
+                source_state.move_history.move_last_turn_result,
+                Some(MoveActionResult::Failed)
+            );
+        }
+    }
+
+    let poison_source = set_with_moves(&dex, "gengar", "cursedbody", &["toxic"]);
+    let toxic = dex.resolve_move("toxic").unwrap().0;
+    let configured = |source: &PokemonSet, target: &PokemonSet, seed| {
+        let state = selected_primary_battle(&dex, source, target, seed);
+        let mut builder = BattleStateBuilder::from_state(state).unwrap();
+        builder
+            .edit_pokemon(
+                PokemonRef::new(SideId::P1, PokemonIndex::new(0)),
+                |pokemon| pokemon.stat_stages.accuracy = -6,
+            )
+            .unwrap();
+        builder
+            .edit_pokemon(target_ref, |pokemon| {
+                pokemon.stat_stages.evasion = 6;
+                pokemon.stats.spe = u16::MAX;
+            })
+            .unwrap();
+        builder.build().unwrap()
+    };
+    let state = configured(&poison_source, &ordinary, 0x33_70);
+    let result = execute_single_move(&dex, &state, 0, foe);
+    assert_eq!(
+        result,
+        execute_single_move(&dex, &round_trip_state(&state), 0, foe)
+    );
+    let target = result
+        .state
+        .side(SideId::P2)
+        .pokemon(PokemonIndex::new(0))
+        .unwrap();
+    assert_eq!(target.status, Some(MajorStatus::BadlyPoisoned));
+    assert_eq!(target.status_state.toxic_counter, 1);
+    assert_eq!(primary_outcome(&result, toxic), TargetResult::Hit);
+    assert!(!result
+        .state
+        .rng()
+        .trace()
+        .unwrap()
+        .iter()
+        .any(|entry| entry.reason == RngReason::Accuracy));
+    assert_eq!(toxic_reference["expected"]["poison_user_status"], "tox");
+    assert_eq!(toxic_reference["expected"]["poison_user_accuracy_draws"], 0);
+
+    let ordinary_source = set_with_moves(&dex, "goodra", "sapsipper", &["toxic"]);
+    let missed = (0..10_000)
+        .map(|seed| {
+            execute_single_move(&dex, &configured(&ordinary_source, &ordinary, seed), 0, foe)
+        })
+        .find(|value| primary_outcome(value, toxic) == TargetResult::Missed)
+        .expect("non-Poison Toxic should retain its accuracy check");
+    assert_eq!(
+        missed
+            .state
+            .side(SideId::P1)
+            .pokemon(PokemonIndex::new(0))
+            .unwrap()
+            .move_history
+            .move_last_turn_result,
+        Some(MoveActionResult::Failed)
+    );
+    assert!(fixture_bool(toxic_reference, "non_poison_user_missed"));
+
+    let steel = set_with_moves(&dex, "corviknight", "pressure", &["recover"]);
+    let immune = execute_single_move(&dex, &configured(&poison_source, &steel, 0x33_71), 0, foe);
+    assert_eq!(primary_outcome(&immune, toxic), TargetResult::Cancelled);
+    assert!(fixture_bool(toxic_reference, "steel_target_immune"));
 }
 
 #[derive(Debug, Deserialize)]

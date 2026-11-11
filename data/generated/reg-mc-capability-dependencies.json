@@ -31,9 +31,9 @@
       },
       "move": {
         "reachable": 510,
-        "unsupported": 245,
+        "unsupported": 241,
         "partial": 0,
-        "implemented": 265
+        "implemented": 269
       }
     },
     "executable_capability_coverage": {
@@ -46,7 +46,7 @@
     "dependency_targets": {
       "ability": 92,
       "item": 25,
-      "move": 245
+      "move": 241
     }
   },
   "capabilities": [
@@ -2359,7 +2359,6 @@
         "move:outrage",
         "move:petaldance",
         "move:phantomforce",
-        "move:poisonpowder",
         "move:powertrick",
         "move:psychicnoise",
         "move:pyroball",
@@ -2379,7 +2378,6 @@
         "move:shedtail",
         "move:sheercold",
         "move:skyattack",
-        "move:sleeppowder",
         "move:sleeptalk",
         "move:smackdown",
         "move:snaptrap",
@@ -2396,7 +2394,6 @@
         "move:stockpile",
         "move:stoneaxe",
         "move:strengthsap",
-        "move:stunspore",
         "move:substitute",
         "move:supercellslam",
         "move:swagger",
@@ -2408,7 +2405,6 @@
         "move:thrash",
         "move:throatchop",
         "move:torment",
-        "move:toxic",
         "move:toxicspikes",
         "move:triattack",
         "move:uproar",
@@ -2447,7 +2443,6 @@
         "move:meteorassault",
         "move:outrage",
         "move:petaldance",
-        "move:poisonpowder",
         "move:pyroball",
         "move:ragingfury",
         "move:rockwrecker",
@@ -2457,13 +2452,10 @@
         "move:scorchingsands",
         "move:selfdestruct",
         "move:sheercold",
-        "move:sleeppowder",
         "move:snipeshot",
         "move:spiritshackle",
-        "move:stunspore",
         "move:thrash",
         "move:throatchop",
-        "move:toxic",
         "move:triattack"
       ]
     },
@@ -8119,24 +8111,6 @@
     },
     {
       "kind": "move",
-      "id": "poisonpowder",
-      "name": "Poison Powder",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "special_behavior"
-      ],
-      "outstanding_blockers": [
-        "special_behavior"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.poisonpowder"
-      ]
-    },
-    {
-      "kind": "move",
       "id": "pollenpuff",
       "name": "Pollen Puff",
       "identity_status": "unsupported",
@@ -8835,24 +8809,6 @@
     },
     {
       "kind": "move",
-      "id": "sleeppowder",
-      "name": "Sleep Powder",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "special_behavior"
-      ],
-      "outstanding_blockers": [
-        "special_behavior"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.sleeppowder"
-      ]
-    },
-    {
-      "kind": "move",
       "id": "sleeptalk",
       "name": "Sleep Talk",
       "identity_status": "unsupported",
@@ -9305,24 +9261,6 @@
     },
     {
       "kind": "move",
-      "id": "stunspore",
-      "name": "Stun Spore",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "special_behavior"
-      ],
-      "outstanding_blockers": [
-        "special_behavior"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.stunspore"
-      ]
-    },
-    {
-      "kind": "move",
       "id": "substitute",
       "name": "Substitute",
       "identity_status": "unsupported",
@@ -9699,24 +9637,6 @@
       "differential_fixtures": [],
       "pinned_reference_evidence": [
         "showdown:data/moves.ts:Moves.torment"
-      ]
-    },
-    {
-      "kind": "move",
-      "id": "toxic",
-      "name": "Toxic",
-      "identity_status": "unsupported",
-      "capabilities": [
-        "special_behavior"
-      ],
-      "outstanding_blockers": [
-        "special_behavior"
-      ],
-      "unlocked": false,
-      "tests": [],
-      "differential_fixtures": [],
-      "pinned_reference_evidence": [
-        "showdown:data/moves.ts:Moves.toxic"
       ]
     },
     {

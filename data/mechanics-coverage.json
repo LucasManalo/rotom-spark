@@ -209,6 +209,62 @@
       ]
     },
     {
+      "id": "toxic",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 16.7",
+      "evidence": [
+        "unit:crates/rotom-dex/tests/combat.rs#powder_status_and_toxic_share_typed_eligibility_and_accuracy_rules",
+        "differential:data/fixtures/differential/primary-non-damage.json#toxic-poison-user-accuracy",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#powder_status_and_toxic_share_typed_eligibility_and_accuracy_rules",
+        "interaction_differential:data/fixtures/differential/primary-non-damage.json#toxic-poison-user-accuracy"
+      ]
+    },
+    {
+      "id": "sleeppowder",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 16.7",
+      "evidence": [
+        "unit:crates/rotom-dex/tests/combat.rs#powder_status_and_toxic_share_typed_eligibility_and_accuracy_rules",
+        "differential:data/fixtures/differential/primary-non-damage.json#powder-status-eligibility",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#powder_status_and_toxic_share_typed_eligibility_and_accuracy_rules",
+        "interaction_differential:data/fixtures/differential/primary-non-damage.json#powder-status-eligibility"
+      ]
+    },
+    {
+      "id": "stunspore",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 16.7",
+      "evidence": [
+        "unit:crates/rotom-dex/tests/combat.rs#powder_status_and_toxic_share_typed_eligibility_and_accuracy_rules",
+        "differential:data/fixtures/differential/primary-non-damage.json#powder-status-eligibility",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#powder_status_and_toxic_share_typed_eligibility_and_accuracy_rules",
+        "interaction_differential:data/fixtures/differential/primary-non-damage.json#powder-status-eligibility"
+      ]
+    },
+    {
+      "id": "poisonpowder",
+      "kind": "move",
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 16.7",
+      "evidence": [
+        "unit:crates/rotom-dex/tests/combat.rs#powder_status_and_toxic_share_typed_eligibility_and_accuracy_rules",
+        "differential:data/fixtures/differential/primary-non-damage.json#powder-status-eligibility",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#powder_status_and_toxic_share_typed_eligibility_and_accuracy_rules",
+        "interaction_differential:data/fixtures/differential/primary-non-damage.json#powder-status-eligibility"
+      ]
+    },
+    {
       "id": "swordsdance",
       "kind": "move",
       "implementation": "implemented",

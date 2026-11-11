@@ -31073,6 +31073,11 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/primary-non-damage.json#powder-status-eligibility",
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "interaction_differential:data/fixtures/differential/primary-non-damage.json#powder-status-eligibility",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#powder_status_and_toxic_share_typed_eligibility_and_accuracy_rules",
         "species/meganium",
         "species/venusaur",
         "species/victreebel",
@@ -31097,7 +31102,9 @@
         "species/vivillonsavanna",
         "species/vivillonsun",
         "species/vivillontundra",
-        "species/whimsicott"
+        "species/whimsicott",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case",
+        "unit:crates/rotom-dex/tests/combat.rs#powder_status_and_toxic_share_typed_eligibility_and_accuracy_rules"
       ],
       "effect_families": [
         "major_status",
@@ -31108,14 +31115,13 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "major_status",
-        "special_behavior"
+        "major_status"
       ],
-      "pr_16_5_supported": false,
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "pr_16_5_supported": true,
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 16.7"
     },
     {
       "id": "pollenpuff",
@@ -36480,6 +36486,11 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/primary-non-damage.json#powder-status-eligibility",
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "interaction_differential:data/fixtures/differential/primary-non-damage.json#powder-status-eligibility",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#powder_status_and_toxic_share_typed_eligibility_and_accuracy_rules",
         "species/roserade",
         "species/venusaur",
         "species/victreebel",
@@ -36503,7 +36514,9 @@
         "species/vivillonsandstorm",
         "species/vivillonsavanna",
         "species/vivillonsun",
-        "species/vivillontundra"
+        "species/vivillontundra",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case",
+        "unit:crates/rotom-dex/tests/combat.rs#powder_status_and_toxic_share_typed_eligibility_and_accuracy_rules"
       ],
       "effect_families": [
         "major_status",
@@ -36514,14 +36527,13 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "major_status",
-        "special_behavior"
+        "major_status"
       ],
-      "pr_16_5_supported": false,
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "pr_16_5_supported": true,
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 16.7"
     },
     {
       "id": "sleeptalk",
@@ -38969,6 +38981,11 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/primary-non-damage.json#powder-status-eligibility",
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "interaction_differential:data/fixtures/differential/primary-non-damage.json#powder-status-eligibility",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#powder_status_and_toxic_share_typed_eligibility_and_accuracy_rules",
         "species/roserade",
         "species/sinistcha",
         "species/sinistchamasterpiece",
@@ -38994,7 +39011,9 @@
         "species/vivillonsavanna",
         "species/vivillonsun",
         "species/vivillontundra",
-        "species/whimsicott"
+        "species/whimsicott",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case",
+        "unit:crates/rotom-dex/tests/combat.rs#powder_status_and_toxic_share_typed_eligibility_and_accuracy_rules"
       ],
       "effect_families": [
         "major_status",
@@ -39005,14 +39024,13 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "major_status",
-        "special_behavior"
+        "major_status"
       ],
-      "pr_16_5_supported": false,
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "pr_16_5_supported": true,
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 16.7"
     },
     {
       "id": "substitute",
@@ -41795,6 +41813,11 @@
       "kind": "move",
       "reachability": "direct_legal_set",
       "evidence": [
+        "differential:data/fixtures/differential/primary-non-damage.json#toxic-poison-user-accuracy",
+        "file:crates/rotom-core/src/combat.rs",
+        "file:crates/rotom-dex/src/combat.rs",
+        "interaction_differential:data/fixtures/differential/primary-non-damage.json#toxic-poison-user-accuracy",
+        "interaction_unit:crates/rotom-dex/tests/combat.rs#powder_status_and_toxic_share_typed_eligibility_and_accuracy_rules",
         "species/arbok",
         "species/ariados",
         "species/beedrill",
@@ -41825,7 +41848,9 @@
         "species/venusaur",
         "species/victreebel",
         "species/vileplume",
-        "species/zoroark"
+        "species/zoroark",
+        "unit:crates/rotom-dex/tests/combat.rs#mechanics_manifest_drives_every_move_capability_and_execution_smoke_case",
+        "unit:crates/rotom-dex/tests/combat.rs#powder_status_and_toxic_share_typed_eligibility_and_accuracy_rules"
       ],
       "effect_families": [
         "major_status",
@@ -41836,14 +41861,13 @@
         "selected_single_target",
         "accuracy",
         "non_damage_primary",
-        "major_status",
-        "special_behavior"
+        "major_status"
       ],
-      "pr_16_5_supported": false,
-      "implementation": "unsupported",
-      "verification": "not_tested",
-      "interaction_verification": "not_tested",
-      "owner_pr": null
+      "pr_16_5_supported": true,
+      "implementation": "implemented",
+      "verification": "differential_verified",
+      "interaction_verification": "differential_verified",
+      "owner_pr": "PR 16.7"
     },
     {
       "id": "toxicspikes",
@@ -49370,19 +49394,19 @@
       "move": {
         "total": 510,
         "implementation": {
-          "unsupported": 245,
+          "unsupported": 241,
           "partial": 0,
-          "implemented": 265
+          "implemented": 269
         },
         "verification": {
-          "not_tested": 245,
+          "not_tested": 241,
           "unit_tested": 218,
-          "differential_verified": 47
+          "differential_verified": 51
         },
         "interaction_verification": {
-          "not_tested": 468,
+          "not_tested": 464,
           "unit_tested": 16,
-          "differential_verified": 26
+          "differential_verified": 30
         },
         "reachability": {
           "direct_legal_set": 510,

@@ -135,6 +135,13 @@ pub enum ContextualPowerPredicate {
     PreviousMoveFailed,
 }
 
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum MoveAccuracyRule {
+    Standard,
+    PoisonUserAlwaysHits,
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct SecondaryMoveEffect {
@@ -563,6 +570,10 @@ pub trait CombatData {
 
     fn move_base_power_rule(&self, _move_id: MoveId) -> BasePowerRule {
         BasePowerRule::Fixed
+    }
+
+    fn move_accuracy_rule(&self, _move_id: MoveId) -> MoveAccuracyRule {
+        MoveAccuracyRule::Standard
     }
 
     fn primary_move_effects(&self, _move_id: MoveId) -> Vec<PrimaryMoveEffect> {
@@ -2909,6 +2920,20 @@ impl BattleState {
 
         let mut after_try_immunity = Vec::with_capacity(after_immunity.len());
         for (index, target_context) in after_immunity {
+            if move_context.move_data.interaction_flags.powder()
+                && self.target_is_naturally_powder_immune(
+                    data,
+                    field_effects,
+                    target_context.target,
+                )?
+            {
+                outcomes[index] = Some(Self::empty_target_outcome(
+                    move_context,
+                    target_context,
+                    TargetResult::Immune,
+                ));
+                continue;
+            }
             if !move_context.queued.prankster_boosted {
                 after_try_immunity.push((index, target_context));
                 continue;
@@ -4567,6 +4592,9 @@ impl BattleState {
         let MoveAccuracy::Percent { value } = move_context.move_data.accuracy else {
             return Ok(true);
         };
+        if self.source_satisfies_accuracy_rule(data, move_context)? {
+            return Ok(true);
+        }
         let source_ability = self
             .side(move_context.source.side)
             .pokemon(move_context.source.pokemon)
@@ -4661,6 +4689,45 @@ impl BattleState {
         resolution.events.push(accuracy);
         self.rng
             .chance(RngReason::Accuracy, u64::from(adjusted.min(100)), 100)
+    }
+
+    fn target_is_naturally_powder_immune<D: CombatData>(
+        &self,
+        data: &D,
+        field_effects: &FieldEffectIds,
+        target: PokemonRef,
+    ) -> Result<bool, BattleError> {
+        let pokemon = self
+            .side(target.side)
+            .pokemon(target.pokemon)
+            .ok_or_else(|| BattleError::InvalidState("powder target is invalid".to_owned()))?;
+        let types = data
+            .pokemon_types(pokemon.species, pokemon.form)
+            .ok_or_else(|| BattleError::DataMismatch("missing powder target types".to_owned()))?;
+        Ok(types.primary == PokemonType::Grass
+            || types.secondary == Some(PokemonType::Grass)
+            || (field_effects.item_is_active_for(self, data, target)
+                && field_effects
+                    .safety_goggles
+                    .is_some_and(|item| pokemon.item == Some(item))))
+    }
+
+    fn source_satisfies_accuracy_rule<D: CombatData>(
+        &self,
+        data: &D,
+        context: &MoveExecutionContext,
+    ) -> Result<bool, BattleError> {
+        if data.move_accuracy_rule(context.move_id) != MoveAccuracyRule::PoisonUserAlwaysHits {
+            return Ok(false);
+        }
+        let source = self
+            .side(context.source.side)
+            .pokemon(context.source.pokemon)
+            .ok_or_else(|| BattleError::InvalidState("accuracy source is invalid".to_owned()))?;
+        let types = data
+            .pokemon_types(source.species, source.form)
+            .ok_or_else(|| BattleError::DataMismatch("missing accuracy source types".to_owned()))?;
+        Ok(types.primary == PokemonType::Poison || types.secondary == Some(PokemonType::Poison))
     }
 
     fn priority_move_blocked_target<D: CombatData>(

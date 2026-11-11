@@ -12,16 +12,19 @@ const version = Object.fromEntries(fs.readFileSync(path.join(repositoryRoot, 'SH
 	.trim().split(/\r?\n/u).map(line => line.split('=', 2)));
 
 const filler = () => ({species: 'Magikarp', ability: 'swiftswim', moves: ['splash'], level: 50});
-const set = (species, moves, ability = 'pressure') => ({species, ability, moves, level: 50});
+const set = (species, moves, ability = 'pressure', item = undefined) => ({
+	species, ability, moves, level: 50, ...(item ? {item} : {}),
+});
 const pad = team => [...team, ...Array.from({length: 4 - team.length}, filler)];
 
 function battleWith(
-	sourceMoves, targetSpecies = 'Blastoise', seed = 'gen5,0000000000000001', targetAbility = 'pressure'
+	sourceMoves, targetSpecies = 'Blastoise', seed = 'gen5,0000000000000001', targetAbility = 'pressure',
+	options = {}
 ) {
 	const battle = new Battle({
 		format: Dex.formats.get(version.format, true), seed,
-		p1: {team: pad([set('Goodra', sourceMoves, 'sapsipper'), filler()])},
-		p2: {team: pad([set(targetSpecies, ['splash'], targetAbility), filler()])},
+		p1: {team: pad([set(options.sourceSpecies || 'Goodra', sourceMoves, options.sourceAbility || 'sapsipper'), filler()])},
+		p2: {team: pad([set(targetSpecies, ['splash'], targetAbility, options.targetItem), filler()])},
 	});
 	battle.makeChoices('team 1234', 'team 1234');
 	return battle;
@@ -114,6 +117,43 @@ function sleepCases() {
 	terrain.field.setTerrain('electricterrain', terrain.p1.active[0]);
 	terrain.randomChance = () => true;
 	return {hypnosis, electric_terrain_prevented: use(terrain, 'hypnosis')};
+}
+
+function powderStatusCases() {
+	const observe = (move, targetSpecies, targetAbility = 'pressure', targetItem = undefined) => {
+		const battle = battleWith([move], targetSpecies, 'gen5,0000000000000021', targetAbility, {targetItem});
+		battle.randomChance = () => true;
+		const execution = use(battle, move);
+		return {result: execution.result, status: execution.state.target.status};
+	};
+	return Object.fromEntries(['sleeppowder', 'stunspore', 'poisonpowder'].map(move => [move, {
+		success: observe(move, 'Blastoise'),
+		grass: observe(move, 'Vileplume', 'chlorophyll'),
+		overcoat: observe(move, 'Kommo-o', 'overcoat'),
+		safety_goggles: observe(move, 'Blastoise', 'pressure', 'safetygoggles'),
+	}]));
+}
+
+function toxicCases() {
+	const poison = battleWith(['toxic'], 'Blastoise', 'gen5,0000000000000022', 'pressure', {
+		sourceSpecies: 'Gengar', sourceAbility: 'cursedbody',
+	});
+	let poisonAccuracyDraws = 0;
+	poison.randomChance = () => { poisonAccuracyDraws++; return false; };
+	const poisonResult = use(poison, 'toxic');
+
+	const ordinary = battleWith(['toxic']);
+	ordinary.randomChance = () => false;
+	const ordinaryResult = use(ordinary, 'toxic');
+	const immune = battleWith(['toxic'], 'Corviknight');
+	immune.randomChance = () => true;
+	const immuneResult = use(immune, 'toxic');
+	return {
+		poison_user_status: poisonResult.state.target.status,
+		poison_user_accuracy_draws: poisonAccuracyDraws,
+		non_poison_user_missed: !ordinaryResult.result,
+		steel_target_immune: !immuneResult.result,
+	};
 }
 
 function statCases() {
@@ -232,6 +272,8 @@ function protectCase() {
 }
 
 const weatherHealing = weatherHealingCases();
+const powderStatuses = powderStatusCases();
+const toxic = toxicCases();
 const weatherHealingBaseline = weatherHealing.morningsun;
 const weatherHealingExpected = {
 	neutral_healed: weatherHealingBaseline.neutral.healed,
@@ -282,6 +324,15 @@ const output = {
 			electric_terrain_prevented: !observations.sleep.electric_terrain_prevented.result,
 			rng: observations.sleep.hypnosis.rng,
 		}},
+		{name: 'powder-status-eligibility', moves: ['sleeppowder', 'stunspore', 'poisonpowder'], expected: {
+			statuses: Object.fromEntries(Object.entries(powderStatuses).map(([move, value]) =>
+				[move, value.success.status]
+			)),
+			grass_immune: Object.values(powderStatuses).every(value => !value.grass.result),
+			overcoat_immune: Object.values(powderStatuses).every(value => !value.overcoat.result),
+			safety_goggles_immune: Object.values(powderStatuses).every(value => !value.safety_goggles.result),
+		}},
+		{name: 'toxic-poison-user-accuracy', move: 'toxic', expected: toxic},
 		{name: 'swords-dance-limits', move: 'swordsdance', expected: Object.fromEntries(
 			Object.entries(observations.stat_stages.swords_dance).map(([name, value]) =>
 				[name, value.state.source.boosts.atk]
