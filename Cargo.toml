@@ -1,11 +1,8 @@
 [workspace]
 members = [
-    "crates/rotom-cli",
-    "crates/rotom-core",
-    "crates/rotom-dex",
-    "crates/rotom-formats",
-    "crates/rotom-protocol",
+    "crates/rotom-engine",
 ]
+exclude = ["crates/rotom-dex", "crates/rotom-formats"]
 resolver = "2"
 
 [workspace.package]

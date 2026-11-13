@@ -1,57 +1,16 @@
-# Rotom Spark
+# Rotom Spark v2
 
-Rotom Spark is a standalone, deterministic Rust battle simulator targeting
-Pokémon Champions Regulation M-C. During Phase 1, behavior will be validated
-against a pinned Pokémon Showdown Champions implementation.
+A clean Rust foundation for a deterministic Champions Regulation M-C battle-state transition engine.
 
-The repository currently contains the workspace foundations, normalized static
-data from a pinned Pokémon Showdown revision, Regulation M-C team parsing and
-validation, and the serializable core battle-state model. Battle resolution is
-being added incrementally; team preview, basic switching, faint resolution,
-forced replacements, and victory detection are available.
-Typed legal-action enumeration and battle-owned deterministic RNG with optional
-diagnostic tracing are also available. Normal turn choices can now be expanded
-into an inspectable priority/speed-ordered action queue with deterministic
-speed-tie handling.
-The first vertical combat slice now resolves a deliberately small set of
-ordinary physical and special attacks with Champions stats, accuracy, PP,
-critical and damage rolls, STAB, type effectiveness, HP loss, and fainting.
-A typed event/effect registry now collects active battle effects, orders their
-handlers deterministically, dispatches initial turn/move/damage/switch hooks,
-enforces per-event relay and cancellation contracts, and records inspectable
-per-turn event traces.
-Common condition processing now includes bounded stat stages, Champions major
-status timing and RNG, burn/poison/toxic effects, timed volatile lifecycle,
-and ordered residual faint handling.
+Only `crates/rotom-engine` is active, with no battle implementation yet. Dex and format source is preserved but excluded pending v2 contracts. See docs/v2/ARCHITECTURE.md, ENGINEERING_RULES.md, and MIGRATION.md.
 
-## Workspace
-
-- `rotom-core`: shared engine IDs, errors, and authoritative battle state.
-- `rotom-dex`: static game data boundary.
-- `rotom-formats`: format rules and legality boundary.
-- `rotom-protocol`: normalized battle snapshots and protocol boundary.
-- `rotom-cli`: development command-line shell, installed as `rotom`.
-
-## Development
+## Verification
 
 ```text
-cargo fmt --all -- --check
-cargo clippy --workspace --all-targets --all-features -- -D warnings
+cargo fmt --check
+cargo check --workspace
 cargo test --workspace
 ```
 
-See `AGENTS.md` and `ROTOM_SPARK_IMPLEMENTATION_PLAN.md` before making changes.
-
-## Regenerating Champions data
-
-Pokémon Showdown is a development-only Git submodule. It is not needed when
-using the checked-in generated data through `rotom-dex`.
-
-```text
-git submodule update --init --recursive
-npm ci --prefix vendor/pokemon-showdown
-npm run build --prefix vendor/pokemon-showdown
-node tools/showdown-export/export-champions.cjs
-node tools/showdown-export/export-champions.cjs --check
-```
+Pinned Showdown information, generated Champions data, team inputs, differential fixtures, reference scripts, and static-data export tooling remain available. Showdown is a development oracle only.
 
